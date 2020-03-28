@@ -5,23 +5,19 @@ import it.polimi.ingsw.model.InternalModel;
 import it.polimi.ingsw.model.Player;
 
 /**
- * 
+ *  Translates a CardRule into a CompiledCardRule
  */
 public class RuleCompiler {
 
-    /**
-     * Default constructor
-     */
-    public RuleCompiler() {
-    }
 
     /**
-     * @param model
-     * @param cardRule
-     * @param owner
-     * @return
+     * Compiles the CardRule using the StatementCompiler and EffectCompiler
+     * @param internalModel the internal model is needed to incapsulate it in the lambdas
+     * @param cardRule the rule to be compiled
+     * @param owner the owner of the rule to be compiled
+     * @return the compiled rule
      **/
-    public static CompiledCardRule compile(InternalModel model, CardRule cardRule, Player owner){
+    public static CompiledCardRule compile(InternalModel internalModel, CardRule cardRule, Player owner){
         return null;
     }
 
