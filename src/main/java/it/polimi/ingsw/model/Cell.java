@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.enums.BuildingType;
-import it.polimi.ingsw.model.exceptions.NoBuildingSignal;
+import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.exceptions.NoWorkerPresentException;
 import it.polimi.ingsw.model.exceptions.WorkerAlreadyPresentException;
 
@@ -42,11 +42,10 @@ public abstract class Cell implements Cloneable{
     public abstract boolean canBuild(BuildingType building);
 
     /**
-     * This method returns the Building currently at the top.
-     * @return the building on the top.
-     * @throws NoBuildingSignal if there is no building.
+     * This method returns the level of the cell (i.e GROUND if there are no buildings).
+     * @return the LevelType associated to the Cell.
      */
-    public abstract BuildingType getTopBuilding() throws NoBuildingSignal;
+    public abstract LevelType getTopBuilding();
 
     /**
      * This method sets on the Cell the Worker passed as an argument.

@@ -1,12 +1,14 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.cardReader.CardFile;
+import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
 
 import java.util.List;
 
 /**
- * This class contains the info about a Player. Each Player is uniquely identified by his nickname.
+ * This class contains the info about a Player.
+ * Each Player is uniquely identified by his nickname.
  * Furthermore each Player has an associated GodCard and can have one of
  * the states specified in PlayerState during his turn.
  */
@@ -37,7 +39,8 @@ public abstract class Player {
     public abstract List<Worker> getWorkers();
 
     /**
-     * Setter that sets the state of the Player to one of the possible states in PlayerState.
+     * Setter that sets the state of the Player to one of
+     * the possible states in PlayerState.
      * @param ps is the state of the Player to set.
      */
     public abstract void setPlayerState(PlayerState ps);
@@ -47,6 +50,25 @@ public abstract class Player {
      * @param c is an instance of CardFile to set.
      */
     public abstract void setCard(CardFile c);
+
+    /**
+     * This method adds a flag to the Player which indicates
+     * that he has performed a certain action.
+     * @param flag is the performed action to add to the Player List flags.
+     */
+    public abstract void addFlag(PlayerFlag flag);
+
+    /**
+     * This method checks if the Player has performed a given action during the match.
+     * @param flag is the action to check.
+     * @return true if the action is contained in the List flags, false otherwise.
+     */
+    public abstract boolean hasFlag(PlayerFlag flag);
+
+    /**
+     * This method deletes all the flags contained in the List flags.
+     */
+    public abstract void clearFlags();
 
     /**
      * This method checks if the given obj equals the Player.
