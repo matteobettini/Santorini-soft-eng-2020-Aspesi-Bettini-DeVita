@@ -29,7 +29,7 @@ public enum StatementType {
      * @return The enum value corresponding to the code
      * @throws IllegalArgumentException If there is no enum value with that code
      */
-    public static StatementType valueByContent(String code) throws IllegalArgumentException{
+    public static StatementType valueByContent(String code){
         for(StatementType e : StatementType.values()){
             if(e.code.equals(code))
                 return e;
