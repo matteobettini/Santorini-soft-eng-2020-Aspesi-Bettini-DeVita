@@ -17,5 +17,5 @@ public enum StatementVerbType {
     BUILD_NUM,
     BUILD_DOME_EXCEPT,
     BUILD_DOME,
-    BUILDING_POS_EQUALS
+    BUILD_IN_SAME_SPOT
 }

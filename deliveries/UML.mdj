@@ -24192,7 +24192,7 @@
 											"top": 927,
 											"width": 156.05712890625,
 											"height": 13,
-											"text": "BUILDING_POS_EQUALS",
+											"text": "BUILD_IN_SAME_SPOT",
 											"horizontalAlignment": 0
 										}
 									],
@@ -30199,7 +30199,7 @@
 											"width": 612.39013671875,
 											"height": 13,
 											"underline": true,
-											"text": "-compileBuildingPosEquals(model: InternalModel, stm: RuleStatement, owner: Player): LambdaStatement",
+											"text": "-compileBuildInSameSpot(model: InternalModel, stm: RuleStatement, owner: Player): LambdaStatement",
 											"horizontalAlignment": 0
 										},
 										{
@@ -32300,7 +32300,7 @@
 											"width": 311.19384765625,
 											"height": 13,
 											"underline": true,
-											"text": "-buildingPosEqualsValidate(stm: RuleStatement): void",
+											"text": "-buildInSameSpotValidate(stm: RuleStatement): void",
 											"horizontalAlignment": 0
 										}
 									],
@@ -34932,7 +34932,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFxGPfUgZ0vsGc="
 							},
-							"name": "compileBuildingPosEquals",
+							"name": "compileBuildInSameSpot",
 							"visibility": "private",
 							"isStatic": true,
 							"parameters": [
@@ -35827,7 +35827,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFxGROX6aZxlxI="
 							},
-							"name": "buildingPosEqualsValidate",
+							"name": "buildInSameSpotValidate",
 							"visibility": "private",
 							"isStatic": true,
 							"parameters": [
@@ -37432,7 +37432,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFw9GBlmqIi0bs="
 							},
-							"name": "BUILDING_POS_EQUALS"
+							"name": "BUILD_IN_SAME_SPOT"
 						}
 					]
 				},
