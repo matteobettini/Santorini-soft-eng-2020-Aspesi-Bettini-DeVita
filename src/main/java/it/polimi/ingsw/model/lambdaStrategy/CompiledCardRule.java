@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.lambdaStrategy;
 
 import it.polimi.ingsw.cardReader.enums.TriggerType;
-import it.polimi.ingsw.model.turnInfoMatteo.BuildData;
-import it.polimi.ingsw.model.turnInfoMatteo.MoveData;
+import it.polimi.ingsw.model.turnInfo.BuildData;
+import it.polimi.ingsw.model.turnInfo.MoveData;
 
 import java.util.*;
 

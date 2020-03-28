@@ -1,7 +1,8 @@
-package it.polimi.ingsw.model.turnInfoMatteo;
+package it.polimi.ingsw.model.turnInfo;
 
 
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.enums.BuildingType;
 
 import java.awt.*;
@@ -22,7 +23,7 @@ public class BuildData extends TurnData {
      * Default constructor
      */
     public BuildData(Player player, Worker worker, Map<Point,BuildingType> data) {
-        super(Player player, Worker worker);
+        super( player, worker);
         this.data = data;
     }
 

@@ -1,6 +1,7 @@
-package it.polimi.ingsw.model.turnInfoMatteo;
+package it.polimi.ingsw.model.turnInfo;
 
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.Worker;
 
 
 /**
