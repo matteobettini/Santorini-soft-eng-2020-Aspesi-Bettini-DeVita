@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.enums.BuildingType;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * 
@@ -17,12 +18,12 @@ public class BuildData extends TurnData {
     /**
      * 
      */
-    private final Map<Point, BuildingType> data;
+    private final Map<Point, List<BuildingType>> data;
 
     /**
      * Default constructor
      */
-    public BuildData(Player player, Worker worker, Map<Point,BuildingType> data) {
+    public BuildData(Player player, Worker worker, Map<Point,List<BuildingType>> data) {
         super( player, worker);
         this.data = data;
     }
@@ -30,7 +31,7 @@ public class BuildData extends TurnData {
     /**
      * @return
      */
-    public Map<Point, BuildingType> getData() {
+    public Map<Point, List<BuildingType>> getData() {
         // TODO implement here
         return null;
     }

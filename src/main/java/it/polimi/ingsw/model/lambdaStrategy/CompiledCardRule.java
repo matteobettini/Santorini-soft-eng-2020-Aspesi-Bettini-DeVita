@@ -57,8 +57,18 @@ public class CompiledCardRule {
      * @return returns true if the statements are all valid or false if it at least one fails
      */
     public boolean execute(MoveData moveData, BuildData buildData, boolean simulate) throws PlayerLostSignal, PlayerWonSignal {
-        // TODO implement here
-        return false;
+
+        boolean result = true;
+
+        for(LambdaStatement s : statements) {
+            result = s.evaluate(moveData, buildData);
+            if(!result)
+                break;
+        }
+
+        result = result && effect.apply(moveData, buildData, simulate);
+
+        return result;
     }
 
     /**
@@ -68,8 +78,7 @@ public class CompiledCardRule {
      * @return returns true if the effect has been applied or false if it has failes
      */
     public boolean applyEffect(MoveData moveData, BuildData buildData) throws PlayerLostSignal, PlayerWonSignal {
-        // TODO implement here
-        return false;
+        return effect.apply(moveData, buildData, false);
     }
 
     /**
