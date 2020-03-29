@@ -4,6 +4,7 @@ import it.polimi.ingsw.cardReader.CardFile;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,63 +13,78 @@ import java.util.List;
  * Furthermore each Player has an associated GodCard and can have one of
  * the states specified in PlayerState during his turn.
  */
-public abstract class Player {
+public class Player {
+
+    private final String nickname;
+    private List<PlayerFlag> flags;
+    private List<Worker> workers;
+    private PlayerState state;
+    private CardFile card;
+
+    Player(String nickname){
+        this.nickname = nickname;
+        this.flags = new ArrayList<>();
+        this.workers = new ArrayList<>();
+        this.workers.add(new Worker(this.nickname + ".1", this));
+        this.workers.add(new Worker(this.nickname + ".2", this));
+        this.state = PlayerState.TURN_STARTED;
+    }
 
     /**
      * Getter that returns the nickname of the Player.
      * @return a String containing the nickname.
      */
-    public abstract String getNickname();
+    public String getNickname(){ return this.nickname; }
 
     /**
      * Getter that returns the CardFile of the GodCard associated to the Player.
      * @return an instance of CardFile.
      */
-    public abstract CardFile getCard();
+    public CardFile getCard(){ return this.card; }
 
     /**
      * Getter that returns the current state of the Player.
      * @return one of the states contained in PlayerState.
      */
-    public abstract PlayerState getState();
+    public PlayerState getState(){ return this.state; }
 
     /**
      * Getter that returns the Workers associated to the Player.
      * @return a List of all the Workers possessed by the Player.
      */
-    public abstract List<Worker> getWorkers();
+    public List<Worker> getWorkers(){ return this.workers; }
 
     /**
      * Setter that sets the state of the Player to one of
      * the possible states in PlayerState.
      * @param ps is the state of the Player to set.
      */
-    public abstract void setPlayerState(PlayerState ps);
+    public void setPlayerState(PlayerState ps){ this.state = ps; }
 
     /**
      * Setter that sets the GodCard associated to the Player.
      * @param c is an instance of CardFile to set.
      */
-    public abstract void setCard(CardFile c);
+    public void setCard(CardFile c){ this.card = c; }
 
     /**
      * This method adds a flag to the Player which indicates
      * that he has performed a certain action.
      * @param flag is the performed action to add to the Player List flags.
      */
-    public abstract void addFlag(PlayerFlag flag);
+    public void addFlag(PlayerFlag flag){ this.flags.add(flag); }
 
     /**
      * This method checks if the Player has performed a given action during the match.
      * @param flag is the action to check.
      * @return true if the action is contained in the List flags, false otherwise.
      */
-    public abstract boolean hasFlag(PlayerFlag flag);
+    public boolean hasFlag(PlayerFlag flag){ return flags.contains(flag); }
 
     /**
      * This method deletes all the flags contained in the List flags.
      */
-    public abstract void clearFlags();
+    public void clearFlags(){ flags.clear(); }
 
     /**
      * This method checks if the given obj equals the Player.
@@ -76,12 +92,34 @@ public abstract class Player {
      * @return true if obj and the Player are identical, false otherwise.
      */
     @Override
-    public abstract boolean equals(Object obj);
+    public boolean equals(Object obj){
+        if(this == obj) return true;
+        if(obj == null) return false;
+        if(this.getClass() != obj.getClass()) return false;
+        Player other = (Player)obj;
+        return this.nickname.equals(other.nickname);
+    }
 
     /**
      * This method returns a clone of the Player.
      * @return an cloned instance of the Player.
      */
     @Override
-    protected abstract Player clone();
+    protected Player clone(){
+        List<PlayerFlag> clonedFlags = new ArrayList<PlayerFlag>(this.flags);
+        List<Worker> clonedWorkers = new ArrayList<Worker>();
+        for(Worker w : this.workers){
+            clonedWorkers.add(w.clone());
+        }
+
+        Player clonedPlayer = new Player(this.nickname);
+
+        clonedPlayer.setPlayerState(this.state);
+        clonedPlayer.setCard(this.card);
+        clonedPlayer.workers = clonedWorkers;
+        clonedPlayer.flags = clonedFlags;
+
+        return clonedPlayer;
+
+    }
 }

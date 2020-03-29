@@ -11,6 +11,7 @@ import java.awt.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//Test on canBuild(List) is missing
 class CellTest {
 
     /**
@@ -43,7 +44,7 @@ class CellTest {
      * at any level(except DOME)
      */
     @Test
-    void testSetWorkerOnEmptyCell() throws NoWorkerPresentException {
+    void testSetWorkerOnEmptyCell() throws NoWorkerPresentException, WorkerAlreadyPresentException, DomeException {
         Cell cellT = new Cell(new Point(0,0));
         String workerID = "WW1";
 
@@ -56,7 +57,7 @@ class CellTest {
      * at any level.
      */
     @Test
-    void testSetWorkerOnOccupiedCell(){
+    void testSetWorkerOnOccupiedCell() throws WorkerAlreadyPresentException, DomeException {
         Cell cellT = new Cell(new Point(0,0));
         String worker1 = "WW1";
         String worker2 = "WW2";
@@ -83,7 +84,7 @@ class CellTest {
 
         try{
             cellT.setWorker(workerID);
-            assert false
+            assert false;
         } catch (DomeException e) {
             assert true;
         } catch (WorkerAlreadyPresentException e) {
@@ -229,7 +230,7 @@ class CellTest {
      * This test verifies that two Cells with the same position and different Workers are equal.
      */
     @Test
-    void testEqualsWithDifferentWorkers(){
+    void testEqualsWithDifferentWorkers() throws DomeException{
         Point pointT = new Point(0,0);
         String workerID1 = "WW1";
         String workerID2 = "WW2";
@@ -254,7 +255,7 @@ class CellTest {
      * This test verifies that two Cells with the same position and at least one null Worker are equal.
      */
     @Test
-    void testEqualsWithNullWorkers(){
+    void testEqualsWithNullWorkers() throws DomeException{
         Point pointT = new Point(0,0);
         Cell cell1 = new Cell(pointT);
         Cell cell2 = new Cell(pointT);

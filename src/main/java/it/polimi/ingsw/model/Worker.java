@@ -6,31 +6,41 @@ import java.awt.*;
  * This class contains all the info about a Worker. In particular its ID and the Player associated to it.
  * Furthermore it contains the info about the current position of the Worker on the Board.
  */
-public abstract class Worker {
+public class Worker {
+
+    private final String ID;
+    private Player player;
+    private Point position;
+
+
+    Worker(String ID, Player p){
+        this.ID = ID;
+        this.player = p;
+    }
 
     /**
      * Getter that returns the ID of the Worker.
      * @return a String containing the id of the Worker.
      */
-    public abstract String getID();
+    public  String getID(){ return this.ID; }
 
     /**
      * Setter that sets the position of the Worker to the given position.
      * @param cell is an instance of Cell that contains the info about the position to set.
      */
-    public abstract void setPosition(Point cell);
+    public void setPosition(Point cell){ this.position = cell; }
 
     /**
      * Getter that returns the position of the Worker.
      * @return a Point with the coordinates of the position.
      */
-    public abstract Point getPosition();
+    public Point getPosition(){ return this.position; }
 
     /**
      * Getter that returns the Player associated to the Worker.
      * @return an instance of Player.
      */
-    public abstract Player getPlayer();
+    public Player getPlayer(){ return this.player; }
 
     /**
      * This method checks if the given obj equals the Worker.
@@ -38,13 +48,24 @@ public abstract class Worker {
      * @return true if obj and the Worker are identical, false otherwise.
      */
     @Override
-    public abstract boolean equals(Object obj);
+    public boolean equals(Object obj){
+        if(this == obj) return true;
+        if(obj == null) return false;
+        if(this.getClass() != obj.getClass()) return false;
+        Worker other = (Worker)obj;
+        return this.ID.equals(other.ID);
+    }
 
     /**
      * This method returns a clone of the Worker.
      * @return an cloned instance of the Worker.
      */
     @Override
-    protected abstract Worker clone();
+    protected Worker clone(){
+        Worker clonedWorker = new Worker(this.ID, this.player.clone());
+        clonedWorker.setPosition(this.position);
+
+        return clonedWorker;
+    }
 
 }
