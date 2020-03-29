@@ -24,7 +24,6 @@ public class EffectCompiler {
     /** Compiles the given effect
      * @param model the internal model is needed to incapsulate it in the lambdas
      * @param effect the effect to compile
-     * @param owner the owner of the rule in which the effect is
      * @return the compiled effect
      */
     public static LambdaEffect compileEffect(InternalModel model, RuleEffect effect) {
@@ -198,7 +197,7 @@ public class EffectCompiler {
 
                 List<Point> moves = moveData.getData();
                 Point finalPosition = moves.get(moves.size()-1);
-                Cell whereIWannaGo = model.getBoard().getCell(finalPosition);
+                Cell finalPositionCell = model.getBoard().getCell(finalPosition);
                 Point mySecondToLastPosition;
                 if(moves.size() > 1)
                     mySecondToLastPosition = moves.get(moves.size()-2);
@@ -218,15 +217,15 @@ public class EffectCompiler {
                     return false;
                 } catch (NoWorkerPresentException e) {
                     try {
-                        whereIWannaGo.getWorkerID();
+                        finalPositionCell.getWorkerID();
                     } catch (NoWorkerPresentException ex) {
-                        System.err.println("There is no one in the cell i want to switch my worker with , i am the set opp pos effect of worker "+ moveData.getWorker().getID());
+                        System.err.println("There is no one in the cell i want to push with my worker , i am the set opp pos effect of worker "+ moveData.getWorker().getID());
                         return false;
                     }
                     if (!simulate) {
                         String hisWorkerName = null;
                         try {
-                            hisWorkerName = whereIWannaGo.getWorkerID();
+                            hisWorkerName = finalPositionCell.getWorkerID();
                         } catch (NoWorkerPresentException ignored) { }
 
                         Worker hisWorker = model.getWorkerByID(hisWorkerName);
@@ -236,13 +235,13 @@ public class EffectCompiler {
                         } catch (WorkerAlreadyPresentException | DomeException ignored) { }
                         hisWorker.setPosition(whereHeHasToGo.getPosition());
                         try {
-                            whereIWannaGo.removeWorker();
+                            finalPositionCell.removeWorker();
                         } catch (NoWorkerPresentException ignored) { }
                         try {
                             model.getBoard().getCell(moveData.getWorker().getPosition()).removeWorker();
                         } catch (NoWorkerPresentException ignored) { }
                         try {
-                            whereIWannaGo.setWorker(moveData.getWorker().getID());
+                            finalPositionCell.setWorker(moveData.getWorker().getID());
                         } catch (WorkerAlreadyPresentException | DomeException ignored) { }
                         moveData.getWorker().setPosition(finalPosition);
                         moveData.getPlayer().setPlayerState(nextPlayerState);
@@ -258,9 +257,8 @@ public class EffectCompiler {
 
                  List<Point> moves = moveData.getData();
 
-
                  Point finalPosition = moves.get(moves.size()-1);
-                 Cell whereIWannaGoCell = model.getBoard().getCell(finalPosition);
+                 Cell finalPositionCell = model.getBoard().getCell(finalPosition);
                  Point mySecondToLastPosition;
                  if(moves.size() > 1)
                      mySecondToLastPosition = moves.get(moves.size()-2);
@@ -274,13 +272,13 @@ public class EffectCompiler {
                          mySecondToLastCell.removeWorker();
                      } catch (NoWorkerPresentException ignored) { }
                      try {
-                         hisWorker = model.getWorkerByID(whereIWannaGoCell.getWorkerID());
+                         hisWorker = model.getWorkerByID(finalPositionCell.getWorkerID());
                      } catch (NoWorkerPresentException ignored) { }
                      try {
-                         whereIWannaGoCell.removeWorker();
+                         finalPositionCell.removeWorker();
                      } catch (NoWorkerPresentException ignored) { }
                      try {
-                         whereIWannaGoCell.setWorker(moveData.getWorker().getID());
+                         finalPositionCell.setWorker(moveData.getWorker().getID());
                      } catch (WorkerAlreadyPresentException | DomeException ignored) { }
                      try {
                          assert (hisWorker != null);
