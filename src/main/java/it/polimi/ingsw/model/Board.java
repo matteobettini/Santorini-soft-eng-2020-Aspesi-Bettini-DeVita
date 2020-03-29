@@ -11,6 +11,7 @@ import java.awt.*;
  */
 public abstract class Board {
 
+
     /**
      * Getter that returns the Cell given its position on the Board.
      * @param p is the position of the Cell in coordinates x and y.

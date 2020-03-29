@@ -2,10 +2,12 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
+import it.polimi.ingsw.model.exceptions.DomeException;
 import it.polimi.ingsw.model.exceptions.NoWorkerPresentException;
 import it.polimi.ingsw.model.exceptions.WorkerAlreadyPresentException;
 
 import java.awt.*;
+import java.util.List;
 
 /**
  * This class represents a Cell of the Board.
@@ -42,6 +44,13 @@ public abstract class Cell implements Cloneable{
     public abstract boolean canBuild(BuildingType building);
 
     /**
+     * This method checks if it is possible to build on the Cell.
+     * @param building is the List of BuildingType of the buildings to check.
+     * @return true if it is possible to build onto the previous building or the ground, false otherwise.
+     */
+    public abstract boolean canBuild(List<BuildingType> building);
+
+    /**
      * This method returns the level of the cell (i.e GROUND if there are no buildings).
      * @return the LevelType associated to the Cell.
      */
@@ -52,7 +61,7 @@ public abstract class Cell implements Cloneable{
      * @param workerID is the ID ot the Worker to set.
      * @throws WorkerAlreadyPresentException if there is already a Worker set.
      */
-    public abstract void setWorker(String workerID) throws WorkerAlreadyPresentException;
+    public abstract void setWorker(String workerID) throws WorkerAlreadyPresentException, DomeException;
 
     /**
      * The method returns the Worker placed on the Cell.
