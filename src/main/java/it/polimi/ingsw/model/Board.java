@@ -33,6 +33,12 @@ public abstract class Board {
      */
     public abstract boolean useBuilding(BuildingType b);
 
+    /**
+     * This method returns the number of available buildings provided their type.
+     * @param b is the BuildingType to check.
+     * @return an int representing the number of available buildings of the BuildingType b.
+     */
+    public abstract int availableBuildings(BuildingType b);
 
     /**
      * This method restocks the number of available buildings of the given BuildingType.
