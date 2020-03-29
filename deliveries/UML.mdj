@@ -8584,13 +8584,30 @@
 											"height": 13,
 											"text": "+clone(): Cell",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFxJo/Wm0H+HAw=",
+											"_parent": {
+												"$ref": "AAAAAAFw9CTFtk9PoJE="
+											},
+											"model": {
+												"$ref": "AAAAAAFxJo/WeEH7JgU="
+											},
+											"font": "Arial;13;0",
+											"left": 1085,
+											"top": 715,
+											"width": 255,
+											"height": 13,
+											"text": "+canBuild(b: List<BuildingType>): boolean",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 1080,
 									"top": 575,
 									"width": 265,
-									"height": 143
+									"height": 158
 								},
 								{
 									"_type": "UMLReceptionCompartmentView",
@@ -8630,7 +8647,7 @@
 							"left": 1080,
 							"top": 512,
 							"width": 265,
-							"height": 206,
+							"height": 221,
 							"nameCompartment": {
 								"$ref": "AAAAAAFw9CTFtk9HFGc="
 							},
@@ -12452,7 +12469,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 1334,
-									"top": 727,
+									"top": 735,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -12473,7 +12490,7 @@
 									"visible": null,
 									"font": "Arial;13;0",
 									"left": 1349,
-									"top": 727,
+									"top": 735,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 30,
@@ -12494,7 +12511,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 1305,
-									"top": 728,
+									"top": 736,
 									"height": 13,
 									"alpha": -1.5707963267948966,
 									"distance": 15,
@@ -12511,7 +12528,7 @@
 							"tail": {
 								"$ref": "AAAAAAFw9CTFtk9GqqY="
 							},
-							"points": "1320:717;1320:752",
+							"points": "1320:732;1320:752",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAFxA0xnrFaw9Wk="
@@ -14206,7 +14223,7 @@
 											"top": 225,
 											"width": 464.74365234375,
 											"height": 13,
-											"text": "-data: Map<Point; BuildingType>",
+											"text": "-data: Map<Point; List<BuildingType>>",
 											"horizontalAlignment": 0
 										}
 									],
@@ -14738,7 +14755,7 @@
 											"font": "Arial;13;1",
 											"left": 1517,
 											"top": 367,
-											"width": 225.10693359375,
+											"width": 232.69873046875,
 											"height": 13,
 											"text": "PacketBuild"
 										},
@@ -14773,7 +14790,7 @@
 									"font": "Arial;13;0",
 									"left": 1512,
 									"top": 360,
-									"width": 235.10693359375,
+									"width": 242.69873046875,
 									"height": 25,
 									"stereotypeLabel": {
 										"$ref": "AAAAAAFxC+A2bCiKBeg="
@@ -14810,7 +14827,7 @@
 											"font": "Arial;13;0",
 											"left": 1517,
 											"top": 390,
-											"width": 225.10693359375,
+											"width": 232.69873046875,
 											"height": 13,
 											"text": "-playerNickname: String",
 											"horizontalAlignment": 0
@@ -14827,7 +14844,7 @@
 											"font": "Arial;13;0",
 											"left": 1517,
 											"top": 405,
-											"width": 225.10693359375,
+											"width": 232.69873046875,
 											"height": 13,
 											"text": "-workerID: String",
 											"horizontalAlignment": 0
@@ -14844,16 +14861,16 @@
 											"font": "Arial;13;0",
 											"left": 1517,
 											"top": 420,
-											"width": 225.10693359375,
+											"width": 232.69873046875,
 											"height": 13,
-											"text": "-builds: Map<Point; BuildingType>",
+											"text": "-builds: Map<Point; List<BuildingType>>",
 											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 1512,
 									"top": 385,
-									"width": 235.10693359375,
+									"width": 242.69873046875,
 									"height": 53
 								},
 								{
@@ -14878,7 +14895,7 @@
 											"font": "Arial;13;0",
 											"left": 1517,
 											"top": 443,
-											"width": 225.10693359375,
+											"width": 232.69873046875,
 											"height": 13,
 											"text": "+getWorkerID(): String",
 											"horizontalAlignment": 0
@@ -14895,7 +14912,7 @@
 											"font": "Arial;13;0",
 											"left": 1517,
 											"top": 458,
-											"width": 225.10693359375,
+											"width": 232.69873046875,
 											"height": 13,
 											"text": "+getPlayerNickname(): String",
 											"horizontalAlignment": 0
@@ -14912,7 +14929,7 @@
 											"font": "Arial;13;0",
 											"left": 1517,
 											"top": 473,
-											"width": 225.10693359375,
+											"width": 232.69873046875,
 											"height": 13,
 											"text": "+getBuilds(): Map<Point;BuildingType>",
 											"horizontalAlignment": 0
@@ -14921,7 +14938,7 @@
 									"font": "Arial;13;0",
 									"left": 1512,
 									"top": 438,
-									"width": 235.10693359375,
+									"width": 242.69873046875,
 									"height": 53
 								},
 								{
@@ -14961,7 +14978,7 @@
 							"containerChangeable": true,
 							"left": 1512,
 							"top": 360,
-							"width": 235.10693359375,
+							"width": 242.69873046875,
 							"height": 193,
 							"nameCompartment": {
 								"$ref": "AAAAAAFxC+A2ayiJFYA="
@@ -18228,6 +18245,34 @@
 									"direction": "return"
 								}
 							]
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFxJo/WeEH7JgU=",
+							"_parent": {
+								"$ref": "AAAAAAFwwKmhphFbv2c="
+							},
+							"name": "canBuild",
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFxJpEJ50MKwN8=",
+									"_parent": {
+										"$ref": "AAAAAAFxJo/WeEH7JgU="
+									},
+									"name": "b",
+									"type": "List<BuildingType>"
+								},
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFxJpEJ6EMLpFM=",
+									"_parent": {
+										"$ref": "AAAAAAFxJo/WeEH7JgU="
+									},
+									"type": "boolean",
+									"direction": "return"
+								}
+							]
 						}
 					]
 				},
@@ -20820,7 +20865,7 @@
 							},
 							"name": "builds",
 							"visibility": "private",
-							"type": "Map<Point; BuildingType>"
+							"type": "Map<Point; List<BuildingType>>"
 						}
 					],
 					"operations": [
@@ -36054,7 +36099,7 @@
 							},
 							"name": "data",
 							"visibility": "private",
-							"type": "Map<Point; BuildingType>"
+							"type": "Map<Point; List<BuildingType>>"
 						}
 					],
 					"operations": [
