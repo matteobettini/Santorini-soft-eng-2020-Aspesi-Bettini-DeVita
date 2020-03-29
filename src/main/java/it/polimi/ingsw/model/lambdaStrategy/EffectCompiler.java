@@ -2,10 +2,7 @@ package it.polimi.ingsw.model.lambdaStrategy;
 
 import it.polimi.ingsw.cardReader.RuleEffect;
 import it.polimi.ingsw.cardReader.enums.EffectType;
-import it.polimi.ingsw.model.Cell;
-import it.polimi.ingsw.model.InternalModel;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerState;
@@ -18,7 +15,6 @@ import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Translates Rule Effects into Compiled Effects
@@ -31,16 +27,17 @@ public class EffectCompiler {
      * @param owner the owner of the rule in which the effect is
      * @return the compiled effect
      */
-    public static LambdaEffect compileEffect(InternalModel model, RuleEffect effect, Player owner) {
+    public static LambdaEffect compileEffect(InternalModel model, RuleEffect effect) {
 
         EffectType effectType = effect.getType();
         LambdaEffect compiledEffect = null;
+
         switch (effectType){
             case ALLOW:
                 compiledEffect = compileAllowEffect(model, effect);
                 break;
             case SET_OPPONENT_POSITION:
-                compiledEffect = compileSetOpponentPositionEffect(model, effect, owner);
+                compiledEffect = compileSetOpponentPositionEffect(model, effect);
                 break;
             case DENY:
                 compiledEffect = ((moveData, buildData, simulate) -> {
@@ -72,25 +69,43 @@ public class EffectCompiler {
 
             if(buildData == null) {
 
+                // All the player moves
                 List<Point> moves = moveData.getData();
+                Point startPosition = moveData.getWorker().getPosition();
+                Point finalPosition = moves.get(moves.size() - 1);
+                Cell startPositionCell = model.getBoard().getCell(startPosition);
+                Cell finalPositionCell = model.getBoard().getCell(finalPosition);
+                Worker myWoker = moveData.getWorker();
+
 
                 try {
-                    model.getBoard().getCell(moves.get(moves.size() - 1)).getWorkerID();
+                    // Where i want to go should be without workers (should be already tested)
+                    finalPositionCell.getWorkerID();
                     return false;
                 } catch (NoWorkerPresentException e) {
-                    if(model.getBoard().getCell(moves.get(moves.size() - 1)).getTopBuilding() == LevelType.DOME)
+                    // It is without workers
+
+                    // If i want to go on a dome it fails (should be already tested)
+                    if(finalPositionCell.getTopBuilding() == LevelType.DOME)
                         return false;
+
+                    // If we are not in a simulation
                     if(!simulate){
                         try {
-                            model.getBoard().getCell(moves.get(moves.size()-1)).setWorker(moveData.getWorker().getID());
+                            // Set my worker in final cell
+                            finalPositionCell.setWorker(myWoker.getID());
                         } catch (WorkerAlreadyPresentException | DomeException ignored) { }
                         try {
-                            model.getBoard().getCell(moveData.getWorker().getPosition()).removeWorker();
+                            // remove my worker from previous position
+                            startPositionCell.removeWorker();
                         } catch (NoWorkerPresentException ignored) {
                             System.err.println("There is no one in the cell my move is starting from , i am the allow effect on move of worker "+ moveData.getWorker().getID());
                             return false;
                         }
-                        moveData.getWorker().setPosition(moves.get(moves.size()-1));
+                        // Set my new worker's position
+                        myWoker.setPosition(finalPosition);
+
+                        // Set the new player state
                         moveData.getPlayer().setPlayerState(nextPlayerState);
                     }
                     return true;
@@ -104,6 +119,7 @@ public class EffectCompiler {
                 Iterator<Point> buildingPos = builds.keySet().iterator();
                 List<BuildingType> allBuildingsIWantToBuild = new ArrayList<>();
 
+                // CHeck i can build the chosen buildings in the chosen cells
                 while(buildingPos.hasNext()){
                     Point whereIWantToBuild = buildingPos.next();
                     List<BuildingType> whatIWantToBuildHere = builds.get(whereIWantToBuild);
@@ -121,7 +137,7 @@ public class EffectCompiler {
                 long numOfThirdFloorsIWantToUse = allBuildingsIWantToBuild.stream()
                         .filter((buildingType -> buildingType == BuildingType.THIRD_FLOOR))
                         .count();
-                long numOfDomesFloorsIWantToUse = allBuildingsIWantToBuild.stream()
+                long numOfDomesIWantToUse = allBuildingsIWantToBuild.stream()
                         .filter((buildingType -> buildingType == BuildingType.DOME))
                         .count();
 
@@ -131,7 +147,7 @@ public class EffectCompiler {
                     return false;
                 if(numOfThirdFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.THIRD_FLOOR))
                     return false;
-                if(numOfDomesFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.DOME))
+                if(numOfDomesIWantToUse > model.getBoard().availableBuildings(BuildingType.DOME))
                     return false;
 
 
@@ -142,24 +158,35 @@ public class EffectCompiler {
                         List<BuildingType> whatIWantToBuildHere = builds.get(whereIWantToBuild);
                         for(BuildingType b : whatIWantToBuildHere)
                             if(!model.getBoard().getCell(whereIWantToBuild).addBuilding(b)) {
-                                System.err.println("L'effetto allow build del worker " + buildData.getWorker().getID() + "nell applicazione ha trovato cose diverse da quelle che ha checkato");
+                                System.err.println("L'effetto allow build del worker " + buildData.getWorker().getID() + "nell applicazione dell'effetto ha trovato cose diverse da quelle che ha checkato nell'effetto");
                                 return false;
                             }
                     }
+                    Board board = model.getBoard();
+                    for( int i=0; i < numOfFirstFloorsIWantToUse; i++)
+                        board.useBuilding(BuildingType.FIRST_FLOOR);
+                    for( int i=0; i < numOfSecondFloorsIWantToUse; i++)
+                        board.useBuilding(BuildingType.SECOND_FLOOR);
+                    for( int i=0; i < numOfThirdFloorsIWantToUse; i++)
+                        board.useBuilding(BuildingType.THIRD_FLOOR);
+                    for( int i=0; i < numOfDomesIWantToUse; i++)
+                        board.useBuilding(BuildingType.DOME);
+
+                    // Set next player state
                     buildData.getPlayer().setPlayerState(nextPlayerState);
                 }
 
                 return true;
 
             }
-            return true;
+            return false;
         };
         return  lambdaEffect;
     }
 
 
 
-    private static LambdaEffect compileSetOpponentPositionEffect(InternalModel model, RuleEffect effect, Player owner) {
+    private static LambdaEffect compileSetOpponentPositionEffect(InternalModel model, RuleEffect effect) {
 
         PlayerState nextPlayerState = effect.getNextState();
         LambdaEffect lambdaEffect = null;

@@ -32,7 +32,7 @@ public class RuleCompiler {
             compiledStatements.add(StatementCompiler.compileStatement(internalModel, s, owner));
         }
 
-        compiledEffect = EffectCompiler.compileEffect(internalModel, cardRule.getEffect(), owner);
+        compiledEffect = EffectCompiler.compileEffect(internalModel, cardRule.getEffect());
 
         return new CompiledCardRule(compiledStatements, compiledEffect, trigger);
 
