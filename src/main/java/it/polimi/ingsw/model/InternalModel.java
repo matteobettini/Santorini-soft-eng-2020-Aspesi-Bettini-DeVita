@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.turnInfo.BuildData;
 import it.polimi.ingsw.model.turnInfo.MoveData;
 import it.polimi.ingsw.packets.PacketBuild;
@@ -9,6 +10,8 @@ import java.awt.*;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * This class contains all the actual instances of the Model data.
@@ -91,8 +94,7 @@ public class InternalModel {
         assert packetMove != null;
         Player p = getPlayerByNick(packetMove.getPlayerNickname());
         Worker w = getWorkerByID(packetMove.getWorkerID());
-        List<Point> moves = packetMove.getMove();
-        return new MoveData(p, w, moves);
+        return new MoveData(p, w, packetMove.getMove());
     }
 
     /**
@@ -104,7 +106,9 @@ public class InternalModel {
      */
     public BuildData packetBuildToBuildData(PacketBuild packetBuild){
         assert packetBuild != null;
-        return null;
+        Player p = getPlayerByNick(packetBuild.getPlayerNickname());
+        Worker w = getWorkerByID(packetBuild.getWorkerID());
+        return new BuildData(p, w, packetBuild.getBuilds());
     }
 
 

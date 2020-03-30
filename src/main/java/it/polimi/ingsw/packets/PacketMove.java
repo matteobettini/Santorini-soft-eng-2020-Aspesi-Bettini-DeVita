@@ -13,7 +13,10 @@ public class PacketMove {
     PacketMove(String playerNickname, String workerID, List<Point> move){
         this.playerNickname = playerNickname;
         this.workerID = workerID;
-        this.move = new ArrayList<>(move);
+        this.move = new ArrayList<>();
+        for(Point p : move){
+            this.move.add(new Point(p));
+        }
     }
 
     public String getPlayerNickname() { return this.playerNickname; }

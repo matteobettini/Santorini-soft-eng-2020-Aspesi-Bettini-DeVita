@@ -16,7 +16,10 @@ public class PacketBuild {
     PacketBuild(String playerNickname, String workerID, Map<Point, List<BuildingType>> builds){
         this.playerNickname = playerNickname;
         this.workerID = workerID;
-        this.builds = new HashMap<>(builds);
+        this.builds = new HashMap<>();
+        for(Point pos : builds.keySet()){
+            this.builds.put(new Point(pos), new ArrayList<>(builds.get(pos)));
+        }
     }
 
     public String getPlayerNickname() { return this.playerNickname; }
