@@ -1,24 +1,22 @@
 package it.polimi.ingsw.cardReader;
 
 import it.polimi.ingsw.cardReader.enums.TriggerType;
-import it.polimi.ingsw.cardReader.helpers.EffectHelper;
-import it.polimi.ingsw.cardReader.helpers.RuleHelper;
-import it.polimi.ingsw.cardReader.helpers.StatementHelper;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CardRuleTest {
+public class CardRuleTest {
     /**
      * Verify that data provided is reachable via getters
      */
     @Test
     void testGetters() {
         TriggerType triggerT = TriggerType.MOVE;
-        List<RuleStatement> statementsT = StatementHelper.getStatementList();
-        RuleEffect effectT = EffectHelper.getRuleEffect();
+        List<RuleStatement> statementsT = RuleStatementTest.getStatementList();
+        RuleEffect effectT = RuleEffectTest.getRuleEffectWithData();
 
         CardRule rule = new CardRule(triggerT,statementsT,effectT);
         assertEquals(rule.getTrigger(), triggerT);
@@ -31,11 +29,23 @@ class CardRuleTest {
      */
     @Test
     void testAddStatementToEmpty(){
-        CardRule cardRule = RuleHelper.getEmptyCardRule();
+        CardRule cardRule = getEmptyCardRule();
         assertEquals(cardRule.getStatements().size(), 0);
-        RuleStatement statement = StatementHelper.getStatement();
+        RuleStatement statement = RuleStatementTest.getStatement();
         cardRule.addStatement(statement);
         assertEquals(cardRule.getStatements().size(),1);
+        assertTrue(cardRule.getStatements().contains(statement));
+    }
+    /**
+     * Verify that a new statement added to an not empty card rule is reachable
+     */
+    @Test
+    void testAddStatement(){
+        CardRule cardRule = getCardRule();
+        int oldSize = cardRule.getStatements().size();
+        RuleStatement statement = RuleStatementTest.getStatement();
+        cardRule.addStatement(statement);
+        assertEquals(cardRule.getStatements().size(),oldSize + 1);
         assertTrue(cardRule.getStatements().contains(statement));
     }
 
@@ -45,13 +55,64 @@ class CardRuleTest {
     @Test
     void testEqualsAndHash(){
         TriggerType triggerT = TriggerType.MOVE;
-        List<RuleStatement> statementsT = StatementHelper.getStatementList();
-        RuleEffect effectT = EffectHelper.getRuleEffect();
+        List<RuleStatement> statementsT = RuleStatementTest.getStatementList();
+        RuleEffect effectT = RuleEffectTest.getRuleEffectWithData();
 
         CardRule rule1 = new CardRule(triggerT,statementsT,effectT);
         CardRule rule2 = new CardRule(triggerT,statementsT,effectT);
 
         assertEquals(rule1,rule2);
         assertEquals(rule1.hashCode(), rule2.hashCode());
+    }
+
+    /**
+     * Helpers t
+     */
+    public static CardRule getEmptyCardRule(){
+        TriggerType triggerT = TriggerType.MOVE;
+        List<RuleStatement> statementsT = new ArrayList<>();
+        RuleEffect effect = RuleEffectTest.getRuleEffectWithNullData();
+        return new CardRule(triggerT,statementsT,effect);
+    }
+    public static CardRule getCardRule(){
+        TriggerType triggerT = TriggerType.MOVE;
+        List<RuleStatement> statementsT = new ArrayList<>();
+        statementsT.addAll(RuleStatementTest.getStatementList());
+        RuleEffect effect = RuleEffectTest.getRuleEffectWithData();
+
+        return new CardRule(triggerT,statementsT,effect);
+    }
+
+    public static List<CardRule> getRandomCardRuleList(){
+        List<CardRule> res = new ArrayList<>();
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithData()));
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithNullData()));
+        return res;
+    }
+
+    public static List<CardRule> getRulesWithAllTriggerTypes(){
+        List<CardRule> res = new ArrayList<>();
+        res.add(new CardRule(TriggerType.BUILD, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithData()));
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithNullData()));
+        res.add(new CardRule(TriggerType.BUILD, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithNullData()));
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithData()));
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithData()));
+        return res;
+    }
+
+    public static List<CardRule> getRuleWithWrongSubject(){
+        List<CardRule> res = new ArrayList<>();
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementsWithWrongSubject(), RuleEffectTest.getRuleEffectWithNullData()));
+        return res;
+    }
+    public static List<CardRule> getRuleWithWrongObject(){
+        List<CardRule> res = new ArrayList<>();
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementsWithWrongObject(), RuleEffectTest.getRuleEffectWithNullData()));
+        return res;
+    }
+    public static List<CardRule> getRuleWithWrongEffect(){
+        List<CardRule> res = new ArrayList<>();
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithWrongData()));
+        return res;
     }
 }

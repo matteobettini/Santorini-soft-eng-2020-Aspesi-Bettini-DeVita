@@ -12,6 +12,7 @@ public class CardRule {
     private final RuleEffect effect;
 
     public CardRule(TriggerType trigger, List<RuleStatement> statements, RuleEffect effect) {
+        assert (trigger != null && statements != null && effect != null);
         this.trigger = trigger;
         this.statements = statements;
         this.effect = effect;
@@ -39,6 +40,7 @@ public class CardRule {
      * @param stm Statement to add to this rule
      */
     public void addStatement(RuleStatement stm){
+        assert (stm != null);
         statements.add(stm);
     }
 

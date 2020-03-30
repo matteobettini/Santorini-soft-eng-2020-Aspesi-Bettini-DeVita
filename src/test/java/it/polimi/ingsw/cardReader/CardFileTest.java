@@ -1,9 +1,6 @@
 package it.polimi.ingsw.cardReader;
 
 import it.polimi.ingsw.cardReader.enums.TriggerType;
-import it.polimi.ingsw.cardReader.helpers.EffectHelper;
-import it.polimi.ingsw.cardReader.helpers.RuleHelper;
-import it.polimi.ingsw.cardReader.helpers.StatementHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -12,7 +9,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CardFileTest {
+public class CardFileTest {
 
     /**
      * Verify that data provided is reachable via getters
@@ -38,11 +35,11 @@ class CardFileTest {
         String descrTest = "DESCR01";
 
         List<CardRule> rules = new ArrayList<>();
-        rules.add(RuleHelper.getEmptyCardRule());
+        rules.add(CardRuleTest.getEmptyCardRule());
         CardFile cardFile = new CardFile(nameTest, descrTest, rules);
         assertEquals(cardFile.getRules(), rules);
 
-        rules = RuleHelper.getRandomCardRuleList();
+        rules = CardRuleTest.getRandomCardRuleList();
         CardFile cardFile1 = new CardFile(nameTest, descrTest, rules);
         assertEquals(cardFile1.getRules(), rules);
     }
@@ -54,7 +51,7 @@ class CardFileTest {
     void testRuleFiltering(){
         String nameTest = "TEST01";
         String descrTest = "DESCR01";
-        List<CardRule> rules = RuleHelper.getRulesWithAllTriggerTypes();
+        List<CardRule> rules = CardRuleTest.getRulesWithAllTriggerTypes();
 
         CardFile cardFile = new CardFile(nameTest,descrTest,rules);
         for(TriggerType trigger : TriggerType.values()){
@@ -71,12 +68,37 @@ class CardFileTest {
     void testEqualsAndHash(){
         String nameTest = "TEST01";
         String descrTest = "DESCR01";
-        List<CardRule> rules = RuleHelper.getRulesWithAllTriggerTypes();
+        List<CardRule> rules = CardRuleTest.getRulesWithAllTriggerTypes();
 
         CardFile cardFile1 = new CardFile(nameTest,descrTest,rules);
         CardFile cardFile2 = new CardFile(nameTest,descrTest,rules);
 
         assertEquals(cardFile1,cardFile2);
         assertEquals(cardFile1.hashCode(), cardFile2.hashCode());
+    }
+
+    public static CardFile getNormalCardFile(){
+        String nameTest = "TEST01";
+        String descrTest = "DESCR01";
+        List<CardRule> rules = CardRuleTest.getRulesWithAllTriggerTypes();
+        return new CardFile(nameTest,descrTest,rules);
+    }
+    public static CardFile getCardFileWithWrongStatementSubject(){
+        String nameTest = "TEST01";
+        String descrTest = "DESCR01";
+        List<CardRule> rules = CardRuleTest.getRuleWithWrongSubject();
+        return new CardFile(nameTest,descrTest,rules);
+    }
+    public static CardFile getCardFileWithWrongStatementObject(){
+        String nameTest = "TEST01";
+        String descrTest = "DESCR01";
+        List<CardRule> rules = CardRuleTest.getRuleWithWrongObject();
+        return new CardFile(nameTest,descrTest,rules);
+    }
+    public static CardFile getCardFileWithWrongEffect(){
+        String nameTest = "TEST01";
+        String descrTest = "DESCR01";
+        List<CardRule> rules = CardRuleTest.getRuleWithWrongEffect();
+        return new CardFile(nameTest,descrTest,rules);
     }
 }

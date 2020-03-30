@@ -2,11 +2,12 @@ package it.polimi.ingsw.cardReader.cardValidator.validators;
 
 import it.polimi.ingsw.cardReader.RuleEffect;
 import it.polimi.ingsw.cardReader.cardValidator.exceptions.InvalidRuleEffectException;
+import it.polimi.ingsw.model.enums.PlayerState;
 
 /**
  * This class offers a method to validate card effect's semantic
  */
-public abstract class EffectValidator {
+public class EffectValidator {
 
     /**
      * Validate card effect semantic
@@ -15,34 +16,57 @@ public abstract class EffectValidator {
      *                                In the message it's always reported the reason.
      */
     public static void checkRuleEffect(RuleEffect effect) throws InvalidRuleEffectException {
-        // TODO implement here
+        switch (effect.getType()){
+            case ALLOW:
+                allowValidate(effect);
+                break;
+            case DENY:
+                denyValidate(effect);
+                break;
+            case WIN:
+                winValidate(effect);
+                break;
+            case SET_OPPONENT_POSITION:
+                setOpponentPositionValidate(effect);
+                break;
+        }
     }
 
-    /**
-     * @param effect
-     */
     private static void allowValidate(RuleEffect effect) throws InvalidRuleEffectException {
-        // TODO implement here
+        if (effect.getData() != null){
+            throw new InvalidRuleEffectException("[ALLOW] Effect data not supported");
+        }
     }
 
-    /**
-     * @param effect
-     */
     private static void denyValidate(RuleEffect effect) throws InvalidRuleEffectException {
-        // TODO implement here
+        if (effect.getData() != null){
+            throw new InvalidRuleEffectException("[DENY] Effect data not supported");
+        }
+        if (effect.getNextState() != PlayerState.UNKNOWN){
+            throw new InvalidRuleEffectException("[DENY] Effect player next state tag not supported");
+        }
     }
 
-    /**
-     * @param effect
-     */
     private static void winValidate(RuleEffect effect)  throws InvalidRuleEffectException{
-        // TODO implement here
+        if (effect.getData() != null){
+            throw new InvalidRuleEffectException("[WIN] Effect data not supported");
+        }
+        if (effect.getNextState() != PlayerState.UNKNOWN){
+            throw new InvalidRuleEffectException("[WIN] Effect player next state tag not supported");
+        }
     }
 
-    /**
-     * @param effect
-     */
     private static void setOpponentPositionValidate(RuleEffect effect) throws InvalidRuleEffectException {
-        // TODO implement here
+        if (effect.getData() == null){
+            throw new InvalidRuleEffectException("[SET_OPPONENT_POSITION] Effect data is required. None provided");
+        }
+        String effect_data = effect.getData();
+        switch (effect_data){
+            case "SWAP":
+            case "PUSH_STRAIGHT":
+                break;
+            default:
+                throw new InvalidRuleEffectException("[SET_OPPONENT_POSITION] Data '" + effect_data + "' is not supported");
+        }
     }
 }

@@ -13,6 +13,7 @@ public class RuleStatement {
     private final String object;
 
     public RuleStatement(StatementType type, String subject, StatementVerbType verb, String object) {
+        assert(type != null && subject != null && verb != null && object != null);
         this.type = type;
         this.subject = subject;
         this.verb = verb;

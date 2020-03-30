@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import it.polimi.ingsw.cardReader.CardFile;
 import it.polimi.ingsw.cardReader.CardRule;
-import it.polimi.ingsw.cardReader.helpers.RuleHelper;
+import it.polimi.ingsw.cardReader.CardRuleTest;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ class PlayerTest {
         String descrTest = "DESCR01";
 
         List<CardRule> rules = new ArrayList<>();
-        rules.add(RuleHelper.getEmptyCardRule());
+        rules.add(CardRuleTest.getEmptyCardRule());
         CardFile cardFile = new CardFile(nameTest, descrTest, rules);
 
         //Test for the Card setter

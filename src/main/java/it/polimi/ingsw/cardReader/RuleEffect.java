@@ -2,7 +2,6 @@ package it.polimi.ingsw.cardReader;
 
 import it.polimi.ingsw.cardReader.enums.EffectType;
 import it.polimi.ingsw.model.enums.PlayerState;
-import org.w3c.dom.Element;
 
 import java.util.Objects;
 
@@ -15,9 +14,10 @@ public class RuleEffect {
 
     private final EffectType type;
     private final PlayerState playerNextState;
-    private final Element data;
+    private final String data;
 
-    public RuleEffect(EffectType type, PlayerState playerNextState, Element data) {
+    public RuleEffect(EffectType type, PlayerState playerNextState, String data) {
+        assert(type != null && playerNextState != null);
         this.type = type;
         this.playerNextState = playerNextState;
         this.data = data;
@@ -45,7 +45,7 @@ public class RuleEffect {
      * @return XML Element containing effect additional info
      *         null, if data is not present
      */
-    public Element getData(){
+    public String getData(){
         return this.data;
     }
 

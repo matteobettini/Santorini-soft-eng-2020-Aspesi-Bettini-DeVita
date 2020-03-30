@@ -1,7 +1,6 @@
 package it.polimi.ingsw.cardReader;
 
 import it.polimi.ingsw.cardReader.enums.TriggerType;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,6 +17,7 @@ public class CardFile {
     private final List<CardRule> rules;
 
     public CardFile(String name, String description, List<CardRule> rules) {
+        assert (name != null && description != null && rules != null);
         this.name = name;
         this.description = description;
         this.rules = rules;
@@ -53,7 +53,7 @@ public class CardFile {
      * @return List of all the rules of the card that have this trigger
      */
     public List<CardRule> getRules(TriggerType trigger){
-        return this.rules.parallelStream().filter(r->r.getTrigger() == trigger).collect(Collectors.toList());
+        return this.rules.stream().filter(r->r.getTrigger() == trigger).collect(Collectors.toList());
     }
 
     /**

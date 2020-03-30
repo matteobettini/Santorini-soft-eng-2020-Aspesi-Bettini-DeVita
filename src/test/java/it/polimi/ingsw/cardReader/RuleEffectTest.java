@@ -1,14 +1,12 @@
 package it.polimi.ingsw.cardReader;
 
 import it.polimi.ingsw.cardReader.enums.EffectType;
-import it.polimi.ingsw.cardReader.helpers.XMLHelper;
 import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Element;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RuleEffectTest {
+public class RuleEffectTest {
     /**
      * Verify that data provided is reachable via getters
      */
@@ -16,7 +14,7 @@ class RuleEffectTest {
     void testGetters() {
         EffectType typeT = EffectType.ALLOW;
         PlayerState stateT = PlayerState.UNKNOWN;
-        Element element = XMLHelper.getElement();
+        String element = "TEST";
 
         RuleEffect ruleEffect = new RuleEffect(typeT,stateT,element);
         assertEquals(ruleEffect.getType(), typeT);
@@ -59,13 +57,41 @@ class RuleEffectTest {
     void testEqualsAndHash(){
         EffectType typeT = EffectType.ALLOW;
         PlayerState stateT = PlayerState.UNKNOWN;
-        Element data = XMLHelper.getElement();
 
+        //With data not null
+        String data = "Test";
         RuleEffect ruleEffect1 = new RuleEffect(typeT,stateT,data);
         RuleEffect ruleEffect2 = new RuleEffect(typeT,stateT,data);
+        assertEquals(ruleEffect1,ruleEffect2);
+        assertEquals(ruleEffect1.hashCode(), ruleEffect2.hashCode());
 
+        //With data null
+        ruleEffect1 = new RuleEffect(typeT,stateT,null);
+        ruleEffect2 = new RuleEffect(typeT,stateT,null);
         assertEquals(ruleEffect1,ruleEffect2);
         assertEquals(ruleEffect1.hashCode(), ruleEffect2.hashCode());
     }
 
+    /**
+     * Helpers for other tests
+     */
+    public static RuleEffect getRuleEffectWithData(){
+        EffectType typeT = EffectType.SET_OPPONENT_POSITION;
+        PlayerState stateT = PlayerState.UNKNOWN;
+        String element = "SWAP";
+
+        return new RuleEffect(typeT,stateT,element);
+    }
+    public static RuleEffect getRuleEffectWithNullData(){
+        EffectType typeT = EffectType.ALLOW;
+        PlayerState stateT = PlayerState.UNKNOWN;
+
+        return new RuleEffect(typeT,stateT,null);
+    }
+    public static RuleEffect getRuleEffectWithWrongData(){
+        EffectType typeT = EffectType.SET_OPPONENT_POSITION;
+        PlayerState stateT = PlayerState.UNKNOWN;
+
+        return new RuleEffect(typeT,stateT,null);
+    }
 }
