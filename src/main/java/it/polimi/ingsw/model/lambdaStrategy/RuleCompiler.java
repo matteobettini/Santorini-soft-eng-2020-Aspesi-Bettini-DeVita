@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.lambdaStrategy;
 
-import it.polimi.ingsw.cardReader.CardRule;
-import it.polimi.ingsw.cardReader.RuleStatement;
-import it.polimi.ingsw.cardReader.enums.TriggerType;
+import it.polimi.ingsw.model.cardReader.CardRule;
+import it.polimi.ingsw.model.cardReader.RuleStatement;
+import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.InternalModel;
 import it.polimi.ingsw.model.Player;
 

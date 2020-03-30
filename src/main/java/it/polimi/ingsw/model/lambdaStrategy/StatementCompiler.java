@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.lambdaStrategy;
 
-import it.polimi.ingsw.cardReader.RuleStatement;
-import it.polimi.ingsw.cardReader.enums.StatementType;
-import it.polimi.ingsw.cardReader.enums.StatementVerbType;
+import it.polimi.ingsw.model.cardReader.RuleStatement;
+import it.polimi.ingsw.model.cardReader.enums.StatementType;
+import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
 import it.polimi.ingsw.model.InternalModel;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Worker;

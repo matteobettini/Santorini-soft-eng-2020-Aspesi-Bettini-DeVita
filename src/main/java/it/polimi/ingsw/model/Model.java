@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.cardReader.CardFile;
+import it.polimi.ingsw.model.cardReader.CardFile;
 import it.polimi.ingsw.packets.PacketBuild;
 import it.polimi.ingsw.packets.PacketMove;
 import jdk.jfr.EventType;

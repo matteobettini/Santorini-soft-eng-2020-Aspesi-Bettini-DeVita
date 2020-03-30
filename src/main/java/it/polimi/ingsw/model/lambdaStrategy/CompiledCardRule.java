@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.lambdaStrategy;
 
-import it.polimi.ingsw.cardReader.enums.TriggerType;
+import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
 import it.polimi.ingsw.model.turnInfo.BuildData;

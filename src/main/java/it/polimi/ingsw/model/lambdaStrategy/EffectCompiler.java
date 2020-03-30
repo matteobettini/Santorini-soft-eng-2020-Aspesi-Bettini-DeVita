@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.lambdaStrategy;
 
-import it.polimi.ingsw.cardReader.RuleEffect;
-import it.polimi.ingsw.cardReader.enums.EffectType;
+import it.polimi.ingsw.model.cardReader.RuleEffect;
+import it.polimi.ingsw.model.cardReader.enums.EffectType;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
