@@ -10,8 +10,6 @@ import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
-import it.polimi.ingsw.model.exceptions.NoWorkerPresentException;
-import it.polimi.ingsw.model.turnInfo.BuildData;
 import it.polimi.ingsw.model.turnInfo.MoveData;
 
 import java.awt.*;

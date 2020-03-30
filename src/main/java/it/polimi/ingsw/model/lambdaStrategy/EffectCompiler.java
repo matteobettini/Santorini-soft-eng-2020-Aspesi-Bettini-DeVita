@@ -6,9 +6,6 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerState;
-import it.polimi.ingsw.model.exceptions.DomeException;
-import it.polimi.ingsw.model.exceptions.NoWorkerPresentException;
-import it.polimi.ingsw.model.exceptions.WorkerAlreadyPresentException;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
 

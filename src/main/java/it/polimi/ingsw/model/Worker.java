@@ -22,16 +22,16 @@ public class Worker {
      * Getter that returns the ID of the Worker.
      * @return a String containing the id of the Worker.
      */
-    public  String getID(){ return this.ID; }
+    public String getID(){ return this.ID; }
 
     /**
      * Setter that sets the position of the Worker to the given position.
-     * @param cell is an instance of Cell that contains the info about the position to set.
+     * @param position is an instance of position that contains the info about the position to set.
      */
-    public void setPosition(Point cell){
-        if(cell == null) this.position = null;
-        else if(cell.x >= 0 && cell.x < 5 && cell.y >= 0 && cell.y < 5){
-            this.position = cell;
+    public void setPosition(Point position){
+        assert position != null;
+        if(position.x >= 0 && position.x < Board.ROWS && position.y >= 0 && position.y < Board.COLUMNS){
+            this.position = position;
         }
         else assert false;
     }

@@ -16,21 +16,29 @@ public class Board {
     private Cell[][] boardRep;
     private Map<BuildingType, Integer> buildingsCounter;
 
+    private static final int NUM_OF_FIRST_FLOOR = 22;
+    private static final int NUM_OF_SECOND_FLOOR = 18;
+    private static final int NUM_OF_THIRD_FLOOR = 14;
+    private static final int NUM_OF_DOME = 18;
+
+    public static final int ROWS = 5;
+    public static final int COLUMNS = 5;
+
     Board(){
-        this.boardRep = new Cell[5][5];
+        this.boardRep = new Cell[ROWS][COLUMNS];
         this.buildingsCounter = new HashMap<>();
 
-        for (int i = 0; i < 5; i++){
-            for(int j = 0; j < 5; j++){
+        for (int i = 0; i < ROWS; i++){
+            for(int j = 0; j < COLUMNS; j++){
                 Point p = new Point(i, j);
                 boardRep[i][j] = new Cell(p);
             }
         }
 
-        buildingsCounter.put(BuildingType.FIRST_FLOOR, 22);
-        buildingsCounter.put(BuildingType.SECOND_FLOOR, 18);
-        buildingsCounter.put(BuildingType.THIRD_FLOOR, 14);
-        buildingsCounter.put(BuildingType.DOME, 18);
+        buildingsCounter.put(BuildingType.FIRST_FLOOR, NUM_OF_FIRST_FLOOR);
+        buildingsCounter.put(BuildingType.SECOND_FLOOR, NUM_OF_SECOND_FLOOR);
+        buildingsCounter.put(BuildingType.THIRD_FLOOR, NUM_OF_THIRD_FLOOR);
+        buildingsCounter.put(BuildingType.DOME, NUM_OF_DOME);
     }
 
     /**
@@ -39,7 +47,7 @@ public class Board {
      * @return a Cell.
      */
     public Cell getCell(Point p){
-        if(p.x >= 0 && p.x < 5 && p.y >= 0 && p.y < 5) return boardRep[p.x][p.y];
+        if(p.x >= 0 && p.x < ROWS && p.y >= 0 && p.y < COLUMNS) return boardRep[p.x][p.y];
         return null;
     }
 
@@ -81,23 +89,31 @@ public class Board {
      * This method restocks the number of available buildings of the given BuildingType.
      * @param b is the BuildingType to restock.
      */
-    public void restockBuilding(BuildingType b){
+    public boolean restockBuilding(BuildingType b, int howMany){
         assert b != null;
+        if(howMany <= 0) return false;
+        int current = buildingsCounter.get(b);
         switch(b){
             case FIRST_FLOOR:
-                buildingsCounter.put(BuildingType.FIRST_FLOOR, 22);
+                if(current + howMany > NUM_OF_FIRST_FLOOR) return false;
+                buildingsCounter.put(BuildingType.FIRST_FLOOR, current + howMany);
                 break;
             case SECOND_FLOOR:
-                buildingsCounter.put(BuildingType.SECOND_FLOOR, 18);
+                if(current + howMany > NUM_OF_SECOND_FLOOR) return false;
+                buildingsCounter.put(BuildingType.SECOND_FLOOR, current + howMany);
                 break;
             case THIRD_FLOOR:
-                buildingsCounter.put(BuildingType.THIRD_FLOOR, 14);
+                if(current + howMany > NUM_OF_THIRD_FLOOR) return false;
+                buildingsCounter.put(BuildingType.THIRD_FLOOR, current + howMany);
                 break;
             case DOME:
-                buildingsCounter.put(BuildingType.DOME, 18);
+                if(current + howMany > NUM_OF_DOME) return false;
+                buildingsCounter.put(BuildingType.DOME, current + howMany);
                 break;
         }
+        return true;
     }
+
 
     /**
      * This method performs a cloning of the Board.
@@ -106,8 +122,8 @@ public class Board {
     @Override
     protected Board clone(){
         Board clonedBoard = new Board();
-        for (int i = 0; i < 5; i++){
-            for(int j = 0; j < 5; j++){
+        for (int i = 0; i < ROWS; i++){
+            for(int j = 0; j < COLUMNS; j++){
                 clonedBoard.boardRep[i][j] = this.boardRep[i][j].clone();
             }
         }

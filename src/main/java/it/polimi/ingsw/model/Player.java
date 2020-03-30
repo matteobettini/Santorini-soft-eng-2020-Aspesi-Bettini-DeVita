@@ -6,7 +6,9 @@ import it.polimi.ingsw.model.enums.PlayerState;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class contains the info about a Player.
@@ -17,14 +19,14 @@ import java.util.List;
 public class Player {
 
     private final String nickname;
-    private List<PlayerFlag> flags;
+    private Set<PlayerFlag> flags;
     private List<Worker> workers;
     private PlayerState state;
     private CardFile card;
 
     Player(String nickname){
         this.nickname = nickname;
-        this.flags = new ArrayList<>();
+        this.flags = new HashSet<>();
         this.workers = new ArrayList<>();
         this.workers.add(new Worker(this.nickname + ".1", this));
         this.workers.add(new Worker(this.nickname + ".2", this));
@@ -119,8 +121,8 @@ public class Player {
      */
     @Override
     protected Player clone(){
-        List<PlayerFlag> clonedFlags = new ArrayList<PlayerFlag>(this.flags);
-        List<Worker> clonedWorkers = new ArrayList<Worker>();
+        Set<PlayerFlag> clonedFlags = new HashSet<>(this.flags);
+        List<Worker> clonedWorkers = new ArrayList<>();
         Player clonedPlayer = new Player(this.nickname);
 
         clonedPlayer.setPlayerState(this.state);

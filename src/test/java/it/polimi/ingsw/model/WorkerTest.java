@@ -26,7 +26,6 @@ class WorkerTest {
 
     /**
      * Test if the setPosition method correctly set a position contained in the Board.
-     * If the position is not contained in the Board the setter does not associate the position to the Player.
      */
     @Test
     void testSetters(){
@@ -34,16 +33,14 @@ class WorkerTest {
         Player playerT = new Player(nickname);
         String workerID = "WW1";
         Worker workerT = new Worker(workerID, playerT);
-        Point rightPosition = new Point(0,0);
-        Point positionOutOfBound = new Point(6,7);
+        Point position = new Point(0,0);
 
-        //Position out of bound -> the getter should return null.
-        workerT.setPosition(positionOutOfBound);
+        workerT.setPosition(null);
         assertNull(workerT.getPosition());
 
         //Position on the board -> the getter should return the set position.
-        workerT.setPosition(rightPosition);
-        assertEquals(rightPosition, workerT.getPosition());
+        workerT.setPosition(position);
+        assertEquals(position, workerT.getPosition());
 
     }
 

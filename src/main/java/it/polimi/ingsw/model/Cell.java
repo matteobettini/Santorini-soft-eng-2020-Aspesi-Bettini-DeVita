@@ -2,9 +2,6 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
-import it.polimi.ingsw.model.exceptions.DomeException;
-import it.polimi.ingsw.model.exceptions.NoWorkerPresentException;
-import it.polimi.ingsw.model.exceptions.WorkerAlreadyPresentException;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -43,33 +40,9 @@ public class Cell{
      */
     public boolean addBuilding(BuildingType b){
         assert b != null;
-        LevelType level = this.getTopBuilding();
-        switch (b) {
-            case FIRST_FLOOR:
-                if(level == LevelType.GROUND){
-                    buildings.add(BuildingType.FIRST_FLOOR);
-                    return true;
-                }
-                break;
-            case SECOND_FLOOR:
-                if(level == LevelType.FIRST_FLOOR){
-                    buildings.add(BuildingType.SECOND_FLOOR);
-                    return true;
-                }
-                break;
-            case THIRD_FLOOR:
-                if(level == LevelType.SECOND_FLOOR){
-                    buildings.add(BuildingType.THIRD_FLOOR);
-                    return true;
-                }
-                break;
-            case DOME:
-                if(level != LevelType.DOME){
-                    buildings.add(BuildingType.DOME);
-                    return true;
-                }
-            default:
-                return false;
+        if(canBuild(b)) {
+            buildings.add(b);
+            return true;
         }
 
         return false;
@@ -83,6 +56,7 @@ public class Cell{
      */
     public boolean canBuild(BuildingType b){
         assert b!= null;
+        if(workerID != null) return false;
         LevelType level = this.getTopBuilding();
         switch (b) {
             case FIRST_FLOOR:
@@ -119,6 +93,7 @@ public class Cell{
     public boolean canBuild(List<BuildingType> b){
         BuildingType temp;
         assert b != null;
+        if(workerID != null) return false;
         if (b.size() <= 0 || !canBuild(b.get(0))) return false;
         temp = b.get(0);
         for(int i = 1; i < b.size(); ++i) {
@@ -154,33 +129,41 @@ public class Cell{
     /**
      * This method sets on the Cell the Worker passed as an argument.
      * @param workerID is the ID ot the Worker to set.
-     * @throws WorkerAlreadyPresentException if there is already a Worker set.
      */
-    public void setWorker(String workerID) throws WorkerAlreadyPresentException, DomeException{
-        if(this.getTopBuilding() == LevelType.DOME) throw new DomeException();
-        if(this.workerID != null) throw new WorkerAlreadyPresentException();
+    public boolean setWorker(String workerID){
+        assert workerID != null;
+        if(this.getTopBuilding() == LevelType.DOME) return false;
+        if(this.workerID != null) return false;
         this.workerID = workerID;
-
+        return true;
     }
 
     /**
      * The method returns the Worker placed on the Cell.
      * @return the Worker ID if present, null otherwise.
-     * @throws NoWorkerPresentException if there is no Worker.
      */
-    public String getWorkerID() throws NoWorkerPresentException{
-        if(this.workerID == null) throw new NoWorkerPresentException();
-        return this.workerID;
-    }
+    public String getWorkerID() { return this.workerID; }
 
     /**
      * This method removes the Worker placed on the Cell.
-     * @throws NoWorkerPresentException if there is no Worker.
      */
-    public void removeWorker() throws NoWorkerPresentException{
-        if(workerID == null) throw new NoWorkerPresentException();
+    public boolean removeWorker() {
+        if (workerID == null) return false;
         this.workerID = null;
+        return true;
     }
+
+    /**
+     * This method checks if the Cell has a Worker.
+     * @return true if the is a Worker, false otherwise;
+     */
+    public boolean hasWorker(){ return workerID != null; }
+
+    /**
+     * This method checks if the Cell is occupied by a DOME or a Worker.
+     * @return true if the Cell is occupied, false otherwise;
+     */
+    public boolean isOccupied(){ return getTopBuilding() == LevelType.DOME || hasWorker();}
 
     /**
      * This method checks if the passed object equals the Worker.
@@ -203,11 +186,7 @@ public class Cell{
     @Override
     protected Cell clone(){
         Cell clonedCell = new Cell(new Point(this.position));
-        try {
-            clonedCell.setWorker(this.workerID);
-        } catch (WorkerAlreadyPresentException | DomeException e) {
-            e.printStackTrace();
-        }
+        if(hasWorker()) clonedCell.setWorker(this.workerID);
         clonedCell.buildings.addAll(this.buildings);
 
         return clonedCell;

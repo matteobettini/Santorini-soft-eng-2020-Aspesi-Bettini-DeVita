@@ -16,10 +16,10 @@ import java.util.List;
  */
 public class InternalModel {
 
-    private Board board;
-    private List<Player> players;
+    private final Board board;
+    private final List<Player> players;
     private Player winner;
-    private List<Player> losers;
+    private final List<Player> losers;
 
 
     InternalModel(List<String> players){
@@ -89,9 +89,9 @@ public class InternalModel {
      */
     public MoveData packetMoveToMoveData(PacketMove packetMove){
         assert packetMove != null;
-        Player p = new Player(packetMove.getPlayerNickname());
-        Worker w = new Worker(packetMove.getWorkerID(), p);
-        List<Point> moves = new ArrayList<>(packetMove.getMove());
+        Player p = getPlayerByNick(packetMove.getPlayerNickname());
+        Worker w = getWorkerByID(packetMove.getWorkerID());
+        List<Point> moves = packetMove.getMove();
         return new MoveData(p, w, moves);
     }
 

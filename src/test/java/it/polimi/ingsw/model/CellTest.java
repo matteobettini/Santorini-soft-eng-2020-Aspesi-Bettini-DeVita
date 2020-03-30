@@ -2,9 +2,6 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
-import it.polimi.ingsw.model.exceptions.DomeException;
-import it.polimi.ingsw.model.exceptions.NoWorkerPresentException;
-import it.polimi.ingsw.model.exceptions.WorkerAlreadyPresentException;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
