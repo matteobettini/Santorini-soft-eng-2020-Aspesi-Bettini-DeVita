@@ -88,27 +88,4 @@ class WorkerTest {
 
     }
 
-    @Test
-    void testClone(){
-        String nickname = "NICK";
-        Player playerT = new Player(nickname);
-        String workerID = "WW1";
-        Worker workerT = new Worker(workerID, playerT);
-
-        Worker clonedWorker = workerT.clone();
-
-        //Clone should work also with a null position.
-        assertNotSame(workerT, clonedWorker);
-        assertEquals(workerT, clonedWorker);
-
-        Point position = new Point(0,0);
-        workerT.setPosition(position);
-        clonedWorker = workerT.clone();
-
-        //Clone with a set position.
-        assertNotSame(workerT, clonedWorker);
-        assertEquals(workerT, clonedWorker);
-
-    }
-
 }

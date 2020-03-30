@@ -4,6 +4,7 @@ import it.polimi.ingsw.cardReader.CardFile;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,27 +60,39 @@ public class Player {
      * the possible states in PlayerState.
      * @param ps is the state of the Player to set.
      */
-    public void setPlayerState(PlayerState ps){ this.state = ps; }
+    public void setPlayerState(PlayerState ps){
+        assert ps != null;
+        this.state = ps;
+    }
 
     /**
      * Setter that sets the GodCard associated to the Player.
      * @param c is an instance of CardFile to set.
      */
-    public void setCard(CardFile c){ this.card = c; }
+    public void setCard(CardFile c){
+        assert c != null;
+        this.card = c;
+    }
 
     /**
      * This method adds a flag to the Player which indicates
      * that he has performed a certain action.
      * @param flag is the performed action to add to the Player List flags.
      */
-    public void addFlag(PlayerFlag flag){ this.flags.add(flag); }
+    public void addFlag(PlayerFlag flag){
+        assert flag != null;
+        this.flags.add(flag);
+    }
 
     /**
      * This method checks if the Player has performed a given action during the match.
      * @param flag is the action to check.
      * @return true if the action is contained in the List flags, false otherwise.
      */
-    public boolean hasFlag(PlayerFlag flag){ return flags.contains(flag); }
+    public boolean hasFlag(PlayerFlag flag){
+        assert flag != null;
+        return flags.contains(flag);
+    }
 
     /**
      * This method deletes all the flags contained in the List flags.
@@ -108,14 +121,17 @@ public class Player {
     protected Player clone(){
         List<PlayerFlag> clonedFlags = new ArrayList<PlayerFlag>(this.flags);
         List<Worker> clonedWorkers = new ArrayList<Worker>();
-        for(Worker w : this.workers){
-            clonedWorkers.add(w.clone());
-        }
-
         Player clonedPlayer = new Player(this.nickname);
 
         clonedPlayer.setPlayerState(this.state);
         clonedPlayer.setCard(this.card);
+
+        for(Worker w : this.workers){
+            Worker cloneW = new Worker(w.getID(), clonedPlayer);
+            cloneW.setPosition(new Point(w.getPosition()));
+            clonedWorkers.add(cloneW);
+        }
+
         clonedPlayer.workers = clonedWorkers;
         clonedPlayer.flags = clonedFlags;
 

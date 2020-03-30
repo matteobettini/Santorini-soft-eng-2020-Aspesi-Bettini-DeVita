@@ -28,7 +28,13 @@ public class Worker {
      * Setter that sets the position of the Worker to the given position.
      * @param cell is an instance of Cell that contains the info about the position to set.
      */
-    public void setPosition(Point cell){ this.position = cell; }
+    public void setPosition(Point cell){
+        if(cell == null) this.position = null;
+        else if(cell.x >= 0 && cell.x < 5 && cell.y >= 0 && cell.y < 5){
+            this.position = cell;
+        }
+        else assert false;
+    }
 
     /**
      * Getter that returns the position of the Worker.
@@ -54,18 +60,6 @@ public class Worker {
         if(this.getClass() != obj.getClass()) return false;
         Worker other = (Worker)obj;
         return this.ID.equals(other.ID);
-    }
-
-    /**
-     * This method returns a clone of the Worker.
-     * @return an cloned instance of the Worker.
-     */
-    @Override
-    protected Worker clone(){
-        Worker clonedWorker = new Worker(this.ID, this.player.clone());
-        clonedWorker.setPosition(this.position);
-
-        return clonedWorker;
     }
 
 }

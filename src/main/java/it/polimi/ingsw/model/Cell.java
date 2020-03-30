@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.exceptions.WorkerAlreadyPresentException;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents a Cell of the Board.
@@ -20,8 +21,8 @@ import java.util.List;
 public class Cell{
 
     private String workerID;
-    private Point position;
-    private List<BuildingType> buildings;
+    private final Point position;
+    private final List<BuildingType> buildings;
 
 
     Cell(Point position){
@@ -41,6 +42,7 @@ public class Cell{
      * @return true if it succeeded to build onto the previous building or the ground, false otherwise.
      */
     public boolean addBuilding(BuildingType b){
+        assert b != null;
         LevelType level = this.getTopBuilding();
         switch (b) {
             case FIRST_FLOOR:
@@ -80,6 +82,7 @@ public class Cell{
      * @return true if it is possible to build onto the previous building or the ground, false otherwise.
      */
     public boolean canBuild(BuildingType b){
+        assert b!= null;
         LevelType level = this.getTopBuilding();
         switch (b) {
             case FIRST_FLOOR:
@@ -115,10 +118,12 @@ public class Cell{
      */
     public boolean canBuild(List<BuildingType> b){
         BuildingType temp;
-        if (!canBuild(b.get(0))) return false;
+        assert b != null;
+        if (b.size() <= 0 || !canBuild(b.get(0))) return false;
         temp = b.get(0);
         for(int i = 1; i < b.size(); ++i) {
-            if(b.get(i) == BuildingType.SECOND_FLOOR && temp != BuildingType.FIRST_FLOOR) return false;
+            if(b.get(i) == BuildingType.FIRST_FLOOR) return false;
+            else if(b.get(i) == BuildingType.SECOND_FLOOR && temp != BuildingType.FIRST_FLOOR) return false;
             else if(b.get(i) == BuildingType.THIRD_FLOOR && temp != BuildingType.SECOND_FLOOR) return false;
             else if(b.get(i) == BuildingType.DOME && temp == BuildingType.DOME) return false;
             temp = b.get(i);
@@ -131,7 +136,7 @@ public class Cell{
      * @return the LevelType associated to the Cell.
      */
     public LevelType getTopBuilding(){
-        if(buildings == null) return LevelType.GROUND;
+        if(buildings.size() == 0) return LevelType.GROUND;
         BuildingType currentTop = buildings.get(buildings.size() - 1);
         switch(currentTop){
             case FIRST_FLOOR:
@@ -155,6 +160,7 @@ public class Cell{
         if(this.getTopBuilding() == LevelType.DOME) throw new DomeException();
         if(this.workerID != null) throw new WorkerAlreadyPresentException();
         this.workerID = workerID;
+
     }
 
     /**
@@ -196,7 +202,7 @@ public class Cell{
      */
     @Override
     protected Cell clone(){
-        Cell clonedCell = new Cell(this.position);
+        Cell clonedCell = new Cell(new Point(this.position));
         try {
             clonedCell.setWorker(this.workerID);
         } catch (WorkerAlreadyPresentException | DomeException e) {
@@ -205,5 +211,10 @@ public class Cell{
         clonedCell.buildings.addAll(this.buildings);
 
         return clonedCell;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position);
     }
 }

@@ -38,7 +38,10 @@ public class Board {
      * @param p is the position of the Cell in coordinates x and y.
      * @return a Cell.
      */
-    public Cell getCell(Point p){ return boardRep[(int) p.getX()][(int) p.getY()];}
+    public Cell getCell(Point p){
+        if(p.x >= 0 && p.x < 5 && p.y >= 0 && p.y < 5) return boardRep[p.x][p.y];
+        return null;
+    }
 
     //Could be entirely replaced by availableBuildings
     /**
@@ -47,6 +50,7 @@ public class Board {
      * @return true if there is availability, false otherwise.
      */
     public boolean canUseBuilding(BuildingType b){
+        assert b != null;
         return buildingsCounter.get(b) > 0;
     }
 
@@ -56,6 +60,7 @@ public class Board {
      * @return true if there is availability and the building is used, false otherwise.
      */
     public boolean useBuilding(BuildingType b){
+        assert b!= null;
         int currentBuilding = buildingsCounter.get(b);
         if(currentBuilding == 0) return false;
         buildingsCounter.put(b, currentBuilding - 1);
@@ -68,6 +73,7 @@ public class Board {
      * @return an int representing the number of available buildings of the BuildingType b.
      */
     public int availableBuildings(BuildingType b){
+        assert b!= null;
         return buildingsCounter.get(b);
     }
 
@@ -76,6 +82,7 @@ public class Board {
      * @param b is the BuildingType to restock.
      */
     public void restockBuilding(BuildingType b){
+        assert b != null;
         switch(b){
             case FIRST_FLOOR:
                 buildingsCounter.put(BuildingType.FIRST_FLOOR, 22);
@@ -104,10 +111,9 @@ public class Board {
                 clonedBoard.boardRep[i][j] = this.boardRep[i][j].clone();
             }
         }
-        clonedBoard.buildingsCounter.put(BuildingType.FIRST_FLOOR, this.buildingsCounter.get(BuildingType.FIRST_FLOOR));
-        clonedBoard.buildingsCounter.put(BuildingType.SECOND_FLOOR, this.buildingsCounter.get(BuildingType.SECOND_FLOOR));
-        clonedBoard.buildingsCounter.put(BuildingType.THIRD_FLOOR, this.buildingsCounter.get(BuildingType.THIRD_FLOOR));
-        clonedBoard.buildingsCounter.put(BuildingType.DOME, this.buildingsCounter.get(BuildingType.DOME));
+        for(BuildingType building : this.buildingsCounter.keySet()){
+            clonedBoard.buildingsCounter.put(building, this.buildingsCounter.get(building));
+        }
 
         return clonedBoard;
     }

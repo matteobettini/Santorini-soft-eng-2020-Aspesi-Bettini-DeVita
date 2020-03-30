@@ -282,6 +282,7 @@ class CellTest {
     @Test
     void testClone() throws NoWorkerPresentException {
         Cell cellT = new Cell(new Point(0,0));
+        assertNull(cellT.getWorkerID());
 
         Cell clonedcell = cellT.clone();
 
@@ -291,8 +292,7 @@ class CellTest {
         //Check building remains.
         assertEquals(cellT.getTopBuilding(), clonedcell.getTopBuilding());
 
-        //Checks that the Worker remains.
-       assertEquals(cellT.getWorkerID(), clonedcell.getWorkerID());
+       assertNull(clonedcell.getWorkerID());
     }
 
 
