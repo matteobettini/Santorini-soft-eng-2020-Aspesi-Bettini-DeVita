@@ -23,5 +23,5 @@ public class PlayerLostSignal extends Exception{
      */
     public Player getPlayer(){
         return player;
-    }
+    }q
 }

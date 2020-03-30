@@ -41,6 +41,7 @@ public class CompiledCardRule {
      * The constructor of the class
      */
     public CompiledCardRule(List<LambdaStatement> lambdaStatements, LambdaEffect lambdaEffect, TriggerType trigger) {
+        assert (lambdaStatements != null && lambdaEffect != null && trigger != null);
         this.effect = lambdaEffect;
         this.statements = lambdaStatements;
         this.trigger = trigger;
@@ -57,6 +58,8 @@ public class CompiledCardRule {
      * @return returns true if the statements are all valid or false if it at least one fails
      */
     public boolean execute(MoveData moveData, BuildData buildData, boolean simulate) throws PlayerLostSignal, PlayerWonSignal {
+
+        assert (this.trigger == TriggerType.MOVE ? buildData == null && moveData != null : moveData == null && buildData != null);
 
         boolean result = true;
 
@@ -78,6 +81,10 @@ public class CompiledCardRule {
      * @return returns true if the effect has been applied or false if it has failes
      */
     public boolean applyEffect(MoveData moveData, BuildData buildData) throws PlayerLostSignal, PlayerWonSignal {
+
+        assert (this.trigger == TriggerType.MOVE ? buildData == null && moveData != null : moveData == null && buildData != null);
+
+
         return effect.apply(moveData, buildData, false);
     }
 

@@ -25,6 +25,8 @@ public class EffectCompiler {
      */
     public static LambdaEffect compileEffect(InternalModel model, RuleEffect effect) {
 
+        assert (model != null && effect != null);
+
         EffectType effectType = effect.getType();
         LambdaEffect compiledEffect = null;
 

@@ -24,6 +24,8 @@ public class RuleCompiler {
      **/
     public static CompiledCardRule compile(InternalModel internalModel, CardRule cardRule, Player owner){
 
+        assert (internalModel != null && cardRule != null && owner != null);
+
         List<LambdaStatement> compiledStatements = new ArrayList<>();
         LambdaEffect compiledEffect = null;
         TriggerType trigger = cardRule.getTrigger();

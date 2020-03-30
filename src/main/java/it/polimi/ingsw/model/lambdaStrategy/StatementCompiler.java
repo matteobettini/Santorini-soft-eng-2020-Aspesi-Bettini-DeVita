@@ -29,6 +29,9 @@ public class StatementCompiler {
      * @return the compiled statement
      */
     public static LambdaStatement compileStatement(InternalModel model, RuleStatement statement, Player owner) {
+
+        assert (model != null && statement != null && owner != null);
+
        StatementVerbType verb = statement.getVerb();
        LambdaStatement result = null;
        switch (verb){
@@ -511,10 +514,16 @@ public class StatementCompiler {
 
 
     public static boolean adiacent(Point p1, Point p2){
+
+        assert (p1 != null && p2 != null);
+
         return (p2.x == p1.x && p2.y == p1.y - 1) || (p2.x == p1.x && p2.y == p1.y + 1) || (p2.x == p1.x - 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y + 1) || (p2.x == p1.x + 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y + 1);
     }
 
     public static List<Integer> getMoveDeltas(InternalModel model, List<Point> moves, MoveData moveData){
+
+        assert (model != null && moves != null && moves.size()>0 && moveData != null);
+
         List<Integer> result = new ArrayList<>();
 
         Map<LevelType,Integer> levelHeights = new HashMap<>();
