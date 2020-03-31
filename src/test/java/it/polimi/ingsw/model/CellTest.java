@@ -26,12 +26,7 @@ class CellTest {
         assertEquals(cellT.getTopBuilding(), LevelType.GROUND);
 
         //Test empty cell getWorkerID.
-        try{
-            cellT.getWorkerID();
-            assert false;
-        } catch (NoWorkerPresentException e) {
-            assert true;
-        }
+        assertNull(cellT.getWorkerID());
 
     }
 
@@ -41,7 +36,7 @@ class CellTest {
      * at any level(except DOME)
      */
     @Test
-    void testSetWorkerOnEmptyCell() throws NoWorkerPresentException, WorkerAlreadyPresentException, DomeException {
+    void testSetWorkerOnEmptyCell() {
         Cell cellT = new Cell(new Point(0,0));
         String workerID = "WW1";
 
@@ -54,19 +49,14 @@ class CellTest {
      * at any level.
      */
     @Test
-    void testSetWorkerOnOccupiedCell() throws WorkerAlreadyPresentException, DomeException {
+    void testSetWorkerOnOccupiedCell() {
         Cell cellT = new Cell(new Point(0,0));
         String worker1 = "WW1";
         String worker2 = "WW2";
         cellT.setWorker(worker1);
 
-        try{
-            cellT.setWorker(worker2);
-            assert false;
-        }
-        catch(WorkerAlreadyPresentException e){
-            assert true;
-        }
+        assertFalse(cellT.setWorker(worker2));
+        assertEquals(cellT.getWorkerID(), worker1);
 
     }
 
@@ -79,14 +69,8 @@ class CellTest {
         String workerID = "WW1";
         cellT.addBuilding(BuildingType.DOME);
 
-        try{
-            cellT.setWorker(workerID);
-            assert false;
-        } catch (DomeException e) {
-            assert true;
-        } catch (WorkerAlreadyPresentException e) {
-            assert false;
-        }
+        assertFalse(cellT.setWorker(workerID));
+        assertNull(cellT.getWorkerID());
 
     }
 
@@ -227,22 +211,17 @@ class CellTest {
      * This test verifies that two Cells with the same position and different Workers are equal.
      */
     @Test
-    void testEqualsWithDifferentWorkers() throws DomeException{
+    void testEqualsWithDifferentWorkers() {
         Point pointT = new Point(0,0);
         String workerID1 = "WW1";
         String workerID2 = "WW2";
         Cell cell1 = new Cell(pointT);
-        try {
-            cell1.setWorker(workerID1);
-        } catch (WorkerAlreadyPresentException e) {
-            assert false;
-        }
+
+        cell1.setWorker(workerID1);
+
         Cell cell2 = new Cell(pointT);
-        try {
-            cell2.setWorker(workerID2);
-        } catch (WorkerAlreadyPresentException e) {
-            assert false;
-        }
+
+        cell2.setWorker(workerID2);
 
         assertEquals(cell1,cell2);
         assertEquals(cell1.hashCode(), cell2.hashCode());
@@ -252,7 +231,7 @@ class CellTest {
      * This test verifies that two Cells with the same position and at least one null Worker are equal.
      */
     @Test
-    void testEqualsWithNullWorkers() throws DomeException{
+    void testEqualsWithNullWorkers() {
         Point pointT = new Point(0,0);
         Cell cell1 = new Cell(pointT);
         Cell cell2 = new Cell(pointT);
@@ -263,11 +242,7 @@ class CellTest {
 
         //CASE 2: Only one null.
         String workerID1 = "WW1";
-        try {
-            cell1.setWorker(workerID1);
-        } catch (WorkerAlreadyPresentException e) {
-            assert false;
-        }
+        cell1.setWorker(workerID1);
 
         assertEquals(cell1,cell2);
         assertEquals(cell1.hashCode(), cell2.hashCode());
@@ -277,7 +252,7 @@ class CellTest {
      * This test checks that the cloned Cell and the Original Cell have not the same reference.
      */
     @Test
-    void testClone() throws NoWorkerPresentException {
+    void testClone() {
         Cell cellT = new Cell(new Point(0,0));
         assertNull(cellT.getWorkerID());
 

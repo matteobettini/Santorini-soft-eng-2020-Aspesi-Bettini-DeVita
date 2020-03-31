@@ -5,7 +5,7 @@ package it.polimi.ingsw.model.enums;
  */
 public enum PlayerState {
     TURN_STARTED,
-    MOVE,
+    MOVED,
     BUILT,
     FIRST_BUILT,
     UNKNOWN

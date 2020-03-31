@@ -74,7 +74,7 @@ public class InternalModel {
      * @return the Worker that has workerID as ID.
      */
     public Worker getWorkerByID(String workerID){
-        assert workerID != null;
+        if(workerID == null) return null;
         for(Player p : this.players){
             for(Worker w : p.getWorkers()){
                 if(w.getID().equals(workerID)) return w;

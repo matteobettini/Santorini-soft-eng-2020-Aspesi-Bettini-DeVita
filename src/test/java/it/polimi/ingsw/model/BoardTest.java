@@ -50,32 +50,32 @@ class BoardTest {
         Board boardT = new Board();
 
         //If there is availability the building can be used and the availability decreases by 1.
-        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),22);
-        for(int i = 1; i <= 22; ++i){
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        for(int i = 1; i <= Board.NUM_OF_FIRST_FLOOR; ++i){
             assertTrue(boardT.canUseBuilding(BuildingType.FIRST_FLOOR));
             assertTrue(boardT.useBuilding(BuildingType.FIRST_FLOOR));
-            assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),22 - i);
+            assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR - i);
         }
 
-        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),18);
-        for(int i = 1; i <= 18; ++i){
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
+        for(int i = 1; i <= Board.NUM_OF_SECOND_FLOOR; ++i){
             assertTrue(boardT.canUseBuilding(BuildingType.SECOND_FLOOR));
             assertTrue(boardT.useBuilding(BuildingType.SECOND_FLOOR));
-            assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),18 - i);
+            assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR - i);
         }
 
-        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),14);
-        for(int i = 1; i <= 14; ++i){
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
+        for(int i = 1; i <= Board.NUM_OF_THIRD_FLOOR; ++i){
             assertTrue(boardT.canUseBuilding(BuildingType.THIRD_FLOOR));
             assertTrue(boardT.useBuilding(BuildingType.THIRD_FLOOR));
-            assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),14 - i);
+            assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR - i);
         }
 
-        assertEquals(boardT.availableBuildings(BuildingType.DOME),18);
-        for(int i = 1; i <= 18; ++i){
+        assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME);
+        for(int i = 1; i <= Board.NUM_OF_DOME; ++i){
             assertTrue(boardT.canUseBuilding(BuildingType.DOME));
             assertTrue(boardT.useBuilding(BuildingType.DOME));
-            assertEquals(boardT.availableBuildings(BuildingType.DOME),18 - i);
+            assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME - i);
         }
 
         //If there is no availability the building can't be used.
@@ -96,29 +96,29 @@ class BoardTest {
         assertEquals(boardT.availableBuildings(BuildingType.DOME),0);
 
         //Checks if the restock method works and only restocks the given building type.
-        boardT.restockBuilding(BuildingType.FIRST_FLOOR);
-        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),22);
+        boardT.restockBuilding(BuildingType.FIRST_FLOOR, Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR), Board.NUM_OF_FIRST_FLOOR);
         assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),0);
         assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),0);
         assertEquals(boardT.availableBuildings(BuildingType.DOME),0);
 
-        boardT.restockBuilding(BuildingType.SECOND_FLOOR);
-        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),22);
-        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),18);
+        boardT.restockBuilding(BuildingType.SECOND_FLOOR, Board.NUM_OF_SECOND_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
         assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),0);
         assertEquals(boardT.availableBuildings(BuildingType.DOME),0);
 
-        boardT.restockBuilding(BuildingType.THIRD_FLOOR);
-        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),22);
-        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),18);
-        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),14);
+        boardT.restockBuilding(BuildingType.THIRD_FLOOR, Board.NUM_OF_THIRD_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
         assertEquals(boardT.availableBuildings(BuildingType.DOME),0);
 
-        boardT.restockBuilding(BuildingType.DOME);
-        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),22);
-        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),18);
-        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),14);
-        assertEquals(boardT.availableBuildings(BuildingType.DOME),18);
+        boardT.restockBuilding(BuildingType.DOME, Board.NUM_OF_DOME);
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME);
 
 
     }

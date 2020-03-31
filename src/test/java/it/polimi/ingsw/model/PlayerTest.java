@@ -10,7 +10,6 @@ import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 class PlayerTest {
@@ -54,7 +53,7 @@ class PlayerTest {
         assertEquals(cardFile, playerT.getCard());
 
         //Test for the state setter
-        List<PlayerState> playerStates = Arrays.asList(PlayerState.values());
+        PlayerState[] playerStates = PlayerState.values();
         for(PlayerState s : playerStates){
             playerT.setPlayerState(s);
             assertEquals(s, playerT.getState());
@@ -71,7 +70,7 @@ class PlayerTest {
     void testFlags(){
         String playerNick = "N1";
         Player playerT = new Player(playerNick);
-        List<PlayerFlag> flags = Arrays.asList(PlayerFlag.values());
+        PlayerFlag[] flags = PlayerFlag.values();
 
         //Add all the possible flags to the player.
         for(PlayerFlag f : flags){

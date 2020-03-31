@@ -16,10 +16,10 @@ public class Board {
     private Cell[][] boardRep;
     private Map<BuildingType, Integer> buildingsCounter;
 
-    private static final int NUM_OF_FIRST_FLOOR = 22;
-    private static final int NUM_OF_SECOND_FLOOR = 18;
-    private static final int NUM_OF_THIRD_FLOOR = 14;
-    private static final int NUM_OF_DOME = 18;
+    public static final int NUM_OF_FIRST_FLOOR = 22;
+    public static final int NUM_OF_SECOND_FLOOR = 18;
+    public static final int NUM_OF_THIRD_FLOOR = 14;
+    public static final int NUM_OF_DOME = 18;
 
     public static final int ROWS = 5;
     public static final int COLUMNS = 5;
