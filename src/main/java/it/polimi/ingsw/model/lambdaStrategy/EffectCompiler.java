@@ -73,41 +73,35 @@ public class EffectCompiler {
                 Point finalPosition = moves.get(moves.size() - 1);
                 Cell startPositionCell = model.getBoard().getCell(startPosition);
                 Cell finalPositionCell = model.getBoard().getCell(finalPosition);
-                Worker myWoker = moveData.getWorker();
+                Worker myWorker = moveData.getWorker();
 
 
-                try {
-                    // Where i want to go should be without workers (should be already tested)
-                    finalPositionCell.getWorkerID();
-                    return false;
-                } catch (NoWorkerPresentException e) {
-                    // It is without workers
 
-                    // If i want to go on a dome it fails (should be already tested)
-                    if(finalPositionCell.getTopBuilding() == LevelType.DOME)
-                        return false;
+                // Where i want to go should be without workers and domes (should be already tested)
+                assert(!finalPositionCell.isOccupied());
 
-                    // If we are not in a simulation
-                    if(!simulate){
-                        try {
-                            // Set my worker in final cell
-                            finalPositionCell.setWorker(myWoker.getID());
-                        } catch (WorkerAlreadyPresentException | DomeException ignored) { }
-                        try {
-                            // remove my worker from previous position
-                            startPositionCell.removeWorker();
-                        } catch (NoWorkerPresentException ignored) {
-                            System.err.println("There is no one in the cell my move is starting from , i am the allow effect on move of worker "+ moveData.getWorker().getID());
-                            return false;
-                        }
-                        // Set my new worker's position
-                        myWoker.setPosition(finalPosition);
+                // Check i am where i want to start the move
+                assert(startPositionCell.getWorkerID().equals(myWorker.getID()));
 
-                        // Set the new player state
-                        moveData.getPlayer().setPlayerState(nextPlayerState);
-                    }
-                    return true;
+
+                // If we are not in a simulation
+                if(!simulate){
+
+                    // Set my worker in final cell
+                    finalPositionCell.setWorker(myWorker.getID());
+
+                    // remove my worker from previous position
+                    if(!startPositionCell.removeWorker())
+                        System.err.println("There is no one in the cell my move is starting from , i am the allow effect on move of worker "+ moveData.getWorker().getID());
+
+                    // Set my new worker's position
+                    myWorker.setPosition(finalPosition);
+
+                    // Set the new player state
+                    moveData.getPlayer().setPlayerState(nextPlayerState);
+
                 }
+                return true;
             }
 
             else if(moveData == null){
@@ -194,59 +188,58 @@ public class EffectCompiler {
 
                 assert(buildData == null);
 
+                Point startPosition = moveData.getWorker().getPosition();
+                Cell startPositionCell = model.getBoard().getCell(startPosition);
                 List<Point> moves = moveData.getData();
                 Point finalPosition = moves.get(moves.size()-1);
                 Cell finalPositionCell = model.getBoard().getCell(finalPosition);
                 Point mySecondToLastPosition;
+                Worker myWorker = moveData.getWorker();
+                Worker hisWorker = model.getWorkerByID(finalPositionCell.getWorkerID());
                 if(moves.size() > 1)
                     mySecondToLastPosition = moves.get(moves.size()-2);
                 else
                     mySecondToLastPosition = moveData.getWorker().getPosition();
+
+                // Check i am where i want to start the move
+                assert(startPositionCell.getWorkerID().equals(myWorker.getID()));
+
+                // Check in my final pos there is not a dome
+                assert (finalPositionCell.getTopBuilding() != LevelType.DOME);
+
+                // Check there is someone in my final position and it is not me
+                if(hisWorker == null || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(0).getID()) || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(1).getID())) {
+                    System.err.println("There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos push effect of worker " + moveData.getWorker().getID());
+                    return false;
+                }
 
                 int deltaX = finalPosition.x - mySecondToLastPosition.x;
                 int deltaY = finalPosition.y - mySecondToLastPosition.y;
 
                 Cell whereHeHasToGo = model.getBoard().getCell(new Point(finalPosition.x-deltaX,finalPosition.y-deltaY));
 
-                if(whereHeHasToGo == null || whereHeHasToGo.getTopBuilding() == LevelType.DOME)
+                if(whereHeHasToGo == null || whereHeHasToGo.isOccupied())
                     return false;
 
-                try {
-                    whereHeHasToGo.getWorkerID();
-                    return false;
-                } catch (NoWorkerPresentException e) {
-                    try {
-                        finalPositionCell.getWorkerID();
-                    } catch (NoWorkerPresentException ex) {
-                        System.err.println("There is no one in the cell i want to push with my worker , i am the set opp pos effect of worker "+ moveData.getWorker().getID());
-                        return false;
-                    }
-                    if (!simulate) {
-                        String hisWorkerName = null;
-                        try {
-                            hisWorkerName = finalPositionCell.getWorkerID();
-                        } catch (NoWorkerPresentException ignored) { }
+                if (!simulate) {
 
-                        Worker hisWorker = model.getWorkerByID(hisWorkerName);
+                    whereHeHasToGo.setWorker(hisWorker.getID());
 
-                        try {
-                            whereHeHasToGo.setWorker(hisWorkerName);
-                        } catch (WorkerAlreadyPresentException | DomeException ignored) { }
-                        hisWorker.setPosition(whereHeHasToGo.getPosition());
-                        try {
-                            finalPositionCell.removeWorker();
-                        } catch (NoWorkerPresentException ignored) { }
-                        try {
-                            model.getBoard().getCell(moveData.getWorker().getPosition()).removeWorker();
-                        } catch (NoWorkerPresentException ignored) { }
-                        try {
-                            finalPositionCell.setWorker(moveData.getWorker().getID());
-                        } catch (WorkerAlreadyPresentException | DomeException ignored) { }
-                        moveData.getWorker().setPosition(finalPosition);
-                        moveData.getPlayer().setPlayerState(nextPlayerState);
-                    }
-                    return true;
+                    hisWorker.setPosition(whereHeHasToGo.getPosition());
+
+                    finalPositionCell.removeWorker();
+
+                    finalPositionCell.setWorker(myWorker.getID());
+
+                    startPositionCell.removeWorker();
+
+                    myWorker.setPosition(finalPosition);
+
+                    moveData.getPlayer().setPlayerState(nextPlayerState);
                 }
+
+                return true;
+
             });
         }
         else if(effect.getData().equals("SWAP")){
@@ -256,6 +249,8 @@ public class EffectCompiler {
 
                  List<Point> moves = moveData.getData();
 
+                 Point startPosition = moveData.getWorker().getPosition();
+                 Cell startPositionCell = model.getBoard().getCell(startPosition);
                  Point finalPosition = moves.get(moves.size()-1);
                  Cell finalPositionCell = model.getBoard().getCell(finalPosition);
                  Point mySecondToLastPosition;
@@ -264,27 +259,39 @@ public class EffectCompiler {
                  else
                      mySecondToLastPosition = moveData.getWorker().getPosition();
                  Cell mySecondToLastCell = model.getBoard().getCell(mySecondToLastPosition);
+                 Worker myWorker = moveData.getWorker();
+                 Worker hisWorker = model.getWorkerByID(finalPositionCell.getWorkerID());
+
+                 // Check i am where i want to start the move
+                 assert(startPositionCell.getWorkerID().equals(myWorker.getID()));
+
+                 // My second to last cell is empty
+                 assert (!mySecondToLastCell.isOccupied());
+
+                 // Check in my final pos there is not a dome
+                 assert (finalPositionCell.getTopBuilding() != LevelType.DOME);
+
+                 // Check there is someone in my final position and it is not me
+                 if(hisWorker == null || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(0).getID()) || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(1).getID())) {
+                     System.err.println("There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos swap effect of worker " + moveData.getWorker().getID());
+                     return false;
+                 }
+
 
                  if (!simulate) {
-                     Worker hisWorker = null;
-                     try {
-                         mySecondToLastCell.removeWorker();
-                     } catch (NoWorkerPresentException ignored) { }
-                     try {
-                         hisWorker = model.getWorkerByID(finalPositionCell.getWorkerID());
-                     } catch (NoWorkerPresentException ignored) { }
-                     try {
-                         finalPositionCell.removeWorker();
-                     } catch (NoWorkerPresentException ignored) { }
-                     try {
-                         finalPositionCell.setWorker(moveData.getWorker().getID());
-                     } catch (WorkerAlreadyPresentException | DomeException ignored) { }
-                     try {
-                         assert (hisWorker != null);
-                         mySecondToLastCell.setWorker(hisWorker.getID());
-                     } catch (WorkerAlreadyPresentException | DomeException ignored) { }
-                     moveData.getWorker().setPosition(finalPosition);
+
+                     startPositionCell.removeWorker();
+
+                     finalPositionCell.removeWorker();
+
+                     finalPositionCell.setWorker(myWorker.getID());
+
+                     mySecondToLastCell.setWorker(hisWorker.getID());
+
+                     myWorker.setPosition(finalPosition);
+
                      hisWorker.setPosition(mySecondToLastPosition);
+
                      moveData.getPlayer().setPlayerState(nextPlayerState);
                  }
 

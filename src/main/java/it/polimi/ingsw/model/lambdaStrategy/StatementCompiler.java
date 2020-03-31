@@ -311,10 +311,8 @@ public class StatementCompiler {
             int occupied = 0;
 
             for(Point p : moves){
-                try {
-                    model.getBoard().getCell(p).getWorkerID();
+                if(model.getBoard().getCell(p).getWorkerID() != null)
                     occupied ++;
-                } catch (NoWorkerPresentException ignored) { }
             }
 
             if(occupied == object)
@@ -359,12 +357,12 @@ public class StatementCompiler {
 
                 Point finalPosition = moves.get(moves.size()-1);
                 List<Worker> myWorkers = moveData.getPlayer().getWorkers();
-                assert(myWorkers.size() == 2);
-                try{
-                    String presentWID = model.getBoard().getCell(finalPosition).getWorkerID();
-                    if(!presentWID.equals(myWorkers.get(0).getID()) && !presentWID.equals(myWorkers.get(1).getID()))
-                        result = true;
-                } catch (NoWorkerPresentException ignored){ }
+
+
+                String presentWID = model.getBoard().getCell(finalPosition).getWorkerID();
+                if(presentWID != null && !presentWID.equals(myWorkers.get(0).getID()) && !presentWID.equals(myWorkers.get(1).getID()))
+                    result = true;
+
 
                 if(isNif)
                     result = !result;
