@@ -8,6 +8,9 @@ import java.awt.*;
  */
 public class Worker {
 
+    /**
+     * This is the ID of the Worker which is the concatenation of the Player nickname + "." + the number starting from 1.
+     */
     private final String ID;
     private Player player;
     private Point position;

@@ -35,20 +35,20 @@ public class PacketBuild {
     }
 
     /**
-     *
-     * @return
+     * Getter that returns the nickname of the Player.
+     * @return the String containing the Player nickname.
      */
     public String getPlayerNickname() { return this.playerNickname; }
 
     /**
-     *
-     * @return
+     * Getter that returns the ID of the Worker.
+     * @return the String containing the ID of the Worker.
      */
     public String getWorkerID() { return this.workerID; }
 
     /**
-     *
-     * @return
+     * Getter that returns the Points where the Player has built and which buildings.
+     * @return a Map that associates the Points to the added buildings.
      */
     public Map<Point, List<BuildingType>> getBuilds() { return this.builds; }
 }

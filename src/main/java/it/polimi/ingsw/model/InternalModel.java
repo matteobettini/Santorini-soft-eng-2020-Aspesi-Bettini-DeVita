@@ -1,17 +1,14 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.turnInfo.BuildData;
 import it.polimi.ingsw.model.turnInfo.MoveData;
+import it.polimi.ingsw.packets.InvalidPacketException;
 import it.polimi.ingsw.packets.PacketBuild;
 import it.polimi.ingsw.packets.PacketMove;
 
 import java.awt.*;
-import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * This class contains all the actual instances of the Model data.
@@ -68,6 +65,8 @@ public class InternalModel {
         losers.add(loser);
     }
 
+    public void setWinner(Player winner){ this.winner = winner; }
+
     /**
      * Getter that returns the Worker given its ID.
      * @param workerID is the ID of the Worker.
@@ -90,10 +89,14 @@ public class InternalModel {
      * the Player in his turn.
      * @return a MoveData obtained by the conversion of a packetMove.
      */
-    public MoveData packetMoveToMoveData(PacketMove packetMove){
+    public MoveData packetMoveToMoveData(PacketMove packetMove) throws InvalidPacketException {
         assert packetMove != null;
         Player p = getPlayerByNick(packetMove.getPlayerNickname());
         Worker w = getWorkerByID(packetMove.getWorkerID());
+        if(packetMove.getMove().size() == 0) throw new InvalidPacketException();
+        for(Point pos : packetMove.getMove()){
+            if(board.getCell(pos) == null) throw new InvalidPacketException();
+        }
         return new MoveData(p, w, packetMove.getMove());
     }
 
@@ -104,10 +107,14 @@ public class InternalModel {
      * the Player in his turn.
      * @return a BuildData obtained by the conversion of a packetBuild.
      */
-    public BuildData packetBuildToBuildData(PacketBuild packetBuild){
+    public BuildData packetBuildToBuildData(PacketBuild packetBuild) throws InvalidPacketException {
         assert packetBuild != null;
         Player p = getPlayerByNick(packetBuild.getPlayerNickname());
         Worker w = getWorkerByID(packetBuild.getWorkerID());
+        if(packetBuild.getBuilds().size() == 0) throw new InvalidPacketException();
+        for(Point pos : packetBuild.getBuilds().keySet()){
+            if(packetBuild.getBuilds().get(pos) == null || packetBuild.getBuilds().get(pos).size() == 0 || board.getCell(pos) == null) throw new InvalidPacketException();
+        }
         return new BuildData(p, w, packetBuild.getBuilds());
     }
 
