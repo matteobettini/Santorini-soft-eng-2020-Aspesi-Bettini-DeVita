@@ -23,6 +23,20 @@ public class RuleEffectTest {
     }
 
     /**
+     * Test nextState setter
+     */
+    @Test
+    void testSetters(){
+        EffectType typeT = EffectType.ALLOW;
+        PlayerState stateT = PlayerState.UNKNOWN;
+
+        RuleEffect ruleEffect = new RuleEffect(typeT,stateT,null);
+        PlayerState nextState = PlayerState.TURN_STARTED;
+        ruleEffect.setNextState(nextState);
+        assertEquals(ruleEffect.getNextState(), nextState);
+    }
+
+    /**
      * Verify behaviour with null data
      */
     @Test
@@ -49,6 +63,10 @@ public class RuleEffectTest {
 
         assertEquals(ruleEffect1,ruleEffect2);
         assertEquals(ruleEffect1.hashCode(), ruleEffect2.hashCode());
+
+        //With not null data
+        RuleEffect ruleEffect3 = new RuleEffect(typeT,stateT,"TEST");
+        assertNotEquals(ruleEffect1,ruleEffect3);
     }
     /**
      * Verify equals and hashcode with not null data
@@ -65,11 +83,9 @@ public class RuleEffectTest {
         assertEquals(ruleEffect1,ruleEffect2);
         assertEquals(ruleEffect1.hashCode(), ruleEffect2.hashCode());
 
-        //With data null
-        ruleEffect1 = new RuleEffect(typeT,stateT,null);
-        ruleEffect2 = new RuleEffect(typeT,stateT,null);
-        assertEquals(ruleEffect1,ruleEffect2);
-        assertEquals(ruleEffect1.hashCode(), ruleEffect2.hashCode());
+        //With different
+        RuleEffect ruleEffect3 = new RuleEffect(typeT,stateT,"Test1");
+        assertNotEquals(ruleEffect1,ruleEffect3);
     }
 
     /**

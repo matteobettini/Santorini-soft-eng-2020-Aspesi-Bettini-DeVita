@@ -2,15 +2,20 @@ package it.polimi.ingsw.model.cardReader.cardValidator;
 
 import it.polimi.ingsw.model.cardReader.CardFile;
 import it.polimi.ingsw.model.cardReader.CardRule;
+import it.polimi.ingsw.model.cardReader.RuleEffect;
 import it.polimi.ingsw.model.cardReader.RuleStatement;
 import it.polimi.ingsw.model.cardReader.enums.EffectType;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.model.enums.PlayerState;
 
 import java.util.List;
 
 /**
  * This class offers a method to patch CardFile with
- * part of the default strategy
+ * part of the default strategy.
+ * Default cardFile must have ONE AND ONLY ONE:
+ * - move rule with allow
+ * - build rule with allow
  */
 public class CardPatcher {
 
@@ -21,11 +26,17 @@ public class CardPatcher {
      * @param card CardFile of the card to be patched
      */
     public void patchCard(CardFile defaultCard, CardFile card){
+        assert(defaultCard.getRules(TriggerType.MOVE).stream().filter(this::isPatchableCompliant).count() == 1);
+        assert(defaultCard.getRules(TriggerType.BUILD).stream().filter(this::isPatchableCompliant).count() == 1);
+
         for(CardRule rule : defaultCard.getRules()){
             if (isPatchableCompliant(rule)){
+                //Add its statements where missing
                 for(RuleStatement stm : rule.getStatements()){
                     applyStatementToCardRule(rule.getTrigger(), stm, card);
                 }
+                //Add its default next state where missing
+                applyNextStateToCardFile(rule.getTrigger(),rule.getEffect().getNextState(),card);
             }
         }
     }
@@ -61,6 +72,33 @@ public class CardPatcher {
             }
         }
         return false;
+    }
+
+    /**
+     * This method patches the cardFile adding default player next state in the compatible rules where was not specified.
+     * @param triggerDefault Default card rule trigger
+     * @param nextStateDefault Default next state to be added
+     * @param card CardFile where we want to add the next state
+     */
+    private void applyNextStateToCardFile(TriggerType triggerDefault, PlayerState nextStateDefault, CardFile card){
+        List<CardRule> similarRules = card.getRules(triggerDefault);
+        for(CardRule rule : similarRules){
+            if (isPatchableCompliant(rule)){
+                applyNextStateToCardRule(nextStateDefault, rule);
+            }
+        }
+    }
+
+    /**
+     * This method patches the card player next state with the default, if was not specified
+     * @param defaultNextState Default player next state
+     * @param rule Rule to be patched
+     */
+    private void applyNextStateToCardRule(PlayerState defaultNextState, CardRule rule){
+        RuleEffect ruleEffect = rule.getEffect();
+        if (ruleEffect.getNextState() == PlayerState.UNKNOWN){
+            ruleEffect.setNextState(defaultNextState);
+        }
     }
 
     /**

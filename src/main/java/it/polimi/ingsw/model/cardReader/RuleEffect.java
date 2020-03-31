@@ -13,7 +13,7 @@ import java.util.Objects;
 public class RuleEffect {
 
     private final EffectType type;
-    private final PlayerState playerNextState;
+    private PlayerState playerNextState;
     private final String data;
 
     public RuleEffect(EffectType type, PlayerState playerNextState, String data) {
@@ -37,6 +37,14 @@ public class RuleEffect {
      */
     public PlayerState getNextState(){
         return this.playerNextState;
+    }
+
+    /**
+     * Setter for the player's next state
+     * @param nextState Enum value to be applied to the player after the rule successfully activates
+     */
+    public void setNextState(PlayerState nextState){
+        this.playerNextState = nextState;
     }
 
     /**

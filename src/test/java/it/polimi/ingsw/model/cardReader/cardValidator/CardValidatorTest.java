@@ -41,5 +41,20 @@ class CardValidatorTest {
         } catch (InvalidCardException e) {
             assert true;
         }
+        //Check CardFile with at least one rule with mixed statements
+        cardFileWrong = CardFileTest.getCardFileWithMixedStatementsOnMove();
+        try{
+            CardValidator.checkCardFile(cardFileWrong);
+            assert false;
+        } catch (InvalidCardException e) {
+            assert true;
+        }
+        cardFileWrong = CardFileTest.getCardFileWithMixedStatementsOnBuild();
+        try{
+            CardValidator.checkCardFile(cardFileWrong);
+            assert false;
+        } catch (InvalidCardException e) {
+            assert true;
+        }
     }
 }

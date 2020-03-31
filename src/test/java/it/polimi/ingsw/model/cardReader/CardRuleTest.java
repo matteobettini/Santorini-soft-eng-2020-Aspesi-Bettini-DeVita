@@ -15,7 +15,7 @@ public class CardRuleTest {
     @Test
     void testGetters() {
         TriggerType triggerT = TriggerType.MOVE;
-        List<RuleStatement> statementsT = RuleStatementTest.getStatementList();
+        List<RuleStatement> statementsT = RuleStatementTest.getMoveStatementList();
         RuleEffect effectT = RuleEffectTest.getRuleEffectWithData();
 
         CardRule rule = new CardRule(triggerT,statementsT,effectT);
@@ -55,7 +55,7 @@ public class CardRuleTest {
     @Test
     void testEqualsAndHash(){
         TriggerType triggerT = TriggerType.MOVE;
-        List<RuleStatement> statementsT = RuleStatementTest.getStatementList();
+        List<RuleStatement> statementsT = RuleStatementTest.getMoveStatementList();
         RuleEffect effectT = RuleEffectTest.getRuleEffectWithData();
 
         CardRule rule1 = new CardRule(triggerT,statementsT,effectT);
@@ -76,8 +76,7 @@ public class CardRuleTest {
     }
     public static CardRule getCardRule(){
         TriggerType triggerT = TriggerType.MOVE;
-        List<RuleStatement> statementsT = new ArrayList<>();
-        statementsT.addAll(RuleStatementTest.getStatementList());
+        List<RuleStatement> statementsT = new ArrayList<>(RuleStatementTest.getMoveStatementList());
         RuleEffect effect = RuleEffectTest.getRuleEffectWithData();
 
         return new CardRule(triggerT,statementsT,effect);
@@ -85,18 +84,18 @@ public class CardRuleTest {
 
     public static List<CardRule> getRandomCardRuleList(){
         List<CardRule> res = new ArrayList<>();
-        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithData()));
-        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithNullData()));
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getMoveStatementList(), RuleEffectTest.getRuleEffectWithData()));
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getMoveStatementList(), RuleEffectTest.getRuleEffectWithNullData()));
         return res;
     }
 
     public static List<CardRule> getRulesWithAllTriggerTypes(){
         List<CardRule> res = new ArrayList<>();
-        res.add(new CardRule(TriggerType.BUILD, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithData()));
-        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithNullData()));
-        res.add(new CardRule(TriggerType.BUILD, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithNullData()));
-        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithData()));
-        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithData()));
+        res.add(new CardRule(TriggerType.BUILD, RuleStatementTest.getBuildStatementList(), RuleEffectTest.getRuleEffectWithData()));
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getMoveStatementList(), RuleEffectTest.getRuleEffectWithNullData()));
+        res.add(new CardRule(TriggerType.BUILD, RuleStatementTest.getBuildStatementList(), RuleEffectTest.getRuleEffectWithNullData()));
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getMoveStatementList(), RuleEffectTest.getRuleEffectWithData()));
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getMoveStatementList(), RuleEffectTest.getRuleEffectWithData()));
         return res;
     }
 
@@ -112,7 +111,17 @@ public class CardRuleTest {
     }
     public static List<CardRule> getRuleWithWrongEffect(){
         List<CardRule> res = new ArrayList<>();
-        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getStatementList(), RuleEffectTest.getRuleEffectWithWrongData()));
+        res.add(new CardRule(TriggerType.BUILD, RuleStatementTest.getBuildStatementList(), RuleEffectTest.getRuleEffectWithWrongData()));
+        return res;
+    }
+    public static List<CardRule> getRuleWithMixedStatementsOnMove(){
+        List<CardRule> res = new ArrayList<>();
+        res.add(new CardRule(TriggerType.MOVE, RuleStatementTest.getMixedStatementOnMoveList(), RuleEffectTest.getRuleEffectWithNullData()));
+        return res;
+    }
+    public static List<CardRule> getRuleWithMixedStatementsOnBuild(){
+        List<CardRule> res = new ArrayList<>();
+        res.add(new CardRule(TriggerType.BUILD, RuleStatementTest.getMixedStatementOnBuildList(), RuleEffectTest.getRuleEffectWithNullData()));
         return res;
     }
 }

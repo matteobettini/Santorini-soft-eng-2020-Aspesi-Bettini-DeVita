@@ -79,26 +79,38 @@ public class CardFileTest {
 
     public static CardFile getNormalCardFile(){
         String nameTest = "TEST01";
-        String descrTest = "DESCR01";
+        String descrTest = "NormalCard";
         List<CardRule> rules = CardRuleTest.getRulesWithAllTriggerTypes();
         return new CardFile(nameTest,descrTest,rules);
     }
     public static CardFile getCardFileWithWrongStatementSubject(){
-        String nameTest = "TEST01";
-        String descrTest = "DESCR01";
+        String nameTest = "TEST02";
+        String descrTest = "WrongStatementSubject";
         List<CardRule> rules = CardRuleTest.getRuleWithWrongSubject();
         return new CardFile(nameTest,descrTest,rules);
     }
     public static CardFile getCardFileWithWrongStatementObject(){
-        String nameTest = "TEST01";
-        String descrTest = "DESCR01";
+        String nameTest = "TEST03";
+        String descrTest = "WrongStatementObject";
         List<CardRule> rules = CardRuleTest.getRuleWithWrongObject();
         return new CardFile(nameTest,descrTest,rules);
     }
     public static CardFile getCardFileWithWrongEffect(){
-        String nameTest = "TEST01";
-        String descrTest = "DESCR01";
+        String nameTest = "TEST04";
+        String descrTest = "WrongEffect";
         List<CardRule> rules = CardRuleTest.getRuleWithWrongEffect();
+        return new CardFile(nameTest,descrTest,rules);
+    }
+    public static CardFile getCardFileWithMixedStatementsOnMove(){
+        String nameTest = "TEST05";
+        String descrTest = "MixedStatements";
+        List<CardRule> rules = CardRuleTest.getRuleWithMixedStatementsOnMove();
+        return new CardFile(nameTest,descrTest,rules);
+    }
+    public static CardFile getCardFileWithMixedStatementsOnBuild(){
+        String nameTest = "TEST05";
+        String descrTest = "MixedStatements";
+        List<CardRule> rules = CardRuleTest.getRuleWithMixedStatementsOnBuild();
         return new CardFile(nameTest,descrTest,rules);
     }
 }

@@ -57,12 +57,35 @@ public class RuleStatementTest {
         return new RuleStatement(typeT,subjT,verbT,objT);
     }
 
-    public static List<RuleStatement> getStatementList(){
+    public static List<RuleStatement> getBuildStatementList(){
+        List<RuleStatement> res = new ArrayList<>();
+        res.add(new RuleStatement(StatementType.IF, "YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER"));
+        res.add(new RuleStatement(StatementType.NIF, "YOU", StatementVerbType.BUILD_DOME_EXCEPT, "THIRD_FLOOR"));
+        res.add(new RuleStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_NUM, "1"));
+        return res;
+    }
+    public static List<RuleStatement> getMoveStatementList(){
+        List<RuleStatement> res = new ArrayList<>();
+        res.add(new RuleStatement(StatementType.IF, "YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER"));
+        res.add(new RuleStatement(StatementType.NIF, "YOU", StatementVerbType.MOVE_LENGTH, "1"));
+        res.add(new RuleStatement(StatementType.IF, "YOU", StatementVerbType.EXISTS_DELTA_MORE, "1"));
+        return res;
+    }
+
+    public static List<RuleStatement> getMixedStatementOnBuildList(){
         List<RuleStatement> res = new ArrayList<>();
         res.add(new RuleStatement(StatementType.IF, "YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER"));
         res.add(new RuleStatement(StatementType.NIF, "YOU", StatementVerbType.BUILD_DOME_EXCEPT, "THIRD_FLOOR"));
         res.add(new RuleStatement(StatementType.NIF, "YOU", StatementVerbType.EXISTS_DELTA_MORE, "1"));
         res.add(new RuleStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_NUM, "1"));
+        return res;
+    }
+    public static List<RuleStatement> getMixedStatementOnMoveList(){
+        List<RuleStatement> res = new ArrayList<>();
+        res.add(new RuleStatement(StatementType.IF, "YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER"));
+        res.add(new RuleStatement(StatementType.NIF, "YOU", StatementVerbType.BUILD_DOME_EXCEPT, "THIRD_FLOOR"));
+        res.add(new RuleStatement(StatementType.NIF, "YOU", StatementVerbType.EXISTS_DELTA_MORE, "1"));
+        res.add(new RuleStatement(StatementType.IF, "YOU", StatementVerbType.MOVE_LENGTH, "1"));
         return res;
     }
 
@@ -80,4 +103,5 @@ public class RuleStatementTest {
         res.add(new RuleStatement(StatementType.IF, "YOU", StatementVerbType.PLAYER_EQUALS, "TTTT"));
         return res;
     }
+
 }
