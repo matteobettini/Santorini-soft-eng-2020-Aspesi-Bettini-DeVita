@@ -39,18 +39,24 @@ public class EffectCompiler {
                 break;
             case DENY:
                 compiledEffect = ((moveData, buildData, simulate) -> {
-                    if(moveData == null)
-                        throw new PlayerLostSignal(buildData.getPlayer());
-                    else
-                        throw new PlayerLostSignal(moveData.getPlayer());
+                    if (!simulate) {
+                        if (moveData == null)
+                            throw new PlayerLostSignal(buildData.getPlayer());
+                        else
+                            throw new PlayerLostSignal(moveData.getPlayer());
+                    }
+                    return true;
                 });
                 break;
             case WIN:
                 compiledEffect = ((moveData, buildData, simulate) -> {
-                    if (moveData == null)
-                        throw new PlayerWonSignal(buildData.getPlayer());
-                    else
-                        throw new PlayerWonSignal(moveData.getPlayer());
+                    if (!simulate) {
+                        if (moveData == null)
+                            throw new PlayerWonSignal(buildData.getPlayer());
+                        else
+                            throw new PlayerWonSignal(moveData.getPlayer());
+                    }
+                    return true;
                 });
                 break;
         }
@@ -154,6 +160,7 @@ public class EffectCompiler {
                                 return false;
                             }
                     }
+
                     Board board = model.getBoard();
                     for( int i=0; i < numOfFirstFloorsIWantToUse; i++)
                         board.useBuilding(BuildingType.FIRST_FLOOR);
@@ -199,7 +206,7 @@ public class EffectCompiler {
                 if(moves.size() > 1)
                     mySecondToLastPosition = moves.get(moves.size()-2);
                 else
-                    mySecondToLastPosition = moveData.getWorker().getPosition();
+                    mySecondToLastPosition = startPosition;
 
                 // Check i am where i want to start the move
                 assert(startPositionCell.getWorkerID().equals(myWorker.getID()));
@@ -257,7 +264,7 @@ public class EffectCompiler {
                  if(moves.size() > 1)
                      mySecondToLastPosition = moves.get(moves.size()-2);
                  else
-                     mySecondToLastPosition = moveData.getWorker().getPosition();
+                     mySecondToLastPosition = startPosition;
                  Cell mySecondToLastCell = model.getBoard().getCell(mySecondToLastPosition);
                  Worker myWorker = moveData.getWorker();
                  Worker hisWorker = model.getWorkerByID(finalPositionCell.getWorkerID());
@@ -266,7 +273,7 @@ public class EffectCompiler {
                  assert(startPositionCell.getWorkerID().equals(myWorker.getID()));
 
                  // My second to last cell is empty
-                 assert (!mySecondToLastCell.isOccupied());
+                 assert ((mySecondToLastCell.getWorkerID() == null || mySecondToLastCell.getWorkerID().equals(myWorker.getID())) && mySecondToLastCell.getTopBuilding() != LevelType.DOME);
 
                  // Check in my final pos there is not a dome
                  assert (finalPositionCell.getTopBuilding() != LevelType.DOME);
