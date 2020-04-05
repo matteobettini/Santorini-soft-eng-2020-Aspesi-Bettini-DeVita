@@ -26,6 +26,7 @@ public class BuildData extends TurnData {
     public BuildData(Player player, Worker worker, Map<Point,List<BuildingType>> data) {
         super( player, worker);
         this.data = data;
+
     }
 
     /**

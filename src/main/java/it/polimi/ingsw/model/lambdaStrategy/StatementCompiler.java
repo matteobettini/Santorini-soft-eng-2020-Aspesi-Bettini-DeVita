@@ -393,13 +393,17 @@ public class StatementCompiler {
 
             if(num_of_builds != object)
                 result = false;
+
             else {
                 result = true;
                 for (Point currPoint : builds.keySet()) {
-                    if (!StatementCompiler.adiacent(currPoint, buildData.getWorker().getPosition()))
+                    if (!StatementCompiler.adiacent(currPoint, buildData.getWorker().getPosition())) {
                         result = false;
+                        break;
+                    }
                 }
             }
+
             if(isNif)
                 result = !result;
 
@@ -469,10 +473,11 @@ public class StatementCompiler {
                     else {
                         List<BuildingType> buildsInThisPoint = builds.get(currPoint);
                         if(buildsInThisPoint.contains(BuildingType.DOME)){
-                            if(model.getBoard().getCell(currPoint).canBuild(buildsInThisPoint)){
-                                if(LevelType.valueOf(buildsInThisPoint.get(buildsInThisPoint.indexOf(BuildingType.DOME)-1).name()) == object)
+                            if(model.getBoard().getCell(currPoint).canBuild(buildsInThisPoint)) {
+                                if (LevelType.valueOf(buildsInThisPoint.get(buildsInThisPoint.indexOf(BuildingType.DOME) - 1).name()) == object){
                                     result = true;
-                                break;
+                                    break;
+                                }
                             }
                         }
                     }
