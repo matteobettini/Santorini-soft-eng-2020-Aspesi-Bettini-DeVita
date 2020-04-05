@@ -93,7 +93,7 @@ public class InternalModel {
         assert packetMove != null;
         Player p = getPlayerByNick(packetMove.getPlayerNickname());
         Worker w = getWorkerByID(packetMove.getWorkerID());
-        if(packetMove.getMove().size() == 0) throw new InvalidPacketException();
+        if(packetMove.getMove().isEmpty() || p == null || w == null) throw new InvalidPacketException();
         for(int i = 0; i < packetMove.getMove().size(); ++i){
             if(packetMove.getMove().get(i) == null || (i > 0 && packetMove.getMove().get(i).equals(packetMove.getMove().get(i - 1)))) throw new InvalidPacketException();
         }
@@ -111,7 +111,7 @@ public class InternalModel {
         assert packetBuild != null;
         Player p = getPlayerByNick(packetBuild.getPlayerNickname());
         Worker w = getWorkerByID(packetBuild.getWorkerID());
-        if(packetBuild.getBuilds().size() == 0) throw new InvalidPacketException();
+        if(packetBuild.getBuilds().isEmpty() || p == null || w == null) throw new InvalidPacketException();
         for(Point pos : packetBuild.getBuilds().keySet()){
             if(packetBuild.getBuilds().get(pos) == null || packetBuild.getBuilds().get(pos).size() == 0 || board.getCell(pos) == null) throw new InvalidPacketException();
         }

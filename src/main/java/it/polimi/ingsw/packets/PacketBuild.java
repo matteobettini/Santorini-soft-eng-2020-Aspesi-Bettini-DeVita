@@ -25,7 +25,7 @@ public class PacketBuild {
      */
     private final Map<Point, List<BuildingType>> builds;
 
-    PacketBuild(String playerNickname, String workerID, Map<Point, List<BuildingType>> builds){
+    public PacketBuild(String playerNickname, String workerID, Map<Point, List<BuildingType>> builds){
         this.playerNickname = playerNickname;
         this.workerID = workerID;
         this.builds = new HashMap<>();

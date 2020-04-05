@@ -22,7 +22,7 @@ public class PacketMove {
      */
     private final List<Point> move;
 
-    PacketMove(String playerNickname, String workerID, List<Point> move){
+    public PacketMove(String playerNickname, String workerID, List<Point> move){
         this.playerNickname = playerNickname;
         this.workerID = workerID;
         this.move = new ArrayList<>();
