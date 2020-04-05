@@ -13,12 +13,11 @@ public class RuleEffectImplTest {
     @Test
     void testGetters() {
         EffectType typeT = EffectType.ALLOW;
-        PlayerState stateT = PlayerState.UNKNOWN;
         String element = "TEST";
 
-        RuleEffect ruleEffect = new RuleEffectImpl(typeT,stateT,element);
+        RuleEffect ruleEffect = new RuleEffectImpl(typeT,null,element);
         assertEquals(ruleEffect.getType(), typeT);
-        assertEquals(ruleEffect.getNextState(), stateT);
+        assertNull(ruleEffect.getNextState());
         assertEquals(ruleEffect.getData(), element);
     }
 
@@ -28,9 +27,8 @@ public class RuleEffectImplTest {
     @Test
     void testSetters(){
         EffectType typeT = EffectType.ALLOW;
-        PlayerState stateT = PlayerState.UNKNOWN;
 
-        RuleEffectImpl ruleEffect = new RuleEffectImpl(typeT,stateT,null);
+        RuleEffectImpl ruleEffect = new RuleEffectImpl(typeT, null,null);
         PlayerState nextState = PlayerState.TURN_STARTED;
         ruleEffect.setNextState(nextState);
         assertEquals(ruleEffect.getNextState(), nextState);
@@ -42,11 +40,10 @@ public class RuleEffectImplTest {
     @Test
     void testNullData(){
         EffectType typeT = EffectType.ALLOW;
-        PlayerState stateT = PlayerState.UNKNOWN;
 
-        RuleEffect ruleEffect = new RuleEffectImpl(typeT,stateT,null);
+        RuleEffect ruleEffect = new RuleEffectImpl(typeT,null,null);
         assertEquals(ruleEffect.getType(), typeT);
-        assertEquals(ruleEffect.getNextState(), stateT);
+        assertNull(ruleEffect.getNextState());
         assertNull(ruleEffect.getData());
     }
 
@@ -56,16 +53,15 @@ public class RuleEffectImplTest {
     @Test
     void testEqualsAndHashNullData(){
         EffectType typeT = EffectType.ALLOW;
-        PlayerState stateT = PlayerState.UNKNOWN;
 
-        RuleEffect ruleEffect1 = new RuleEffectImpl(typeT,stateT,null);
-        RuleEffect ruleEffect2 = new RuleEffectImpl(typeT,stateT,null);
+        RuleEffect ruleEffect1 = new RuleEffectImpl(typeT,null,null);
+        RuleEffect ruleEffect2 = new RuleEffectImpl(typeT,null,null);
 
         assertEquals(ruleEffect1,ruleEffect2);
         assertEquals(ruleEffect1.hashCode(), ruleEffect2.hashCode());
 
         //With not null data
-        RuleEffect ruleEffect3 = new RuleEffectImpl(typeT,stateT,"TEST");
+        RuleEffect ruleEffect3 = new RuleEffectImpl(typeT,null,"TEST");
         assertNotEquals(ruleEffect1,ruleEffect3);
     }
     /**
@@ -74,17 +70,16 @@ public class RuleEffectImplTest {
     @Test
     void testEqualsAndHash(){
         EffectType typeT = EffectType.ALLOW;
-        PlayerState stateT = PlayerState.UNKNOWN;
 
         //With data not null
         String data = "Test";
-        RuleEffect ruleEffect1 = new RuleEffectImpl(typeT,stateT,data);
-        RuleEffect ruleEffect2 = new RuleEffectImpl(typeT,stateT,data);
+        RuleEffect ruleEffect1 = new RuleEffectImpl(typeT,null,data);
+        RuleEffect ruleEffect2 = new RuleEffectImpl(typeT,null,data);
         assertEquals(ruleEffect1,ruleEffect2);
         assertEquals(ruleEffect1.hashCode(), ruleEffect2.hashCode());
 
         //With different
-        RuleEffect ruleEffect3 = new RuleEffectImpl(typeT,stateT,"Test1");
+        RuleEffect ruleEffect3 = new RuleEffectImpl(typeT,null,"Test1");
         assertNotEquals(ruleEffect1,ruleEffect3);
     }
 
@@ -93,21 +88,18 @@ public class RuleEffectImplTest {
      */
     public static RuleEffectImpl getRuleEffectWithData(){
         EffectType typeT = EffectType.SET_OPPONENT_POSITION;
-        PlayerState stateT = PlayerState.UNKNOWN;
         String element = "SWAP";
 
-        return new RuleEffectImpl(typeT,stateT,element);
+        return new RuleEffectImpl(typeT,null,element);
     }
     public static RuleEffectImpl getRuleEffectWithNullData(){
         EffectType typeT = EffectType.ALLOW;
-        PlayerState stateT = PlayerState.UNKNOWN;
 
-        return new RuleEffectImpl(typeT,stateT,null);
+        return new RuleEffectImpl(typeT,null,null);
     }
     public static RuleEffectImpl getRuleEffectWithWrongData(){
         EffectType typeT = EffectType.SET_OPPONENT_POSITION;
-        PlayerState stateT = PlayerState.UNKNOWN;
 
-        return new RuleEffectImpl(typeT,stateT,null);
+        return new RuleEffectImpl(typeT,null,null);
     }
 }

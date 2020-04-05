@@ -43,11 +43,27 @@ public class CardPatcherTest {
                                     }
                                 }
                                 assert (found);
-                                assertNotEquals(cardRule.getEffect().getNextState(), PlayerState.UNKNOWN);
+                                assertNotEquals(cardRule.getEffect().getNextState(), null);
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Test
+    void testNextStates(){
+        CardFile defaultStrategy = getDefaultStrategyExample();
+        //Create test card
+        CardFileImpl card = getCardExample();
+        CardPatcher.patchCard(defaultStrategy,card);
+        //Check that all allow rules have a valid next state
+        for(CardRule rule : card.getRules()){
+            if (rule.getEffect().getType() == EffectType.WIN || rule.getEffect().getType() == EffectType.DENY){
+                assertNull(rule.getEffect().getNextState());
+            }else{
+                assertNotNull(rule.getEffect().getNextState());
             }
         }
     }
@@ -57,7 +73,7 @@ public class CardPatcherTest {
         List<RuleStatementImpl> statements = new ArrayList<>();
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "TURN_STARTED"));
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.MOVE_LENGTH, "1"));
-        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, PlayerState.UNKNOWN, null);
+        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, null, null);
         List<CardRuleImpl> rules = new ArrayList<>();
         rules.add(new CardRuleImpl(TriggerType.MOVE, statements,effect));
         //Generate default BUILD ALLOW strategy
@@ -68,12 +84,12 @@ public class CardPatcherTest {
         //Generate default BUILD DENY strategy
         statements = new ArrayList<>();
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "MOVED"));
-        effect = new RuleEffectImpl(EffectType.DENY, PlayerState.UNKNOWN, null);
+        effect = new RuleEffectImpl(EffectType.DENY, null, null);
         rules.add(new CardRuleImpl(TriggerType.BUILD, statements,effect));
         //Generate default MOVE WIN strategy
         statements = new ArrayList<>();
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "MOVED"));
-        effect = new RuleEffectImpl(EffectType.WIN, PlayerState.UNKNOWN, null);
+        effect = new RuleEffectImpl(EffectType.WIN, null, null);
         rules.add(new CardRuleImpl(TriggerType.MOVE, statements,effect));
         CardFileImpl cardFile = new CardFileImpl("Card Test", "", rules);
         try{

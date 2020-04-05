@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.cardReader;
 
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidRuleEffectException;
-import it.polimi.ingsw.model.enums.PlayerState;
 
 /**
  * This class offers a method to validate card effect's semantic
@@ -41,7 +40,7 @@ class EffectValidator {
         if (effect.getData() != null){
             throw new InvalidRuleEffectException("[DENY] Effect data not supported");
         }
-        if (effect.getNextState() != PlayerState.UNKNOWN){
+        if (effect.getNextState() != null){
             throw new InvalidRuleEffectException("[DENY] Effect player next state tag not supported");
         }
     }
@@ -50,7 +49,7 @@ class EffectValidator {
         if (effect.getData() != null){
             throw new InvalidRuleEffectException("[WIN] Effect data not supported");
         }
-        if (effect.getNextState() != PlayerState.UNKNOWN){
+        if (effect.getNextState() != null){
             throw new InvalidRuleEffectException("[WIN] Effect player next state tag not supported");
         }
     }

@@ -8,5 +8,5 @@ public enum PlayerState {
     MOVED,
     BUILT,
     FIRST_BUILT,
-    UNKNOWN
+    END_TURN
 }

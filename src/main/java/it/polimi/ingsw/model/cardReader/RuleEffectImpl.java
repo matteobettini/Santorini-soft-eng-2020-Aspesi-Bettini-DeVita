@@ -17,7 +17,7 @@ class RuleEffectImpl implements RuleEffect {
     private final String data;
 
     public RuleEffectImpl(EffectType type, PlayerState playerNextState, String data) {
-        assert(type != null && playerNextState != null);
+        assert(type != null);
         this.type = type;
         this.playerNextState = playerNextState;
         this.data = data;
@@ -44,7 +44,6 @@ class RuleEffectImpl implements RuleEffect {
      * @param nextState Enum value to be applied to the player after the rule successfully activates
      */
     public void setNextState(PlayerState nextState){
-        assert (nextState != null);
         this.playerNextState = nextState;
     }
 
@@ -69,7 +68,7 @@ class RuleEffectImpl implements RuleEffect {
         if (o == null || getClass() != o.getClass()) return false;
         RuleEffectImpl that = (RuleEffectImpl) o;
         return type == that.type &&
-                playerNextState == that.playerNextState &&
+                Objects.equals(playerNextState,that.playerNextState) &&
                 Objects.equals(data, that.data);
     }
 

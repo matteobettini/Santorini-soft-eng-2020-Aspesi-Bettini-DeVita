@@ -72,7 +72,7 @@ public class CardFactory {
         statements = new LinkedList<>();
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.EXISTS_DELTA_MORE, "0"));
         statements.add(new RuleStatementImpl(StatementType.IF,"FINAL_POSITION", StatementVerbType.LEVEL_TYPE, "THIRD_FLOOR"));
-        effect = new RuleEffectImpl(EffectType.WIN,PlayerState.UNKNOWN,null);
+        effect = new RuleEffectImpl(EffectType.WIN,null,null);
         rules.add(new CardRuleImpl(TriggerType.MOVE,statements,effect));
         //Generate card
         CardFile defaultCard = new CardFileImpl("Default Strategy", "None", rules);

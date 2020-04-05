@@ -92,7 +92,7 @@ class CardPatcher {
      */
     private static void applyNextStateToCardRule(PlayerState defaultNextState, CardRuleImpl rule){
         RuleEffectImpl ruleEffect = rule.getEffectInternal();
-        if (ruleEffect.getNextState() == PlayerState.UNKNOWN){
+        if (ruleEffect.getNextState() == null){
             ruleEffect.setNextState(defaultNextState);
         }
     }

@@ -12,7 +12,7 @@ class EffectValidatorTest {
      */
     @Test
     void testAllowNullData(){
-        RuleEffect allowOK = new RuleEffectImpl(EffectType.ALLOW, PlayerState.UNKNOWN, null);
+        RuleEffect allowOK = new RuleEffectImpl(EffectType.ALLOW, null, null);
         try{
             EffectValidator.checkRuleEffect(allowOK);
             assert true;
@@ -35,7 +35,7 @@ class EffectValidatorTest {
     void testAllowNotNullData(){
         String data = "PUSH";
 
-        RuleEffect allowWrong = new RuleEffectImpl(EffectType.ALLOW, PlayerState.UNKNOWN, data);
+        RuleEffect allowWrong = new RuleEffectImpl(EffectType.ALLOW, null, data);
         try{
             EffectValidator.checkRuleEffect(allowWrong);
             assert false;
@@ -56,7 +56,7 @@ class EffectValidatorTest {
      */
     @Test
     void testDenyNullData(){
-        RuleEffect allowOK = new RuleEffectImpl(EffectType.DENY, PlayerState.UNKNOWN, null);
+        RuleEffect allowOK = new RuleEffectImpl(EffectType.DENY, null, null);
         try{
             EffectValidator.checkRuleEffect(allowOK);
             assert true;
@@ -79,7 +79,7 @@ class EffectValidatorTest {
     void testDenyNotNullData(){
         String data = "SWAP";
 
-        RuleEffect allowWrong = new RuleEffectImpl(EffectType.DENY, PlayerState.UNKNOWN, data);
+        RuleEffect allowWrong = new RuleEffectImpl(EffectType.DENY, null, data);
         try{
             EffectValidator.checkRuleEffect(allowWrong);
             assert false;
@@ -100,7 +100,7 @@ class EffectValidatorTest {
      */
     @Test
     void testWinNullData(){
-        RuleEffect allowOK = new RuleEffectImpl(EffectType.WIN, PlayerState.UNKNOWN, null);
+        RuleEffect allowOK = new RuleEffectImpl(EffectType.WIN, null, null);
         try{
             EffectValidator.checkRuleEffect(allowOK);
             assert true;
@@ -123,7 +123,7 @@ class EffectValidatorTest {
     void testWinNotNullData(){
         String data = "WW";
 
-        RuleEffect allowWrong = new RuleEffectImpl(EffectType.WIN, PlayerState.UNKNOWN, data);
+        RuleEffect allowWrong = new RuleEffectImpl(EffectType.WIN, null, data);
         try{
             EffectValidator.checkRuleEffect(allowWrong);
             assert false;
@@ -144,7 +144,7 @@ class EffectValidatorTest {
      */
     @Test
     void testSetOpponentPositionNullData(){
-        RuleEffect allowWrong = new RuleEffectImpl(EffectType.SET_OPPONENT_POSITION, PlayerState.UNKNOWN, null);
+        RuleEffect allowWrong = new RuleEffectImpl(EffectType.SET_OPPONENT_POSITION, null, null);
         try{
             EffectValidator.checkRuleEffect(allowWrong);
             assert false;
@@ -166,7 +166,7 @@ class EffectValidatorTest {
     @Test
     void testSetOpponentPosition(){
         //Test with data tag with correct data
-        RuleEffect effectOkay = new RuleEffectImpl(EffectType.SET_OPPONENT_POSITION, PlayerState.UNKNOWN, "SWAP");
+        RuleEffect effectOkay = new RuleEffectImpl(EffectType.SET_OPPONENT_POSITION, null, "SWAP");
         try{
             EffectValidator.checkRuleEffect(effectOkay);
             assert true;
@@ -183,7 +183,7 @@ class EffectValidatorTest {
 
         //Test with data tag with empty data
         String emptyData = "";
-        RuleEffect effectWrong = new RuleEffectImpl(EffectType.SET_OPPONENT_POSITION, PlayerState.UNKNOWN, emptyData);
+        RuleEffect effectWrong = new RuleEffectImpl(EffectType.SET_OPPONENT_POSITION, null, emptyData);
         try{
             EffectValidator.checkRuleEffect(effectWrong);
             assert false;
@@ -193,7 +193,7 @@ class EffectValidatorTest {
 
         //Test with data tag with wrong data
         String wrongData = "PULL";
-        effectWrong = new RuleEffectImpl(EffectType.SET_OPPONENT_POSITION, PlayerState.UNKNOWN, wrongData);
+        effectWrong = new RuleEffectImpl(EffectType.SET_OPPONENT_POSITION, null, wrongData);
         try{
             EffectValidator.checkRuleEffect(effectWrong);
             assert false;

@@ -66,7 +66,7 @@ class CardReader {
         DocumentBuilder builder = factory.newDocumentBuilder();
         builder.setErrorHandler(
                 new ErrorHandler() {
-                    public void warning(SAXParseException e) throws SAXException {
+                    public void warning(SAXParseException e) {
                         System.out.println("[XML PARSE]: " + e.getMessage()); // do nothing
                     }
                     public void error(SAXParseException e) throws SAXException {
@@ -236,7 +236,7 @@ class CardReader {
         }
 
         //Parse tag next state
-        PlayerState nextState = PlayerState.UNKNOWN;
+        PlayerState nextState = null;
         nList = effectElement.getElementsByTagName("nextstate");
         if (nList.getLength() == 1){
             Node nextStateNode = nList.item(0);
