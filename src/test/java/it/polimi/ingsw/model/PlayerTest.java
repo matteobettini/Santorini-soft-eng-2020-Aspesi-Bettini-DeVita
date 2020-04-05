@@ -3,14 +3,10 @@ package it.polimi.ingsw.model;
 import static org.junit.jupiter.api.Assertions.*;
 
 import it.polimi.ingsw.model.cardReader.CardFile;
-import it.polimi.ingsw.model.cardReader.CardRule;
-import it.polimi.ingsw.model.cardReader.CardRuleTest;
+import it.polimi.ingsw.model.cardReader.CardFileImplTest;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 class PlayerTest {
 
@@ -40,12 +36,7 @@ class PlayerTest {
         String playerNick = "N1";
         Player playerT = new Player(playerNick);
 
-        String nameTest = "TEST01";
-        String descrTest = "DESCR01";
-
-        List<CardRule> rules = new ArrayList<>();
-        rules.add(CardRuleTest.getEmptyCardRule());
-        CardFile cardFile = new CardFile(nameTest, descrTest, rules);
+        CardFile cardFile = CardFileImplTest.getNormalCardFile();
 
         //Test for the Card setter
         playerT.setCard(cardFile);

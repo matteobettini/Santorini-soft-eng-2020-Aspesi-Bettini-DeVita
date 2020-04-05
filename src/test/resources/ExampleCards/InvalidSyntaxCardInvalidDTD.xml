@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Card SYSTEM "CardSchemaWrong.dtd">
+<Card>
+    <name>Apollo</name>
+    <description>
+        Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.
+    </description>
+    <rules>
+        <rule event="MOVE">
+            <statementsa>
+                <if> <!--Sei il possessore della carta-->
+                    <subject>YOU</subject>
+                    <verb>PLAYER_EQUALS</verb>
+                    <object>CARD_OWNER</object>
+                </if>
+                <if> <!--Hai un'interazione con un altro worker-->
+                    <subject>YOU</subject>
+                    <verb>INTERACTION_NUM</verb>
+                    <object>1</object>
+                </if>
+                <if> <!--Quell'unica interazione era nella posizione finale ed era un avversario-->
+                    <subject>FINAL_POSITION</subject>
+                    <verb>POSITION_EQUALS</verb>
+                    <object>OPPONENTS</object>
+                </if>
+            </statementsa>
+            <effect> <!--Sposta l'avversario al tuo posto-->
+                <type>SET_OPPONENT_POSITION</type>
+                <data>SWAP</data>
+            </effect>
+        </rule>
+    </rules>
+</Card>

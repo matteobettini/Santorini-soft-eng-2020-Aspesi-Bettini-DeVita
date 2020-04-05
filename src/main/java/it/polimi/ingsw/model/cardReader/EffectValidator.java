@@ -1,13 +1,12 @@
-package it.polimi.ingsw.model.cardReader.cardValidator.validators;
+package it.polimi.ingsw.model.cardReader;
 
-import it.polimi.ingsw.model.cardReader.RuleEffect;
-import it.polimi.ingsw.model.cardReader.cardValidator.exceptions.InvalidRuleEffectException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidRuleEffectException;
 import it.polimi.ingsw.model.enums.PlayerState;
 
 /**
  * This class offers a method to validate card effect's semantic
  */
-public class EffectValidator {
+class EffectValidator {
 
     /**
      * Validate card effect semantic

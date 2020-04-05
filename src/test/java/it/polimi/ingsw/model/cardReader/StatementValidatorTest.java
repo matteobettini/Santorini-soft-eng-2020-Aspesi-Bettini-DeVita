@@ -1,9 +1,7 @@
-package it.polimi.ingsw.model.cardReader.cardValidator.validators;
+package it.polimi.ingsw.model.cardReader;
 
-import it.polimi.ingsw.model.cardReader.RuleStatement;
-import it.polimi.ingsw.model.cardReader.RuleStatementTest;
-import it.polimi.ingsw.model.cardReader.cardValidator.exceptions.InvalidStatementObjectException;
-import it.polimi.ingsw.model.cardReader.cardValidator.exceptions.InvalidStatementSubjectException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidStatementObjectException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidStatementSubjectException;
 import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +14,7 @@ class StatementValidatorTest {
     @Test
     void testPlayerEquals() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -24,7 +22,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -34,7 +32,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.PLAYER_EQUALS, "WRONG_OBJECT");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.PLAYER_EQUALS, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -44,7 +42,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.PLAYER_EQUALS, "WRONG_OBJECT");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.PLAYER_EQUALS, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -60,7 +58,7 @@ class StatementValidatorTest {
     @Test
     void testStateEquals() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.STATE_EQUALS, "TURN_STARTED");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.STATE_EQUALS, "TURN_STARTED");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -68,7 +66,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.STATE_EQUALS, "MOVED");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.STATE_EQUALS, "MOVED");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -78,7 +76,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.STATE_EQUALS, "WRONG_OBJECT");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.STATE_EQUALS, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -88,7 +86,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.STATE_EQUALS, "WRONG_OBJECT");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.STATE_EQUALS, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -104,7 +102,7 @@ class StatementValidatorTest {
     @Test
     void testHasFlag() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.HAS_FLAG, "MOVED_UP_ONCE");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.HAS_FLAG, "MOVED_UP_ONCE");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -112,7 +110,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.HAS_FLAG, "MOVED_UP_ONCE");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.HAS_FLAG, "MOVED_UP_ONCE");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -122,7 +120,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("CARD_OWNER", StatementVerbType.HAS_FLAG, "WRONG_OBJECT");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("CARD_OWNER", StatementVerbType.HAS_FLAG, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -132,7 +130,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.HAS_FLAG, "WRONG_OBJECT");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.HAS_FLAG, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -148,7 +146,7 @@ class StatementValidatorTest {
     @Test
     void testMoveLength() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.MOVE_LENGTH, "1");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.MOVE_LENGTH, "1");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -156,7 +154,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.MOVE_LENGTH, "1");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.MOVE_LENGTH, "1");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -166,7 +164,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.MOVE_LENGTH, "0");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.MOVE_LENGTH, "0");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -176,7 +174,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check correct subject and wrong object
-        stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.MOVE_LENGTH, "-1");
+        stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.MOVE_LENGTH, "-1");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -186,7 +184,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check correct subject and wrong object (not a number)
-        stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.MOVE_LENGTH, "XX");
+        stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.MOVE_LENGTH, "XX");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -196,7 +194,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.MOVE_LENGTH, "-2");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.MOVE_LENGTH, "-2");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -212,7 +210,7 @@ class StatementValidatorTest {
     @Test
     void testExistsDeltaMore() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_MORE, "1");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_MORE, "1");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -220,7 +218,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and object
-        stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_MORE, "0");
+        stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_MORE, "0");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -228,7 +226,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and object
-        stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_MORE, "-1");
+        stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_MORE, "-1");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -236,7 +234,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_DELTA_MORE, "1");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_DELTA_MORE, "1");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -246,7 +244,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_MORE, "NOT_NUMBER");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_MORE, "NOT_NUMBER");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -256,7 +254,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_DELTA_MORE, "NaN");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_DELTA_MORE, "NaN");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -272,7 +270,7 @@ class StatementValidatorTest {
     @Test
     void testExistsDeltaLess() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_LESS, "1");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_LESS, "1");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -280,7 +278,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and object
-        stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_LESS, "0");
+        stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_LESS, "0");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -288,7 +286,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and object
-        stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_LESS, "-1");
+        stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_LESS, "-1");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -296,7 +294,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_DELTA_LESS, "1");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_DELTA_LESS, "1");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -306,7 +304,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_LESS, "NOT_NUMBER");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_DELTA_LESS, "NOT_NUMBER");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -316,7 +314,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_DELTA_LESS, "NaN");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_DELTA_LESS, "NaN");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -332,7 +330,7 @@ class StatementValidatorTest {
     @Test
     void testLevelType() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("START_POSITION", StatementVerbType.LEVEL_TYPE, "GROUND");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("START_POSITION", StatementVerbType.LEVEL_TYPE, "GROUND");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -340,7 +338,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.LEVEL_TYPE, "GROUND");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.LEVEL_TYPE, "GROUND");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -350,7 +348,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("FINAL_POSITION", StatementVerbType.LEVEL_TYPE, "WRONG_LEVEL");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("FINAL_POSITION", StatementVerbType.LEVEL_TYPE, "WRONG_LEVEL");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -360,7 +358,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.LEVEL_TYPE, "WRONG_LEVEL");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.LEVEL_TYPE, "WRONG_LEVEL");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -376,14 +374,14 @@ class StatementValidatorTest {
     @Test
     void testInteractionNum() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.INTERACTION_NUM, "1");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.INTERACTION_NUM, "1");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
         } catch (InvalidStatementSubjectException | InvalidStatementObjectException e) {
             assert false;
         }
-        stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.INTERACTION_NUM, "0");
+        stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.INTERACTION_NUM, "0");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -391,7 +389,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.INTERACTION_NUM, "1");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.INTERACTION_NUM, "1");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -401,7 +399,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.INTERACTION_NUM, "-1");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.INTERACTION_NUM, "-1");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -411,7 +409,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check correct subject and wrong object (not a number)
-        stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.INTERACTION_NUM, "XX");
+        stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.INTERACTION_NUM, "XX");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -421,7 +419,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.INTERACTION_NUM, "-2");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.INTERACTION_NUM, "-2");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -437,7 +435,7 @@ class StatementValidatorTest {
     @Test
     void testPositionEquals() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("FINAL_POSITION", StatementVerbType.POSITION_EQUALS, "START_POSITION");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("FINAL_POSITION", StatementVerbType.POSITION_EQUALS, "START_POSITION");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -445,7 +443,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.POSITION_EQUALS, "OPPONENTS");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.POSITION_EQUALS, "OPPONENTS");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -455,7 +453,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("FINAL_POSITION", StatementVerbType.POSITION_EQUALS, "WRONG_OBJECT");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("FINAL_POSITION", StatementVerbType.POSITION_EQUALS, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -465,7 +463,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.POSITION_EQUALS, "WRONG_OBJECT");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.POSITION_EQUALS, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -481,7 +479,7 @@ class StatementValidatorTest {
     @Test
     void testBuildNum() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_NUM, "1");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_NUM, "1");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -489,7 +487,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_NUM, "1");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_NUM, "1");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -499,7 +497,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_NUM, "0");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_NUM, "0");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -508,7 +506,7 @@ class StatementValidatorTest {
         }catch (InvalidStatementObjectException e) {
             assert true;
         }
-        stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_NUM, "-1");
+        stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_NUM, "-1");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -517,7 +515,7 @@ class StatementValidatorTest {
         }catch (InvalidStatementObjectException e) {
             assert true;
         }
-        stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_NUM, "XX");
+        stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_NUM, "XX");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -527,7 +525,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_NUM, "NaN");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_NUM, "NaN");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -543,7 +541,7 @@ class StatementValidatorTest {
     @Test
     void testBuildDome() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_DOME, "FIRST_FLOOR");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_DOME, "FIRST_FLOOR");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -551,7 +549,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_DOME, "FIRST_FLOOR");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_DOME, "FIRST_FLOOR");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -561,7 +559,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_DOME, "WRONG_OBJECT");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_DOME, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -571,7 +569,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_DOME, "WRONG_OBJECT");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_DOME, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -587,7 +585,7 @@ class StatementValidatorTest {
     @Test
     void testBuildExceptDome() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_DOME_EXCEPT, "FIRST_FLOOR");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_DOME_EXCEPT, "FIRST_FLOOR");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -595,7 +593,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_DOME_EXCEPT, "FIRST_FLOOR");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_DOME_EXCEPT, "FIRST_FLOOR");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -605,7 +603,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_DOME_EXCEPT, "WRONG_OBJECT");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_DOME_EXCEPT, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -615,7 +613,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_DOME_EXCEPT, "WRONG_OBJECT");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_DOME_EXCEPT, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;
@@ -631,7 +629,7 @@ class StatementValidatorTest {
     @Test
     void testBuildInSameSpot() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_IN_SAME_SPOT, "ALL");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_IN_SAME_SPOT, "ALL");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -639,7 +637,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_IN_SAME_SPOT, "ALL");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_IN_SAME_SPOT, "ALL");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -649,7 +647,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementTest.getStatement("YOU", StatementVerbType.BUILD_IN_SAME_SPOT, "WRONG_OBJECT");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_IN_SAME_SPOT, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -659,7 +657,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_IN_SAME_SPOT, "WRONG_OBJECT");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.BUILD_IN_SAME_SPOT, "WRONG_OBJECT");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;

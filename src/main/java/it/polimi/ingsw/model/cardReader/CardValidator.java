@@ -1,20 +1,15 @@
-package it.polimi.ingsw.model.cardReader.cardValidator;
+package it.polimi.ingsw.model.cardReader;
 
-import it.polimi.ingsw.model.cardReader.CardFile;
-import it.polimi.ingsw.model.cardReader.CardRule;
-import it.polimi.ingsw.model.cardReader.RuleStatement;
-import it.polimi.ingsw.model.cardReader.cardValidator.exceptions.InvalidRuleEffectException;
-import it.polimi.ingsw.model.cardReader.cardValidator.exceptions.InvalidStatementObjectException;
-import it.polimi.ingsw.model.cardReader.cardValidator.exceptions.InvalidStatementSubjectException;
-import it.polimi.ingsw.model.cardReader.cardValidator.validators.EffectValidator;
-import it.polimi.ingsw.model.cardReader.cardValidator.validators.StatementValidator;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidRuleEffectException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidStatementObjectException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidStatementSubjectException;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 
 /**
  * This class offers a method to validate semantically a CardFile
  */
-public class CardValidator {
+class CardValidator {
 
     /**
      * This method is used to validate a CardFile semantically
@@ -87,8 +82,9 @@ public class CardValidator {
                     default:
                         return false;
                 }
+            default:
+                assert false;
+                return false;
         }
-        assert false;
-        return false;
     }
 }

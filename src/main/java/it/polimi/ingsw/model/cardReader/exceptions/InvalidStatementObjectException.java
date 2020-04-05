@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.cardReader.cardValidator.exceptions;
+package it.polimi.ingsw.model.cardReader.exceptions;
 
 /**
  * This exception is thrown when a problem is found during the scan of the subject of a RuleStatement

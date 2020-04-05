@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!ELEMENT Card (name, description, rules) >
+<!ELEMENT rules (rule+) >
+<!ELEMENT rule (statementsa, effect) >
+<!ELEMENT name (#PCDATA) >
+<!ELEMENT description (#PCDATA) >
+<!ELEMENT statementsa ((if | nif)+) >
+<!ELEMENT effect (type, data?, nextstate?) >
+<!ELEMENT type (#PCDATA) >
+<!ELEMENT data (#PCDATA) >
+<!ELEMENT nextstate (#PCDATA)>
+<!ELEMENT if (subject, verb, object) >
+<!ELEMENT nif (subject, verb, object) >
+<!ELEMENT subject (#PCDATA)>
+<!ELEMENT verb (#PCDATA)>
+<!ELEMENT object (#PCDATA)>
+
+<!ATTLIST rule
+    event (MOVE | BUILD) #REQUIRED >

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Card SYSTEM "CardSchema.dtd">
+<Card>
+    <name>Artemis</name>
+    <description>
+        Your Move: Your Worker may move one additional time, but not back to its initial space.
+    </description>
+    <rules>
+        <rule event="MOVE">
+            <statements>
+                <if> <!--Sei il possessore della carta-->
+                    <subject>YOU</subject>
+                    <verb>PLAYER_EQUALS</verb>
+                    <object>CARD_OWNER</object>
+                </if>
+                <if> <!--Hai preventivato due spostamenti adiacenti-->
+                    <subject>YOU</subject>
+                    <verb>MOVE_LENGTH</verb>
+                    <object>2</object>
+                </if>
+                <nif> <!--Le posizioni iniziali e finali non corrispondono-->
+                    <subject>FINAL_POSITION</subject>
+                    <verb>POSITION_EQUALS</verb>
+                    <object>START_POSITION</object>
+                </nif>
+                <!--Verranno aggiunte
+                <if> Se hai appena iniziato il turno
+                    <subject>YOU</subject>
+                    <verb>STATE_EQUALS</verb>
+                    <object>TURN_STARTED</object>
+                </if>
+                <nif> Nel tuo spostamento, non ci sono step con il delta livello > 1 (non sei salito per più di un livello)
+                    <subject>YOU</subject>
+                    <verb>EXISTS_DELTA_MORE</verb>
+                    <object>1</object>
+                </nif>
+                <if> <Non ti sei scontrato con altri giocatori
+                    <subject>YOU</subject>
+                    <verb>INTERACTION_NUM</verb>
+                    <object>0</object>
+                </if>
+                -->
+            </statements>
+            <effect>
+                <type>ALLOW</type> <!--La tua mossa è permessa-->
+                <!--Verrà aggiunto
+                <nextstate>MOVED</nextstate>
+                -->
+                <!--
+                    (APPLY)     Verifica che la posizione di destinazione sia libera.
+                                Una carta che consente lo scambio con un worker alla destinazione
+                                dovrà spostare prima worker dalla cella di destinazione.
+                -->
+            </effect>
+        </rule>
+    </rules>
+</Card>

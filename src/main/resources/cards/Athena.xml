@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Card SYSTEM "CardSchema.dtd">
+<Card>
+    <name>Athena</name>
+    <description>
+        Opponent’s Turn: If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn.
+    </description>
+    <rules>
+        <rule event="MOVE">
+            <statements>
+                <nif> <!--Non sei il possessore della carta-->
+                    <subject>YOU</subject>
+                    <verb>PLAYER_EQUALS</verb>
+                    <object>CARD_OWNER</object>
+                </nif>
+                <if> <!--Il possessore della carta è salito di almeno un livello nel suo turno-->
+                    <subject>CARD_OWNER</subject>
+                    <verb>HAS_FLAG</verb>
+                    <object>MOVED_UP_ONCE</object>
+                </if>
+                <if> <!--Tu vuoi salire di almeno un livello-->
+                    <subject>YOU</subject>
+                    <verb>EXISTS_DELTA_MORE</verb>
+                    <object>0</object>
+                </if>
+            </statements>
+            <effect>
+                <type>DENY</type> <!--Hai perso-->
+                <!--Il tag nextstate non viene ereditato perché non serve-->
+                <!--Non serve applicare la mossa, in ogni caso il fatto che il player potesse
+                    farla è garantito dagli allow-->
+            </effect>
+        </rule>
+    </rules>
+</Card>

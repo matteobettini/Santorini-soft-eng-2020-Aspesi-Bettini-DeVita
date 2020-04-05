@@ -1,7 +1,5 @@
-package it.polimi.ingsw.model.cardReader.cardValidator;
+package it.polimi.ingsw.model.cardReader;
 
-import it.polimi.ingsw.model.cardReader.CardFile;
-import it.polimi.ingsw.model.cardReader.CardFileTest;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +8,7 @@ class CardValidatorTest {
     @Test
     void checkCardFile() {
         //Check correct CardFile
-        CardFile cardFileOkay = CardFileTest.getNormalCardFile();
+        CardFile cardFileOkay = CardFileImplTest.getNormalCardFile();
         try{
             CardValidator.checkCardFile(cardFileOkay);
             assert true;
@@ -18,7 +16,7 @@ class CardValidatorTest {
             assert false;
         }
         //Check CardFile with at least one rule with one statement with wrong subject
-        CardFile cardFileWrong = CardFileTest.getCardFileWithWrongStatementSubject();
+        CardFile cardFileWrong = CardFileImplTest.getCardFileWithWrongStatementSubject();
         try{
             CardValidator.checkCardFile(cardFileWrong);
             assert false;
@@ -26,7 +24,7 @@ class CardValidatorTest {
             assert true;
         }
         //Check CardFile with at least one rule with one statement with wrong object
-        cardFileWrong = CardFileTest.getCardFileWithWrongStatementObject();
+        cardFileWrong = CardFileImplTest.getCardFileWithWrongStatementObject();
         try{
             CardValidator.checkCardFile(cardFileWrong);
             assert false;
@@ -34,7 +32,7 @@ class CardValidatorTest {
             assert true;
         }
         //Check CardFile with at least one rule with one effect with wrong data
-        cardFileWrong = CardFileTest.getCardFileWithWrongEffect();
+        cardFileWrong = CardFileImplTest.getCardFileWithWrongEffect();
         try{
             CardValidator.checkCardFile(cardFileWrong);
             assert false;
@@ -42,14 +40,14 @@ class CardValidatorTest {
             assert true;
         }
         //Check CardFile with at least one rule with mixed statements
-        cardFileWrong = CardFileTest.getCardFileWithMixedStatementsOnMove();
+        cardFileWrong = CardFileImplTest.getCardFileWithMixedStatementsOnMove();
         try{
             CardValidator.checkCardFile(cardFileWrong);
             assert false;
         } catch (InvalidCardException e) {
             assert true;
         }
-        cardFileWrong = CardFileTest.getCardFileWithMixedStatementsOnBuild();
+        cardFileWrong = CardFileImplTest.getCardFileWithMixedStatementsOnBuild();
         try{
             CardValidator.checkCardFile(cardFileWrong);
             assert false;

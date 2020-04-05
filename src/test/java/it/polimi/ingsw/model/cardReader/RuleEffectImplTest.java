@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RuleEffectTest {
+public class RuleEffectImplTest {
     /**
      * Verify that data provided is reachable via getters
      */
@@ -16,7 +16,7 @@ public class RuleEffectTest {
         PlayerState stateT = PlayerState.UNKNOWN;
         String element = "TEST";
 
-        RuleEffect ruleEffect = new RuleEffect(typeT,stateT,element);
+        RuleEffect ruleEffect = new RuleEffectImpl(typeT,stateT,element);
         assertEquals(ruleEffect.getType(), typeT);
         assertEquals(ruleEffect.getNextState(), stateT);
         assertEquals(ruleEffect.getData(), element);
@@ -30,7 +30,7 @@ public class RuleEffectTest {
         EffectType typeT = EffectType.ALLOW;
         PlayerState stateT = PlayerState.UNKNOWN;
 
-        RuleEffect ruleEffect = new RuleEffect(typeT,stateT,null);
+        RuleEffectImpl ruleEffect = new RuleEffectImpl(typeT,stateT,null);
         PlayerState nextState = PlayerState.TURN_STARTED;
         ruleEffect.setNextState(nextState);
         assertEquals(ruleEffect.getNextState(), nextState);
@@ -44,7 +44,7 @@ public class RuleEffectTest {
         EffectType typeT = EffectType.ALLOW;
         PlayerState stateT = PlayerState.UNKNOWN;
 
-        RuleEffect ruleEffect = new RuleEffect(typeT,stateT,null);
+        RuleEffect ruleEffect = new RuleEffectImpl(typeT,stateT,null);
         assertEquals(ruleEffect.getType(), typeT);
         assertEquals(ruleEffect.getNextState(), stateT);
         assertNull(ruleEffect.getData());
@@ -58,14 +58,14 @@ public class RuleEffectTest {
         EffectType typeT = EffectType.ALLOW;
         PlayerState stateT = PlayerState.UNKNOWN;
 
-        RuleEffect ruleEffect1 = new RuleEffect(typeT,stateT,null);
-        RuleEffect ruleEffect2 = new RuleEffect(typeT,stateT,null);
+        RuleEffect ruleEffect1 = new RuleEffectImpl(typeT,stateT,null);
+        RuleEffect ruleEffect2 = new RuleEffectImpl(typeT,stateT,null);
 
         assertEquals(ruleEffect1,ruleEffect2);
         assertEquals(ruleEffect1.hashCode(), ruleEffect2.hashCode());
 
         //With not null data
-        RuleEffect ruleEffect3 = new RuleEffect(typeT,stateT,"TEST");
+        RuleEffect ruleEffect3 = new RuleEffectImpl(typeT,stateT,"TEST");
         assertNotEquals(ruleEffect1,ruleEffect3);
     }
     /**
@@ -78,36 +78,36 @@ public class RuleEffectTest {
 
         //With data not null
         String data = "Test";
-        RuleEffect ruleEffect1 = new RuleEffect(typeT,stateT,data);
-        RuleEffect ruleEffect2 = new RuleEffect(typeT,stateT,data);
+        RuleEffect ruleEffect1 = new RuleEffectImpl(typeT,stateT,data);
+        RuleEffect ruleEffect2 = new RuleEffectImpl(typeT,stateT,data);
         assertEquals(ruleEffect1,ruleEffect2);
         assertEquals(ruleEffect1.hashCode(), ruleEffect2.hashCode());
 
         //With different
-        RuleEffect ruleEffect3 = new RuleEffect(typeT,stateT,"Test1");
+        RuleEffect ruleEffect3 = new RuleEffectImpl(typeT,stateT,"Test1");
         assertNotEquals(ruleEffect1,ruleEffect3);
     }
 
     /**
      * Helpers for other tests
      */
-    public static RuleEffect getRuleEffectWithData(){
+    public static RuleEffectImpl getRuleEffectWithData(){
         EffectType typeT = EffectType.SET_OPPONENT_POSITION;
         PlayerState stateT = PlayerState.UNKNOWN;
         String element = "SWAP";
 
-        return new RuleEffect(typeT,stateT,element);
+        return new RuleEffectImpl(typeT,stateT,element);
     }
-    public static RuleEffect getRuleEffectWithNullData(){
+    public static RuleEffectImpl getRuleEffectWithNullData(){
         EffectType typeT = EffectType.ALLOW;
         PlayerState stateT = PlayerState.UNKNOWN;
 
-        return new RuleEffect(typeT,stateT,null);
+        return new RuleEffectImpl(typeT,stateT,null);
     }
-    public static RuleEffect getRuleEffectWithWrongData(){
+    public static RuleEffectImpl getRuleEffectWithWrongData(){
         EffectType typeT = EffectType.SET_OPPONENT_POSITION;
         PlayerState stateT = PlayerState.UNKNOWN;
 
-        return new RuleEffect(typeT,stateT,null);
+        return new RuleEffectImpl(typeT,stateT,null);
     }
 }

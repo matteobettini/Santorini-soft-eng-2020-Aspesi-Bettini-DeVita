@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Card SYSTEM "CardSchema.dtd">
+<Card>
+    <name>Apollo</name>
+    <description>
+        Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.
+    </description>
+    <rules>
+        <rule event="MOVE">
+            <statements>
+                <if> <!--Sei il possessore della carta-->
+                    <subject>YOU</subject>
+                    <verb>PLAYER_EQUALS</verb>
+                    <object>CARD_OWNER</object>
+                </if>
+                <if> <!--Hai un'interazione con un altro worker-->
+                    <subject>YOU</subject>
+                    <verb>INTERACTION_NUM</verb>
+                    <object>1</object>
+                </if>
+                <if> <!--Quell'unica interazione era nella posizione finale ed era un avversario-->
+                    <subject>FINAL_POSITION</subject>
+                    <verb>POSITION_EQUALS</verb>
+                    <object>OPPONENTS</object>
+                </if>
+                <!--Verranno aggiunte
+                <if> Se hai appena iniziato il turno
+                    <subject>YOU</subject>
+                    <verb>STATE_EQUALS</verb>
+                    <object>TURN_STARTED</object>
+                </if>
+                <if> Ti vuoi muovere solo di una cella adiacente, senza passare per cupole
+                    <subject>YOU</subject>
+                    <verb>MOVE_LENGTH</verb>
+                    <object>1</object>
+                </if>
+                <nif> Nel tuo spostamento, non ci sono step con il delta livello > 1 (non sei salito per più di un livello)
+                    <subject>YOU</subject>
+                    <verb>EXISTS_DELTA_MORE</verb>
+                    <object>1</object>
+                </nif>
+                -->
+            </statements>
+            <effect> <!--Sposta l'avversario al tuo posto-->
+                <type>SET_OPPONENT_POSITION</type>
+                <data>SWAP</data>
+                <!--Verrà aggiunto
+                <nextstate>MOVED</nextstate>
+                -->
+                <!--
+                    (APPLY)  Verifica che la posizione di destinazione sia libera.
+                                    Una carta che consente lo scambio con un worker alla destinazione
+                                    dovrà spostare prima worker dalla cella di destinazione.
+                -->
+            </effect>
+        </rule>
+    </rules>
+</Card>

@@ -1,0 +1,74 @@
+<Card>
+    <name>Default</name>
+    <description>Strategia di default</description>
+    <rules>
+        <rule event="MOVE">
+            <statements>
+                <if> <!--Se hai appena iniziato il turno-->
+                    <subject>YOU</subject>
+                    <verb>STATE_EQUALS</verb>
+                    <object>TURN_STARTED</object>
+                </if>
+                <if> <!--Ti vuoi muovere solo di una cella adiacente, senza passare per cupole-->
+                    <subject>YOU</subject>
+                    <verb>MOVE_LENGTH</verb>
+                    <object>1</object>
+                </if>
+                <nif> <!--Nel tuo spostamento, non ci sono step con il delta livello > 1 (non sei salito per più di un livello)-->
+                    <subject>YOU</subject>
+                    <verb>EXISTS_DELTA_MORE</verb>
+                    <object>1</object>
+                </nif>
+                <if> <!--Non ti sei scontrato con altri giocatori-->
+                    <subject>YOU</subject>
+                    <verb>INTERACTION_NUM</verb>
+                    <object>0</object>
+                </if>
+            </statements>
+            <effect>
+                <type>ALLOW</type> <!--La mossa è consentita-->
+                <nextstate>MOVED</nextstate> <!--Sarà impostato solo se l'effetto sarà ritenuto applicabile-->
+            </effect>
+        </rule>
+        <rule event="BUILD">
+            <statements>
+                <if> <!--Se ti sei mosso-->
+                    <subject>YOU</subject>
+                    <verb>STATE_EQUALS</verb>
+                    <object>MOVED</object>
+                </if>
+                <if> <!--Vuoi costruire solo un edificio, adiacente a te-->
+                    <subject>YOU</subject>
+                    <verb>BUILD_NUM</verb>
+                    <object>1</object>
+                </if>
+                <nif> <!--Non vuoi costruire cupole su un livello diverso dal terzo-->
+                    <subject>YOU</subject>
+                    <verb>BUILD_DOME_EXCEPT</verb>
+                    <object>THIRD_FLOOR</object>
+                </nif>
+            </statements>
+            <effect>
+                <type>ALLOW</type> <!--Permette la costruzione-->
+                <nextstate>BUILT</nextstate> <!--Sarà impostato solo se l'effetto sarà ritenuto applicabile-->
+            </effect>
+        </rule>
+        <rule event="MOVE">
+            <statements>
+                <if> <!--Nel tuo spostamento, sei salito-->
+                    <subject>YOU</subject>
+                    <verb>EXISTS_DELTA_MORE</verb>
+                    <object>0</object>
+                </if>
+                <if> <!--Sei arrivato su un terzo livello-->
+                    <subject>FINAL_POSITION</subject>
+                    <verb>LEVEL_TYPE</verb>
+                    <object>THIRD_FLOOR</object>
+                </if>
+            </statements>
+            <effect>
+                <type>WIN</type> <!--Hai vinto-->
+            </effect>
+        </rule>
+    </rules>
+</Card>

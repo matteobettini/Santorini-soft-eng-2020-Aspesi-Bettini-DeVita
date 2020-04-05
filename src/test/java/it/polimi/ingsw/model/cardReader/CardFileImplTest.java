@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CardFileTest {
+public class CardFileImplTest {
 
     /**
      * Verify that data provided is reachable via getters
@@ -18,9 +18,9 @@ public class CardFileTest {
     void testGetters() {
         String nameTest = "TEST01";
         String descrTest = "DESCR01";
-        List<CardRule> rules = new ArrayList<>();
+        List<CardRuleImpl> rules = new ArrayList<>();
 
-        CardFile cardFile = new CardFile(nameTest, descrTest, rules);
+        CardFile cardFile = new CardFileImpl(nameTest, descrTest, rules);
         assertEquals(cardFile.getName(), nameTest);
         assertEquals(cardFile.getDescription(), descrTest);
         assertEquals(cardFile.getRules(), rules);
@@ -34,13 +34,13 @@ public class CardFileTest {
         String nameTest = "TEST01";
         String descrTest = "DESCR01";
 
-        List<CardRule> rules = new ArrayList<>();
-        rules.add(CardRuleTest.getEmptyCardRule());
-        CardFile cardFile = new CardFile(nameTest, descrTest, rules);
+        List<CardRuleImpl> rules = new ArrayList<>();
+        rules.add(CardRuleImplTest.getEmptyCardRule());
+        CardFile cardFile = new CardFileImpl(nameTest, descrTest, rules);
         assertEquals(cardFile.getRules(), rules);
 
-        rules = CardRuleTest.getRandomCardRuleList();
-        CardFile cardFile1 = new CardFile(nameTest, descrTest, rules);
+        rules = CardRuleImplTest.getRandomCardRuleList();
+        CardFile cardFile1 = new CardFileImpl(nameTest, descrTest, rules);
         assertEquals(cardFile1.getRules(), rules);
     }
 
@@ -51,9 +51,9 @@ public class CardFileTest {
     void testRuleFiltering(){
         String nameTest = "TEST01";
         String descrTest = "DESCR01";
-        List<CardRule> rules = CardRuleTest.getRulesWithAllTriggerTypes();
+        List<CardRuleImpl> rules = CardRuleImplTest.getRulesWithAllTriggerTypes();
 
-        CardFile cardFile = new CardFile(nameTest,descrTest,rules);
+        CardFile cardFile = new CardFileImpl(nameTest,descrTest,rules);
         for(TriggerType trigger : TriggerType.values()){
             List<CardRule> correctFilteredRules = rules.stream().filter(r->r.getTrigger() == trigger).collect(Collectors.toList());
             List<CardRule> output = cardFile.getRules(trigger);
@@ -68,10 +68,10 @@ public class CardFileTest {
     void testEqualsAndHash(){
         String nameTest = "TEST01";
         String descrTest = "DESCR01";
-        List<CardRule> rules = CardRuleTest.getRulesWithAllTriggerTypes();
+        List<CardRuleImpl> rules = CardRuleImplTest.getRulesWithAllTriggerTypes();
 
-        CardFile cardFile1 = new CardFile(nameTest,descrTest,rules);
-        CardFile cardFile2 = new CardFile(nameTest,descrTest,rules);
+        CardFile cardFile1 = new CardFileImpl(nameTest,descrTest,rules);
+        CardFile cardFile2 = new CardFileImpl(nameTest,descrTest,rules);
 
         assertEquals(cardFile1,cardFile2);
         assertEquals(cardFile1.hashCode(), cardFile2.hashCode());
@@ -80,37 +80,37 @@ public class CardFileTest {
     public static CardFile getNormalCardFile(){
         String nameTest = "TEST01";
         String descrTest = "NormalCard";
-        List<CardRule> rules = CardRuleTest.getRulesWithAllTriggerTypes();
-        return new CardFile(nameTest,descrTest,rules);
+        List<CardRuleImpl> rules = CardRuleImplTest.getRulesWithAllTriggerTypes();
+        return new CardFileImpl(nameTest,descrTest,rules);
     }
     public static CardFile getCardFileWithWrongStatementSubject(){
         String nameTest = "TEST02";
         String descrTest = "WrongStatementSubject";
-        List<CardRule> rules = CardRuleTest.getRuleWithWrongSubject();
-        return new CardFile(nameTest,descrTest,rules);
+        List<CardRuleImpl> rules = CardRuleImplTest.getRuleWithWrongSubject();
+        return new CardFileImpl(nameTest,descrTest,rules);
     }
     public static CardFile getCardFileWithWrongStatementObject(){
         String nameTest = "TEST03";
         String descrTest = "WrongStatementObject";
-        List<CardRule> rules = CardRuleTest.getRuleWithWrongObject();
-        return new CardFile(nameTest,descrTest,rules);
+        List<CardRuleImpl> rules = CardRuleImplTest.getRuleWithWrongObject();
+        return new CardFileImpl(nameTest,descrTest,rules);
     }
     public static CardFile getCardFileWithWrongEffect(){
         String nameTest = "TEST04";
         String descrTest = "WrongEffect";
-        List<CardRule> rules = CardRuleTest.getRuleWithWrongEffect();
-        return new CardFile(nameTest,descrTest,rules);
+        List<CardRuleImpl> rules = CardRuleImplTest.getRuleWithWrongEffect();
+        return new CardFileImpl(nameTest,descrTest,rules);
     }
     public static CardFile getCardFileWithMixedStatementsOnMove(){
         String nameTest = "TEST05";
         String descrTest = "MixedStatements";
-        List<CardRule> rules = CardRuleTest.getRuleWithMixedStatementsOnMove();
-        return new CardFile(nameTest,descrTest,rules);
+        List<CardRuleImpl> rules = CardRuleImplTest.getRuleWithMixedStatementsOnMove();
+        return new CardFileImpl(nameTest,descrTest,rules);
     }
-    public static CardFile getCardFileWithMixedStatementsOnBuild(){
+    public static CardFileImpl getCardFileWithMixedStatementsOnBuild(){
         String nameTest = "TEST05";
         String descrTest = "MixedStatements";
-        List<CardRule> rules = CardRuleTest.getRuleWithMixedStatementsOnBuild();
-        return new CardFile(nameTest,descrTest,rules);
+        List<CardRuleImpl> rules = CardRuleImplTest.getRuleWithMixedStatementsOnBuild();
+        return new CardFileImpl(nameTest,descrTest,rules);
     }
 }

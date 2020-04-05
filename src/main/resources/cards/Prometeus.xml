@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Card SYSTEM "CardSchema.dtd">
+<Card>
+    <name>Prometeus</name>
+    <description>
+        Your Turn: If your Worker does not move up, it may build both before and after moving.
+    </description>
+    <rules>
+        <rule event="BUILD">
+            <statements>
+                <if> <!--Sei il possessore della carta-->
+                    <subject>YOU</subject>
+                    <verb>PLAYER_EQUALS</verb>
+                    <object>CARD_OWNER</object>
+                </if>
+                <if> <!--Il tuo turno è appena iniziato-->
+                    <subject>YOU</subject>
+                    <verb>STATE_EQUALS</verb>
+                    <object>TURN_STARTED</object>  
+                </if>
+                <!--Verranno aggiunti
+                <if> Vuoi costruire solo un edificio, adiacente a te
+                    <subject>YOU</subject>
+                    <verb>BUILD_NUM</verb>
+                    <object>1</object>
+                </if>
+                <nif> Non vuoi costruire cupole su un livello diverso dal terzo
+                    <subject>YOU</subject>
+                    <verb>BUILD_DOME_EXCEPT</verb>
+                    <object>THIRD_FLOOR</object>
+                </nif>
+                -->
+            </statements>
+            <effect>
+                <type>ALLOW</type> <!--Ti permetto di costruire-->
+                <nextstate>FIRST_BUILT</nextstate> <!--Cambia lo stato di default per poter muoverti-->
+                <!--
+                    (APPLY)     > Si occupa della verifica che le celle di destinazione
+                                  non siano occupate da un worker o da una cupola
+                                > Controlla che la consecutio degli edifici sia corretta
+                                  (con eccezione per le cupole, il cui controllo è lasciato a
+                                   BUILD_DOME_EXCEPT)
+                -->
+            </effect>
+        </rule>
+        <rule event="MOVE">
+            <statements>
+                <if> <!--Sei il possessore della carta-->
+                    <subject>YOU</subject>
+                    <verb>PLAYER_EQUALS</verb>
+                    <object>CARD_OWNER</object>
+                </if>
+                <if> <!--Hai sfruttato il potere di FIRST_BUILT-->
+                    <subject>YOU</subject>
+                    <verb>STATE_EQUALS</verb>
+                    <object>FIRST_BUILT</object>  
+                </if>
+                <nif> <!--Non sei salito-->
+                    <subject>YOU</subject>
+                    <verb>EXISTS_DELTA_MORE</verb>
+                    <object>0</object>  
+                </nif>
+                <!--Verranno aggiunti
+                <if> Ti vuoi muovere solo di una cella adiacente, senza passare per cupole
+                    <subject>YOU</subject>
+                    <verb>MOVE_LENGTH</verb>
+                    <object>1</object>
+                </if>
+                <if> Non ti sei scontrato con altri giocatori
+                    <subject>YOU</subject>
+                    <verb>INTERACTION_NUM</verb>
+                    <object>0</object>
+                </if>
+                -->     
+            </statements>
+            <effect>
+                <type>ALLOW</type>
+                <!--Verrà aggiunto
+                <nextstate>MOVED</nextstate>
+                -->
+                <!--
+                    (APPLY)     Verifica che la posizione di destinazione sia libera.
+                                Una carta che consente lo scambio con un worker alla destinazione
+                                dovrà spostare prima worker dalla cella di destinazione.
+                -->
+            </effect>
+        </rule>
+        <!--La seconda build è garantita dalla strategia di default-->
+    </rules>
+</Card>

@@ -1,8 +1,7 @@
-package it.polimi.ingsw.model.cardReader.cardValidator.validators;
+package it.polimi.ingsw.model.cardReader;
 
-import it.polimi.ingsw.model.cardReader.RuleStatement;
-import it.polimi.ingsw.model.cardReader.cardValidator.exceptions.InvalidStatementObjectException;
-import it.polimi.ingsw.model.cardReader.cardValidator.exceptions.InvalidStatementSubjectException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidStatementObjectException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidStatementSubjectException;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
@@ -10,7 +9,7 @@ import it.polimi.ingsw.model.enums.PlayerState;
 /**
  * This class offers a method to validate card statement's semantic
  */
-public class StatementValidator {
+class StatementValidator {
     /**
      * This method is used to validate RuleStatement semantic
      * @param stm RuleStatement to be validated

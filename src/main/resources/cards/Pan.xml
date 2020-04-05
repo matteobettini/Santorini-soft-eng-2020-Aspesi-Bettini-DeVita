@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Card SYSTEM "CardSchema.dtd">
+<Card>
+    <name>Pan</name>
+    <description>
+        Win Condition: You also win if your Worker moves down two or more levels.
+    </description>
+    <rules>
+        <rule event="MOVE">
+            <statements>
+                <if> <!--Sei il possessore della carta-->
+                    <subject>YOU</subject>
+                    <verb>PLAYER_EQUALS</verb>
+                    <object>CARD_OWNER</object>
+                </if>
+                <if> <!--Vuoi scendere di due o più livelli-->
+                    <subject>YOU</subject>
+                    <verb>EXISTS_DELTA_LESS</verb>
+                    <object>-1</object>
+                </if>
+            </statements>
+            <effect>
+                <type>WIN</type>
+                <!--Il tag nextstate non viene ereditato perché non serve-->
+                <!--La mossa viene applicata dall'allow specifico, in ogni caso il fatto che 
+                    il player potesse farla è garantito dagli allow-->
+            </effect>
+        </rule>
+    </rules>
+</Card>
