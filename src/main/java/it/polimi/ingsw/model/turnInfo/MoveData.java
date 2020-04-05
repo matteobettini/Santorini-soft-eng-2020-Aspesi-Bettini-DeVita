@@ -33,8 +33,7 @@ public class MoveData extends TurnData {
      * @return
      */
     public List<Point> getData() {
-        // TODO implement here
-        return null;
+       return data;
     }
 
 }

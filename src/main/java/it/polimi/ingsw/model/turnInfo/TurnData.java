@@ -33,16 +33,14 @@ public abstract class TurnData {
      * @return
      */
     public Player getPlayer() {
-        // TODO implement here
-        return null;
+        return  player;
     }
 
     /**
      * @return
      */
     public Worker getWorker() {
-        // TODO implement here
-        return null;
+        return worker;
     }
 
 

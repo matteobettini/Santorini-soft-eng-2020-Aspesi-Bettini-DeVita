@@ -22,7 +22,7 @@ public class InternalModel {
     private final List<Player> losers;
 
 
-    InternalModel(List<String> players){
+    public InternalModel(List<String> players){
         this.players = new ArrayList<>();
         for(String p : players){
             this.players.add(new Player(p));

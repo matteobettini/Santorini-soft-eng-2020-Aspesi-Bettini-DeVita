@@ -32,8 +32,7 @@ public class BuildData extends TurnData {
      * @return
      */
     public Map<Point, List<BuildingType>> getData() {
-        // TODO implement here
-        return null;
+        return data;
     }
 
 }

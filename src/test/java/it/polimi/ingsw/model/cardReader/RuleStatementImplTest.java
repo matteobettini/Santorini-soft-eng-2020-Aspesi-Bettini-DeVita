@@ -93,6 +93,10 @@ public class RuleStatementImplTest {
         return new RuleStatementImpl(StatementType.IF, subj,verb,obj);
     }
 
+    public static RuleStatementImpl getStatement(StatementType type, String subj, StatementVerbType verb, String obj){
+        return new RuleStatementImpl(type, subj,verb,obj);
+    }
+
     public static List<RuleStatementImpl> getStatementsWithWrongSubject(){
         List<RuleStatementImpl> res = new ArrayList<>();
         res.add(new RuleStatementImpl(StatementType.IF, "TTTT", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER"));
