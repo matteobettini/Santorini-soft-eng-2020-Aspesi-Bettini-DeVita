@@ -23,7 +23,7 @@ public class Cell{
 
 
     Cell(Point position){
-        this.position = position;
+        this.position = new Point(position);
         this.buildings = new ArrayList<>();
     }
 
@@ -31,7 +31,7 @@ public class Cell{
      *  This method returns the Cell position.
      * @return Cell Position.
      */
-    public Point getPosition(){ return this.position; }
+    public Point getPosition(){ return new Point(this.position); }
 
     /**
      * This method builds on the Cell.

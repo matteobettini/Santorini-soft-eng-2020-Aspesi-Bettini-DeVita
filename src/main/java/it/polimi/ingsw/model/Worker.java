@@ -34,7 +34,7 @@ public class Worker {
     public void setPosition(Point position){
         assert position != null;
         if(position.x >= 0 && position.x < Board.ROWS && position.y >= 0 && position.y < Board.COLUMNS){
-            this.position = position;
+            this.position = new Point(position);
         }
         else assert false;
     }
@@ -43,7 +43,7 @@ public class Worker {
      * Getter that returns the position of the Worker.
      * @return a Point with the coordinates of the position.
      */
-    public Point getPosition(){ return this.position; }
+    public Point getPosition(){ return (this.position != null ? new Point(this.position) : null); }
 
     /**
      * Getter that returns the Player associated to the Worker.

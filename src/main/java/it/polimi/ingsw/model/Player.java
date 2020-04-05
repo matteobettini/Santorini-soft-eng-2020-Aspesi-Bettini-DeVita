@@ -55,7 +55,7 @@ public class Player {
      * Getter that returns the Workers associated to the Player.
      * @return a List of all the Workers possessed by the Player.
      */
-    public List<Worker> getWorkers(){ return this.workers; }
+    public List<Worker> getWorkers(){ return new ArrayList<>(this.workers); }
 
     /**
      * Setter that sets the state of the Player to one of

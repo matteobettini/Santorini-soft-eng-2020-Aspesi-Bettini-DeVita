@@ -89,10 +89,23 @@ class PlayerTest {
         assertNotSame(playerT, clonedPlayer);
         assertEquals(playerT, clonedPlayer);
 
+        //Check same nickname
+        assertEquals(playerT.getNickname(), clonedPlayer.getNickname());
+
         //Check that the cloned Player and the original one have the same Workers but not identical.
         for(int i = 0; i < playerT.getWorkers().size(); ++i){
             assertNotSame(playerT.getWorkers().get(i), clonedPlayer.getWorkers().get(i));
             assertEquals(playerT.getWorkers().get(i), clonedPlayer.getWorkers().get(i));
+        }
+
+        //Check player has the same card, state and flag
+        assertEquals(clonedPlayer.getState(), playerT.getState());
+        assertEquals(clonedPlayer.getCard(), playerT.getCard());
+        for(PlayerFlag flag: PlayerFlag.values()){
+            if (playerT.hasFlag(flag))
+                assertTrue(clonedPlayer.hasFlag(flag));
+            else
+                assertFalse(clonedPlayer.hasFlag(flag));
         }
     }
 

@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.enums.LevelType;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -373,6 +374,15 @@ class CellTest {
     }
 
     /**
+     * Check edge case where i want to check an empty list
+     */
+    @Test
+    void testCanBuildEmpty(){
+        Cell cellT = new Cell(new Point(0,0));
+        assertFalse(cellT.canBuild(new LinkedList<>()));
+    }
+
+    /**
      * Verify that it is not possible to build onto a DOME.
      */
     @Test
@@ -488,6 +498,7 @@ class CellTest {
     void testClone() {
         Cell cellT = new Cell(new Point(0,0));
         assertNull(cellT.getWorkerID());
+        cellT.addBuilding(BuildingType.FIRST_FLOOR);
 
         Cell clonedCell = cellT.clone();
 
@@ -497,7 +508,18 @@ class CellTest {
         //Check building remains.
         assertEquals(cellT.getTopBuilding(), clonedCell.getTopBuilding());
 
-       assertNull(clonedCell.getWorkerID());
+        assertNull(clonedCell.getWorkerID());
+
+        //Check player remains
+        String workerID1 = "WW1";
+        cellT = new Cell(new Point(0,0));
+        cellT.setWorker(workerID1);
+
+        clonedCell = cellT.clone();
+
+        assertNotSame(cellT, clonedCell);
+        assertEquals(cellT,clonedCell);
+        assertEquals(cellT.getWorkerID(), workerID1);
     }
 
 
