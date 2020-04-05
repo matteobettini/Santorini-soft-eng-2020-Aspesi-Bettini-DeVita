@@ -114,6 +114,33 @@ public class Board {
         return true;
     }
 
+    /**
+     * This method checks if the passed object equals the Board.
+     * @param obj is the object to check.
+     * @return true if obj has all the Cells equal to the ones of this and the buildingsCounters have the same keys and values,
+     * false otherwise.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(obj == null) return false;
+        if(this.getClass() != obj.getClass()) return false;
+        Board other = (Board)obj;
+        for (int i = 0; i < ROWS; i++){
+            for(int j = 0; j < COLUMNS; j++){
+                if(!other.boardRep[i][j].equals(this.boardRep[i][j])) return false;
+            }
+        }
+
+        if(!this.buildingsCounter.keySet().equals(other.buildingsCounter.keySet())) return false;
+        for(BuildingType building : this.buildingsCounter.keySet()){
+            if(!other.buildingsCounter.get(building).equals(this.buildingsCounter.get(building))) return false;
+        }
+
+
+        return true;
+    }
+
 
     /**
      * This method performs a cloning of the Board.

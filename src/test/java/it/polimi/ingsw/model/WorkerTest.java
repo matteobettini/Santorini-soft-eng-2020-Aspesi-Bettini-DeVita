@@ -35,7 +35,6 @@ class WorkerTest {
         Worker workerT = new Worker(workerID, playerT);
         Point position = new Point(0,0);
 
-        workerT.setPosition(null);
         assertNull(workerT.getPosition());
 
         //Position on the board -> the getter should return the set position.
@@ -61,7 +60,6 @@ class WorkerTest {
 
         //Test with the position se to null.
         assertEquals(worker1, worker2);
-        assertEquals(worker1.hashCode(), worker2.hashCode());
 
         //Test with different position and id but not Player.
         Worker worker3 = new Worker("WW3", player1);
@@ -79,7 +77,6 @@ class WorkerTest {
         worker2.setPosition(position);
 
         assertEquals(worker1, worker2);
-        assertEquals(worker1.hashCode(), worker2.hashCode());
 
         //Two different workers can't have the same position or the same ID.
 

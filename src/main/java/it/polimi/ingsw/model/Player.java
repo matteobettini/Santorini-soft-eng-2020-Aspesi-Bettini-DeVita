@@ -126,11 +126,11 @@ public class Player {
         Player clonedPlayer = new Player(this.nickname);
 
         clonedPlayer.setPlayerState(this.state);
-        clonedPlayer.setCard(this.card);
+        if(this.card != null )clonedPlayer.setCard(this.card);
 
         for(Worker w : this.workers){
             Worker cloneW = new Worker(w.getID(), clonedPlayer);
-            cloneW.setPosition(new Point(w.getPosition()));
+            if(w.getPosition() != null) cloneW.setPosition(new Point(w.getPosition()));
             clonedWorkers.add(cloneW);
         }
 

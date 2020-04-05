@@ -94,8 +94,8 @@ public class InternalModel {
         Player p = getPlayerByNick(packetMove.getPlayerNickname());
         Worker w = getWorkerByID(packetMove.getWorkerID());
         if(packetMove.getMove().size() == 0) throw new InvalidPacketException();
-        for(Point pos : packetMove.getMove()){
-            if(board.getCell(pos) == null) throw new InvalidPacketException();
+        for(int i = 0; i < packetMove.getMove().size(); ++i){
+            if(packetMove.getMove().get(i) == null || (i > 0 && packetMove.getMove().get(i).equals(packetMove.getMove().get(i - 1)))) throw new InvalidPacketException();
         }
         return new MoveData(p, w, packetMove.getMove());
     }

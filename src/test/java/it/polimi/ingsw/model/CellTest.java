@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.enums.LevelType;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +26,14 @@ class CellTest {
 
         //Test empty cell top building.
         assertEquals(cellT.getTopBuilding(), LevelType.GROUND);
-
+        cellT.addBuilding(BuildingType.FIRST_FLOOR);
+        assertEquals(cellT.getTopBuilding(), LevelType.FIRST_FLOOR);
+        cellT.addBuilding(BuildingType.SECOND_FLOOR);
+        assertEquals(cellT.getTopBuilding(), LevelType.SECOND_FLOOR);
+        cellT.addBuilding(BuildingType.THIRD_FLOOR);
+        assertEquals(cellT.getTopBuilding(), LevelType.THIRD_FLOOR);
+        cellT.addBuilding(BuildingType.DOME);
+        assertEquals(cellT.getTopBuilding(), LevelType.DOME);
         //Test empty cell getWorkerID.
         assertNull(cellT.getWorkerID());
 
@@ -40,8 +49,12 @@ class CellTest {
         Cell cellT = new Cell(new Point(0,0));
         String workerID = "WW1";
 
+        assertFalse(cellT.isOccupied());
+        assertFalse(cellT.hasWorker());
         cellT.setWorker(workerID);
         assertEquals(cellT.getWorkerID(),workerID);
+        assertTrue(cellT.isOccupied());
+        assertTrue(cellT.hasWorker());
     }
 
     /**
@@ -55,6 +68,8 @@ class CellTest {
         String worker2 = "WW2";
         cellT.setWorker(worker1);
 
+        assertTrue(cellT.isOccupied());
+        assertTrue(cellT.hasWorker());
         assertFalse(cellT.setWorker(worker2));
         assertEquals(cellT.getWorkerID(), worker1);
 
@@ -69,9 +84,23 @@ class CellTest {
         String workerID = "WW1";
         cellT.addBuilding(BuildingType.DOME);
 
+        assertTrue(cellT.isOccupied());
+        assertFalse(cellT.hasWorker());
         assertFalse(cellT.setWorker(workerID));
         assertNull(cellT.getWorkerID());
 
+    }
+
+    @Test
+    void testRemoverWorker() {
+        Cell cellT = new Cell(new Point(0, 0));
+        String workerID = "WW1";
+        assertFalse(cellT.removeWorker());
+        cellT.setWorker(workerID);
+        assertTrue(cellT.removeWorker());
+
+        assertFalse(cellT.isOccupied());
+        assertFalse(cellT.hasWorker());
     }
 
     /**
@@ -149,6 +178,201 @@ class CellTest {
     }
 
     /**
+     * This test verifies the correctness of both of the canBuild methods.
+     */
+    @Test
+    void testCanBuild(){
+        Cell cellT = new Cell(new Point(0,0));
+        cellT.setWorker("WORKER");
+
+        //CASE 1: There is a Worker on the Cell.
+        assertFalse(cellT.canBuild(BuildingType.FIRST_FLOOR));
+        List<BuildingType> buildings = new ArrayList<>();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+
+        cellT.removeWorker();
+        buildings.clear();
+        //CASE 2: There is not a Worker on the Cell.
+        //2.A The Cell is completely Empty.
+        assertTrue(cellT.canBuild(BuildingType.FIRST_FLOOR));
+        assertFalse(cellT.canBuild(BuildingType.SECOND_FLOOR));
+        assertFalse(cellT.canBuild(BuildingType.THIRD_FLOOR));
+        assertTrue(cellT.canBuild(BuildingType.DOME));
+
+        //Test with some possible combinations:
+        //FIRST FIRST
+        buildings.add(BuildingType.FIRST_FLOOR);
+        assertTrue(cellT.canBuild(buildings));
+        buildings.add(BuildingType.FIRST_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //FIRST SECOND
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        assertTrue(cellT.canBuild(buildings));
+        //FIRST THIRD
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //FIRST DOME
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.DOME);
+        assertTrue(cellT.canBuild(buildings));
+        //SECOND FIRST
+        buildings.clear();
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.FIRST_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //SECOND SECOND
+        buildings.clear();
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //SECOND THIRD
+        buildings.clear();
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //SECOND DOME
+        buildings.clear();
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.DOME);
+        assertFalse(cellT.canBuild(buildings));
+        //THIRD SECOND
+        buildings.clear();
+        buildings.add(BuildingType.THIRD_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //THIRD FIRST
+        buildings.clear();
+        buildings.add(BuildingType.THIRD_FLOOR);
+        buildings.add(BuildingType.FIRST_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //THIRD THIRD
+        buildings.clear();
+        buildings.add(BuildingType.THIRD_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //THIRD DOME
+        buildings.clear();
+        buildings.add(BuildingType.THIRD_FLOOR);
+        buildings.add(BuildingType.DOME);
+        assertFalse(cellT.canBuild(buildings));
+        //DOME FIRST
+        buildings.clear();
+        buildings.add(BuildingType.DOME);
+        assertTrue(cellT.canBuild(buildings));
+        buildings.add(BuildingType.FIRST_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //DOME SECOND
+        buildings.clear();
+        buildings.add(BuildingType.DOME);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //DOME THIRD
+        buildings.clear();
+        buildings.add(BuildingType.DOME);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //DOME DOME
+        buildings.clear();
+        buildings.add(BuildingType.DOME);
+        buildings.add(BuildingType.DOME);
+        assertFalse(cellT.canBuild(buildings));
+
+        //FIRST SECOND THIRD
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertTrue(cellT.canBuild(buildings));
+        //FIRST SECOND DOME
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.DOME);
+        assertTrue(cellT.canBuild(buildings));
+        //FIRST DOME SECOND
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.DOME);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //SECOND FIRST THIRD
+        buildings.clear();
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //FIRST FIRST SECOND
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //FIRST FIRST DOME
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.DOME);
+        assertFalse(cellT.canBuild(buildings));
+        //THIRD SECOND FIRST
+        buildings.clear();
+        buildings.add(BuildingType.THIRD_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.FIRST_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+
+        //FIRST SECOND THIRD DOME
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        buildings.add(BuildingType.DOME);
+        assertTrue(cellT.canBuild(buildings));
+        //FIRST SECOND DOME THIRD
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.DOME);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //FIRST DOME SECOND THIRD
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.DOME);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //SECOND FIRST THIRD DOME
+        buildings.clear();
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        buildings.add(BuildingType.DOME);
+        assertFalse(cellT.canBuild(buildings));
+        //FIRST SECOND THIRD THIRD
+        buildings.clear();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+        //DOME FIRST SECOND THIRD
+        buildings.clear();
+        buildings.add(BuildingType.DOME);
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildings.add(BuildingType.THIRD_FLOOR);
+        assertFalse(cellT.canBuild(buildings));
+
+    }
+
+    /**
      * Verify that it is not possible to build onto a DOME.
      */
     @Test
@@ -217,10 +441,14 @@ class CellTest {
         String workerID2 = "WW2";
         Cell cell1 = new Cell(pointT);
 
+        //Cells should be equal even if they have different buildings
+        cell1.addBuilding(BuildingType.FIRST_FLOOR);
         cell1.setWorker(workerID1);
 
         Cell cell2 = new Cell(pointT);
 
+        cell2.addBuilding(BuildingType.FIRST_FLOOR);
+        cell2.addBuilding(BuildingType.SECOND_FLOOR);
         cell2.setWorker(workerID2);
 
         assertEquals(cell1,cell2);
@@ -237,6 +465,11 @@ class CellTest {
         Cell cell2 = new Cell(pointT);
 
         //CASE 1: Both null.
+
+        cell1.addBuilding(BuildingType.FIRST_FLOOR);
+        cell2.addBuilding(BuildingType.FIRST_FLOOR);
+        cell2.addBuilding(BuildingType.SECOND_FLOOR);
+        cell2.addBuilding(BuildingType.THIRD_FLOOR);
         assertEquals(cell1,cell2);
         assertEquals(cell1.hashCode(), cell2.hashCode());
 
@@ -256,15 +489,15 @@ class CellTest {
         Cell cellT = new Cell(new Point(0,0));
         assertNull(cellT.getWorkerID());
 
-        Cell clonedcell = cellT.clone();
+        Cell clonedCell = cellT.clone();
 
-        assertNotSame(cellT, clonedcell);
-        assertEquals(cellT,clonedcell);
+        assertNotSame(cellT, clonedCell);
+        assertEquals(cellT,clonedCell);
 
         //Check building remains.
-        assertEquals(cellT.getTopBuilding(), clonedcell.getTopBuilding());
+        assertEquals(cellT.getTopBuilding(), clonedCell.getTopBuilding());
 
-       assertNull(clonedcell.getWorkerID());
+       assertNull(clonedCell.getWorkerID());
     }
 
 

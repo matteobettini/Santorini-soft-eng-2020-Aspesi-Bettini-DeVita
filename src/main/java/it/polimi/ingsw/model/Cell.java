@@ -111,19 +111,23 @@ public class Cell{
      * @return the LevelType associated to the Cell.
      */
     public LevelType getTopBuilding(){
-        if(buildings.size() == 0) return LevelType.GROUND;
-        BuildingType currentTop = buildings.get(buildings.size() - 1);
-        switch(currentTop){
-            case FIRST_FLOOR:
-                return LevelType.FIRST_FLOOR;
-            case SECOND_FLOOR:
-                return LevelType.SECOND_FLOOR;
-            case THIRD_FLOOR:
-                return LevelType.THIRD_FLOOR;
-            case DOME:
-                return LevelType.DOME;
+        if(buildings.isEmpty()) return LevelType.GROUND;
+        else{
+            BuildingType currentTop = buildings.get(buildings.size() - 1);
+            switch(currentTop){
+                case FIRST_FLOOR:
+                    return LevelType.FIRST_FLOOR;
+                case SECOND_FLOOR:
+                    return LevelType.SECOND_FLOOR;
+                case THIRD_FLOOR:
+                    return LevelType.THIRD_FLOOR;
+                case DOME:
+                    return LevelType.DOME;
+                default:
+                    assert false;
+                    return null;
+            }
         }
-        return LevelType.GROUND;
     }
 
     /**
@@ -166,9 +170,9 @@ public class Cell{
     public boolean isOccupied(){ return getTopBuilding() == LevelType.DOME || hasWorker();}
 
     /**
-     * This method checks if the passed object equals the Worker.
+     * This method checks if the passed object equals the Cell.
      * @param obj is the object to check.
-     * @return true if obj is identical to the Worker, false otherwise.
+     * @return true if obj has the same position of this in the Board, false otherwise.
      */
     @Override
     public boolean equals(Object obj){

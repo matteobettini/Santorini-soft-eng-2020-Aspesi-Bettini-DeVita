@@ -104,12 +104,14 @@ class PlayerTest {
         String nickname = "NICK";
         Player p1 = new Player(nickname);
         Player p2 = new Player(nickname);
-
+        Player p3 = new Player(nickname + "2");
 
         assertEquals(p1,p2);
-        assertEquals(p1.hashCode(),p2.hashCode());
+        assertNotEquals(p1,p3);
 
-
+        p1.setPlayerState(PlayerState.MOVED);
+        p2.setPlayerState(PlayerState.BUILT);
+        assertEquals(p1,p2);
 
     }
 
