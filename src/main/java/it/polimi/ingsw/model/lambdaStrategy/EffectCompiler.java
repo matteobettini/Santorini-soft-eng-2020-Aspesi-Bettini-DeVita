@@ -97,8 +97,7 @@ public class EffectCompiler {
                     finalPositionCell.setWorker(myWorker.getID());
 
                     // remove my worker from previous position
-                    if(!startPositionCell.removeWorker())
-                        System.err.println("There is no one in the cell my move is starting from , i am the allow effect on move of worker "+ moveData.getWorker().getID());
+                    if ((!startPositionCell.removeWorker())) throw new AssertionError();
 
                     // Set my new worker's position
                     myWorker.setPosition(finalPosition);
@@ -221,9 +220,9 @@ public class EffectCompiler {
                 }
 
                 int deltaX = finalPosition.x - mySecondToLastPosition.x;
-                int deltaY = finalPosition.y - mySecondToLastPosition.y;
+                int deltaY = -(finalPosition.y - mySecondToLastPosition.y);
 
-                Cell whereHeHasToGo = model.getBoard().getCell(new Point(finalPosition.x-deltaX,finalPosition.y-deltaY));
+                Cell whereHeHasToGo = model.getBoard().getCell(new Point(finalPosition.x+deltaX,finalPosition.y+deltaY));
 
                 if(whereHeHasToGo == null || whereHeHasToGo.isOccupied())
                     return false;

@@ -102,4 +102,7 @@ public class RuleEffectImplTest {
 
         return new RuleEffectImpl(typeT,null,null);
     }
+    public static RuleEffectImpl getRuleEffect(EffectType effectType, PlayerState playerNextState, String data){
+        return new RuleEffectImpl(effectType, playerNextState, data);
+    }
 }

@@ -1123,4 +1123,456 @@ class StatementCompilerTest {
 
         assertTrue(lambdaStatement.evaluate(null, buildData));
     }
+
+    /*
+       This test verifies that build dome except returns false when called with ground as object
+       and the player wants to build a dome on the ground
+       returns true with all other objects
+   */
+    @Test
+    void buildDomeExcept_Test1(){
+        /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        model.getBoard().getCell(new Point(1, 3)).addBuilding(BuildingType.FIRST_FLOOR);
+
+        model.getBoard().getCell(new Point(0, 3)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(0, 3)).addBuilding(BuildingType.SECOND_FLOOR);
+
+
+        model.getBoard().getCell(new Point(0, 2)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(0, 2)).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(new Point(0, 2)).addBuilding(BuildingType.THIRD_FLOOR);
+
+
+        for(LevelType lt : LevelType.values()) {
+            if (lt == LevelType.DOME) {
+                break;
+            }
+            RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_DOME_EXCEPT, lt.toString());
+            LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
+
+            Map<Point,List<BuildingType>> builds = new HashMap<>();
+
+            Point point1 = new Point(2,3);
+            List<BuildingType> buildsInPoint = new ArrayList<>();
+            buildsInPoint.add(BuildingType.DOME);
+            builds.put(point1, buildsInPoint);
+
+          /*  Point point2 = new Point(1,3);
+            buildsInPoint = new ArrayList<>();
+            buildsInPoint.add(BuildingType.DOME);
+            builds.put(point2, buildsInPoint);
+
+            Point point3 = new Point(0,3);
+            buildsInPoint = new ArrayList<>();
+            buildsInPoint.add(BuildingType.DOME);
+            builds.put(point3, buildsInPoint);
+
+            Point point4 = new Point(0, 2);
+            buildsInPoint = new ArrayList<>();
+            buildsInPoint.add(BuildingType.DOME);
+            builds.put(point4, buildsInPoint);*/
+
+           /* Point point5 = new Point(0, 1);
+            Point point6 = new Point(1, 1);
+            Point point7 = new Point(2,1);*/
+
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+
+            if(lt == LevelType.GROUND)
+                assertFalse(lambdaStatement.evaluate(null, buildData));
+            else
+                assertTrue(lambdaStatement.evaluate(null, buildData));
+        }
+    }
+
+    /*
+       This test verifies that build dome except returns always true when
+       a player wants to build two domes on two different levels
+    */
+    @Test
+    void buildDomeExcept_Test2(){
+        /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+
+        for(LevelType lt : LevelType.values()) {
+            if (lt == LevelType.DOME) {
+                break;
+            }
+            RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.BUILD_DOME_EXCEPT, lt.toString());
+            LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
+
+            Map<Point,List<BuildingType>> builds = new HashMap<>();
+
+       /*     Point point1 = new Point(2,3);
+            List<BuildingType> buildsInPoint = new ArrayList<>();
+            buildsInPoint.add(BuildingType.DOME);
+            builds.put(point1, buildsInPoint);*/
+
+            /*Point point2 = new Point(1,3);
+            List<BuildingType> buildsInPoint2 = new ArrayList<>();
+            buildsInPoint2.add(BuildingType.FIRST_FLOOR);
+            buildsInPoint2.add(BuildingType.DOME);
+            builds.put(point2, buildsInPoint2);*/
+
+            Point point3 = new Point(0,3);
+            List<BuildingType> buildsInPoint3 = new ArrayList<>();
+            buildsInPoint3.add(BuildingType.FIRST_FLOOR);
+            buildsInPoint3.add(BuildingType.SECOND_FLOOR);
+            buildsInPoint3.add(BuildingType.DOME);
+            builds.put(point3, buildsInPoint3);
+
+            Point point4 = new Point(0, 2);
+            List<BuildingType> buildsInPoint4 = new ArrayList<>();
+            buildsInPoint4.add(BuildingType.FIRST_FLOOR);
+            buildsInPoint4.add(BuildingType.SECOND_FLOOR);
+            buildsInPoint4.add(BuildingType.THIRD_FLOOR);
+            buildsInPoint4.add(BuildingType.DOME);
+            builds.put(point4, buildsInPoint4);
+
+            Point point5 = new Point(0, 1);
+            Point point6 = new Point(1, 1);
+            Point point7 = new Point(2,1);
+
+
+
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+
+            assertFalse(lambdaStatement.evaluate(null, buildData));
+
+        }
+    }
+
+    /*
+       This test verifies that build dome except returns false when called with second level as object
+       and the player wants to build a dome on the second level
+       returns true with all other objects
+   */
+    @Test
+    void buildDomeExcept_Test3(){
+        /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        model.getBoard().getCell(new Point(2, 3)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(2, 3)).addBuilding(BuildingType.SECOND_FLOOR);
+
+        model.getBoard().getCell(new Point(1, 3)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(1, 3)).addBuilding(BuildingType.SECOND_FLOOR);
+
+        model.getBoard().getCell(new Point(0, 3)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(0, 3)).addBuilding(BuildingType.SECOND_FLOOR);
+
+        model.getBoard().getCell(new Point(0, 2)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(0, 2)).addBuilding(BuildingType.SECOND_FLOOR);
+
+
+        for(LevelType lt : LevelType.values()) {
+            if (lt == LevelType.DOME) {
+                break;
+            }
+            RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_DOME_EXCEPT, lt.toString());
+            LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
+
+            Map<Point,List<BuildingType>> builds = new HashMap<>();
+
+            Point point1 = new Point(2,3);
+            List<BuildingType> buildsInPoint = new ArrayList<>();
+            buildsInPoint.add(BuildingType.DOME);
+            builds.put(point1, buildsInPoint);
+
+            Point point2 = new Point(1,3);
+            buildsInPoint = new ArrayList<>();
+            buildsInPoint.add(BuildingType.DOME);
+            builds.put(point2, buildsInPoint);
+
+            Point point3 = new Point(0,3);
+            buildsInPoint = new ArrayList<>();
+            buildsInPoint.add(BuildingType.DOME);
+            builds.put(point3, buildsInPoint);
+
+            Point point4 = new Point(0, 2);
+            buildsInPoint = new ArrayList<>();
+            buildsInPoint.add(BuildingType.DOME);
+            builds.put(point4, buildsInPoint);
+
+          /*  Point point5 = new Point(0, 1);
+            Point point6 = new Point(1, 1);
+            Point point7 = new Point(2,1);*/
+
+
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+
+            if(lt == LevelType.SECOND_FLOOR)
+                assertFalse(lambdaStatement.evaluate(null, buildData));
+            else
+                assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        }
+    }
+
+    /*
+       This test verifies that build dome except returns always true when
+       a player wants to build a dome on a different level from object
+   */
+    @Test
+    void buildDomeExcept_Test4(){
+        /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        model.getBoard().getCell(new Point(2, 3)).addBuilding(BuildingType.FIRST_FLOOR);
+
+        model.getBoard().getCell(new Point(1, 3)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(1, 3)).addBuilding(BuildingType.SECOND_FLOOR);
+
+        model.getBoard().getCell(new Point(0, 3)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(0, 3)).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(new Point(0, 3)).addBuilding(BuildingType.THIRD_FLOOR);
+
+        model.getBoard().getCell(new Point(0, 2)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(0, 2)).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(new Point(0, 2)).addBuilding(BuildingType.THIRD_FLOOR);
+        model.getBoard().getCell(new Point(0, 2)).addBuilding(BuildingType.DOME);
+
+
+
+        for(LevelType lt : LevelType.values()) {
+            if (lt == LevelType.DOME) {
+                break;
+            }
+            RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_DOME_EXCEPT, lt.toString());
+            LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
+
+            Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<BuildingType> buildsInPoint = new ArrayList<>();
+
+            if(lt == LevelType.THIRD_FLOOR) {
+                Point point1 = new Point(2, 3);
+                buildsInPoint.add(BuildingType.DOME);
+                builds.put(point1, buildsInPoint);
+            }
+
+            if(lt == LevelType.SECOND_FLOOR) {
+                Point point2 = new Point(1, 3);
+                buildsInPoint = new ArrayList<>();
+                buildsInPoint.add(BuildingType.DOME);
+                builds.put(point2, buildsInPoint);
+            }
+
+            if(lt == LevelType.FIRST_FLOOR) {
+                Point point3 = new Point(0, 3);
+                buildsInPoint = new ArrayList<>();
+                buildsInPoint.add(BuildingType.DOME);
+                builds.put(point3, buildsInPoint);
+            }
+
+            if(lt == LevelType.GROUND) {
+                Point point4 = new Point(0, 2);
+                buildsInPoint = new ArrayList<>();
+                buildsInPoint.add(BuildingType.DOME);
+                builds.put(point4, buildsInPoint);
+            }
+
+          /*  Point point5 = new Point(0, 1);
+            Point point6 = new Point(1, 1);
+            Point point7 = new Point(2,1);*/
+
+
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+
+            if(lt == LevelType.SECOND_FLOOR)
+                assertFalse(lambdaStatement.evaluate(null, buildData));
+            else
+                assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        }
+    }
+
+    /*
+        Tests a move with 3 interactions on a wide range of different levels
+     */
+    @Test
+    void interactionNum_Test1(){
+        /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 | SF |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        |    | TF | FF | TF |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+
+        model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.SECOND_FLOOR);
+
+        String id = model.getBoard().getCell(new Point(1, 2)).getWorkerID();
+        model.getBoard().getCell(new Point(1, 2)).removeWorker();
+        model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.THIRD_FLOOR);
+        model.getBoard().getCell(new Point(1, 2)).setWorker(id);
+
+        id = model.getBoard().getCell(new Point(2, 2)).getWorkerID();
+        model.getBoard().getCell(new Point(2, 2)).removeWorker();
+        model.getBoard().getCell(new Point(2, 2)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(2, 2)).setWorker(id);
+
+        id = model.getBoard().getCell(new Point(3, 2)).getWorkerID();
+        model.getBoard().getCell(new Point(3, 2)).removeWorker();
+        model.getBoard().getCell(new Point(3, 2)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(3, 2)).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(new Point(3, 2)).addBuilding(BuildingType.THIRD_FLOOR);
+        model.getBoard().getCell(new Point(3, 2)).setWorker(id);
+
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"YOU", StatementVerbType.INTERACTION_NUM,"3");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(1,0);
+        Point point2 = new Point(1,1);
+        Point point3 = new Point(1,2);
+        Point point4 = new Point(2, 2);
+        Point point5 = new Point(3, 2);
+        Point point6 = new Point(4, 2);
+
+        moves.add(point1);
+        moves.add(point2);
+        moves.add(point3);
+        moves.add(point4);
+        moves.add(point5);
+        moves.add(point6);
+        MoveData moveData = new MoveData(Andrea, AndreaW1, moves);
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+    }
+
+    /*
+       Tests a move with 7 interactions on a wide range of different levels
+       in a sequance of move that touches some cells 2 times
+    */
+    @Test
+    void interactionNum_Test2(){
+        /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 | SF |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        |    | TF | FF | TF |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+
+        model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.SECOND_FLOOR);
+
+        String id = model.getBoard().getCell(new Point(1, 2)).getWorkerID();
+        model.getBoard().getCell(new Point(1, 2)).removeWorker();
+        model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.THIRD_FLOOR);
+        model.getBoard().getCell(new Point(1, 2)).setWorker(id);
+
+        id = model.getBoard().getCell(new Point(2, 2)).getWorkerID();
+        model.getBoard().getCell(new Point(2, 2)).removeWorker();
+        model.getBoard().getCell(new Point(2, 2)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(2, 2)).setWorker(id);
+
+        id = model.getBoard().getCell(new Point(3, 2)).getWorkerID();
+        model.getBoard().getCell(new Point(3, 2)).removeWorker();
+        model.getBoard().getCell(new Point(3, 2)).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(new Point(3, 2)).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(new Point(3, 2)).addBuilding(BuildingType.THIRD_FLOOR);
+        model.getBoard().getCell(new Point(3, 2)).setWorker(id);
+
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"YOU", StatementVerbType.INTERACTION_NUM,"7");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(1,0);
+        Point point2 = new Point(1,1);
+        Point point3 = new Point(1,2);
+        Point point4 = new Point(2, 2);
+        Point point5 = new Point(3, 2);
+        Point point6 = new Point(3, 3);
+        Point point7 = new Point(2, 4);
+        Point point8 = new Point(3, 3);
+        Point point9 = new Point(3, 2);
+
+
+
+
+        moves.add(point1);
+        moves.add(point2);
+        moves.add(point3);
+        moves.add(point4);
+        moves.add(point5);
+        moves.add(point6);
+        moves.add(point7);
+        moves.add(point8);
+        moves.add(point9);
+
+        MoveData moveData = new MoveData(Andrea, AndreaW1, moves);
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+    }
+
+
 }

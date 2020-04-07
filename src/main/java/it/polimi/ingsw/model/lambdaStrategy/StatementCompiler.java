@@ -434,9 +434,10 @@ public class StatementCompiler {
                         List<BuildingType> buildsInThisPoint = builds.get(currPoint);
                         if(buildsInThisPoint.contains(BuildingType.DOME)){
                             if(model.getBoard().getCell(currPoint).canBuild(buildsInThisPoint)){
-                                if(LevelType.valueOf(buildsInThisPoint.get(buildsInThisPoint.indexOf(BuildingType.DOME)-1).name()) != object)
+                                if(LevelType.valueOf(buildsInThisPoint.get(buildsInThisPoint.indexOf(BuildingType.DOME)-1).name()) != object) {
                                     result = true;
                                     break;
+                                }
                             }
                         }
                     }
