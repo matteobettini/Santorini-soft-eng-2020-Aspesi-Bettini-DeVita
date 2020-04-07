@@ -25,13 +25,23 @@ public class PacketBuild {
      */
     private final Map<Point, List<BuildingType>> builds;
 
-    public PacketBuild(String playerNickname, String workerID, Map<Point, List<BuildingType>> builds){
+    private final List<Point> dataOrder;
+
+    public PacketBuild(String playerNickname, String workerID, Map<Point, List<BuildingType>> builds, List<Point> dataOrder){
         this.playerNickname = playerNickname;
         this.workerID = workerID;
         this.builds = new HashMap<>();
         for(Point pos : builds.keySet()){
             this.builds.put(new Point(pos), new ArrayList<>(builds.get(pos)));
         }
+        this.dataOrder = new ArrayList<>();
+        for(Point p : dataOrder)
+            this.dataOrder.add(new Point(p));
+
+    }
+
+    public List<Point> getDataOrder() {
+        return dataOrder;
     }
 
     /**

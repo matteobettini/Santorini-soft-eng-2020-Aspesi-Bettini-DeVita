@@ -34,6 +34,14 @@ public class Cell{
     public Point getPosition(){ return new Point(this.position); }
 
     /**
+     * Returns the height of the buildings in the cell
+     * @return the height of the buildings in the cell
+     */
+    public int getHeight(){
+        return buildings.size();
+    }
+
+    /**
      * This method builds on the Cell.
      * @param b is the BuildingType of the building to add.
      * @return true if it succeeded to build onto the previous building or the ground, false otherwise.

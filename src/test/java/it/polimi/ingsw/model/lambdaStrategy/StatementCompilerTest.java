@@ -100,7 +100,7 @@ class StatementCompilerTest {
             // WITH IF
             for (Player p : model.getPlayers()) {
                 MoveData moveData = new MoveData(p, null, null);
-                BuildData buildData = new BuildData(p, null, null);
+                BuildData buildData = new BuildData(p, null, null, null);
                 if (p.equals(cardOwner)) {
                     assert (compiledStatement.evaluate(moveData, null));
                     assert (compiledStatement.evaluate(null, buildData));
@@ -116,7 +116,7 @@ class StatementCompilerTest {
             // WITH NIF
             for (Player p : model.getPlayers()) {
                 MoveData moveData = new MoveData(p, null, null);
-                BuildData buildData = new BuildData(p, null, null);
+                BuildData buildData = new BuildData(p, null, null, null);
                 if (p.equals(cardOwner)) {
                     assert (!compiledStatement.evaluate(moveData, null));
                     assert (!compiledStatement.evaluate(null, buildData));
@@ -338,7 +338,7 @@ class StatementCompilerTest {
         model.getBoard().getCell(new Point(3, 2)).setWorker(id);
 
 
-        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"YOU", StatementVerbType.EXISTS_DELTA_MORE,"3");
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"YOU", StatementVerbType.EXISTS_DELTA_MORE,"2");
         LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
 
         List<Point> moves = new ArrayList<>();
@@ -356,25 +356,25 @@ class StatementCompilerTest {
         moves.add(point5);
         moves.add(point6);
         MoveData moveData = new MoveData(Andrea, AndreaW1, moves);
-        assertFalse(lambdaStatement.evaluate(moveData, null));
+        assertTrue(lambdaStatement.evaluate(moveData, null));
     }
 
     /*
-       Testing in a path with some first floors and second floors and third floors and domes that
-        it doesnt exist a delta more than 4
-        or that exists delta more than 3 is true
+       Testing in a path with some first floors and second floors and third floors that
+        it doesnt exist a delta more than 3
+        or that exists delta more than 2 is true
     */
     @Test
     void existsDeltaMore_Test6(){
         /*
           0    1     2    3    4
         +----+----+----+----+----+
-    0   | A1 | DM |    |    |    |
+    0   | A1 | SF |    |    |    |
         +----+----+----+----+----+
     1   |    |    |    |    |    |
         +----+----+----+----+----+
     2   |    | B1 | A2 | B2 |    |
-        |    | DM | FF | TF |    |
+        |    | FF |    | TF |    |
         +----+----+----+----+----+
     3   |    |    |    | D2 |    |
         +----+----+----+----+----+
@@ -384,18 +384,14 @@ class StatementCompilerTest {
 
         model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.FIRST_FLOOR);
         model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.SECOND_FLOOR);
-        model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.DOME);
+
 
         String id = model.getBoard().getCell(new Point(1, 2)).getWorkerID();
         model.getBoard().getCell(new Point(1, 2)).removeWorker();
         model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.FIRST_FLOOR);
-        model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.DOME);
         model.getBoard().getCell(new Point(1, 2)).setWorker(id);
 
-        id = model.getBoard().getCell(new Point(2, 2)).getWorkerID();
-        model.getBoard().getCell(new Point(2, 2)).removeWorker();
-        model.getBoard().getCell(new Point(2, 2)).addBuilding(BuildingType.FIRST_FLOOR);
-        model.getBoard().getCell(new Point(2, 2)).setWorker(id);
+
 
         id = model.getBoard().getCell(new Point(3, 2)).getWorkerID();
         model.getBoard().getCell(new Point(3, 2)).removeWorker();
@@ -405,7 +401,7 @@ class StatementCompilerTest {
         model.getBoard().getCell(new Point(3, 2)).setWorker(id);
 
 
-        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"YOU", StatementVerbType.EXISTS_DELTA_MORE,"3");
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"YOU", StatementVerbType.EXISTS_DELTA_MORE,"3");
         LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
 
         List<Point> moves = new ArrayList<>();
@@ -658,21 +654,21 @@ class StatementCompilerTest {
     }
 
     /*
-       Testing in a path with some first floors and second floors and third floors and domes that
-        it doesnt exist a delta less than -4
-        or that exists delta less than -3 is true
+       Testing in a path with some first floors and second floors and third floors that
+        it doesnt exist a delta less than -3
+        or that exists delta less than -2 is true
     */
     @Test
     void existsDeltaLess_Test6(){
         /*
           0    1     2    3    4
         +----+----+----+----+----+
-    0   | A1 | DM |    |    |    |
+    0   | A1 | SF |    |    |    |
         +----+----+----+----+----+
     1   |    |    |    |    |    |
         +----+----+----+----+----+
     2   |    | B1 | A2 | B2 |    |
-        |    | DM | FF | TF |    |
+        |    | FF |    | TF |    |
         +----+----+----+----+----+
     3   |    |    |    | D2 |    |
         +----+----+----+----+----+
@@ -682,18 +678,14 @@ class StatementCompilerTest {
 
         model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.FIRST_FLOOR);
         model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.SECOND_FLOOR);
-        model.getBoard().getCell(new Point(1, 0)).addBuilding(BuildingType.DOME);
+
 
         String id = model.getBoard().getCell(new Point(1, 2)).getWorkerID();
         model.getBoard().getCell(new Point(1, 2)).removeWorker();
         model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.FIRST_FLOOR);
-        model.getBoard().getCell(new Point(1, 2)).addBuilding(BuildingType.DOME);
         model.getBoard().getCell(new Point(1, 2)).setWorker(id);
 
-        id = model.getBoard().getCell(new Point(2, 2)).getWorkerID();
-        model.getBoard().getCell(new Point(2, 2)).removeWorker();
-        model.getBoard().getCell(new Point(2, 2)).addBuilding(BuildingType.FIRST_FLOOR);
-        model.getBoard().getCell(new Point(2, 2)).setWorker(id);
+
 
         id = model.getBoard().getCell(new Point(3, 2)).getWorkerID();
         model.getBoard().getCell(new Point(3, 2)).removeWorker();
@@ -703,7 +695,7 @@ class StatementCompilerTest {
         model.getBoard().getCell(new Point(3, 2)).setWorker(id);
 
 
-        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"YOU", StatementVerbType.EXISTS_DELTA_LESS,"-3");
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"YOU", StatementVerbType.EXISTS_DELTA_LESS,"-2");
         LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
 
         List<Point> moves = new ArrayList<>();
@@ -788,7 +780,7 @@ class StatementCompilerTest {
             Point point7 = new Point(2,1);
 
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
             assertTrue(lambdaStatement.evaluate(null, buildData));
         }
@@ -859,7 +851,7 @@ class StatementCompilerTest {
             Point point7 = new Point(2,1);
 
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
             if(lt == LevelType.SECOND_FLOOR)
                 assertFalse(lambdaStatement.evaluate(null, buildData));
@@ -940,7 +932,7 @@ class StatementCompilerTest {
             Point point7 = new Point(2,1);
 
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
             assertFalse(lambdaStatement.evaluate(null, buildData));
         }
@@ -1008,7 +1000,7 @@ class StatementCompilerTest {
 
 
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
             assertTrue(lambdaStatement.evaluate(null, buildData));
         }
@@ -1075,7 +1067,7 @@ class StatementCompilerTest {
 
 
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
             if(lt == LevelType.GROUND || lt == LevelType.FIRST_FLOOR)
                 assertFalse(lambdaStatement.evaluate(null, buildData));
@@ -1119,7 +1111,7 @@ class StatementCompilerTest {
         builds.put(point1, buildsInPoint);
 
 
-        BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
         assertTrue(lambdaStatement.evaluate(null, buildData));
     }
@@ -1189,7 +1181,7 @@ class StatementCompilerTest {
             Point point6 = new Point(1, 1);
             Point point7 = new Point(2,1);*/
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
             if(lt == LevelType.GROUND)
                 assertFalse(lambdaStatement.evaluate(null, buildData));
@@ -1260,7 +1252,7 @@ class StatementCompilerTest {
 
 
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
             assertFalse(lambdaStatement.evaluate(null, buildData));
 
@@ -1335,7 +1327,7 @@ class StatementCompilerTest {
             Point point7 = new Point(2,1);*/
 
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
             if(lt == LevelType.SECOND_FLOOR)
                 assertFalse(lambdaStatement.evaluate(null, buildData));
@@ -1423,7 +1415,7 @@ class StatementCompilerTest {
             Point point7 = new Point(2,1);*/
 
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
 
             if(lt == LevelType.SECOND_FLOOR)
                 assertFalse(lambdaStatement.evaluate(null, buildData));

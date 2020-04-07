@@ -173,23 +173,9 @@ public class StatementCompiler {
             boolean result = false;
             assert (buildData == null);
             List<Point> moves = moveData.getData();
-            assert (!moves.isEmpty());
 
-            if (moves.size() == object) {
-                Point myPosition = moveData.getWorker().getPosition();
-                Point myFirstMovePosition = moves.get(0);
-                if (StatementCompiler.adiacent(myPosition, myFirstMovePosition) && model.getBoard().getCell(myFirstMovePosition).getTopBuilding() != LevelType.DOME){
-                    boolean correct = true;
-                    for (int i = 0; i < moves.size() - 1; i++) {
-                        if(!StatementCompiler.adiacent(moves.get(i), moves.get(i+1)) || model.getBoard().getCell(moves.get(i+1)).getTopBuilding() == LevelType.DOME) {
-                            correct = false;
-                            break;
-                        }
-                    }
-                    if(correct)
-                        result = true;
-                }
-            }
+            if (moves.size() == object)
+                result = true;
 
             if(isNif)
                 result = !result;
@@ -381,7 +367,7 @@ public class StatementCompiler {
         int object = Integer.parseInt(statement.getObject());
 
         LambdaStatement lambdaStatement = ((moveData, buildData) -> {
-            boolean result;
+            boolean result = false;
             assert(moveData == null);
 
             Map<Point,List<BuildingType>> builds = buildData.getData();
@@ -391,18 +377,8 @@ public class StatementCompiler {
             for(List<BuildingType> b : builds.values())
                 num_of_builds += b.size();
 
-            if(num_of_builds != object)
-                result = false;
-
-            else {
+            if(num_of_builds == object)
                 result = true;
-                for (Point currPoint : builds.keySet()) {
-                    if (!StatementCompiler.adiacent(currPoint, buildData.getWorker().getPosition())) {
-                        result = false;
-                        break;
-                    }
-                }
-            }
 
             if(isNif)
                 result = !result;
@@ -422,24 +398,18 @@ public class StatementCompiler {
             assert(moveData == null);
             Map<Point,List<BuildingType>> builds = buildData.getData();
 
-            if(!builds.isEmpty()) {
-                for (Point currPoint : builds.keySet()) {
-                    if (builds.get(currPoint).size() == 1 && builds.get(currPoint).get(0) == BuildingType.DOME) {
-                        if (model.getBoard().getCell(currPoint).getTopBuilding() != object) {
+            for (Point currPoint : builds.keySet()) {
+                List<BuildingType> buildsInThisPoint = builds.get(currPoint);
+                if(buildsInThisPoint.contains(BuildingType.DOME)){
+                    if (buildsInThisPoint.indexOf(BuildingType.DOME) == 0){
+                        if(model.getBoard().getCell(currPoint).getTopBuilding() != object) {
                             result = true;
                             break;
                         }
                     }
-                    else {
-                        List<BuildingType> buildsInThisPoint = builds.get(currPoint);
-                        if(buildsInThisPoint.contains(BuildingType.DOME)){
-                            if(model.getBoard().getCell(currPoint).canBuild(buildsInThisPoint)){
-                                if(LevelType.valueOf(buildsInThisPoint.get(buildsInThisPoint.indexOf(BuildingType.DOME)-1).name()) != object) {
-                                    result = true;
-                                    break;
-                                }
-                            }
-                        }
+                    else if(LevelType.valueOf(buildsInThisPoint.get(buildsInThisPoint.indexOf(BuildingType.DOME) - 1).name()) != object){
+                        result = true;
+                        break;
                     }
                 }
             }
@@ -463,27 +433,23 @@ public class StatementCompiler {
             assert(moveData == null);
             Map<Point,List<BuildingType>> builds = buildData.getData();
 
-            if(!builds.isEmpty()) {
-                for (Point currPoint : builds.keySet()) {
-                    if (builds.get(currPoint).size() == 1 && builds.get(currPoint).get(0) == BuildingType.DOME) {
-                        if (model.getBoard().getCell(currPoint).getTopBuilding() == object) {
+
+            for (Point currPoint : builds.keySet()) {
+                List<BuildingType> buildsInThisPoint = builds.get(currPoint);
+                if(buildsInThisPoint.contains(BuildingType.DOME)){
+                    if (buildsInThisPoint.indexOf(BuildingType.DOME) == 0){
+                        if(model.getBoard().getCell(currPoint).getTopBuilding() == object) {
                             result = true;
                             break;
                         }
                     }
-                    else {
-                        List<BuildingType> buildsInThisPoint = builds.get(currPoint);
-                        if(buildsInThisPoint.contains(BuildingType.DOME)){
-                            if(model.getBoard().getCell(currPoint).canBuild(buildsInThisPoint)) {
-                                if (LevelType.valueOf(buildsInThisPoint.get(buildsInThisPoint.indexOf(BuildingType.DOME) - 1).name()) == object){
-                                    result = true;
-                                    break;
-                                }
-                            }
-                        }
+                    else if(LevelType.valueOf(buildsInThisPoint.get(buildsInThisPoint.indexOf(BuildingType.DOME) - 1).name()) == object){
+                        result = true;
+                        break;
                     }
                 }
             }
+
             if(isNif)
                 result = !result;
 
@@ -517,12 +483,7 @@ public class StatementCompiler {
 
 
 
-    public static boolean adiacent(Point p1, Point p2){
 
-        assert (p1 != null && p2 != null);
-
-        return (p2.x == p1.x && p2.y == p1.y - 1) || (p2.x == p1.x && p2.y == p1.y + 1) || (p2.x == p1.x - 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y + 1) || (p2.x == p1.x + 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y + 1);
-    }
 
     public static List<Integer> getMoveDeltas(InternalModel model, List<Point> moves, MoveData moveData){
 
@@ -530,18 +491,12 @@ public class StatementCompiler {
 
         List<Integer> result = new ArrayList<>();
 
-        Map<LevelType,Integer> levelHeights = new HashMap<>();
-        levelHeights.put(LevelType.GROUND, 0);
-        levelHeights.put(LevelType.FIRST_FLOOR, 1);
-        levelHeights.put(LevelType.SECOND_FLOOR, 2);
-        levelHeights.put(LevelType.THIRD_FLOOR, 3);
-        levelHeights.put(LevelType.DOME, 4);
 
-        result.add(levelHeights.get(model.getBoard().getCell(moves.get(0)).getTopBuilding()) - levelHeights.get(model.getBoard().getCell(moveData.getWorker().getPosition()).getTopBuilding()));
+        result.add(model.getBoard().getCell(moves.get(0)).getHeight() - model.getBoard().getCell(moveData.getWorker().getPosition()).getHeight());
 
 
         for(int i = 0; i< moves.size()-1; i++){
-            int differenceInHeight = levelHeights.get(model.getBoard().getCell(moves.get(i+1)).getTopBuilding()) - levelHeights.get(model.getBoard().getCell(moves.get(i)).getTopBuilding());
+            int differenceInHeight = (model.getBoard().getCell(moves.get(i+1)).getHeight() - model.getBoard().getCell(moves.get(i)).getHeight());
             result.add(differenceInHeight);
         }
 

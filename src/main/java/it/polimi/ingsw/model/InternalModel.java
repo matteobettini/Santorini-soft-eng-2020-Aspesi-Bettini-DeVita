@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.enums.BuildingType;
+import it.polimi.ingsw.model.enums.LevelType;
+import it.polimi.ingsw.model.lambdaStrategy.StatementCompiler;
 import it.polimi.ingsw.model.turnInfo.BuildData;
 import it.polimi.ingsw.model.turnInfo.MoveData;
 import it.polimi.ingsw.packets.InvalidPacketException;
@@ -9,6 +12,7 @@ import it.polimi.ingsw.packets.PacketMove;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class contains all the actual instances of the Model data.
@@ -91,13 +95,28 @@ public class InternalModel {
      */
     public MoveData packetMoveToMoveData(PacketMove packetMove) throws InvalidPacketException {
         assert packetMove != null;
+        
         Player p = getPlayerByNick(packetMove.getPlayerNickname());
         Worker w = getWorkerByID(packetMove.getWorkerID());
-        if(packetMove.getMove().isEmpty() || p == null || w == null) throw new InvalidPacketException();
-        for(int i = 0; i < packetMove.getMove().size(); ++i){
-            if(packetMove.getMove().get(i) == null || (i > 0 && packetMove.getMove().get(i).equals(packetMove.getMove().get(i - 1)))) throw new InvalidPacketException();
+        List<Point> moves = packetMove.getMove();
+        
+        if(moves == null || moves.isEmpty() || p == null || w == null) throw new InvalidPacketException();
+
+        for (Point move : moves) if (move == null) throw new InvalidPacketException();
+        
+        Point myPosition = w.getPosition();
+        Point myFirstMovePosition = moves.get(0);
+        if (!(Board.areAdjacent(myPosition, myFirstMovePosition, false) && board.getCell(myFirstMovePosition).getTopBuilding() != LevelType.DOME)){
+            throw new InvalidPacketException();
         }
-        return new MoveData(p, w, packetMove.getMove());
+        
+        for (int i = 0; i < moves.size() - 1; i++) {
+            if(!Board.areAdjacent(moves.get(i), moves.get(i+1), false) || board.getCell(moves.get(i+1)).getTopBuilding() == LevelType.DOME) {
+                throw new InvalidPacketException();
+            }
+        }
+        
+        return new MoveData(p, w, moves);
     }
 
     /**
@@ -109,13 +128,28 @@ public class InternalModel {
      */
     public BuildData packetBuildToBuildData(PacketBuild packetBuild) throws InvalidPacketException {
         assert packetBuild != null;
+        
         Player p = getPlayerByNick(packetBuild.getPlayerNickname());
         Worker w = getWorkerByID(packetBuild.getWorkerID());
-        if(packetBuild.getBuilds().isEmpty() || p == null || w == null) throw new InvalidPacketException();
-        for(Point pos : packetBuild.getBuilds().keySet()){
-            if(packetBuild.getBuilds().get(pos) == null || packetBuild.getBuilds().get(pos).size() == 0 || board.getCell(pos) == null) throw new InvalidPacketException();
+        Map<Point,List<BuildingType>> builds = packetBuild.getBuilds();
+        List<Point> buildsOrder = packetBuild.getDataOrder();
+        
+        if(buildsOrder == null || builds == null || buildsOrder.isEmpty() || builds.isEmpty() || buildsOrder.size() != builds.size()  || p == null || w == null) throw new InvalidPacketException();
+        
+        for(Point pos : builds.keySet()) {
+            if (builds.get(pos) == null || builds.get(pos).isEmpty() || board.getCell(pos) == null)
+                throw new InvalidPacketException();
+            if (!Board.areAdjacent(pos, w.getPosition(), true))
+                throw new InvalidPacketException();
+
         }
-        return new BuildData(p, w, packetBuild.getBuilds());
+
+        for(Point point : buildsOrder)
+            if(!builds.containsKey(point))
+                throw new InvalidPacketException();
+
+
+        return new BuildData(p, w, builds, buildsOrder);
     }
 
 

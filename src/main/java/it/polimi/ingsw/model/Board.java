@@ -115,6 +115,22 @@ public class Board {
     }
 
     /**
+     *  It's true if the two points are adjacent
+     *
+     * @param p1 point 1
+     * @param p2 point 2
+     * @param considerEquals considers p1 as adjacent to himself
+     * @return true if are they adjacent
+     */
+    public static boolean areAdjacent(Point p1, Point p2,boolean considerEquals){
+
+        assert (p1 != null && p2 != null);
+        if(considerEquals && p1.equals(p2))
+            return true;
+        return (p2.x == p1.x && p2.y == p1.y - 1) || (p2.x == p1.x && p2.y == p1.y + 1) || (p2.x == p1.x - 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y + 1) || (p2.x == p1.x + 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y + 1);
+    }
+
+    /**
      * This method checks if the passed object equals the Board.
      * @param obj is the object to check.
      * @return true if obj has all the Cells equal to the ones of this and the buildingsCounters have the same keys and values,

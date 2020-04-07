@@ -177,7 +177,7 @@ class EffectCompilerTest {
         builds.put(point3, buildsInPoint);
 
 
-        BuildData buildData = new BuildData(Andrea, AndreaW1, builds);
+        BuildData buildData = new BuildData(Andrea, AndreaW1, builds, null);
 
 
         assertTrue(lambdaEffect.apply(null,buildData,true));
@@ -245,7 +245,7 @@ class EffectCompilerTest {
         builds.put(point3, buildsInPoint);
 
 
-        BuildData buildData = new BuildData(Andrea, AndreaW1, builds);
+        BuildData buildData = new BuildData(Andrea, AndreaW1, builds, null);
 
 
         assertFalse(lambdaEffect.apply(null,buildData,true));
@@ -521,7 +521,7 @@ class EffectCompilerTest {
             fail();
         }
 
-        BuildData buildData = new BuildData(null,null,null);
+        BuildData buildData = new BuildData(null,null,null, null);
 
         try {
             lambdaEffect.apply(null, buildData, true);
@@ -562,7 +562,7 @@ class EffectCompilerTest {
 
         }
 
-        BuildData buildData = new BuildData(null,null,null);
+        BuildData buildData = new BuildData(null,null,null, null);
 
         try {
             lambdaEffect.apply(null, buildData, true);
