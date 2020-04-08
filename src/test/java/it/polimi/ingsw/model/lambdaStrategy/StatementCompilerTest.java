@@ -516,6 +516,42 @@ class StatementCompilerTest {
 
     }
     /**
+     * Testing the Statement Verb HAS_FLAG:
+     * When the obj is not a flag contained in CardOwner the evaluation should be false with the Statement type IF, true if contained.
+     * When the obj is not a flag contained in CardOwner the evaluation should be true with the Statement type NIF, false if contained.
+     */
+    @Test
+    void hasFlag_Test2(){
+        RuleStatement playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CARD_OWNER", StatementVerbType.HAS_FLAG, "MOVED_UP_ONCE");
+        LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
+
+        Player p = Andrea;
+        MoveData moveData = new MoveData(p, null, null);
+        BuildData buildData = new BuildData(p, null, null, null);
+
+        assert (compiledStatement.evaluate(moveData, null));
+        assert (compiledStatement.evaluate(null, buildData));
+
+        playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CARD_OWNER", StatementVerbType.HAS_FLAG, "MOVED_UP_ONCE");
+        compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
+
+
+        assert (!compiledStatement.evaluate(moveData, null));
+        assert (!compiledStatement.evaluate(null, buildData));
+
+        p.addFlag(PlayerFlag.MOVED_UP_ONCE);
+
+        assert (compiledStatement.evaluate(moveData, null));
+        assert (compiledStatement.evaluate(null, buildData));
+
+        playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CARD_OWNER", StatementVerbType.HAS_FLAG, "MOVED_UP_ONCE");
+        compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
+
+        assert (!compiledStatement.evaluate(moveData, null));
+        assert (!compiledStatement.evaluate(null, buildData));
+
+    }
+    /**
      * Testing the Statement Verb MOVE_LENGTH when the obj is 0.
      * If there is a single move, then the evaluation should be false with the Statement Type IF.
      * If there is a single move, then the evaluation should be true with the Statement Type NIF.
