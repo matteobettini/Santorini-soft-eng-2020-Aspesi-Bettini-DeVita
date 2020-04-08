@@ -277,6 +277,7 @@ public class EffectCompiler {
                  // Check in my final pos there is not a dome
                  assert (finalPositionCell.getTopBuilding() != LevelType.DOME);
 
+                 System.out.println(finalPosition);
                  // Check there is someone in my final position and it is not me
                  if(hisWorker == null || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(0).getID()) || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(1).getID())) {
                      System.err.println("There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos swap effect of worker " + moveData.getWorker().getID());

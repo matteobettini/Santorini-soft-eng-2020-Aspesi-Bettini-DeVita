@@ -134,7 +134,7 @@ class EffectCompilerTest {
 
     /*
         Tests an allow build effect both in simulation and in non simulation
-        an a case where the workar can build
+        in a case where the workar can build
      */
     @Test
     void allowEffectBuild_Test1() throws PlayerWonSignal, PlayerLostSignal {
@@ -497,7 +497,9 @@ class EffectCompilerTest {
 
     }
 
-
+    /*
+        Tests everything about a win effect
+     */
     @Test
     void winEffect(){
 
@@ -539,6 +541,9 @@ class EffectCompilerTest {
         }
     }
 
+    /*
+        Tests everything about a deny effect
+     */
     @Test
     void denyEffect(){
 
@@ -581,4 +586,245 @@ class EffectCompilerTest {
 
 
     }
+
+    /*
+       Tests a succesfull swap
+    */
+    @Test
+    void setOpponentPositonEffect_SWAP_Test1() throws PlayerWonSignal, PlayerLostSignal {
+           /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 | FF | SF |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "SWAP");
+
+        LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(3,2);
+
+        moves.add(point1);
+
+
+        MoveData moveData = new MoveData(Andrea, AndreaW2, moves);
+
+
+        assertTrue(lambdaEffect.apply(moveData,null,true));
+
+        assertEquals(AndreaW2.getPosition(), new Point(2,2));
+        assertEquals(model.getBoard().getCell(new Point(2,2)).getWorkerID(), AndreaW2.getID());
+
+        assertEquals(model.getBoard().getCell(new Point(3,2)).getWorkerID(), MatteoW2.getID());
+        assertEquals(MatteoW2.getPosition(), new Point(3,2));
+
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        assertTrue(lambdaEffect.apply(moveData,null,false));
+
+        assertEquals(AndreaW2.getPosition(), point1);
+        assertEquals(model.getBoard().getCell(point1).getWorkerID(), AndreaW2.getID());
+
+        assertEquals(MatteoW2.getPosition(), new Point(2,2));
+        assertEquals(model.getBoard().getCell(new Point(2,2)).getWorkerID(), MatteoW2.getID());
+
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+    }
+
+
+    /*
+      Tests a succesfull swap with more than one move
+   */
+    @Test
+    void setOpponentPositonEffect_SWAP_Test2() throws PlayerWonSignal, PlayerLostSignal {
+           /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 | FF | SF |    |    |
+        +----+----+----+----+----+
+    1   |    |    | A2 |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 |    | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+
+        model.getBoard().getCell(new Point(2,2)).removeWorker();
+        model.getBoard().getCell(new Point(2,1)).setWorker(AndreaW2.getID());
+        AndreaW2.setPosition(new Point(2,1));
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "SWAP");
+
+        LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(2,2);
+        Point point2 = new Point(3,2);
+
+        moves.add(point1);
+        moves.add(point2);
+
+
+        MoveData moveData = new MoveData(Andrea, AndreaW2, moves);
+
+        assertTrue(lambdaEffect.apply(moveData,null,true));
+
+        assertEquals(AndreaW2.getPosition(), new Point(2,1));
+        assertEquals(model.getBoard().getCell(new Point(2,1)).getWorkerID(), AndreaW2.getID());
+
+        assertEquals(model.getBoard().getCell(point2).getWorkerID(), MatteoW2.getID());
+        assertEquals(MatteoW2.getPosition(), point2);
+
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        assertTrue(lambdaEffect.apply(moveData,null,false));
+
+        assertEquals(AndreaW2.getPosition(), point2);
+        assertEquals(model.getBoard().getCell(point2).getWorkerID(), AndreaW2.getID());
+
+        assertFalse(model.getBoard().getCell(new Point(2,1)).hasWorker());
+
+        assertEquals(MatteoW2.getPosition(), point1);
+        assertEquals(model.getBoard().getCell(point1).getWorkerID(), MatteoW2.getID());
+
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+    }
+
+    /*
+      Tests a unsuccesfull swap with more than one move and trying to put one of your workers on a third floor
+   */
+    @Test
+    void setOpponentPositonEffect_SWAP_Test3() throws PlayerWonSignal, PlayerLostSignal {
+           /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 | FF | TF |    |    |
+        +----+----+----+----+----+
+    1   |    |    | A2 |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 |    | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        model.getBoard().getCell(new Point(2,0)).addBuilding(BuildingType.THIRD_FLOOR);
+        model.getBoard().getCell(new Point(2,2)).removeWorker();
+        model.getBoard().getCell(new Point(2,1)).setWorker(AndreaW2.getID());
+        AndreaW2.setPosition(new Point(2,1));
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "SWAP");
+
+        LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(1,0);
+        Point point2 = new Point(2,0);
+        Point point3 = new Point(2,1);
+
+        moves.add(point1);
+        moves.add(point2);
+        moves.add(point3);
+
+
+        MoveData moveData = new MoveData(Andrea, AndreaW1, moves);
+
+        assertFalse(lambdaEffect.apply(moveData,null,true));
+
+        assertEquals(AndreaW1.getPosition(), new Point(0,0));
+        assertEquals(model.getBoard().getCell(new Point(0,0)).getWorkerID(), AndreaW1.getID());
+
+        assertEquals(model.getBoard().getCell(point3).getWorkerID(), AndreaW2.getID());
+        assertEquals(AndreaW2.getPosition(), point3);
+
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        assertFalse(lambdaEffect.apply(moveData,null,false));
+
+        assertEquals(AndreaW1.getPosition(), new Point(0,0));
+        assertEquals(model.getBoard().getCell(new Point(0,0)).getWorkerID(), AndreaW1.getID());
+
+        assertEquals(model.getBoard().getCell(point3).getWorkerID(), AndreaW2.getID());
+        assertEquals(AndreaW2.getPosition(), point3);
+
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+    }
+
+    /*
+      Tests a succesfull swap with more than one move and trying to put an opponent's worker on a third floor
+   */
+    @Test
+    void setOpponentPositonEffect_SWAP_Test4() throws PlayerWonSignal, PlayerLostSignal {
+           /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 | FF | TF |    |    |
+        +----+----+----+----+----+
+    1   |    |    | B2 |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 |    |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        model.getBoard().getCell(new Point(2,0)).addBuilding(BuildingType.THIRD_FLOOR);
+
+        model.getBoard().getCell(new Point(3,2)).removeWorker();
+        assertTrue(model.getBoard().getCell(new Point(2,1)).setWorker(MatteoW2.getID()));
+        MatteoW2.setPosition(new Point(2,1));
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "SWAP");
+
+        LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(1,0);
+        Point point2 = new Point(2,0);
+        Point point3 = new Point(2,1);
+
+        moves.add(point1);
+        moves.add(point2);
+        moves.add(point3);
+
+
+        MoveData moveData = new MoveData(Andrea, AndreaW1, moves);
+
+        assertTrue(lambdaEffect.apply(moveData,null,true));
+
+        assertEquals(AndreaW1.getPosition(), new Point(0,0));
+        assertEquals(model.getBoard().getCell(new Point(0,0)).getWorkerID(), AndreaW1.getID());
+
+        assertEquals(model.getBoard().getCell(point3).getWorkerID(), MatteoW2.getID());
+        assertEquals(MatteoW2.getPosition(), point3);
+
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        assertTrue(lambdaEffect.apply(moveData,null,false));
+
+        assertEquals(AndreaW1.getPosition(), point3);
+        assertEquals(model.getBoard().getCell(point3).getWorkerID(), AndreaW1.getID());
+
+        assertFalse(model.getBoard().getCell(new Point(0,0)).hasWorker());
+
+        assertEquals(MatteoW2.getPosition(), point2);
+        assertEquals(model.getBoard().getCell(point2).getWorkerID(), MatteoW2.getID());
+
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+
+    }
+
 }
