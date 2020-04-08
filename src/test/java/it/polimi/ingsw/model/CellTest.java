@@ -374,6 +374,49 @@ class CellTest {
     }
 
     /**
+     * Testing if the getHeight method returns the right integer corresponding to the number
+     * of buildings on the Cell.
+     */
+    @Test
+    void testGetHeight(){
+        Cell cellT = new Cell(new Point(0,0));
+
+        assertEquals(cellT.getHeight(),0);
+
+        cellT.addBuilding(BuildingType.FIRST_FLOOR);
+        assertEquals(cellT.getHeight(), 1);
+        cellT.addBuilding(BuildingType.FIRST_FLOOR);
+        assertEquals(cellT.getHeight(), 1);
+        cellT.addBuilding(BuildingType.SECOND_FLOOR);
+        assertEquals(cellT.getHeight(), 2);
+        cellT.addBuilding(BuildingType.SECOND_FLOOR);
+        assertEquals(cellT.getHeight(), 2);
+        cellT.addBuilding(BuildingType.THIRD_FLOOR);
+        assertEquals(cellT.getHeight(), 3);
+        cellT.addBuilding(BuildingType.THIRD_FLOOR);
+        assertEquals(cellT.getHeight(), 3);
+        cellT.addBuilding(BuildingType.DOME);
+        assertEquals(cellT.getHeight(), 4);
+        cellT.addBuilding(BuildingType.DOME);
+        assertEquals(cellT.getHeight(), 4);
+
+        cellT = new Cell(new Point(1,1));
+        cellT.addBuilding(BuildingType.DOME);
+        assertEquals(cellT.getHeight(), 1);
+
+        cellT = new Cell(new Point(2,2));
+        cellT.addBuilding(BuildingType.FIRST_FLOOR);
+        cellT.addBuilding(BuildingType.DOME);
+        assertEquals(cellT.getHeight(), 2);
+
+        cellT = new Cell(new Point(3,3));
+        cellT.addBuilding(BuildingType.FIRST_FLOOR);
+        cellT.addBuilding(BuildingType.SECOND_FLOOR);
+        cellT.addBuilding(BuildingType.DOME);
+        assertEquals(cellT.getHeight(), 3);
+    }
+
+    /**
      * Check edge case where i want to check an empty list
      */
     @Test

@@ -42,6 +42,75 @@ class BoardTest {
     }
 
     /**
+     * Testing if two given Cells are adjacent: this means that given p1 and p2
+     * p2 is adjacent to p1 if one of its edges touch one edge of p1 (p1,p2 are squares)
+     */
+    @Test
+    void testAreAdjacent(){
+        Point[][] points = new Point[Board.ROWS][Board.COLUMNS];
+        for(int i = 0; i < Board.ROWS; ++i){
+            for(int j = 0; j < Board.COLUMNS; ++j){
+                points[i][j] = new Point(i,j);
+            }
+        }
+
+        for(int i = 0; i < Board.ROWS; ++i){
+            for(int j = 0; j < Board.COLUMNS; ++j){
+                //TEST EQUALS FOR EACH CELL ON THE BOARD
+                assertTrue(Board.areAdjacent(points[i][j],points[i][j], true));
+            }
+        }
+
+        //TEST FOR NOT EQUALS AND NOT ADJACENT
+        assertFalse(Board.areAdjacent(points[0][0],points[4][4], true));
+
+        //CORNERS
+
+        assertTrue(Board.areAdjacent(points[0][0],points[0][1], false));
+        assertTrue(Board.areAdjacent(points[0][0],points[1][1], false));
+        assertTrue(Board.areAdjacent(points[0][0],points[1][0], false));
+        assertFalse(Board.areAdjacent(points[0][0],points[2][2], true));
+
+        assertTrue(Board.areAdjacent(points[0][4],points[0][3], false));
+        assertTrue(Board.areAdjacent(points[0][4],points[1][3], false));
+        assertTrue(Board.areAdjacent(points[0][4],points[1][4], false));
+        assertFalse(Board.areAdjacent(points[0][4],points[2][2], true));
+
+        assertTrue(Board.areAdjacent(points[4][0],points[3][0], false));
+        assertTrue(Board.areAdjacent(points[4][0],points[3][1], false));
+        assertTrue(Board.areAdjacent(points[4][0],points[4][1], false));
+        assertFalse(Board.areAdjacent(points[4][0],points[2][2], true));
+
+        assertTrue(Board.areAdjacent(points[4][4],points[3][4], false));
+        assertTrue(Board.areAdjacent(points[4][4],points[3][3], false));
+        assertTrue(Board.areAdjacent(points[4][4],points[4][3], false));
+        assertFalse(Board.areAdjacent(points[4][4],points[2][2], true));
+
+        //CELLS ADJACENT TO THE CENTER(2,2)
+        assertTrue(Board.areAdjacent(points[2][2],points[2][1], false));
+        assertTrue(Board.areAdjacent(points[2][2],points[1][1], false));
+        assertTrue(Board.areAdjacent(points[2][2],points[1][3], false));
+        assertTrue(Board.areAdjacent(points[2][2],points[2][1], false));
+        assertTrue(Board.areAdjacent(points[2][2],points[2][3], false));
+        assertTrue(Board.areAdjacent(points[2][2],points[3][1], false));
+        assertTrue(Board.areAdjacent(points[2][2],points[3][2], false));
+        assertTrue(Board.areAdjacent(points[2][2],points[3][3], false));
+        //CELLS NOT ADJACENT TO THE CENTER
+        assertFalse(Board.areAdjacent(points[2][2],points[0][2], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[4][2], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[2][0], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[2][4], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[1][0], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[1][4], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[3][0], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[3][4], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[4][1], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[4][3], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[0][1], true));
+        assertFalse(Board.areAdjacent(points[2][2],points[0][3], true));
+    }
+
+    /**
      * Test if it is possible to build provided that there are enough buildings.
      * Test if the availableBuildings and restockBuilding methods return the correct numbers.
      */
