@@ -95,6 +95,7 @@ class BoardTest {
         assertTrue(Board.areAdjacent(points[2][2],points[3][1], false));
         assertTrue(Board.areAdjacent(points[2][2],points[3][2], false));
         assertTrue(Board.areAdjacent(points[2][2],points[3][3], false));
+        assertTrue(Board.areAdjacent(points[2][2],points[2][2], true));
         //CELLS NOT ADJACENT TO THE CENTER
         assertFalse(Board.areAdjacent(points[2][2],points[0][2], true));
         assertFalse(Board.areAdjacent(points[2][2],points[4][2], true));
