@@ -167,7 +167,7 @@ public class Cell{
 
     /**
      * This method checks if the Cell has a Worker.
-     * @return true if the is a Worker, false otherwise;
+     * @return true if there is a Worker, false otherwise;
      */
     public boolean hasWorker(){ return workerID != null; }
 
@@ -176,6 +176,25 @@ public class Cell{
      * @return true if the Cell is occupied, false otherwise;
      */
     public boolean isOccupied(){ return getTopBuilding() == LevelType.DOME || hasWorker();}
+
+    /**
+     * Returns next building that can be built on this cell
+     * @return
+     */
+    public BuildingType getNextBuildable(){
+        switch (getTopBuilding()){
+            case GROUND:
+                return BuildingType.FIRST_FLOOR;
+            case FIRST_FLOOR:
+                return BuildingType.SECOND_FLOOR;
+            case SECOND_FLOOR:
+                return BuildingType.THIRD_FLOOR;
+            case THIRD_FLOOR:
+                return BuildingType.DOME;
+            default:
+                return null;
+        }
+    }
 
     /**
      * This method checks if the passed object equals the Cell.

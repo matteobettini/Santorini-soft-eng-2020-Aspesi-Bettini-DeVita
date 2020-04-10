@@ -5,9 +5,11 @@ import it.polimi.ingsw.model.cardReader.enums.EffectType;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
+import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
+import it.polimi.ingsw.model.turnInfo.MoveData;
 
 import java.awt.*;
 import java.util.*;
@@ -105,6 +107,7 @@ public class EffectCompiler {
                     // Set the new player state
                     moveData.getPlayer().setPlayerState(nextPlayerState);
 
+                    setPlayerFlags(model.getBoard(),moveData,startPosition); //Update flags
                 }
                 return true;
             }
@@ -242,6 +245,8 @@ public class EffectCompiler {
                     myWorker.setPosition(finalPosition);
 
                     moveData.getPlayer().setPlayerState(nextPlayerState);
+
+                    setPlayerFlags(model.getBoard(),moveData,startPosition); //Update flags
                 }
 
                 return true;
@@ -277,10 +282,11 @@ public class EffectCompiler {
                  // Check in my final pos there is not a dome
                  assert (finalPositionCell.getTopBuilding() != LevelType.DOME);
 
-                 System.out.println(finalPosition);
+                 //System.out.println(finalPosition);
                  // Check there is someone in my final position and it is not me
                  if(hisWorker == null || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(0).getID()) || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(1).getID())) {
-                     System.err.println("There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos swap effect of worker " + moveData.getWorker().getID());
+                     //System.err.println("There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos swap effect of worker " + moveData.getWorker().getID());
+                     //NOTE: if the card was written correctly, no way i can enter here.
                      return false;
                  }
 
@@ -300,12 +306,20 @@ public class EffectCompiler {
                      hisWorker.setPosition(mySecondToLastPosition);
 
                      moveData.getPlayer().setPlayerState(nextPlayerState);
+
+                     setPlayerFlags(model.getBoard(),moveData,startPosition); //Update flags
                  }
 
                  return true;
             });
         }
         return lambdaEffect;
+    }
+
+    private static void setPlayerFlags(Board board, MoveData moveData, Point startPosition){
+        List<Integer> deltas = board.getMoveDeltas(moveData.getData(),startPosition);
+        if (deltas.stream().max(Integer::compareTo).orElse(0) > 0) //If the player moved up at least once
+            moveData.getPlayer().addFlag(PlayerFlag.MOVED_UP_ONCE);
     }
 
 }

@@ -24,7 +24,7 @@ public class RuleCompiler {
      **/
     public static CompiledCardRule compile(InternalModel internalModel, CardRule cardRule, Player owner){
 
-        assert (internalModel != null && cardRule != null && owner != null);
+        assert (internalModel != null && cardRule != null);
 
         List<LambdaStatement> compiledStatements = new ArrayList<>();
         LambdaEffect compiledEffect = null;

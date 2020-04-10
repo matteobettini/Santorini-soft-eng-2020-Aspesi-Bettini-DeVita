@@ -30,7 +30,7 @@ public class StatementCompiler {
      */
     public static LambdaStatement compileStatement(InternalModel model, RuleStatement statement, Player owner) {
 
-        assert (model != null && statement != null && owner != null);
+        assert (model != null && statement != null);
 
        StatementVerbType verb = statement.getVerb();
        LambdaStatement result = null;
@@ -45,7 +45,7 @@ public class StatementCompiler {
                result = compileHasFlag(statement, owner);
                break;
            case MOVE_LENGTH:
-               result = compileMoveLegth(model, statement);
+               result = compileMoveLength(statement);
                break;
            case EXISTS_DELTA_MORE:
                result = compileExistsDeltaMore(model, statement);
@@ -79,7 +79,7 @@ public class StatementCompiler {
     }
 
     private static LambdaStatement compilePlayerEquals(RuleStatement statement, Player owner) {
-
+        assert (owner != null);
         boolean isNif = statement.getType() == StatementType.NIF;
 
         LambdaStatement lambdaStatement = ((moveData, buildData) -> {
@@ -98,7 +98,6 @@ public class StatementCompiler {
         });
         return  lambdaStatement;
     }
-
 
     private static LambdaStatement compileStateEquals(RuleStatement statement) {
 
@@ -122,6 +121,7 @@ public class StatementCompiler {
     }
 
     private static LambdaStatement compileHasFlag(RuleStatement statement, Player owner) {
+        assert (owner != null);
 
         PlayerFlag objectFlag = PlayerFlag.valueOf(statement.getObject());
         boolean isNif = statement.getType() == StatementType.NIF;
@@ -162,8 +162,7 @@ public class StatementCompiler {
         return  lambdaStatement;
     }
 
-
-    private static LambdaStatement compileMoveLegth(InternalModel model, RuleStatement statement) {
+    private static LambdaStatement compileMoveLength(RuleStatement statement) {
 
         int object = Integer.parseInt(statement.getObject());
         boolean isNif = statement.getType() == StatementType.NIF;
@@ -197,7 +196,7 @@ public class StatementCompiler {
 
             List<Point> moves = moveData.getData();
             if(!moves.isEmpty()){
-                List<Integer> deltas = StatementCompiler.getMoveDeltas(model, moves, moveData);
+                List<Integer> deltas = model.getBoard().getMoveDeltas(moves, moveData.getWorker().getPosition());
                 int max = deltas.stream()
                         .max(Integer::compareTo)
                         .orElse(0);
@@ -213,7 +212,6 @@ public class StatementCompiler {
         return  lambdaStatement;
     }
 
-
     private static LambdaStatement compileExistsDeltaLess(InternalModel model, RuleStatement statement) {
         int object = Integer.parseInt(statement.getObject());
         boolean isNif = statement.getType() == StatementType.NIF;
@@ -224,7 +222,7 @@ public class StatementCompiler {
 
             List<Point> moves = moveData.getData();
             if(!moves.isEmpty()){
-                List<Integer> deltas = StatementCompiler.getMoveDeltas(model, moves, moveData);
+                List<Integer> deltas = model.getBoard().getMoveDeltas(moves, moveData.getWorker().getPosition());
                 int min = deltas.stream()
                         .min(Integer::compareTo)
                         .orElse(0);
@@ -239,7 +237,6 @@ public class StatementCompiler {
         });
         return  lambdaStatement;
     }
-
 
     private static LambdaStatement compileLevelType(InternalModel model, RuleStatement statement) {
 
@@ -283,7 +280,6 @@ public class StatementCompiler {
         return lambdaStatement;
     }
 
-
     private static LambdaStatement compileInteractionNum(InternalModel model, RuleStatement statement) {
 
         boolean isNif = statement.getType() == StatementType.NIF;
@@ -311,7 +307,6 @@ public class StatementCompiler {
         });
         return  lambdaStatement;
     }
-
 
     private static LambdaStatement compilePositionEquals(InternalModel model, RuleStatement statement) {
 
@@ -359,7 +354,6 @@ public class StatementCompiler {
 
         return  lambdaStatement;
     }
-
 
     private static LambdaStatement compileBuildNum(RuleStatement statement) {
 
@@ -422,7 +416,6 @@ public class StatementCompiler {
         return  lambdaStatement;
     }
 
-
     private static LambdaStatement compileBuildDome(InternalModel model, RuleStatement statement) {
 
         boolean isNif = statement.getType() == StatementType.NIF;
@@ -458,7 +451,6 @@ public class StatementCompiler {
         return  lambdaStatement;
     }
 
-
     private static LambdaStatement compileBuildInSameSpot(RuleStatement statement) {
 
         boolean isNif = statement.getType() == StatementType.NIF;
@@ -479,28 +471,4 @@ public class StatementCompiler {
         });
         return  lambdaStatement;
     }
-
-
-
-
-
-
-    public static List<Integer> getMoveDeltas(InternalModel model, List<Point> moves, MoveData moveData){
-
-        assert (model != null && moves != null && moves.size()>0 && moveData != null);
-
-        List<Integer> result = new ArrayList<>();
-
-
-        result.add(model.getBoard().getCell(moves.get(0)).getHeight() - model.getBoard().getCell(moveData.getWorker().getPosition()).getHeight());
-
-
-        for(int i = 0; i< moves.size()-1; i++){
-            int differenceInHeight = (model.getBoard().getCell(moves.get(i+1)).getHeight() - model.getBoard().getCell(moves.get(i)).getHeight());
-            result.add(differenceInHeight);
-        }
-
-        return result;
-    }
-
 }

@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.cardReader.CardFile;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
+import it.polimi.ingsw.model.turnInfo.MoveData;
 
 import java.awt.*;
 import java.util.ArrayList;

@@ -4,9 +4,12 @@ import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.InternalModel;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.cardReader.CardFactory;
 import it.polimi.ingsw.model.cardReader.RuleEffect;
 import it.polimi.ingsw.model.cardReader.RuleEffectImplTest;
 import it.polimi.ingsw.model.cardReader.enums.EffectType;
+import it.polimi.ingsw.model.cardReader.exceptions.CardLoadingException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerState;
@@ -55,12 +58,12 @@ class EffectCompilerTest {
 */
 
     @BeforeEach
-    void setUp(){
+    void setUp() throws CardLoadingException, InvalidCardException {
         List<String> players = new ArrayList<String>();
         players.add("Andrea");
         players.add("Matteo");
         players.add("Mirko");
-        model = new InternalModel(players);
+        model = new InternalModel(players, CardFactory.getInstance());
         Andrea = model.getPlayerByNick("Andrea");
         Matteo = model.getPlayerByNick("Matteo");
         Mirko = model.getPlayerByNick("Mirko");
@@ -591,7 +594,7 @@ class EffectCompilerTest {
        Tests a succesfull swap
     */
     @Test
-    void setOpponentPositonEffect_SWAP_Test1() throws PlayerWonSignal, PlayerLostSignal {
+    void setOpponentPositionEffect_SWAP_Test1() throws PlayerWonSignal, PlayerLostSignal {
            /*
           0    1     2    3    4
         +----+----+----+----+----+
@@ -643,10 +646,10 @@ class EffectCompilerTest {
 
 
     /*
-      Tests a succesfull swap with more than one move
+      Tests a successful swap with more than one move
    */
     @Test
-    void setOpponentPositonEffect_SWAP_Test2() throws PlayerWonSignal, PlayerLostSignal {
+    void setOpponentPositionEffect_SWAP_Test2() throws PlayerWonSignal, PlayerLostSignal {
            /*
           0    1     2    3    4
         +----+----+----+----+----+
@@ -703,10 +706,10 @@ class EffectCompilerTest {
     }
 
     /*
-      Tests a unsuccesfull swap with more than one move and trying to put one of your workers on a third floor
+      Tests a unsuccessful swap with more than one move and trying to put one of your workers on a third floor
    */
     @Test
-    void setOpponentPositonEffect_SWAP_Test3() throws PlayerWonSignal, PlayerLostSignal {
+    void setOpponentPositionEffect_SWAP_Test3() throws PlayerWonSignal, PlayerLostSignal {
            /*
           0    1     2    3    4
         +----+----+----+----+----+
@@ -764,10 +767,10 @@ class EffectCompilerTest {
     }
 
     /*
-      Tests a succesfull swap with more than one move and trying to put an opponent's worker on a third floor
+      Tests a successful swap with more than one move and trying to put an opponent's worker on a third floor
    */
     @Test
-    void setOpponentPositonEffect_SWAP_Test4() throws PlayerWonSignal, PlayerLostSignal {
+    void setOpponentPositionEffect_SWAP_Test4() throws PlayerWonSignal, PlayerLostSignal {
            /*
           0    1     2    3    4
         +----+----+----+----+----+

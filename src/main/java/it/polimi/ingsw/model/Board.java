@@ -3,7 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.enums.BuildingType;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -128,6 +130,27 @@ public class Board {
         if(considerEquals && p1.equals(p2))
             return true;
         return (p2.x == p1.x && p2.y == p1.y - 1) || (p2.x == p1.x && p2.y == p1.y + 1) || (p2.x == p1.x - 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y + 1) || (p2.x == p1.x + 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y + 1);
+    }
+
+    /**
+     * This method returns a list of level deltas among different move steps, including start position
+     * @param moves List of move points, not including start position
+     * @param startPosition Point of start for the movement
+     * @return List of level deltas for this movement
+     */
+    public List<Integer> getMoveDeltas(List<Point> moves, Point startPosition){
+        assert (moves != null && moves.size()>0 && startPosition != null);
+
+        List<Integer> result = new ArrayList<>();
+
+        result.add(getCell(moves.get(0)).getHeight() - getCell(startPosition).getHeight());
+
+        for(int i = 0; i< moves.size()-1; i++){
+            int differenceInHeight = (getCell(moves.get(i+1)).getHeight() - getCell(moves.get(i)).getHeight());
+            result.add(differenceInHeight);
+        }
+
+        return result;
     }
 
     /**

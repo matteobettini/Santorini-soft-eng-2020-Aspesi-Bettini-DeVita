@@ -3,11 +3,14 @@ package it.polimi.ingsw.model.lambdaStrategy;
 import it.polimi.ingsw.model.InternalModel;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.cardReader.CardFactory;
 import it.polimi.ingsw.model.cardReader.RuleEffectImplTest;
 import it.polimi.ingsw.model.cardReader.RuleStatement;
 import it.polimi.ingsw.model.cardReader.RuleStatementImplTest;
 import it.polimi.ingsw.model.cardReader.enums.StatementType;
 import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
+import it.polimi.ingsw.model.cardReader.exceptions.CardLoadingException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
@@ -56,12 +59,12 @@ class StatementCompilerTest {
 */
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws CardLoadingException, InvalidCardException {
         List<String> players = new ArrayList<String>();
         players.add("Andrea");
         players.add("Matteo");
         players.add("Mirko");
-        model = new InternalModel(players);
+        model = new InternalModel(players, CardFactory.getInstance());
         Andrea = model.getPlayerByNick("Andrea");
         Matteo = model.getPlayerByNick("Matteo");
         Mirko = model.getPlayerByNick("Mirko");
