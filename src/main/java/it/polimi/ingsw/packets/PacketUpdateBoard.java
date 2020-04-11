@@ -1,0 +1,38 @@
+package it.polimi.ingsw.packets;
+
+import it.polimi.ingsw.model.enums.BuildingType;
+
+import java.awt.*;
+import java.util.List;
+import java.util.Map;
+
+public class PacketUpdateBoard {
+
+    private final Map<String, Point> workersPositions;
+    private final Map<Point, BuildingType> newBuildings;
+    private final String playerLostID;
+    private final String playerWonID;
+
+    public PacketUpdateBoard(Map<String, Point> workersPositions, Map<Point, BuildingType> newBuildings, String playerLostID, String playerWonID) {
+        this.workersPositions = workersPositions;
+        this.newBuildings = newBuildings;
+        this.playerLostID = playerLostID;
+        this.playerWonID = playerWonID;
+    }
+
+    public Map<String, Point> getWorkersPositions() {
+        return workersPositions;
+    }
+
+    public Map<Point, BuildingType> getNewBuildings() {
+        return newBuildings;
+    }
+
+    public String getPlayerLostID() {
+        return playerLostID;
+    }
+
+    public String getPlayerWonID() {
+        return playerWonID;
+    }
+}

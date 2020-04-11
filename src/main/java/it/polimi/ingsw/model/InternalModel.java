@@ -172,10 +172,9 @@ public class InternalModel {
     /**
      * Compiles Card Rules, creating executable lambdas adapted to this particular
      * instance.
-     * @param cardAssociations Map containing association player <--> chosen card for each player
      */
-    public void compileCardStrategy(Map<Player, CardFile> cardAssociations){
-        assert cardAssociations != null;
+    public void compileCardStrategy(){
+
         allowMoveRules = new ArrayList<>();
         denyMoveRules = new ArrayList<>();
         winMoveRules = new ArrayList<>();
@@ -189,11 +188,14 @@ public class InternalModel {
             compileAndAddRule(rule,null);
         }
         //Adding card rules
-        for(Player player : cardAssociations.keySet()){
-            for(CardRule rule : cardAssociations.get(player).getRules()){
+        for(Player player : players){
+            assert(player.getCard() != null);
+            for(CardRule rule : player.getCard().getRules()){
                 compileAndAddRule(rule,player);
             }
         }
+
+
     }
 
     private void compileAndAddRule(CardRule rule, Player owner){

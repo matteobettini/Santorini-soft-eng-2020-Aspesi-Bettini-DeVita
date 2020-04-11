@@ -19,6 +19,7 @@ public class Worker {
     Worker(String ID, Player p){
         this.ID = ID;
         this.player = p;
+        this.position = null;
     }
 
     /**
