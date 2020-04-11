@@ -11,6 +11,9 @@ import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
 import it.polimi.ingsw.model.turnInfo.BuildData;
 import it.polimi.ingsw.model.turnInfo.MoveData;
+import it.polimi.ingsw.packets.InvalidPacketException;
+import it.polimi.ingsw.packets.PacketBuild;
+import it.polimi.ingsw.packets.PacketMove;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -104,11 +107,14 @@ class InternalModelTestMirko {
         List<Point> points = new LinkedList<>();
         points.add(endCell);
 
-        MoveData moveData = new MoveData(Mirko, MirkoW1, points);
+        PacketMove packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(), points);
+
+        assertNotNull(packetMove);
 
         try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
             assertTrue(model.makeMove(moveData));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
             assert false;
         }
 
@@ -124,14 +130,25 @@ class InternalModelTestMirko {
         buildingTypes.add(BuildingType.FIRST_FLOOR);
         buildingTypes.add(BuildingType.SECOND_FLOOR);
         builds.put(buildPoint,buildingTypes);
+        List<Point> dataOrder = new ArrayList<>();
+        dataOrder.add(buildPoint);
+
+        PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
 
         try{
-            assertTrue(model.makeBuild(new BuildData(Mirko, MirkoW1, builds, null)));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertTrue(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
             assert false;
         }
 
         assertEquals(board.getCell(buildPoint).getTopBuilding(), LevelType.SECOND_FLOOR);
+        assertEquals(PlayerState.BUILT,Mirko.getState());
+
+        Mirko.setPlayerState(PlayerState.MOVED);
+        assertEquals(PlayerState.MOVED,Mirko.getState());
 
         //SECOND CASE
         Point buildPoint1 = new Point(0,4);
@@ -142,11 +159,19 @@ class InternalModelTestMirko {
         builds.put(buildPoint1,buildingTypes);
         buildingTypes = new LinkedList<>();
         buildingTypes.add(BuildingType.SECOND_FLOOR);
-        builds.put(buildPoint1,buildingTypes);
+        builds.put(buildPoint2,buildingTypes);
+        dataOrder = new ArrayList<>();
+        dataOrder.add(buildPoint1);
+        dataOrder.add(buildPoint2);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
 
         try{
-            assertFalse(model.makeBuild(new BuildData(Mirko, MirkoW1, builds, null)));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertFalse(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
             assert false;
         }
 
@@ -196,18 +221,22 @@ class InternalModelTestMirko {
         List<Point> points = new LinkedList<>();
         points.add(endCell);
 
-        MoveData moveData = new MoveData(Mirko, MirkoW1, points);
+        PacketMove packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(), points);
+
+        assertNotNull(packetMove);
 
         try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
             assertTrue(model.makeMove(moveData));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
             assert false;
         }
 
+        assertEquals(Mirko.getState(),PlayerState.MOVED);
         assertEquals(MirkoW1.getPosition(),endCell);
         assertEquals(board.getCell(endCell).getWorkerID(),MirkoW1.getID());
 
-        Mirko.setPlayerState(PlayerState.MOVED);
+
 
         Point buildPoint = new Point(1,3);
 
@@ -219,12 +248,22 @@ class InternalModelTestMirko {
         buildingTypes.add(BuildingType.THIRD_FLOOR);
         buildingTypes.add(BuildingType.DOME);
         builds.put(buildPoint,buildingTypes);
+        List<Point> dataOrder = new ArrayList<>();
+        dataOrder.add(buildPoint);
+
+        PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
 
         try{
-            assertFalse(model.makeBuild(new BuildData(Mirko, MirkoW1, builds, null)));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertFalse(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
             assert false;
         }
+
+        assertEquals(Mirko.getState(),PlayerState.MOVED);
+        assertEquals(board.getCell(buildPoint).getTopBuilding(), LevelType.SECOND_FLOOR);
 
     }
 
@@ -289,24 +328,37 @@ class InternalModelTestMirko {
         List<Point> points = new LinkedList<>();
         points.add(endCell1);
 
-        MoveData moveData = new MoveData(Mirko, MirkoW1, points);
+        PacketMove packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(), points);
+
+        assertNotNull(packetMove);
 
         try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
             assertFalse(model.makeMove(moveData));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
             assert false;
         }
+
+        assertEquals(MirkoW1.getPosition(),startCell);
+        assertEquals(PlayerState.TURN_STARTED, Mirko.getState());
 
         points = new LinkedList<>();
         points.add(endCell2);
 
-        moveData = new MoveData(Mirko, MirkoW1, points);
+        packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(), points);
+
+        assertNotNull(packetMove);
 
         try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
             assertFalse(model.makeMove(moveData));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
             assert false;
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert true;
         }
+
+        assertEquals(MirkoW1.getPosition(),startCell);
+        assertEquals(PlayerState.TURN_STARTED, Mirko.getState());
 
 
     }
@@ -364,18 +416,21 @@ class InternalModelTestMirko {
         List<Point> points = new LinkedList<>();
         points.add(endCell);
 
-        MoveData moveData = new MoveData(Mirko, MirkoW1, points);
+        PacketMove packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(), points);
+
+        assertNotNull(packetMove);
 
         try{
-                assertTrue(model.makeMove(moveData));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
             assert false;
         }
 
         assertEquals(MirkoW1.getPosition(),endCell);
         assertEquals(board.getCell(endCell).getWorkerID(),MirkoW1.getID());
 
-        Mirko.setPlayerState(PlayerState.MOVED);
+        assertEquals(Mirko.getState(),PlayerState.MOVED);
 
         Point buildPoint = new Point(1,3);
 
@@ -384,14 +439,23 @@ class InternalModelTestMirko {
         buildingTypes.add(BuildingType.FIRST_FLOOR);
         buildingTypes.add(BuildingType.SECOND_FLOOR);
         builds.put(buildPoint,buildingTypes);
+        List<Point> dataOrder = new ArrayList<>();
+        dataOrder.add(buildPoint);
+
+        PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
 
         try{
-            assertFalse(model.makeBuild(new BuildData(Mirko, MirkoW1, builds, null)));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertFalse(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
             assert false;
         }
 
         assertEquals(board.getCell(buildPoint).getTopBuilding(), LevelType.GROUND);
+
+        assertEquals(Mirko.getState(),PlayerState.MOVED);
 
         buildPoint = new Point(1,2);
 
@@ -400,13 +464,21 @@ class InternalModelTestMirko {
         buildingTypes.add(BuildingType.FIRST_FLOOR);
         buildingTypes.add(BuildingType.SECOND_FLOOR);
         builds.put(buildPoint,buildingTypes);
+        dataOrder = new ArrayList<>();
+        dataOrder.add(buildPoint);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
 
         try{
-            assertFalse(model.makeBuild(new BuildData(Mirko, MirkoW1, builds, null)));
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertFalse(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
             assert false;
         }
 
+        assertEquals(Mirko.getState(),PlayerState.MOVED);
         assertEquals(board.getCell(buildPoint).getTopBuilding(), LevelType.FIRST_FLOOR);
 
     }
