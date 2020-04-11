@@ -91,11 +91,10 @@ public class InternalModelTestMatteo {
         CardFile prometheus = cardFactory.getCards().stream().filter(x -> x.getName().equals("Prometheus")).findFirst().orElse(null);
         CardFile artemis = cardFactory.getCards().stream().filter(x -> x.getName().equals("Artemis")).findFirst().orElse(null);
         CardFile athena = cardFactory.getCards().stream().filter(x -> x.getName().equals("Athena")).findFirst().orElse(null);
-        Map<Player,CardFile> cardOfPlayers = new HashMap<>();
-        cardOfPlayers.put(Matteo, prometheus);
-        cardOfPlayers.put(Andrea, artemis);
-        cardOfPlayers.put(Mirko, athena);
-        model.compileCardStrategy(cardOfPlayers);
+        Matteo.setCard(prometheus);
+        Andrea.setCard(artemis);
+        Mirko.setCard(athena);
+        model.compileCardStrategy();
 
         //Initializing positions
         Point point1 = new Point(2,2);
@@ -307,11 +306,10 @@ public class InternalModelTestMatteo {
         CardFile prometheus = cardFactory.getCards().stream().filter(x -> x.getName().equals("Prometheus")).findFirst().orElse(null);
         CardFile artemis = cardFactory.getCards().stream().filter(x -> x.getName().equals("Artemis")).findFirst().orElse(null);
         CardFile athena = cardFactory.getCards().stream().filter(x -> x.getName().equals("Athena")).findFirst().orElse(null);
-        Map<Player,CardFile> cardOfPlayers = new HashMap<>();
-        cardOfPlayers.put(Matteo, prometheus);
-        cardOfPlayers.put(Andrea, artemis);
-        cardOfPlayers.put(Mirko, athena);
-        model.compileCardStrategy(cardOfPlayers);
+        Matteo.setCard(prometheus);
+        Andrea.setCard(artemis);
+        Mirko.setCard(athena);
+        model.compileCardStrategy();
 
 
         //Initializing positions
@@ -506,11 +504,10 @@ public class InternalModelTestMatteo {
         CardFile prometheus = cardFactory.getCards().stream().filter(x -> x.getName().equals("Prometheus")).findFirst().orElse(null);
         CardFile artemis = cardFactory.getCards().stream().filter(x -> x.getName().equals("Artemis")).findFirst().orElse(null);
         CardFile athena = cardFactory.getCards().stream().filter(x -> x.getName().equals("Athena")).findFirst().orElse(null);
-        Map<Player,CardFile> cardOfPlayers = new HashMap<>();
-        cardOfPlayers.put(Matteo, prometheus);
-        cardOfPlayers.put(Andrea, artemis);
-        cardOfPlayers.put(Mirko, athena);
-        model.compileCardStrategy(cardOfPlayers);
+        Matteo.setCard(prometheus);
+        Andrea.setCard(artemis);
+        Mirko.setCard(athena);
+        model.compileCardStrategy();
 
 
         //Initializing positions
@@ -724,11 +721,10 @@ public class InternalModelTestMatteo {
         CardFile pan = cardFactory.getCards().stream().filter(x -> x.getName().equals("Pan")).findFirst().orElse(null);
         CardFile artemis = cardFactory.getCards().stream().filter(x -> x.getName().equals("Artemis")).findFirst().orElse(null);
         CardFile athena = cardFactory.getCards().stream().filter(x -> x.getName().equals("Athena")).findFirst().orElse(null);
-        Map<Player,CardFile> cardOfPlayers = new HashMap<>();
-        cardOfPlayers.put(Matteo, pan);
-        cardOfPlayers.put(Andrea, artemis);
-        cardOfPlayers.put(Mirko, athena);
-        model.compileCardStrategy(cardOfPlayers);
+        Matteo.setCard(pan);
+        Andrea.setCard(artemis);
+        Mirko.setCard(athena);
+        model.compileCardStrategy();
 
 
         //Initializing positions
@@ -986,12 +982,10 @@ public class InternalModelTestMatteo {
         CardFile hephaestus = cardFactory.getCards().stream().filter(x -> x.getName().equals("Hephaestus")).findFirst().orElse(null);
         CardFile artemis = cardFactory.getCards().stream().filter(x -> x.getName().equals("Artemis")).findFirst().orElse(null);
         CardFile pan = cardFactory.getCards().stream().filter(x -> x.getName().equals("Pan")).findFirst().orElse(null);
-        Map<Player,CardFile> cardOfPlayers = new HashMap<>();
-        cardOfPlayers.put(Matteo, hephaestus);
-        cardOfPlayers.put(Andrea, artemis);
-        cardOfPlayers.put(Mirko, pan);
-        model.compileCardStrategy(cardOfPlayers);
-
+        Matteo.setCard(hephaestus);
+        Andrea.setCard(artemis);
+        Mirko.setCard(pan);
+        model.compileCardStrategy();
 
         //Initializing positions
         Point point04 = new Point(0,4);
