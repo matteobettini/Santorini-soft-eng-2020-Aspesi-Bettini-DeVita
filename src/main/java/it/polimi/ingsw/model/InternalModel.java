@@ -243,7 +243,12 @@ public class InternalModel {
         }
         //Check if with this move, the player has won
         for(CompiledCardRule rule : winMoveRules){
-            rule.execute(moveData,null,false);
+            try{
+                rule.execute(moveData,null,false);
+            } catch (PlayerWonSignal e){
+                fired.applyEffect(moveData,null);
+                throw new PlayerWonSignal(e.getPlayer());
+            }
         }
         //If the move was normal and allowed, apply its effect
         fired.applyEffect(moveData,null);
@@ -272,7 +277,12 @@ public class InternalModel {
         }
         //Check if with this build, the player has won
         for(CompiledCardRule rule : winBuildRules){
-            rule.execute(null,buildData,false);
+            try {
+                rule.execute(null, buildData, false);
+            } catch (PlayerWonSignal e){
+                fired.applyEffect(null, buildData);
+                throw new PlayerWonSignal(e.getPlayer());
+            }
         }
         //If the build was normal and allowed, apply its effect
         fired.applyEffect(null,buildData);

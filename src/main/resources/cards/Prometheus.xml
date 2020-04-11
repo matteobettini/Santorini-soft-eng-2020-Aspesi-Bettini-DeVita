@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Card SYSTEM "CardSchema.dtd">
 <Card>
-    <name>Prometeus</name>
+    <name>Prometheus</name>
     <description>
         Your Turn: If your Worker does not move up, it may build both before and after moving.
     </description>
