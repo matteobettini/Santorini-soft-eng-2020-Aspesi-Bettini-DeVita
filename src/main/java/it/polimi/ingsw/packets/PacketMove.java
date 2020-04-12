@@ -26,8 +26,10 @@ public class PacketMove {
         this.playerNickname = playerNickname;
         this.workerID = workerID;
         this.move = new ArrayList<>();
-        for(Point p : move){
-            this.move.add(new Point(p));
+        if(move != null){
+            for(Point p : move){
+                if(p != null )this.move.add(new Point(p));
+            }
         }
     }
 

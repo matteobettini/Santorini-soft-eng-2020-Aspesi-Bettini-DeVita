@@ -61,8 +61,7 @@ class InternalModelTestAndrea {
 
     @Test
     void testCompileCardStrategy1()  {
-        Map<Player, CardFile> map = new HashMap<>();
-        model.compileCardStrategy(map); //Compiling only default strategy
+        model.compileCardStrategy(); //Compiling only default strategy
 
         //Test packet
         Board board = model.getBoard();
@@ -95,8 +94,7 @@ class InternalModelTestAndrea {
 
     @Test
     void testCompileCardStrategy2()  {
-        Map<Player, CardFile> map = new HashMap<>();
-        model.compileCardStrategy(map); //Compiling only default strategy
+        model.compileCardStrategy(); //Compiling only default strategy
 
         //Test packet
         Board board = model.getBoard();
@@ -128,8 +126,7 @@ class InternalModelTestAndrea {
 
     @Test
     void testCompileCardStrategy3() {
-        Map<Player, CardFile> map = new HashMap<>();
-        model.compileCardStrategy(map); //Compiling only default strategy
+        model.compileCardStrategy(); //Compiling only default strategy
 
         //Test packet
         Board board = model.getBoard();
@@ -157,8 +154,7 @@ class InternalModelTestAndrea {
 
     @Test
     void testCompileCardStrategy4() {
-        Map<Player, CardFile> map = new HashMap<>();
-        model.compileCardStrategy(map); //Compiling only default strategy
+        model.compileCardStrategy(); //Compiling only default strategy
 
         //Test packet
         Board board = model.getBoard();
@@ -189,9 +185,8 @@ class InternalModelTestAndrea {
     void testCompileCardStrategyApollo1()  {
         CardFile apollo = cardFactory.getCards().stream().filter(c->c.getName().equals("Apollo")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Andrea, apollo);
-        model.compileCardStrategy(map);
+        Andrea.setCard(apollo);
+        model.compileCardStrategy();
 
 
         //Test packet
@@ -226,9 +221,8 @@ class InternalModelTestAndrea {
     void testCompileCardStrategyApollo2(){
         CardFile apollo = cardFactory.getCards().stream().filter(c->c.getName().equals("Apollo")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Andrea, apollo);
-        model.compileCardStrategy(map);
+        Andrea.setCard(apollo);
+        model.compileCardStrategy();
 
         //Test packet
         Board board = model.getBoard();
@@ -291,9 +285,8 @@ class InternalModelTestAndrea {
     void testCompileCardStrategyArtemis1()  {
         CardFile artemis = cardFactory.getCards().stream().filter(c->c.getName().equals("Artemis")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Andrea, artemis);
-        model.compileCardStrategy(map);
+        Andrea.setCard(artemis);
+        model.compileCardStrategy();
 
         //Test packet
         Point startCell = new Point(0,0);
@@ -335,9 +328,8 @@ class InternalModelTestAndrea {
     void testCompileCardStrategyMinotaur1()  {
         CardFile minotaur = cardFactory.getCards().stream().filter(c->c.getName().equals("Minotaur")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Andrea, minotaur);
-        model.compileCardStrategy(map);
+        Andrea.setCard(minotaur);
+        model.compileCardStrategy();
 
 
         //Test packet
@@ -372,9 +364,8 @@ class InternalModelTestAndrea {
     void testCompileCardStrategyPan1()  {
         CardFile pan = cardFactory.getCards().stream().filter(c->c.getName().equals("Pan")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Andrea, pan);
-        model.compileCardStrategy(map);
+        Andrea.setCard(pan);
+        model.compileCardStrategy();
 
 
         //Test packet
@@ -415,9 +406,8 @@ class InternalModelTestAndrea {
     void testCompileCardStrategyAthena1()  {
         CardFile athena = cardFactory.getCards().stream().filter(c->c.getName().equals("Athena")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Mirko, athena);
-        model.compileCardStrategy(map);
+        Mirko.setCard(athena);
+        model.compileCardStrategy();
 
 
         //Test packet
@@ -474,9 +464,8 @@ class InternalModelTestAndrea {
     @Test
     void testCompileCardStrategyDemeter1()  {
         CardFile demeter = cardFactory.getCards().stream().filter(c->c.getName().equals("Demeter")).findAny().orElse(null);
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Andrea, demeter);
-        model.compileCardStrategy(map);
+        Andrea.setCard(demeter);
+        model.compileCardStrategy();
 
 
         //Test packet
@@ -510,9 +499,8 @@ class InternalModelTestAndrea {
     @Test
     void testCompileCardStrategyDemeter2()  {
         CardFile demeter = cardFactory.getCards().stream().filter(c->c.getName().equals("Demeter")).findAny().orElse(null);
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Andrea, demeter);
-        model.compileCardStrategy(map);
+        Andrea.setCard(demeter);
+        model.compileCardStrategy();
 
 
         //Test packet
@@ -545,8 +533,7 @@ class InternalModelTestAndrea {
 
     @Test
     void testAllowedMoves() {
-        Map<Player, CardFile> map = new HashMap<>();
-        model.compileCardStrategy(map); //Compiling only default strategy
+        model.compileCardStrategy(); //Compiling only default strategy
 
         //Test packet
         Board board = model.getBoard();
@@ -612,8 +599,7 @@ class InternalModelTestAndrea {
 
     @Test
     void testNoMovesPossible1(){
-        Map<Player, CardFile> map = new HashMap<>();
-        model.compileCardStrategy(map); //Compiling only default strategy
+        model.compileCardStrategy(); //Compiling only default strategy
 
         //Test packet
         Board board = model.getBoard();
@@ -667,8 +653,7 @@ class InternalModelTestAndrea {
 
     @Test
     void testAllowedBuilds() {
-        Map<Player, CardFile> map = new HashMap<>();
-        model.compileCardStrategy(map); //Compiling only default strategy
+        model.compileCardStrategy(); //Compiling only default strategy
 
         //Test packet
         Board board = model.getBoard();

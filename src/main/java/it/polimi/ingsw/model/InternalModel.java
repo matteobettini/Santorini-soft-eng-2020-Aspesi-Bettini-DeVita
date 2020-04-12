@@ -119,11 +119,11 @@ public class InternalModel {
         
         if(moves == null || moves.isEmpty() || p == null || w == null) throw new InvalidPacketException();
 
-        for (Point move : moves) if (move == null) throw new InvalidPacketException();
+        for (Point move : moves) if (move == null || board.getCell(move) == null) throw new InvalidPacketException();
         
         Point myPosition = w.getPosition();
         Point myFirstMovePosition = moves.get(0);
-        if (!(Board.areAdjacent(myPosition, myFirstMovePosition, false) && board.getCell(myFirstMovePosition).getTopBuilding() != LevelType.DOME)){
+        if (!Board.areAdjacent(myPosition, myFirstMovePosition, false) || board.getCell(myFirstMovePosition).getTopBuilding() == LevelType.DOME){
             throw new InvalidPacketException();
         }
         
@@ -189,10 +189,13 @@ public class InternalModel {
         }
         //Adding card rules
         for(Player player : players){
-            assert(player.getCard() != null);
-            for(CardRule rule : player.getCard().getRules()){
-                compileAndAddRule(rule,player);
+            //assert(player.getCard() != null);
+            if(player.getCard() != null){
+                for(CardRule rule : player.getCard().getRules()){
+                    compileAndAddRule(rule,player);
+                }
             }
+
         }
 
 

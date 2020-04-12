@@ -92,9 +92,8 @@ class InternalModelTestMirko {
 
         CardFile hephaestus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hephaestus")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Mirko, hephaestus);
-        model.compileCardStrategy(map);
+        Mirko.setCard(hephaestus);
+        model.compileCardStrategy();
 
         Board board = model.getBoard();
 
@@ -206,9 +205,8 @@ class InternalModelTestMirko {
 
         CardFile hephaestus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hephaestus")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Mirko, hephaestus);
-        model.compileCardStrategy(map);
+        Mirko.setCard(hephaestus);
+        model.compileCardStrategy();
 
         Board board = model.getBoard();
 
@@ -293,9 +291,8 @@ class InternalModelTestMirko {
 
         CardFile hephaestus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hephaestus")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Mirko, hephaestus);
-        model.compileCardStrategy(map);
+        Mirko.setCard(hephaestus);
+        model.compileCardStrategy();
 
         Board board = model.getBoard();
 
@@ -389,9 +386,8 @@ class InternalModelTestMirko {
 
         CardFile hephaestus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hephaestus")).findAny().orElse(null);
 
-        Map<Player, CardFile> map = new HashMap<>();
-        map.put(Mirko, hephaestus);
-        model.compileCardStrategy(map);
+        Mirko.setCard(hephaestus);
+        model.compileCardStrategy();
 
         Board board = model.getBoard();
 
@@ -480,6 +476,402 @@ class InternalModelTestMirko {
 
         assertEquals(Mirko.getState(),PlayerState.MOVED);
         assertEquals(board.getCell(buildPoint).getTopBuilding(), LevelType.FIRST_FLOOR);
+
+    }
+
+    /**
+     * Test if the method that converts a PacketMove into a MoveData correctly returns the InvalidPacketException:
+     * if the argument PlayerNickname is not one of the registered Player.
+     * if the argument moves is null.
+     * if the argument workerID is not one of the Worker in the game.
+     * if the moves list is empty.
+     * if one of the point in moves is null.
+     * if one of the point is not on the Board.
+     * if in the first move position there is a DOME.
+     * if the first move position is not adjacent to the start position.
+     * if the second move position is not adjacent to the first move position.
+     * if in the second move position there is a DOME.
+     *
+     * Test if the method correctly convert the packet because all the conditions are satisfied.
+     */
+    @Test
+    void testPacketMoveToMoveData(){
+        //CASE WRONG PLAYER
+        List<Point> moves = new ArrayList<>();
+        moves.add(new Point(0,0));
+        PacketMove packetMove = new PacketMove("Marco", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE MOVES IS NULL
+        moves = null;
+
+        packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE WRONG WORKER
+        moves = new ArrayList<>();
+        moves.add(new Point(0,0));
+
+        packetMove = new PacketMove("Mirko", "MirkoW3",moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE MOVES IS EMPTY
+
+        moves = new ArrayList<>();
+
+        packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE A POINT IS NULL
+        moves = new ArrayList<>();
+        moves.add(null);
+
+        packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE A POINT IS NOT ON THE BOARD
+        moves = new ArrayList<>();
+        moves.add(new Point(6,6));
+
+        packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE IN FIRST MOVE THERE IS A DOME
+        Point startPosition = new Point(0,0);
+        MirkoW1.setPosition(startPosition);
+        Point firstMove = new Point(0,1);
+        model.getBoard().getCell(firstMove).addBuilding(BuildingType.DOME);
+
+        moves = new ArrayList<>();
+        moves.add(firstMove);
+
+        packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE THE FIRST MOVE IS NOT ADJACENT TO THE START POSITION
+
+        startPosition = new Point(0,0);
+        MirkoW1.setPosition(startPosition);
+        firstMove = new Point(0,2);
+
+        moves = new ArrayList<>();
+        moves.add(firstMove);
+
+        packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE THE SECOND MOVE IS NOT ADJACENT TO THE FIRST MOVE
+
+        startPosition = new Point(0,0);
+        MirkoW1.setPosition(startPosition);
+        firstMove = new Point(1,0);
+        Point secondMove = new Point(0,3);
+
+        moves = new ArrayList<>();
+        moves.add(firstMove);
+        moves.add(secondMove);
+
+        packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE THE SECOND MOVE IS A DOME
+
+        startPosition = new Point(0,0);
+        MirkoW1.setPosition(startPosition);
+        firstMove = new Point(0,1);
+        secondMove = new Point(0,2);
+        model.getBoard().getCell(secondMove).addBuilding(BuildingType.DOME);
+
+        moves = new ArrayList<>();
+        moves.add(firstMove);
+        moves.add(secondMove);
+
+        packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE EVERYTHING SHOULD BE FINE
+        startPosition = new Point(0,0);
+        MirkoW1.setPosition(startPosition);
+        firstMove = new Point(1,0);
+        secondMove = new Point(1,1);
+        model.getBoard().getCell(firstMove).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(secondMove).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(secondMove).addBuilding(BuildingType.SECOND_FLOOR);
+
+        moves = new ArrayList<>();
+        moves.add(firstMove);
+        moves.add(secondMove);
+
+        packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assert true;
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+
+
+    }
+
+
+    @Test
+    void testPacketBuildToBuildData(){
+
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> orderBuilds = new ArrayList<>();
+        Point startPosition = new Point(0,0);
+        Point firstBuild = new Point(0,1);
+        Point secondBuild = new Point(0,2);
+        List<BuildingType> buildings = new ArrayList<>();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        builds.put(firstBuild,buildings);
+        orderBuilds.add(firstBuild);
+
+        MirkoW1.setPosition(startPosition);
+
+
+        //CASE WRONG PLAYER
+        PacketBuild packetBuild = new PacketBuild("Marco",MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE WRONG WORKER
+        packetBuild = new PacketBuild(Mirko.getNickname(),"MirkoW3",builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE BUILDSORDER IS NULL
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,null);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE BUILDSORDER EMPTY
+
+        orderBuilds = new ArrayList<>();
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE BUILDSORDER.size() != BUILD.size()
+
+        orderBuilds = new ArrayList<>();
+        orderBuilds.add(firstBuild);
+        orderBuilds.add(secondBuild);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE BUILD IS NULL
+        orderBuilds = new ArrayList<>();
+        orderBuilds.add(firstBuild);
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),null,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE BUILDS IS EMPTY
+        orderBuilds = new ArrayList<>();
+        orderBuilds.add(firstBuild);
+        builds = new HashMap<>();
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE BUILDINGTYPE IN BUILDS IS NULL
+        builds = new HashMap<>();
+        orderBuilds = new ArrayList<>();
+        builds.put(firstBuild,null);
+        orderBuilds.add(firstBuild);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE BUILDINGTYPE IN BUILDS IS EMPTY
+        builds = new HashMap<>();
+        orderBuilds = new ArrayList<>();
+        buildings = new ArrayList<>();
+        builds.put(firstBuild,buildings);
+        orderBuilds.add(firstBuild);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE POINT IN BUILDS IS NOT ON THE BOARD
+        builds = new HashMap<>();
+        orderBuilds = new ArrayList<>();
+        buildings = new ArrayList<>();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        Point out = new Point(6,6);
+        builds.put(out,buildings);
+        orderBuilds.add(out);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE BUILD POINT NOT ADJACENT
+        builds = new HashMap<>();
+        orderBuilds = new ArrayList<>();
+        buildings = new ArrayList<>();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        Point notAdjacent = new Point(0,3);
+        builds.put(notAdjacent,buildings);
+        orderBuilds.add(notAdjacent);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE BUILD POINT IS NOT THE SAME IN BUILDSORDER
+        builds = new HashMap<>();
+        orderBuilds = new ArrayList<>();
+        buildings = new ArrayList<>();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(firstBuild,buildings);
+        orderBuilds.add(secondBuild);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        //CASE EVERYTHING SHOULD BE FINE
+        firstBuild = new Point(0,1);
+        secondBuild = new Point(1,0);
+        builds = new HashMap<>();
+        orderBuilds = new ArrayList<>();
+        buildings = new ArrayList<>();
+        buildings.add(BuildingType.FIRST_FLOOR);
+        List<BuildingType> buildings2 = new ArrayList<>();
+        buildings2.add(BuildingType.FIRST_FLOOR);
+        builds.put(firstBuild,buildings);
+        builds.put(secondBuild,buildings2);
+        orderBuilds.add(firstBuild);
+        orderBuilds.add(secondBuild);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assert true;
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+
 
     }
 

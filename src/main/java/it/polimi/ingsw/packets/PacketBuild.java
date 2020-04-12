@@ -31,12 +31,16 @@ public class PacketBuild {
         this.playerNickname = playerNickname;
         this.workerID = workerID;
         this.builds = new HashMap<>();
-        for(Point pos : builds.keySet()){
-            this.builds.put(new Point(pos), new ArrayList<>(builds.get(pos)));
+        if(builds != null){
+            for(Point pos : builds.keySet()){
+                if(builds.get(pos) != null && pos != null) this.builds.put(new Point(pos), new ArrayList<>(builds.get(pos)));
+            }
         }
         this.dataOrder = new ArrayList<>();
-        for(Point p : dataOrder)
-            this.dataOrder.add(new Point(p));
+        if(dataOrder != null){
+            for(Point p : dataOrder)
+                if(p != null) this.dataOrder.add(new Point(p));
+        }
 
     }
 
