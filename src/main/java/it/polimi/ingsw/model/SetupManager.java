@@ -77,8 +77,12 @@ public class SetupManager {
     public void setSelectedCards(String SenderID, List<String> chosenCards) throws InvalidPacketException {
         assert(setupPhase == SetupPhase.WAIT_CARDS);
 
-        // IF THE SENDER IS WORNG OR THE LIST IS NULL -> INVALID
-        if(!SenderID.equals(players.get(activePlayerIndex).getNickname()) || chosenCards == null )
+        // IF THE SENDER IS WORNG -> IGNORE
+        if( SenderID == null || !SenderID.equals(players.get(activePlayerIndex).getNickname()))
+            return;
+
+        // IF THE LIST IS NULL -> INVALID
+        if(chosenCards == null )
             throw new InvalidPacketException();
 
         // IF THE NUMBER OF CARDS CHOSEN IS NOT RIGHT -> INVALID
@@ -160,12 +164,15 @@ public class SetupManager {
         }
 
     }
-
     public void setStartPlayer(String SenderID, String startPlayer) throws InvalidPacketException{
         assert(challenger.equals(players.get(activePlayerIndex)));
 
-        //IF I AM NOT RECEIVEING IT FROM THE CHALLENGER ORE THE START PLAYER IS NULL -> INVALID
-        if(!(SenderID.equals(players.get(activePlayerIndex).getNickname())) || startPlayer == null)
+        //IF I AM NOT RECEIVEING IT FROM THE CHALLENGER  -> IGNORE
+        if( SenderID == null || !(SenderID.equals(players.get(activePlayerIndex).getNickname())))
+            return;
+
+        // IF THE START PLAYER IS NULL -> INVALID
+        if(startPlayer == null )
             throw new InvalidPacketException();
 
         //IF THE CHOSEN PLAYER IS NOT ONE OF THE PLAYERS
@@ -184,7 +191,6 @@ public class SetupManager {
         this.setupPhase = SetupPhase.WAIT_WORKERS_CHOICE;
 
     }
-
     public void setWorkersPositions(String SenderID, Map<String, Point> myWorkersPositions) throws InvalidPacketException{
         assert(setupPhase == SetupPhase.WAIT_WORKERS_CHOICE);
 
@@ -192,8 +198,12 @@ public class SetupManager {
         Worker activePlayerWorker1 = activePlayer.getWorkers().get(0);
         Worker activePlayerWorker2 = activePlayer.getWorkers().get(1);
 
-        // IF THE SENDER IS WORNG OR THE MAP IS NULL -> INVALID
-        if(!SenderID.equals(activePlayer.getNickname()) || myWorkersPositions == null )
+        // IF THE SENDER IS WORNG -> IGNORE
+        if( SenderID == null || !SenderID.equals(activePlayer.getNickname()))
+            return;
+
+        // IF THE MAP IS NULL -> INVALID
+        if(myWorkersPositions == null)
             throw new InvalidPacketException();
 
         // IF THE NUMBER OF POSITINS IS NOT RIGHT -> INVALID
@@ -258,7 +268,6 @@ public class SetupManager {
         activePlayerIndex = random.nextInt(players.size());
         this.challenger = players.get(activePlayerIndex);
     }
-
     private void incrementActivePlayerIndex(){
         activePlayerIndex ++;
         if(activePlayerIndex > (players.size() - 1 ))

@@ -23,13 +23,13 @@ public class PacketMove {
     private final List<Point> move;
 
     public PacketMove(String playerNickname, String workerID, List<Point> move){
+        assert (playerNickname != null && workerID != null && move != null);
         this.playerNickname = playerNickname;
         this.workerID = workerID;
         this.move = new ArrayList<>();
-        if(move != null){
-            for(Point p : move){
-                if(p != null )this.move.add(new Point(p));
-            }
+        for(Point p : move){
+            assert(p != null);
+            this.move.add(new Point(p));
         }
     }
 

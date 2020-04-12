@@ -28,19 +28,21 @@ public class PacketBuild {
     private final List<Point> dataOrder;
 
     public PacketBuild(String playerNickname, String workerID, Map<Point, List<BuildingType>> builds, List<Point> dataOrder){
+        assert(playerNickname != null && workerID != null && builds != null && dataOrder != null);
         this.playerNickname = playerNickname;
         this.workerID = workerID;
         this.builds = new HashMap<>();
-        if(builds != null){
-            for(Point pos : builds.keySet()){
-                if(builds.get(pos) != null && pos != null) this.builds.put(new Point(pos), new ArrayList<>(builds.get(pos)));
-            }
+        for(Point pos : builds.keySet()) {
+            assert (pos != null && builds.get(pos) != null);
+            this.builds.put(new Point(pos), new ArrayList<>(builds.get(pos)));
         }
+
         this.dataOrder = new ArrayList<>();
-        if(dataOrder != null){
-            for(Point p : dataOrder)
-                if(p != null) this.dataOrder.add(new Point(p));
+        for(Point p : dataOrder) {
+            assert (p != null);
+            this.dataOrder.add(new Point(p));
         }
+
 
     }
 

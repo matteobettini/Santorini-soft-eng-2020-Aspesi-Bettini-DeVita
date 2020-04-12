@@ -6,10 +6,8 @@ import it.polimi.ingsw.model.cardReader.CardRule;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
-import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.lambdaStrategy.CompiledCardRule;
 import it.polimi.ingsw.model.lambdaStrategy.RuleCompiler;
-import it.polimi.ingsw.model.lambdaStrategy.StatementCompiler;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
 import it.polimi.ingsw.model.turnInfo.BuildData;
@@ -158,7 +156,6 @@ public class InternalModel {
                 throw new InvalidPacketException();
             if (!Board.areAdjacent(pos, w.getPosition(), true))
                 throw new InvalidPacketException();
-
         }
 
         for(Point point : buildsOrder)

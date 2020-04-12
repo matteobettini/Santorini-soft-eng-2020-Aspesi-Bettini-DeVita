@@ -49,6 +49,7 @@ public class Board {
      * @return a Cell.
      */
     public Cell getCell(Point p){
+        if(p == null) return null;
         if(p.x >= 0 && p.x < ROWS && p.y >= 0 && p.y < COLUMNS) return boardRep[p.x][p.y];
         return null;
     }
