@@ -9,11 +9,11 @@ import java.util.Map;
 public class PacketUpdateBoard {
 
     private final Map<String, Point> workersPositions;
-    private final Map<Point, BuildingType> newBuildings;
+    private final Map<Point, List<BuildingType>> newBuildings;
     private final String playerLostID;
     private final String playerWonID;
 
-    public PacketUpdateBoard(Map<String, Point> workersPositions, Map<Point, BuildingType> newBuildings, String playerLostID, String playerWonID) {
+    public PacketUpdateBoard(Map<String, Point> workersPositions, Map<Point, List<BuildingType>> newBuildings, String playerLostID, String playerWonID) {
         this.workersPositions = workersPositions;
         this.newBuildings = newBuildings;
         this.playerLostID = playerLostID;
@@ -24,7 +24,7 @@ public class PacketUpdateBoard {
         return workersPositions;
     }
 
-    public Map<Point, BuildingType> getNewBuildings() {
+    public Map<Point, List<BuildingType>> getNewBuildings() {
         return newBuildings;
     }
 

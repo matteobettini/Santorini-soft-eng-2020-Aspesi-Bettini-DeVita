@@ -82,6 +82,7 @@ public class InternalModel {
         assert loser != null;
         assert !losers.contains(loser);
         losers.add(loser);
+        players.remove(loser);
     }
 
     public void setWinner(Player winner){ this.winner = winner; }

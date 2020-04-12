@@ -58,6 +58,7 @@ public class Player {
      */
     public List<Worker> getWorkers(){ return new ArrayList<>(this.workers); }
 
+
     /**
      * Setter that sets the state of the Player to one of
      * the possible states in PlayerState.

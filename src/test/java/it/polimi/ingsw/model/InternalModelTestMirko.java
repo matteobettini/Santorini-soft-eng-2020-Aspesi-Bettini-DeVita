@@ -507,7 +507,7 @@ class InternalModelTestMirko {
             assert true;
         }
 
-        //CASE MOVES IS NULL
+        /*CASE MOVES IS NULL
         moves = null;
 
         packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
@@ -516,7 +516,7 @@ class InternalModelTestMirko {
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
-        }
+        }*/
 
         //CASE WRONG WORKER
         moves = new ArrayList<>();
@@ -542,7 +542,7 @@ class InternalModelTestMirko {
             assert true;
         }
 
-        //CASE A POINT IS NULL
+        /*CASE A POINT IS NULL
         moves = new ArrayList<>();
         moves.add(null);
 
@@ -552,7 +552,7 @@ class InternalModelTestMirko {
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
-        }
+        }*/
 
         //CASE A POINT IS NOT ON THE BOARD
         moves = new ArrayList<>();
@@ -664,6 +664,20 @@ class InternalModelTestMirko {
     }
 
 
+    /**
+     * Test if the method that converts a PacketBuild into a BuildData correctly returns the InvalidPacketException:
+     * if the argument PlayerNickname is not one of the registered Player.
+     * if the argument workerID is not one of the Worker in the game.
+     * if the buildsOrder list is empty.
+     * if the size of buildsOrder is not equal to the size of builds.
+     * if the builds map i empty.
+     * if there is a buildingType empty list in builds.
+     * if there is a point not on the Board in builds.
+     * if there are not adjacent points in builds.
+     * if there are points in builds that are different from the ones in buildsOrder.
+     *
+     * Test if the method correctly convert the packet because all the conditions are satisfied.
+     */
     @Test
     void testPacketBuildToBuildData(){
 
@@ -701,7 +715,7 @@ class InternalModelTestMirko {
             assert true;
         }
 
-        //CASE BUILDSORDER IS NULL
+        /*CASE BUILDSORDER IS NULL
 
         packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,null);
 
@@ -710,7 +724,7 @@ class InternalModelTestMirko {
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
-        }
+        }*/
 
         //CASE BUILDSORDER EMPTY
 
@@ -740,7 +754,7 @@ class InternalModelTestMirko {
             assert true;
         }
 
-        //CASE BUILD IS NULL
+        /*CASE BUILD IS NULL
         orderBuilds = new ArrayList<>();
         orderBuilds.add(firstBuild);
         packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),null,orderBuilds);
@@ -750,7 +764,7 @@ class InternalModelTestMirko {
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
-        }
+        }*/
 
         //CASE BUILDS IS EMPTY
         orderBuilds = new ArrayList<>();
@@ -765,7 +779,7 @@ class InternalModelTestMirko {
             assert true;
         }
 
-        //CASE BUILDINGTYPE IN BUILDS IS NULL
+        /*CASE BUILDINGTYPE IN BUILDS IS NULL
         builds = new HashMap<>();
         orderBuilds = new ArrayList<>();
         builds.put(firstBuild,null);
@@ -778,7 +792,7 @@ class InternalModelTestMirko {
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
-        }
+        }*/
 
         //CASE BUILDINGTYPE IN BUILDS IS EMPTY
         builds = new HashMap<>();
@@ -848,6 +862,7 @@ class InternalModelTestMirko {
         } catch (InvalidPacketException e) {
             assert true;
         }
+
 
         //CASE EVERYTHING SHOULD BE FINE
         firstBuild = new Point(0,1);
