@@ -1,15 +1,14 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.cardReader.CardFile;
+import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
 import it.polimi.ingsw.model.turnInfo.MoveData;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 /**
  * This class contains the info about a Player.
@@ -24,14 +23,20 @@ public class Player {
     private List<Worker> workers;
     private PlayerState state;
     private CardFile card;
+    private Map<PlayerState,Set<TriggerType>>  statePossibleActions;
 
     Player(String nickname){
         this.nickname = nickname;
+        this.statePossibleActions = null;
         this.flags = new HashSet<>();
         this.workers = new ArrayList<>();
         this.workers.add(new Worker(this.nickname + ".1", this));
         this.workers.add(new Worker(this.nickname + ".2", this));
         this.state = PlayerState.TURN_STARTED;
+    }
+
+    public Set<TriggerType> getPossibleActions(){
+        return statePossibleActions.get(state);
     }
 
     /**

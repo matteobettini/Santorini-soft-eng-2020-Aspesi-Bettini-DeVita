@@ -7,6 +7,5 @@ public enum PlayerState {
     TURN_STARTED,
     MOVED,
     BUILT,
-    FIRST_BUILT,
-    END_TURN
+    FIRST_BUILT
 }

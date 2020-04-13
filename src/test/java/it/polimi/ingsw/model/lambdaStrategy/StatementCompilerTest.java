@@ -168,10 +168,6 @@ class StatementCompilerTest {
         assert (!compiledStatement.evaluate(moveData, null));
         assert (!compiledStatement.evaluate(null, buildData));
 
-        p.setPlayerState(PlayerState.END_TURN);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-        assert (!compiledStatement.evaluate(null, buildData));
 
 
 
@@ -200,10 +196,6 @@ class StatementCompilerTest {
         assert (compiledStatement.evaluate(moveData, null));
         assert (compiledStatement.evaluate(null, buildData));
 
-        p.setPlayerState(PlayerState.END_TURN);
-
-        assert (compiledStatement.evaluate(moveData, null));
-        assert (compiledStatement.evaluate(null, buildData));
 
 
     }
@@ -242,10 +234,6 @@ class StatementCompilerTest {
         assert (!compiledStatement.evaluate(moveData, null));
         assert (!compiledStatement.evaluate(null, buildData));
 
-        p.setPlayerState(PlayerState.END_TURN);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-        assert (!compiledStatement.evaluate(null, buildData));
 
         playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.STATE_EQUALS, "MOVED");
         compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
@@ -270,10 +258,6 @@ class StatementCompilerTest {
         assert (compiledStatement.evaluate(moveData, null));
         assert (compiledStatement.evaluate(null, buildData));
 
-        p.setPlayerState(PlayerState.END_TURN);
-
-        assert (compiledStatement.evaluate(moveData, null));
-        assert (compiledStatement.evaluate(null, buildData));
     }
     /**
      * Testing the statement STATE_EQUALS when the object is BUILT.
@@ -311,10 +295,6 @@ class StatementCompilerTest {
         assert (!compiledStatement.evaluate(moveData, null));
         assert (!compiledStatement.evaluate(null, buildData));
 
-        p.setPlayerState(PlayerState.END_TURN);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-        assert (!compiledStatement.evaluate(null, buildData));
 
         playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.STATE_EQUALS, "BUILT");
         compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
@@ -339,10 +319,6 @@ class StatementCompilerTest {
         assert (compiledStatement.evaluate(moveData, null));
         assert (compiledStatement.evaluate(null, buildData));
 
-        p.setPlayerState(PlayerState.END_TURN);
-
-        assert (compiledStatement.evaluate(moveData, null));
-        assert (compiledStatement.evaluate(null, buildData));
 
 
     }
@@ -381,10 +357,6 @@ class StatementCompilerTest {
         assert (!compiledStatement.evaluate(moveData, null));
         assert (!compiledStatement.evaluate(null, buildData));
 
-        p.setPlayerState(PlayerState.END_TURN);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-        assert (!compiledStatement.evaluate(null, buildData));
 
         playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.STATE_EQUALS, "FIRST_BUILT");
         compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
@@ -409,78 +381,6 @@ class StatementCompilerTest {
         assert (compiledStatement.evaluate(moveData, null));
         assert (compiledStatement.evaluate(null, buildData));
 
-        p.setPlayerState(PlayerState.END_TURN);
-
-        assert (compiledStatement.evaluate(moveData, null));
-        assert (compiledStatement.evaluate(null, buildData));
-    }
-    /**
-     * Testing the statement STATE_EQUALS when the object is END_TURN.
-     * If the Statement type is IF the evaluation should be true.
-     * If the Statement type is NIF the evaluation should be false.
-     */
-    @Test
-    void stateEquals_Test5(){
-
-        RuleStatement playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "END_TURN");
-        LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
-
-        Player p = Andrea;
-        MoveData moveData = new MoveData(p, null, null);
-        BuildData buildData = new BuildData(p, null, null, null);
-
-        // WITH IF AND END_TURN
-        p.setPlayerState(PlayerState.END_TURN);
-        assert (compiledStatement.evaluate(moveData, null));
-        assert (compiledStatement.evaluate(null, buildData));
-
-        p.setPlayerState(PlayerState.TURN_STARTED);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-        assert (!compiledStatement.evaluate(null, buildData));
-
-        p.setPlayerState(PlayerState.MOVED);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-        assert (!compiledStatement.evaluate(null, buildData));
-
-        p.setPlayerState(PlayerState.BUILT);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-        assert (!compiledStatement.evaluate(null, buildData));
-
-        p.setPlayerState(PlayerState.FIRST_BUILT);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-        assert (!compiledStatement.evaluate(null, buildData));
-
-        playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.STATE_EQUALS, "END_TURN");
-        compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
-
-        // WITH NIF AND END_TURN
-        p.setPlayerState(PlayerState.END_TURN);
-        assert (!compiledStatement.evaluate(moveData, null));
-        assert (!compiledStatement.evaluate(null, buildData));
-
-        p.setPlayerState(PlayerState.TURN_STARTED);
-
-        assert (compiledStatement.evaluate(moveData, null));
-        assert (compiledStatement.evaluate(null, buildData));
-
-        p.setPlayerState(PlayerState.MOVED);
-
-        assert (compiledStatement.evaluate(moveData, null));
-        assert (compiledStatement.evaluate(null, buildData));
-
-        p.setPlayerState(PlayerState.BUILT);
-
-        assert (compiledStatement.evaluate(moveData, null));
-        assert (compiledStatement.evaluate(null, buildData));
-
-        p.setPlayerState(PlayerState.FIRST_BUILT);
-
-        assert (compiledStatement.evaluate(moveData, null));
-        assert (compiledStatement.evaluate(null, buildData));
     }
     /**
      * Testing the Statement Verb HAS_FLAG:

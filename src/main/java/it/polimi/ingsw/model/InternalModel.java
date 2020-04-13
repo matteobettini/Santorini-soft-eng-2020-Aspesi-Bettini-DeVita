@@ -19,7 +19,6 @@ import it.polimi.ingsw.packets.PacketMove;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This class contains all the actual instances of the Model data.
@@ -82,10 +81,13 @@ public class InternalModel {
         assert loser != null;
         assert !losers.contains(loser);
         losers.add(loser);
-        players.remove(loser);
     }
 
-    public void setWinner(Player winner){ this.winner = winner; }
+    public void setWinner(Player winner){
+        assert this.winner == null;
+        assert winner != null;
+        this.winner = winner;
+    }
 
     /**
      * Getter that returns the Worker given its ID.

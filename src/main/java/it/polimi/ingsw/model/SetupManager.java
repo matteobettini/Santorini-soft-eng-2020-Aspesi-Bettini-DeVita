@@ -75,7 +75,8 @@ public class SetupManager {
 
     }
     public void setSelectedCards(String SenderID, List<String> chosenCards) throws InvalidPacketException {
-        assert(setupPhase == SetupPhase.WAIT_CARDS);
+        if(setupPhase != SetupPhase.WAIT_CARDS)
+            return;
 
         // IF THE SENDER IS WORNG -> IGNORE
         if( SenderID == null || !SenderID.equals(players.get(activePlayerIndex).getNickname()))
@@ -165,6 +166,10 @@ public class SetupManager {
 
     }
     public void setStartPlayer(String SenderID, String startPlayer) throws InvalidPacketException{
+
+        if(setupPhase != SetupPhase.WAIT_START_PLAYER)
+            return;
+
         assert(challenger.equals(players.get(activePlayerIndex)));
 
         //IF I AM NOT RECEIVEING IT FROM THE CHALLENGER  -> IGNORE
@@ -176,7 +181,7 @@ public class SetupManager {
             throw new InvalidPacketException();
 
         //IF THE CHOSEN PLAYER IS NOT ONE OF THE PLAYERS
-        if(!players.stream().map(Player::getNickname).collect(Collectors.toList()).contains(startPlayer)){
+        if(players.stream().filter(x -> x.getNickname().equals(startPlayer)).count() == 1){
             throw new InvalidPacketException();
         }
         startingPlayer = model.getPlayerByNick(startPlayer);
@@ -191,8 +196,10 @@ public class SetupManager {
         this.setupPhase = SetupPhase.WAIT_WORKERS_CHOICE;
 
     }
+
     public void setWorkersPositions(String SenderID, Map<String, Point> myWorkersPositions) throws InvalidPacketException{
-        assert(setupPhase == SetupPhase.WAIT_WORKERS_CHOICE);
+        if(setupPhase != SetupPhase.WAIT_WORKERS_CHOICE)
+            return;
 
         Player activePlayer = players.get(activePlayerIndex);
         Worker activePlayerWorker1 = activePlayer.getWorkers().get(0);
@@ -212,6 +219,8 @@ public class SetupManager {
 
 
         for( String workerID : myWorkersPositions.keySet()){
+            if(workerID == null)
+                throw new InvalidPacketException();
             // IF ONE OF THE WORKERS IS NOT ONE OF MINE -> INVALID
             if(!workerID.equals(activePlayerWorker1.getID()) || !workerID.equals(activePlayerWorker2.getID()))
                 throw new InvalidPacketException();
@@ -253,8 +262,6 @@ public class SetupManager {
         }else{ // IF NOT WE ASK FOR OTHER WORKERS POSITIONING
             PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);
             notifyPacketDoActionObservers(packetDoAction);
-
-            this.setupPhase = SetupPhase.WAIT_WORKERS_CHOICE;
         }
 
     }
