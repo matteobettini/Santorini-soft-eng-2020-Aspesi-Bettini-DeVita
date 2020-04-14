@@ -118,7 +118,7 @@ public class InternalModel {
         Worker w = getWorkerByID(packetMove.getWorkerID());
         List<Point> moves = packetMove.getMove();
         
-        if(moves == null || moves.isEmpty() || p == null || w == null) throw new InvalidPacketException();
+        if(moves == null || moves.isEmpty() || p == null || w == null || !p.getWorkers().contains(w)) throw new InvalidPacketException();
 
         for (Point move : moves) if (move == null || board.getCell(move) == null) throw new InvalidPacketException();
         
@@ -152,7 +152,7 @@ public class InternalModel {
         Map<Point,List<BuildingType>> builds = packetBuild.getBuilds();
         List<Point> buildsOrder = packetBuild.getDataOrder();
         
-        if(buildsOrder == null || builds == null || buildsOrder.isEmpty() || builds.isEmpty() || buildsOrder.size() != builds.size()  || p == null || w == null) throw new InvalidPacketException();
+        if(buildsOrder == null || builds == null || buildsOrder.isEmpty() || builds.isEmpty() || buildsOrder.size() != builds.size()  || p == null || w == null || !p.getWorkers().contains(w)) throw new InvalidPacketException();
         
         for(Point pos : builds.keySet()) {
             if (builds.get(pos) == null || builds.get(pos).isEmpty() || board.getCell(pos) == null)
