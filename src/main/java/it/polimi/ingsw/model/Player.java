@@ -27,7 +27,7 @@ public class Player {
 
     Player(String nickname){
         this.nickname = nickname;
-        this.statePossibleActions = null;
+        this.statePossibleActions = new HashMap<>();
         this.flags = new HashSet<>();
         this.workers = new ArrayList<>();
         this.workers.add(new Worker(this.nickname + ".1", this));
@@ -36,7 +36,15 @@ public class Player {
     }
 
     public Set<TriggerType> getPossibleActions(){
-        return statePossibleActions.get(state);
+        return new HashSet<>(statePossibleActions.get(state));
+    }
+
+    public void addActionData(Map<PlayerState, Set<TriggerType>> association){
+        statePossibleActions = new HashMap<>();
+        for(PlayerState state : PlayerState.values()){
+            assert (association.containsKey(state));
+            statePossibleActions.put(state, new HashSet<>(association.get(state)));
+        }
     }
 
     /**

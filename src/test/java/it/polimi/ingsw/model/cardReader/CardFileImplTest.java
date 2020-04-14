@@ -1,9 +1,15 @@
 package it.polimi.ingsw.model.cardReader;
 
+import it.polimi.ingsw.model.cardReader.enums.EffectType;
+import it.polimi.ingsw.model.cardReader.enums.StatementType;
+import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
+import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,5 +118,80 @@ public class CardFileImplTest {
         String descrTest = "MixedStatements";
         List<CardRuleImpl> rules = CardRuleImplTest.getRuleWithMixedStatementsOnBuild();
         return new CardFileImpl(nameTest,descrTest,rules);
+    }
+
+    public static CardFileImpl getAllowOpponents(TriggerType triggerType, PlayerState state) {
+        String nameTest = "TEST06";
+        String descrTest = "AllowOpponents";
+        List<RuleStatementImpl> statements = new LinkedList<>();
+        RuleStatementImpl stmt = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER");
+        statements.add(stmt);
+        stmt = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, state.name());
+        statements.add(stmt);
+        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        List<CardRuleImpl> rules = new LinkedList<>();
+        rules.add(CardRuleImplTest.getRule(triggerType, statements, effect));
+        CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
+        try{
+            CardValidator.checkCardFile(cardFile);
+        } catch (InvalidCardException e) {
+            assert false;
+        }
+        return cardFile;
+    }
+    public static CardFileImpl getAllowOpponents(TriggerType triggerType) {
+        String nameTest = "TEST07";
+        String descrTest = "AllowOpponents";
+        List<RuleStatementImpl> statements = new LinkedList<>();
+        RuleStatementImpl stmt = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER");
+        statements.add(stmt);
+        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        List<CardRuleImpl> rules = new LinkedList<>();
+        rules.add(CardRuleImplTest.getRule(triggerType, statements, effect));
+        CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
+        try{
+            CardValidator.checkCardFile(cardFile);
+        } catch (InvalidCardException e) {
+            assert false;
+        }
+        return cardFile;
+    }
+    public static CardFileImpl getAllowOpponentsAllStatesExcluded(TriggerType triggerType, PlayerState state) {
+        String nameTest = "TEST08";
+        String descrTest = "AllowNegatedState";
+        List<RuleStatementImpl> statements = new LinkedList<>();
+        RuleStatementImpl stmt = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER");
+        statements.add(stmt);
+        stmt = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.STATE_EQUALS, state.name());
+        statements.add(stmt);
+        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        List<CardRuleImpl> rules = new LinkedList<>();
+        rules.add(CardRuleImplTest.getRule(triggerType, statements, effect));
+        CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
+        try{
+            CardValidator.checkCardFile(cardFile);
+        } catch (InvalidCardException e) {
+            assert false;
+        }
+        return cardFile;
+    }
+    public static CardFileImpl getAllowAllStatesExcluded(TriggerType triggerType, PlayerState state) {
+        String nameTest = "TEST08";
+        String descrTest = "AllowNegatedState";
+        List<RuleStatementImpl> statements = new LinkedList<>();
+        RuleStatementImpl stmt = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER");
+        statements.add(stmt);
+        stmt = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.STATE_EQUALS, state.name());
+        statements.add(stmt);
+        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        List<CardRuleImpl> rules = new LinkedList<>();
+        rules.add(CardRuleImplTest.getRule(triggerType, statements, effect));
+        CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
+        try{
+            CardValidator.checkCardFile(cardFile);
+        } catch (InvalidCardException e) {
+            assert false;
+        }
+        return cardFile;
     }
 }

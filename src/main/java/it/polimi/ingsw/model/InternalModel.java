@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.lambdaStrategy.CompiledCardRule;
+import it.polimi.ingsw.model.lambdaStrategy.MapCompiler;
 import it.polimi.ingsw.model.lambdaStrategy.RuleCompiler;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
@@ -202,8 +203,8 @@ public class InternalModel {
             }
 
         }
-
-
+        //Compile state info for players
+        MapCompiler.compileMap(players,cardFactory.getDefaultStrategy());
     }
 
     private void compileAndAddRule(CardRule rule, Player owner){

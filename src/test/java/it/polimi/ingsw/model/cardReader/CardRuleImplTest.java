@@ -124,4 +124,8 @@ public class CardRuleImplTest {
         res.add(new CardRuleImpl(TriggerType.BUILD, RuleStatementImplTest.getMixedStatementOnBuildList(), RuleEffectImplTest.getRuleEffectWithNullData()));
         return res;
     }
+
+    public static CardRuleImpl getRule(TriggerType triggerType, List<RuleStatementImpl> statements, RuleEffectImpl effect){
+        return new CardRuleImpl(triggerType,statements,effect);
+    }
 }
