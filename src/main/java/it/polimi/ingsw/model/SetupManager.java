@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.cardReader.CardFile;
 import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.model.enums.SetupPhase;
+import it.polimi.ingsw.observe.Observable;
 import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.*;
 import javafx.util.Pair;
@@ -12,7 +13,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SetupManager {
+public class SetupManager extends Observable<PacketContainer> {
 
     private final List<Player> players;
     private SetupPhase setupPhase;
@@ -26,13 +27,10 @@ public class SetupManager {
     private final Map<String, String> allCards;
     private int numberOfCardsToChoose;
 
-
-    private final List<Observer<PacketSetup>> packetSetupObservers;
-    private final List<Observer<PacketCardsFromServer>> packetCardsFromServerObservers;
-    private final List<Observer<PacketUpdateBoard>> packetUpdateBoardObservers;
-    private final List<Observer<PacketDoAction>> packetDoActionObservers;
+    
 
     public SetupManager(InternalModel model, List<CardFile> cards) {
+        super();
         this.setupPhase = SetupPhase.STARTING;
         this.challenger = null;
         this.cardAssociations = new HashMap<>();
@@ -42,10 +40,8 @@ public class SetupManager {
         this.players = model.getPlayers();
         this.numberOfCardsToChoose = players.size();
         this.startingPlayer = null;
-        this.packetSetupObservers = new ArrayList<>();
-        this.packetCardsFromServerObservers = new ArrayList<>();
-        this.packetUpdateBoardObservers = new ArrayList<>();
-        this.packetDoActionObservers = new ArrayList<>();
+
+
 
         assert (players.size() == 2 || players.size() == 3);
 
@@ -70,7 +66,8 @@ public class SetupManager {
 
         //SENDIND THE CARDS TO CHOOSE TO THE CHALLENGER
         PacketCardsFromServer packetCardsFromServer = new PacketCardsFromServer(challenger.getNickname(), numberOfCardsToChoose, allCards ,availableCards);
-        notifyPacketCardsFromServerObservers(packetCardsFromServer);
+        PacketContainer packetContainer = new PacketContainer(packetCardsFromServer,null,null, null, null);
+        notify(packetContainer);
         this.setupPhase = SetupPhase.WAIT_CARDS;
 
     }
@@ -146,7 +143,8 @@ public class SetupManager {
             }
 
             PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards);
-            notifyPacketSetupObservers(packetSetup);
+            PacketContainer packetContainer = new PacketContainer(null,packetSetup,null, null, null);
+            notify(packetContainer);
 
             // SOME SLEEPING NOT TO SEND TWO PACKETS AT THE SAME TIME
             try {
@@ -156,12 +154,15 @@ public class SetupManager {
             }
 
             PacketDoAction packetDoAction = new PacketDoAction(challenger.getNickname(), ActionType.CHOOSE_START_PLAYER);
-            notifyPacketDoActionObservers(packetDoAction);
+            packetContainer = new PacketContainer(null,null,null, packetDoAction, null);
+            notify(packetContainer);
+
 
             this.setupPhase = SetupPhase.WAIT_START_PLAYER;
         }else{ //IF THE NEXT PLAYER IS NOT THE CHALLENGER I ASK HIM TO CHOOSE
             PacketCardsFromServer packetCardsFromServer = new PacketCardsFromServer(players.get(activePlayerIndex).getNickname(), numberOfCardsToChoose, allCards ,availableCards);
-            notifyPacketCardsFromServerObservers(packetCardsFromServer);
+            PacketContainer packetContainer = new PacketContainer(packetCardsFromServer,null,null, null, null);
+            notify(packetContainer);
         }
 
     }
@@ -191,12 +192,12 @@ public class SetupManager {
         assert (activePlayerIndex == 0);
 
         PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);
-        notifyPacketDoActionObservers(packetDoAction);
+        PacketContainer packetContainer = new PacketContainer(null,null,null, packetDoAction, null);
+        notify(packetContainer);
 
         this.setupPhase = SetupPhase.WAIT_WORKERS_CHOICE;
 
     }
-
     public void setWorkersPositions(String SenderID, Map<String, Point> myWorkersPositions) throws InvalidPacketException{
         if(setupPhase != SetupPhase.WAIT_WORKERS_CHOICE)
             return;
@@ -244,7 +245,8 @@ public class SetupManager {
             }
         }
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPositions, null, null, null);
-        notifyPacketUpdateBoardObservers(packetUpdateBoard);
+        PacketContainer packetContainer = new PacketContainer(null,null,packetUpdateBoard, null, null);
+        notify(packetContainer);
 
         // SOME SLEEPING NOT TO SEND TWO PACKETS AT THE SAME TIME
         try {
@@ -261,7 +263,8 @@ public class SetupManager {
             model.compileCardStrategy();
         }else{ // IF NOT WE ASK FOR OTHER WORKERS POSITIONING
             PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);
-            notifyPacketDoActionObservers(packetDoAction);
+            packetContainer = new PacketContainer(null,null,null, packetDoAction, null);
+            notify(packetContainer);
         }
 
     }
@@ -281,37 +284,5 @@ public class SetupManager {
             activePlayerIndex = 0;
     }
 
-    public void addPacketSetupObserver(Observer<PacketSetup> o){
-        packetSetupObservers.add(o);
-    }
-    public void addPacketDoActionObserver(Observer<PacketDoAction> o){
-        packetDoActionObservers.add(o);
-    }
-    public void addPacketUpdateBoardObserver(Observer<PacketUpdateBoard> o){
-        packetUpdateBoardObservers.add(o);
-    }
-    public void addPacketCardsFromServerObserver(Observer<PacketCardsFromServer> o){
-        packetCardsFromServerObservers.add(o);
-    }
-
-    public void notifyPacketSetupObservers(PacketSetup p){
-        for(Observer<PacketSetup> observer: packetSetupObservers){
-            observer.update(p);
-        }
-    }
-    public void notifyPacketDoActionObservers(PacketDoAction p){
-        for(Observer<PacketDoAction> observer: packetDoActionObservers){
-            observer.update(p);
-        }
-    }
-    public void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
-        for(Observer<PacketUpdateBoard> observer: packetUpdateBoardObservers){
-            observer.update(p);
-        }
-    }
-    public void notifyPacketCardsFromServerObservers(PacketCardsFromServer p){
-        for(Observer<PacketCardsFromServer> observer: packetCardsFromServerObservers){
-            observer.update(p);
-        }
-    }
+ 
 }

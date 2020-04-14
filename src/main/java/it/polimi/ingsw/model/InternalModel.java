@@ -395,6 +395,8 @@ public class InternalModel {
         return result;
     }
 
+    public  Set<Point> getPossibleMoves(MoveData moveData){ return null;}
+
     /**
      * Gets all possible points where the specified worker can build at the next opportunity it has.
      * Very similar to canBuild, used for strategy testing purposes at the moment.
@@ -430,6 +432,8 @@ public class InternalModel {
         }
         return result;
     }
+
+    public Set<Point> getPossibleBuilds(BuildData buildData){return null;}
 
     private CompiledCardRule getAllowMoveRule(MoveData moveData){
         assert (moveData != null && allowMoveRules != null);
