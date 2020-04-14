@@ -80,7 +80,12 @@ public class InternalModel {
     public void addLoser(Player loser){
         assert loser != null;
         assert !losers.contains(loser);
+        assert players.contains(loser);
         losers.add(loser);
+        board.getCell(loser.getWorkers().get(0).getPosition()).removeWorker();
+        board.getCell(loser.getWorkers().get(1).getPosition()).removeWorker();
+        loser.getWorkers().get(0).removeFromBoard();
+        loser.getWorkers().get(1).removeFromBoard();
     }
 
     public void setWinner(Player winner){

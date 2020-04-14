@@ -28,6 +28,14 @@ public class Worker {
      */
     public String getID(){ return this.ID; }
 
+
+    /**
+     * set worker's position to null
+     */
+    public void removeFromBoard(){
+        this.position = null;
+    }
+
     /**
      * Setter that sets the position of the Worker to the given position.
      * @param position is an instance of position that contains the info about the position to set.
