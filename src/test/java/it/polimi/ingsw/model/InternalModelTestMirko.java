@@ -479,6 +479,1612 @@ class InternalModelTestMirko {
 
     }
 
+    @Test
+    void apollo_atlas_prometheus(){
+         /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | x  |x   | x  |    |
+                +----+----+----+----+----+
+            2   |    |  x |D1  | x  |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |  x | x  |  M1|    |
+                |    |    |    | x  |    |
+                +----+----+----+----+----+
+            4   |    |    |    | A1 |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+        // Initializing cards
+        CardFile prometheus = cardFactory.getCards().stream().filter(x -> x.getName().equals("Prometheus")).findFirst().orElse(null);
+        CardFile atlas = cardFactory.getCards().stream().filter(x -> x.getName().equals("Atlas")).findFirst().orElse(null);
+        CardFile apollo = cardFactory.getCards().stream().filter(x -> x.getName().equals("Apollo")).findFirst().orElse(null);
+
+        Matteo.setCard(prometheus); //M1
+        Andrea.setCard(atlas); //A1
+        Mirko.setCard(apollo); //D1
+        model.compileCardStrategy();
+
+        //Initializing positions pointXY
+
+        Point point22 = new Point(2,2);
+        Point point33 = new Point(3,3);
+        Point point34 = new Point(3,4);
+        Point point32 = new Point(3,2);
+        Point point43 = new Point(4,3);
+        Point point42 = new Point(4,2);
+        Point point44 = new Point(4,4);
+        Point point31 = new Point(3,1);
+        Point point21 = new Point(2,1);
+        Point point23 = new Point(2,3);
+
+        model.getBoard().getCell(point22).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(point22);
+
+        model.getBoard().getCell(point33).setWorker(MatteoW1.getID());
+        MatteoW1.setPosition(point33);
+
+        model.getBoard().getCell(point34).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(point34);
+
+        //MOVE UTILS
+        List<Point> moves = new ArrayList<>();
+        PacketMove packetMove;
+        MoveData moveData;
+        Set<Point> possibleMoves = new HashSet<>();
+
+        //BUILDS UTILS
+        List<BuildingType> buildings = new ArrayList<>();
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildsOrder = new ArrayList<>();
+        PacketBuild packetBuild;
+        BuildData buildData;
+        Set<Point> possibleBuilds = new HashSet<>();
+
+        //FIRST MOVE MIRKO AS APOLLO SWAPS HIMSELF WITH MATTEO
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | x  | x  | x  |    |
+                +----+----+----+----+----+
+            2   |    |    |M1  |    |    |
+                |    | x  |  ↘ | x  |    |
+                +----+----+----+----+----+
+            3   |    | x  |  x |  D1|    |
+                |    |    |    |  x |    |
+                +----+----+----+----+----+
+            4   |    |    |    | A1 |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+        possibleMoves.add(point32);
+        possibleMoves.add(point33);
+        possibleMoves.add(point21);
+        possibleMoves.add(new Point(1,1));
+        possibleMoves.add(point31);
+        possibleMoves.add(new Point(1,2));
+        possibleMoves.add(new Point(1,3));
+        possibleMoves.add(point23);
+
+        assertEquals(possibleMoves, model.getPossibleMoves(Mirko, MirkoW1));
+
+        moves.add(point33);
+        packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Mirko.getState());
+        assertEquals(point33, MirkoW1.getPosition());
+        assertEquals(MirkoW1.getID(), model.getBoard().getCell(point33).getWorkerID());
+
+        assertEquals(PlayerState.TURN_STARTED, Matteo.getState());
+        assertEquals(point22, MatteoW1.getPosition());
+        assertEquals(MatteoW1.getID(), model.getBoard().getCell(point22).getWorkerID());
+
+        //MIRKO'S WORKER BUILDS IN POSITION 32
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |M1  | FF |    |
+                |    |    |    | x  | x  |
+                +----+----+----+----+----+
+            3   |    |    | x  |  D1| x  |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    | A1 | x  |
+                |    |    | x  |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(point32);
+        possibleBuilds.add(point42);
+        possibleBuilds.add(new Point(4,3));
+        possibleBuilds.add(point44);
+        possibleBuilds.add(new Point(2,4));
+        possibleBuilds.add(point23);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1));
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point32,buildings);
+        buildsOrder.add(point32);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(), MirkoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point32).getTopBuilding(), LevelType.FIRST_FLOOR);
+        assertEquals(PlayerState.BUILT, Mirko.getState());
+
+        //MATTEO'S WORKER MOVES IN POSITION 32
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | x  | x  | x  |    |
+                +----+----+----+----+----+
+            2   |    |    |    | FF |    |
+                |    |x   | -> | xM1|    |
+                +----+----+----+----+----+
+            3   |    | x  | x  |  D1|    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    | A1 |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(point32);
+        possibleMoves.add(point31);
+        possibleMoves.add(point21);
+        possibleMoves.add(new Point(1,1));
+        possibleMoves.add(new Point(1,2));
+        possibleMoves.add(new Point(1,3));
+        possibleMoves.add(point23);
+
+        assertEquals(possibleMoves, model.getPossibleMoves(Matteo, MatteoW1));
+
+        moves.add(point32);
+        packetMove = new PacketMove(Matteo.getNickname(),MatteoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Matteo.getState());
+        assertEquals(point32, MatteoW1.getPosition());
+        assertEquals(MatteoW1.getID(), model.getBoard().getCell(point32).getWorkerID());
+
+        //MATTEO'S WORKER BUILDS IN POSITION 22
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    | x  | x  | x  |
+                +----+----+----+----+----+
+            2   |    |    | x  | FF | x  |
+                |    |    | FF | M1 |    |
+                +----+----+----+----+----+
+            3   |    |    | x  |  D1| x  |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    | A1 |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(point22);
+        possibleBuilds.add(point21);
+        possibleBuilds.add(point31);
+        possibleBuilds.add(new Point(4,1));
+        possibleBuilds.add(point42);
+        possibleBuilds.add(new Point(4,3));
+        possibleBuilds.add(point23);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point22,buildings);
+        buildsOrder.add(point22);
+
+        packetBuild = new PacketBuild(Matteo.getNickname(), MatteoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point22).getTopBuilding(), LevelType.FIRST_FLOOR);
+        assertEquals(PlayerState.BUILT, Matteo.getState());
+
+
+        //ANDREA'S WORKER MOVES IN POSITION 43
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    | FF |    |
+                |    |    | FF | M1 |    |
+                +----+----+----+----+----+
+            3   |    |    | x  |  D1| A1 |
+                |    |    |    |    | x  |
+                +----+----+----+----+----+
+            4   |    |    | x  | ↗  | x  |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(point43);
+        possibleMoves.add(point23);
+        possibleMoves.add(new Point(2,4));
+        possibleMoves.add(point44);
+
+        assertEquals(possibleMoves,model.getPossibleMoves(Andrea, AndreaW1));
+
+        moves.add(point43);
+        packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Andrea.getState());
+        assertEquals(point43, AndreaW1.getPosition());
+        assertEquals(AndreaW1.getID(), model.getBoard().getCell(point43).getWorkerID());
+
+        //ANDREA'S WORKER BUILDS A DOME IN POSITION 42
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    | FF | C  |
+                |    |    | FF | M1 | x  |
+                +----+----+----+----+----+
+            3   |    |    |    |  D1| A1 |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |  x |  x |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(point42);
+        possibleBuilds.add(point44);
+        possibleBuilds.add(point34);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1));
+
+        buildings.add(BuildingType.DOME);
+        builds.put(point42,buildings);
+        buildsOrder.add(point42);
+
+        packetBuild = new PacketBuild(Andrea.getNickname(), AndreaW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point42).getTopBuilding(), LevelType.DOME);
+        assertEquals(PlayerState.BUILT, Andrea.getState());
+
+        ///////////////////FIRST TURN ENDED///////////////////////////////////
+
+        Mirko.setPlayerState(PlayerState.TURN_STARTED);
+        Matteo.setPlayerState(PlayerState.TURN_STARTED);
+        Andrea.setPlayerState(PlayerState.TURN_STARTED);
+
+        //MIRKO'S WORKER MOVES IN POSITION 43 AND SWAPS HIMSELF WITH ANDREA'S WORKER
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    | x  | FF | C  |
+                |    |    | FF | xM1|    |
+                +----+----+----+----+----+
+            3   |    |    | x  |  A1| D1 |
+                |    |    |    |  ->| x  |
+                +----+----+----+----+----+
+            4   |    |    | x  |  x |  x |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(point43);
+        possibleMoves.add(point44);
+        possibleMoves.add(point34);
+        possibleMoves.add(new Point(2,4));
+        possibleMoves.add(point23);
+        possibleMoves.add(point22);
+        possibleMoves.add(point32);
+
+        assertEquals(possibleMoves,model.getPossibleMoves(Mirko, MirkoW1));
+
+        moves.add(point43);
+        packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Mirko.getState());
+        assertEquals(point43, MirkoW1.getPosition());
+        assertEquals(MirkoW1.getID(), model.getBoard().getCell(point43).getWorkerID());
+
+        assertEquals(PlayerState.TURN_STARTED, Andrea.getState());
+        assertEquals(point33, AndreaW1.getPosition());
+        assertEquals(AndreaW1.getID(), model.getBoard().getCell(point33).getWorkerID());
+
+        //MIRKO'S WORKER BUILDS IN POSITION 43
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    | FF | C  |
+                |    |    | FF |  M1|    |
+                +----+----+----+----+----+
+            3   |    |    |    |  A1| D1 |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |  x |  FF|
+                |    |    |    |    |   x|
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(point44);
+        possibleBuilds.add(point34);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1));
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point44,buildings);
+        buildsOrder.add(point44);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(), MirkoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point44).getTopBuilding(), LevelType.FIRST_FLOOR);
+        assertEquals(PlayerState.BUILT, Mirko.getState());
+
+        //MATTEO'S WORKER BUILDS A SECOND FLOOR IN POSITION 22
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    | x  | x  | x  |
+                +----+----+----+----+----+
+            2   |    |    | X  | FF | C  |
+                |    |    | SF |  M1|    |
+                +----+----+----+----+----+
+            3   |    |    | x  |  A1| D1 |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleBuilds.add(point22);
+        possibleBuilds.add(point21);
+        possibleBuilds.add(point31);
+        possibleBuilds.add(new Point(4,1));
+        possibleBuilds.add(point23);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+
+        buildings.add(BuildingType.SECOND_FLOOR);
+        builds.put(point22,buildings);
+        buildsOrder.add(point22);
+
+        packetBuild = new PacketBuild(Matteo.getNickname(), MatteoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point22).getTopBuilding(), LevelType.SECOND_FLOOR);
+        assertEquals(PlayerState.FIRST_BUILT, Matteo.getState());
+
+        //MATTEO'S TRIES TO MOVE IN POSITION 22 BUT HE CAN'T
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    | FF | C  |
+                |    |    | SF |<- M1    |
+                +----+----+----+----+----+
+            3   |    |    |    |  A1| D1 |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        moves.add(point22);
+        packetMove = new PacketMove(Matteo.getNickname(),MatteoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertFalse(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.FIRST_BUILT, Matteo.getState());
+        assertEquals(point32, MatteoW1.getPosition());
+        assertEquals(MatteoW1.getID(), model.getBoard().getCell(point32).getWorkerID());
+
+        //MATTEO'S WORKER MOVES IN POSITION 31
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    | x  |    |
+                |    |    | x  | M1 | x  |
+                +----+----+----+----+----+
+            2   |    |    |    | FF | C  |
+                |    |    | SF |  ⬆|    |
+                +----+----+----+----+----+
+            3   |    |    | x  |  A1| D1 |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        moves.clear();
+
+        possibleMoves.add(new Point(4,1));
+        possibleMoves.add(point31);
+        possibleMoves.add(point21);
+        possibleMoves.add(point23);
+
+        assertEquals(possibleMoves,model.getPossibleMoves(Matteo, MatteoW1));
+
+        moves.add(point31);
+        packetMove = new PacketMove(Matteo.getNickname(),MatteoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Matteo.getState());
+        assertEquals(point31, MatteoW1.getPosition());
+        assertEquals(MatteoW1.getID(), model.getBoard().getCell(point31).getWorkerID());
+
+        //MATTEO'S WORKER BUILDS IN POSITION 21
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    | x  | x  | x  |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    | x  | M1 | x  |
+                +----+----+----+----+----+
+            2   |    |    | x  | FF | C  |
+                |    |    | SF | x  |    |
+                +----+----+----+----+----+
+            3   |    |    |    |  A1| D1 |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleBuilds.add(new Point(4,1));
+        possibleBuilds.add(new Point(4,0));
+        possibleBuilds.add(new Point(3,0));
+        possibleBuilds.add(new Point(2,0));
+        possibleBuilds.add(point21);
+        possibleBuilds.add(point22);
+        possibleBuilds.add(point32);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point21,buildings);
+        buildsOrder.add(point21);
+
+        packetBuild = new PacketBuild(Matteo.getNickname(), MatteoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point21).getTopBuilding(), LevelType.FIRST_FLOOR);
+        assertEquals(PlayerState.BUILT, Matteo.getState());
+
+        //ANDREA'S WORKER MOVES IN POSITION 23
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    | FF | C  |
+                |    |    | SF | x  |    |
+                +----+----+----+----+----+
+            3   |    |    | A1 |    | D1 |
+                |    |    |  X | <- |    |
+                +----+----+----+----+----+
+            4   |    |    |  x | x  |  FF|
+                |    |    |    |    |  x |
+                +----+----+----+----+----+
+            Y
+        */
+
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(point32);
+        possibleMoves.add(point23);
+        possibleMoves.add(new Point(2,4));
+        possibleMoves.add(point34);
+        possibleMoves.add(point44);
+
+        assertEquals(possibleMoves,model.getPossibleMoves(Andrea, AndreaW1));
+
+        moves.add(point23);
+        packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Andrea.getState());
+        assertEquals(point23, AndreaW1.getPosition());
+        assertEquals(AndreaW1.getID(), model.getBoard().getCell(point23).getWorkerID());
+
+        //ANDREA'S WORKER BUILDS IN POSITION 33
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    | x  | x  | FF | C  |
+                |    |    | SF | x  |    |
+                +----+----+----+----+----+
+            3   |    |  x | A1 |  FF| D1 |
+                |    |    |    |  X |    |
+                +----+----+----+----+----+
+            4   |    | x  |  x | x  |  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(point22);
+        possibleBuilds.add(point32);
+        possibleBuilds.add(point33);
+        possibleBuilds.add(point34);
+        possibleBuilds.add(new Point(2,4));
+        possibleBuilds.add(new Point(1,4));
+        possibleBuilds.add(new Point(1,3));
+        possibleBuilds.add(new Point(1,2));
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1));
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point33,buildings);
+        buildsOrder.add(point33);
+
+        packetBuild = new PacketBuild(Andrea.getNickname(), AndreaW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point33).getTopBuilding(), LevelType.FIRST_FLOOR);
+        assertEquals(PlayerState.BUILT, Andrea.getState());
+
+        ///////////////////SECOND TURN ENDED///////////////////////////////////
+
+        Mirko.setPlayerState(PlayerState.TURN_STARTED);
+        Matteo.setPlayerState(PlayerState.TURN_STARTED);
+        Andrea.setPlayerState(PlayerState.TURN_STARTED);
+
+        //MIRKO'S WORKER MOVES IN POSITION 33
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    | FF | C  |
+                |    |    | SF | x  |    |
+                +----+----+----+----+----+
+            3   |    |    | A1 |  FF|    |
+                |    |    |    |xD1 | <- |
+                +----+----+----+----+----+
+            4   |    |    |    | x  |  FF|
+                |    |    |    |    | x  |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(point44);
+        possibleMoves.add(point34);
+        possibleMoves.add(point33);
+        possibleMoves.add(point32);
+
+        assertEquals(possibleMoves,model.getPossibleMoves(Mirko, MirkoW1));
+
+        moves.add(point33);
+        packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Mirko.getState());
+        assertEquals(point33, MirkoW1.getPosition());
+        assertEquals(MirkoW1.getID(), model.getBoard().getCell(point33).getWorkerID());
+
+        //MIRKO'S WORKER BUILDS IN POSITION 22
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    | X  | FF | C  |
+                |    |    | TF | x  |    |
+                +----+----+----+----+----+
+            3   |    |    | A1 |  FF|    |
+                |    |    |    | D1 |  x |
+                +----+----+----+----+----+
+            4   |    |    |  x | x  |  FF|
+                |    |    |    |    | x  |
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(point22);
+        possibleBuilds.add(point32);
+        possibleBuilds.add(point43);
+        possibleBuilds.add(point44);
+        possibleBuilds.add(point34);
+        possibleBuilds.add(new Point(2,4));
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1));
+
+        buildings.add(BuildingType.THIRD_FLOOR);
+        builds.put(point22,buildings);
+        buildsOrder.add(point22);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(), MirkoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point22).getTopBuilding(), LevelType.THIRD_FLOOR);
+        assertEquals(PlayerState.BUILT, Mirko.getState());
+
+        //MATTEO'S WORKER MOVES IN POSITION 21
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    | x  | x  | x  |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    | xM1| <- | x  |
+                +----+----+----+----+----+
+            2   |    |    |    | FF | C  |
+                |    |    | TF | x  |    |
+                +----+----+----+----+----+
+            3   |    |    | A1 |  FF|    |
+                |    |    |    | D1 |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(point32);
+        possibleMoves.add(new Point(4,1));
+        possibleMoves.add(new Point(4,0));
+        possibleMoves.add(new Point(3,0));
+        possibleMoves.add(new Point(2,0));
+        possibleMoves.add(point21);
+
+        assertEquals(possibleMoves, model.getPossibleMoves(Matteo, MatteoW1));
+
+        moves.add(point21);
+        packetMove = new PacketMove(Matteo.getNickname(),MatteoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Matteo.getState());
+        assertEquals(point21, MatteoW1.getPosition());
+        assertEquals(MatteoW1.getID(), model.getBoard().getCell(point21).getWorkerID());
+
+        //MATTEO'S WORKER BUILDS IN POSITION 32
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    | x  | x  | x  |    |
+                +----+----+----+----+----+
+            1   |    | x  | FF |    |    |
+                |    |    |  M1| x  |    |
+                +----+----+----+----+----+
+            2   |    | x  | x  | SF | C  |
+                |    |    | TF | X  |    |
+                +----+----+----+----+----+
+            3   |    |    | A1 |  FF|    |
+                |    |    |    | D1 |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(new Point(3,0));
+        possibleBuilds.add(new Point(2,0));
+        possibleBuilds.add(new Point(1,0));
+        possibleBuilds.add(new Point(1,1));
+        possibleBuilds.add(new Point(1,2));
+        possibleBuilds.add(point22);
+        possibleBuilds.add(point32);
+        possibleBuilds.add(point31);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+
+        buildings.add(BuildingType.SECOND_FLOOR);
+        builds.put(point32,buildings);
+        buildsOrder.add(point32);
+
+        packetBuild = new PacketBuild(Matteo.getNickname(), MatteoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point32).getTopBuilding(), LevelType.SECOND_FLOOR);
+        assertEquals(PlayerState.BUILT, Matteo.getState());
+
+        //ANDREA'S WORKER MOVES IN POSITION 34
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    |  M1|    |    |
+                +----+----+----+----+----+
+            2   |    | x  |    | SF | C  |
+                |    |    | TF |    |    |
+                +----+----+----+----+----+
+            3   |    | x  | ↘  |  FF|    |
+                |    |    |    | D1 |    |
+                +----+----+----+----+----+
+            4   |    | x  | x  | xA1|  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(new Point(1,2));
+        possibleMoves.add(new Point(1,3));
+        possibleMoves.add(new Point(1,4));
+        possibleMoves.add(new Point(2,4));
+        possibleMoves.add(point34);
+
+        assertEquals(possibleMoves,model.getPossibleMoves(Andrea, AndreaW1));
+
+        moves.add(point34);
+        packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Andrea.getState());
+        assertEquals(point34, AndreaW1.getPosition());
+        assertEquals(AndreaW1.getID(), model.getBoard().getCell(point34).getWorkerID());
+
+        //ANDREA'S WORKER BUILDS IN POSITION 23
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    |  M1|    |    |
+                +----+----+----+----+----+
+            2   |    |    |    | SF | C  |
+                |    |    | TF |    |    |
+                +----+----+----+----+----+
+            3   |    |    | C  |  FF| X  |
+                |    |    | X  | D1 |    |
+                +----+----+----+----+----+
+            4   |    |    | x  |  A1|  FF|
+                |    |    |    |    |  x |
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(point23);
+        possibleBuilds.add(new Point(2,4));
+        possibleBuilds.add(point44);
+        possibleBuilds.add(point43);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1));
+
+        buildings.add(BuildingType.DOME);
+        builds.put(point23,buildings);
+        buildsOrder.add(point23);
+
+        packetBuild = new PacketBuild(Andrea.getNickname(), AndreaW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point23).getTopBuilding(), LevelType.DOME);
+        assertEquals(PlayerState.BUILT, Andrea.getState());
+
+        ///////////////////THIRD TURN ENDED///////////////////////////////////
+
+        Mirko.setPlayerState(PlayerState.TURN_STARTED);
+        Matteo.setPlayerState(PlayerState.TURN_STARTED);
+        Andrea.setPlayerState(PlayerState.TURN_STARTED);
+
+        //MIRKO'S WORKER MOVES IN POSITION 32
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    |  M1|    |    |
+                +----+----+----+----+----+
+            2   |    |    |    | SF | C  |
+                |    |    | TF | XD1|    |
+                +----+----+----+----+----+
+            3   |    |    | C  |  FF| X  |
+                |    |    |    |  ⬆|    |
+                +----+----+----+----+----+
+            4   |    |    | x  |  A1|  FF|
+                |    |    |    |  x |  x |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(point44);
+        possibleMoves.add(point34);
+        possibleMoves.add(point43);
+        possibleMoves.add(point32);
+        possibleMoves.add(new Point(2,4));
+
+        assertEquals(possibleMoves,model.getPossibleMoves(Mirko, MirkoW1));
+
+        moves.add(point32);
+        packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Mirko.getState());
+        assertEquals(point32, MirkoW1.getPosition());
+        assertEquals(MirkoW1.getID(), model.getBoard().getCell(point32).getWorkerID());
+
+        //MIRKO'S WORKER BUILDS IN POSITION 33
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | FF |    |    |
+                |    |    |  M1| x  | x  |
+                +----+----+----+----+----+
+            2   |    |    |  x | SF | C  |
+                |    |    | TF | D1 |    |
+                +----+----+----+----+----+
+            3   |    |    | C  |  SF| x  |
+                |    |    |    |  X |    |
+                +----+----+----+----+----+
+            4   |    |    |    |  A1|  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(point31);
+        possibleBuilds.add(new Point(4,1));
+        possibleBuilds.add(point43);
+        possibleBuilds.add(point33);
+        possibleBuilds.add(point22);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1));
+
+        buildings.add(BuildingType.SECOND_FLOOR);
+        builds.put(point33,buildings);
+        buildsOrder.add(point33);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(), MirkoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point33).getTopBuilding(), LevelType.SECOND_FLOOR);
+        assertEquals(PlayerState.BUILT, Mirko.getState());
+
+        //MATTEO'S WORKER BUILDS IN POSITION 31
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    | x  | x  | x  |    |
+                +----+----+----+----+----+
+            1   |    |    | FF | FF |    |
+                |    | x  |  M1| x  |    |
+                +----+----+----+----+----+
+            2   |    | x  |  x | SF | C  |
+                |    |    | TF | D1 |    |
+                +----+----+----+----+----+
+            3   |    |    | C  |  SF|    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |  A1|  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleBuilds.add(point31);
+        possibleBuilds.add(new Point(3,0));
+        possibleBuilds.add(new Point(2,0));
+        possibleBuilds.add(new Point(1,0));
+        possibleBuilds.add(new Point(1,1));
+        possibleBuilds.add(new Point(1,2));
+        possibleBuilds.add(point22);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point31,buildings);
+        buildsOrder.add(point31);
+
+        packetBuild = new PacketBuild(Matteo.getNickname(), MatteoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point31).getTopBuilding(), LevelType.FIRST_FLOOR);
+        assertEquals(PlayerState.FIRST_BUILT, Matteo.getState());
+
+        //MATTEO'S WORKER MOVES IN POSITION 31
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    | x  | x  | x  |    |
+                +----+----+----+----+----+
+            1   |    |    | FF | FF |    |
+                |    | x  |  ->| xM1|    |
+                +----+----+----+----+----+
+            2   |    | x  |    | SF | C  |
+                |    |    | TF | D1 |    |
+                +----+----+----+----+----+
+            3   |    |    | C  |  SF|    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |  A1|  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleMoves.add(point31);
+        possibleMoves.add(new Point(3,0));
+        possibleMoves.add(new Point(2,0));
+        possibleMoves.add(new Point(1,0));
+        possibleMoves.add(new Point(1,1));
+        possibleMoves.add(new Point(1,2));
+
+        assertEquals(possibleMoves, model.getPossibleMoves(Matteo, MatteoW1));
+
+        moves.add(point31);
+        packetMove = new PacketMove(Matteo.getNickname(),MatteoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Matteo.getState());
+        assertEquals(point31, MatteoW1.getPosition());
+        assertEquals(MatteoW1.getID(), model.getBoard().getCell(point31).getWorkerID());
+
+        //MATTEO'S WORKER BUILDS IN POSITION 21
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    | x  | x  | x  |
+                +----+----+----+----+----+
+            1   |    |    | SF | FF |    |
+                |    |    |  X | M1 | x  |
+                +----+----+----+----+----+
+            2   |    |    | x  | SF | C  |
+                |    |    | TF | D1 |    |
+                +----+----+----+----+----+
+            3   |    |    | C  |  SF|    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |  A1|  FF|
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleBuilds.add(point21);
+        possibleBuilds.add(new Point(3,0));
+        possibleBuilds.add(new Point(2,0));
+        possibleBuilds.add(new Point(4,0));
+        possibleBuilds.add(new Point(4,1));
+        possibleBuilds.add(point22);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+
+        buildings.add(BuildingType.SECOND_FLOOR);
+        builds.put(point21,buildings);
+        buildsOrder.add(point21);
+
+        packetBuild = new PacketBuild(Matteo.getNickname(), MatteoW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point21).getTopBuilding(), LevelType.SECOND_FLOOR);
+        assertEquals(PlayerState.BUILT, Matteo.getState());
+
+        //ANDREA'S WORKER MOVES IN POSITION 44
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | SF | FF |    |
+                |    |    |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    | SF | C  |
+                |    |    | TF | D1 |    |
+                +----+----+----+----+----+
+            3   |    |    | C  |  SF| x  |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    | x  |    |  FF|
+                |    |    |    |  ->| xA1|
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(new Point(2,4));
+        possibleMoves.add(point44);
+        possibleMoves.add(point43);
+
+        assertEquals(possibleMoves,model.getPossibleMoves(Andrea, AndreaW1));
+
+        moves.add(point44);
+        packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Andrea.getState());
+        assertEquals(point44, AndreaW1.getPosition());
+        assertEquals(AndreaW1.getID(), model.getBoard().getCell(point44).getWorkerID());
+
+        //ANDREA'S WORKER BUILDS IN POSITION 33
+         /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | SF | FF |    |
+                |    |    |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    | SF | C  |
+                |    |    | TF | D1 |    |
+                +----+----+----+----+----+
+            3   |    |    | C  |  TF| x  |
+                |    |    |    |  x |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |  FF|
+                |    |    |    |  x |  A1|
+                +----+----+----+----+----+
+            Y
+        */
+
+        possibleBuilds.add(point34);
+        possibleBuilds.add(point33);
+        possibleBuilds.add(point43);
+
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1));
+
+        buildings.add(BuildingType.THIRD_FLOOR);
+        builds.put(point33,buildings);
+        buildsOrder.add(point33);
+
+        packetBuild = new PacketBuild(Andrea.getNickname(), AndreaW1.getID(), builds, buildsOrder);
+        buildData = null;
+        try {
+            buildData = model.packetBuildToBuildData(packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertNotNull(buildData);
+        try {
+            assertTrue(model.makeBuild(buildData));
+        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
+            assert false;
+        }
+
+        assertSame(model.getBoard().getCell(point33).getTopBuilding(), LevelType.THIRD_FLOOR);
+        assertEquals(PlayerState.BUILT, Andrea.getState());
+
+        Mirko.setPlayerState(PlayerState.TURN_STARTED);
+
+        //MIRKO NOW CAN WIN IN TWO WAYS: BY GOING IN 2,2 OR 3,3
+         /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    | SF | FF |    |
+                |    |    | x  |x M1| x  |
+                +----+----+----+----+----+
+            2   |    |    | WIN| SF | C  |
+                |    |    | TF | D1 |    |
+                +----+----+----+----+----+
+            3   |    |    | C  |  TF| x  |
+                |    |    |    |WIN |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |  FF|
+                |    |    |    |    |  A1|
+                +----+----+----+----+----+
+            Y
+        */
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        possibleMoves.add(new Point(4,1));
+        possibleMoves.add(point31);
+        possibleMoves.add(point21);
+        possibleMoves.add(point22);
+        possibleMoves.add(point33);
+        possibleMoves.add(point43);
+
+        assertEquals(possibleMoves,model.getPossibleMoves(Mirko, MirkoW1));
+
+        moves.add(point33);
+        packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal e) {
+            assert true;
+        }
+        catch (PlayerLostSignal e){
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Mirko.getState());
+        assertEquals(point33, MirkoW1.getPosition());
+        assertEquals(MirkoW1.getID(), model.getBoard().getCell(point33).getWorkerID());
+
+        //RESET MIRKO'S WORKER IN 3,2 AND MAKE HIM WIN IN 2,2
+        Mirko.setPlayerState(PlayerState.TURN_STARTED);
+        MirkoW1.setPosition(point32);
+        model.getBoard().getCell(point33).removeWorker();
+        model.getBoard().getCell(point32).setWorker(MirkoW1.getID());
+
+        //RESET UTILITIES
+        possibleMoves.clear();
+        moves.clear();
+        buildings.clear();
+        builds.clear();
+        buildsOrder.clear();
+        possibleBuilds.clear();
+
+        moves.add(point22);
+        packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(),moves);
+        moveData = null;
+        try{
+            moveData = model.packetMoveToMoveData(packetMove);
+        } catch (InvalidPacketException e){
+            assert false;
+        }
+        assertNotNull(moveData);
+        try {
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal e) {
+            assert true;
+        }
+        catch (PlayerLostSignal e){
+            assert false;
+        }
+        assertEquals(PlayerState.MOVED, Mirko.getState());
+        assertEquals(point22, MirkoW1.getPosition());
+        assertEquals(MirkoW1.getID(), model.getBoard().getCell(point22).getWorkerID());
+
+    }
+
     //Tests from 1-9 test if the method that converts a PacketMove into a MoveData correctly returns the InvalidPacketException.
     //Test 10 tests the correct execution.
     /**
