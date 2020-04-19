@@ -182,7 +182,7 @@ public class SetupManager extends Observable<PacketContainer> {
             throw new InvalidPacketException();
 
         //IF THE CHOSEN PLAYER IS NOT ONE OF THE PLAYERS
-        if(players.stream().filter(x -> x.getNickname().equals(startPlayer)).count() == 1){
+        if(players.stream().filter(x -> x.getNickname().equals(startPlayer)).count() != 1){
             throw new InvalidPacketException();
         }
         startingPlayer = model.getPlayerByNick(startPlayer);
