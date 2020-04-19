@@ -8,7 +8,6 @@ import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
 import it.polimi.ingsw.model.turnInfo.BuildData;
 import it.polimi.ingsw.model.turnInfo.MoveData;
 import it.polimi.ingsw.observe.Observable;
-import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.*;
 
 import java.awt.*;
@@ -46,7 +45,7 @@ public class TurnLogic extends Observable<PacketContainer> {
 
         if(stillInGamePlayers.size() == 1){
             PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null, null, null, stillInGamePlayers.get(0).getNickname());
-            PacketContainer packetContainer = new PacketContainer(null,null,packetUpdateBoard,null, null);
+            PacketContainer packetContainer = new PacketContainer(packetUpdateBoard);
             notify(packetContainer);
             model.setWinner(stillInGamePlayers.get(0));
             stillInGamePlayers.clear();
@@ -108,7 +107,7 @@ public class TurnLogic extends Observable<PacketContainer> {
         }
 
         PacketDoAction packetDoAction = new PacketDoAction(currPlayer.getNickname(), nextPossibleAction);
-        PacketContainer packetContainer = new PacketContainer(null,null,null, packetDoAction, null);
+        PacketContainer packetContainer = new PacketContainer(packetDoAction);
         notify(packetContainer);
 
     }
@@ -165,7 +164,7 @@ public class TurnLogic extends Observable<PacketContainer> {
         }
 
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPosition,null,null,winner);
-        PacketContainer packetContainer = new PacketContainer(null,null,packetUpdateBoard,null, null);
+        PacketContainer packetContainer = new PacketContainer(packetUpdateBoard);
         notify(packetContainer);
 
         assert stillInGamePlayers.size() != 1;
@@ -218,7 +217,7 @@ public class TurnLogic extends Observable<PacketContainer> {
 
 
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null,newBuildings,null,winner);
-        PacketContainer packetContainer = new PacketContainer(null,null,packetUpdateBoard,null, null);
+        PacketContainer packetContainer = new PacketContainer(packetUpdateBoard);
         notify(packetContainer);
 
         assert stillInGamePlayers.size() != 1;
@@ -248,18 +247,18 @@ public class TurnLogic extends Observable<PacketContainer> {
         Worker myWorker = model.getWorkerByID(packetMove.getWorkerID());
         Worker myOtherWorker = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(packetMove.getWorkerID())).findAny().orElse(null);
         assert myOtherWorker != null;
-        Map<String,Set<Point>> possiblePoints = new HashMap<>();
+        Map<String,Set<Point>> possibleMoves = new HashMap<>();
         Set<Point> possiblePointsW1 = new HashSet<>();
         Set<Point> possiblePointsW2 = new HashSet<>();
-        possiblePoints.put(myWorker.getID(), possiblePointsW1);
-        possiblePoints.put(myOtherWorker.getID(), possiblePointsW2);
+        possibleMoves.put(myWorker.getID(), possiblePointsW1);
+        possibleMoves.put(myOtherWorker.getID(), possiblePointsW2);
 
         if (!packetMove.getMove().isEmpty()){
             MoveData moveData = null;
             try {
                 moveData = model.packetMoveToMoveData(packetMove);
             } catch (InvalidPacketException e) {
-                sendPossiblePoints(currPlayer.getNickname(), possiblePoints);
+                sendPossibleMoves(currPlayer.getNickname(), possibleMoves);
                 return;
             }
 
@@ -271,7 +270,7 @@ public class TurnLogic extends Observable<PacketContainer> {
                 possiblePointsW2.addAll(model.getPossibleMoves(currPlayer, myOtherWorker));
             }
         }
-        sendPossiblePoints(currPlayer.getNickname(), possiblePoints);
+        sendPossibleMoves(currPlayer.getNickname(), possibleMoves);
     }
 
     public void getPossibleBuilds(String senderID, PacketBuild packetBuild) {
@@ -296,36 +295,44 @@ public class TurnLogic extends Observable<PacketContainer> {
         Worker myWorker = model.getWorkerByID(packetBuild.getWorkerID());
         Worker myOtherWorker = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(packetBuild.getWorkerID())).findAny().orElse(null);
         assert myOtherWorker != null;
-        Map<String,Set<Point>> possiblePoints = new HashMap<>();
-        Set<Point> possiblePointsW1 = new HashSet<>();
-        Set<Point> possiblePointsW2 = new HashSet<>();
-        possiblePoints.put(myWorker.getID(), possiblePointsW1);
-        possiblePoints.put(myOtherWorker.getID(), possiblePointsW2);
+
+        Map<String, Map<Point, List<BuildingType>>> possibleBuilds = new HashMap<>();
+
+        Map<Point, List<BuildingType>> possibleBuildsW1 = new HashMap<>();
+        Map<Point, List<BuildingType>> possibleBuildsW2 = new HashMap<>();
 
         if (!packetBuild.getBuilds().isEmpty()){
             BuildData buildData = null;
             try {
                 buildData = model.packetBuildToBuildData(packetBuild);
             } catch (InvalidPacketException e) {
-                sendPossiblePoints(currPlayer.getNickname(), possiblePoints);
+                possibleBuilds.put(myWorker.getID(), possibleBuildsW1);
+                possibleBuilds.put(myOtherWorker.getID(), possibleBuildsW2);
+                sendPossibleBuilds(currPlayer.getNickname(), possibleBuilds);
                 return;
             }
 
-            possiblePointsW1.addAll(model.getPossibleBuilds(buildData));
+            possibleBuilds.put(myWorker.getID(), model.getPossibleBuildsAdvanced(buildData));
+            possibleBuilds.put(myOtherWorker.getID(), possibleBuildsW2);
 
         } else {
-            possiblePointsW1.addAll(model.getPossibleBuilds(currPlayer, myWorker));
+            possibleBuilds.put(myWorker.getID(), model.getPossibleBuildsAdvanced(currPlayer,myWorker));
             if(forBothWorkers){
-                possiblePointsW2.addAll(model.getPossibleBuilds(currPlayer, myOtherWorker));
+                possibleBuilds.put(myOtherWorker.getID(),  model.getPossibleBuildsAdvanced(currPlayer, myOtherWorker));
             }
         }
-        sendPossiblePoints(currPlayer.getNickname(), possiblePoints);
+        sendPossibleBuilds(currPlayer.getNickname(), possibleBuilds);
     }
 
+    private void sendPossibleBuilds(String to, Map<String, Map<Point, List<BuildingType>>> possibleBuilds){
+        PacketPossibleBuilds packetPossibleBuilds = new PacketPossibleBuilds(to, possibleBuilds);
+        PacketContainer packetContainer = new PacketContainer(packetPossibleBuilds);
+        notify(packetContainer);
+    }
 
-    private void sendPossiblePoints(String to, Map<String,Set<Point>> possiblePoints){
-        PacketPossiblePoints packetPossiblePoints = new PacketPossiblePoints(to, possiblePoints);
-        PacketContainer packetContainer = new PacketContainer(null,null, null,null, packetPossiblePoints);
+    private void sendPossibleMoves(String to, Map<String,Set<Point>> possibleMoves){
+        PacketPossibleMoves packetPossibleMoves = new PacketPossibleMoves(to, possibleMoves);
+        PacketContainer packetContainer = new PacketContainer(packetPossibleMoves);
         notify(packetContainer);
     }
 
@@ -347,7 +354,7 @@ public class TurnLogic extends Observable<PacketContainer> {
         stillInGamePlayers.remove(currPlayer);
 
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null, null, currPlayer.getNickname(), null);
-        PacketContainer packetContainer = new PacketContainer(null,null,packetUpdateBoard,null, null);
+        PacketContainer packetContainer = new PacketContainer(packetUpdateBoard);
         notify(packetContainer);
         setNextPlayer();
     }

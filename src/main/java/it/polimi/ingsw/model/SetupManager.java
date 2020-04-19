@@ -66,7 +66,7 @@ public class SetupManager extends Observable<PacketContainer> {
 
         //SENDING THE CARDS TO CHOOSE TO THE CHALLENGER
         PacketCardsFromServer packetCardsFromServer = new PacketCardsFromServer(challenger.getNickname(), numberOfCardsToChoose, allCards ,availableCards);
-        PacketContainer packetContainer = new PacketContainer(packetCardsFromServer,null,null, null, null);
+        PacketContainer packetContainer = new PacketContainer(packetCardsFromServer);
         notify(packetContainer);
         this.setupPhase = SetupPhase.WAIT_CARDS;
 
@@ -143,18 +143,18 @@ public class SetupManager extends Observable<PacketContainer> {
             }
 
             PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards);
-            PacketContainer packetContainer = new PacketContainer(null,packetSetup,null, null, null);
+            PacketContainer packetContainer = new PacketContainer(packetSetup);
             notify(packetContainer);
 
             PacketDoAction packetDoAction = new PacketDoAction(challenger.getNickname(), ActionType.CHOOSE_START_PLAYER);
-            packetContainer = new PacketContainer(null,null,null, packetDoAction, null);
+            packetContainer = new PacketContainer(packetDoAction);
             notify(packetContainer);
 
 
             this.setupPhase = SetupPhase.WAIT_START_PLAYER;
         }else{ //IF THE NEXT PLAYER IS NOT THE CHALLENGER I ASK HIM TO CHOOSE
             PacketCardsFromServer packetCardsFromServer = new PacketCardsFromServer(players.get(activePlayerIndex).getNickname(), numberOfCardsToChoose, allCards ,availableCards);
-            PacketContainer packetContainer = new PacketContainer(packetCardsFromServer,null,null, null, null);
+            PacketContainer packetContainer = new PacketContainer(packetCardsFromServer);
             notify(packetContainer);
         }
 
@@ -185,7 +185,7 @@ public class SetupManager extends Observable<PacketContainer> {
         assert (activePlayerIndex == 0);
 
         PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);
-        PacketContainer packetContainer = new PacketContainer(null,null,null, packetDoAction, null);
+        PacketContainer packetContainer = new PacketContainer(packetDoAction);
         notify(packetContainer);
 
         this.setupPhase = SetupPhase.WAIT_WORKERS_CHOICE;
@@ -238,7 +238,7 @@ public class SetupManager extends Observable<PacketContainer> {
             }
         }
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPositions, null, null, null);
-        PacketContainer packetContainer = new PacketContainer(null,null,packetUpdateBoard, null, null);
+        PacketContainer packetContainer = new PacketContainer(packetUpdateBoard);
         notify(packetContainer);
 
 
@@ -250,7 +250,7 @@ public class SetupManager extends Observable<PacketContainer> {
             model.compileCardStrategy();
         }else{ // IF NOT WE ASK FOR OTHER WORKERS POSITIONING
             PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);
-            packetContainer = new PacketContainer(null,null,null, packetDoAction, null);
+            packetContainer = new PacketContainer(packetDoAction);
             notify(packetContainer);
         }
 
