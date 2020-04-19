@@ -18,30 +18,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class Client implements Observer<PacketContainer> {
-    private PacketContainer packetContainer;
-    private PacketSetup packetSetup;
-    private PacketDoAction packetDoAction;
-    public void update(PacketContainer packet){
-        this.packetContainer = packet;
-        if(packetContainer.getPacketSetup() != null) this.packetSetup = packetContainer.getPacketSetup();
-        if(packetContainer.getPacketDoAction() != null) this.packetDoAction = packetContainer.getPacketDoAction();
-    }
-    public PacketContainer container(){
-        return packetContainer;
-    }
-    public PacketSetup setup(){
-        return packetSetup;
-    }
-    public PacketDoAction action(){
-        return packetDoAction;
-    }
-}
-
 class SetupManagerTest {
+
+    static class Client implements Observer<PacketContainer> {
+        private PacketContainer packetContainer;
+        private PacketSetup packetSetup;
+        private PacketDoAction packetDoAction;
+        private PacketUpdateBoard packetUpdateBoard;
+        public void update(PacketContainer packet){
+            this.packetContainer = packet;
+            if(packetContainer.getPacketSetup() != null) this.packetSetup = packetContainer.getPacketSetup();
+            if(packetContainer.getPacketDoAction() != null) this.packetDoAction = packetContainer.getPacketDoAction();
+            if(packetContainer.getPacketUpdateBoard() != null) this.packetUpdateBoard = packetContainer.getPacketUpdateBoard();
+        }
+        public PacketContainer container(){
+            return packetContainer;
+        }
+        public PacketSetup setup(){
+            return packetSetup;
+        }
+        public PacketDoAction action(){
+            return packetDoAction;
+        }
+        public PacketUpdateBoard board(){
+            return packetUpdateBoard;
+        }
+    }
 
     private static CardFactory cardFactory;
     private InternalModel model;
@@ -144,7 +150,7 @@ class SetupManagerTest {
         PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
         assert packet != null;
         String challenger = packet.getTo();
-        String notChallenger = null;
+        String notChallenger;
         if(challenger.equals(players.get(0))) notChallenger = players.get(1);
         else if (challenger.equals(players.get(1))) notChallenger = players.get(2);
         else notChallenger = players.get(0);
@@ -235,7 +241,7 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        String next = null;
+        String next;
         packet = client.container().getPacketCardsFromServer();
         List<String> availableCards = new ArrayList<>(packet.getAvailableCards());
         try{
@@ -275,8 +281,7 @@ class SetupManagerTest {
         Map<String, Pair<String, String>> playerCardAssociation = new HashMap<>();
 
         assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_CARDS);
-        players.removeIf(other -> other.equals(challenger));
-        String next = null;
+        String next;
         packet = client.container().getPacketCardsFromServer();
         List<String> availableCards = new ArrayList<>(packet.getAvailableCards());
 
@@ -300,10 +305,6 @@ class SetupManagerTest {
             helperCards = new Pair<>(availableCards.get(0),packet.getAllCards().get(availableCards.get(0)));
             playerCardAssociation.put(next,helperCards);
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_CARDS);
-
-            String finalNext = next;
-            players.removeIf(other -> other.equals(finalNext));
-
             packet = client.container().getPacketCardsFromServer();
             next = packet.getTo();
             assertNotEquals(next, challenger);
@@ -352,7 +353,7 @@ class SetupManagerTest {
     }
 
     /**
-     * The senderID is null.
+     * The setStartPlayer method can't work because the previous steps weren't done.
      */
     @Test
     void setStartPlayerTest1(){
@@ -369,6 +370,14 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
+    }
+
+    /**
+     * The senderID is null.
+     */
+    @Test
+    void setStartPlayerTest2(){
+        setupManager.start();
         PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
         String challenger = packet.getTo();
         try{
@@ -377,7 +386,7 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        String next = null;
+        String next;
         packet = client.container().getPacketCardsFromServer();
         try{
             next = packet.getTo();
@@ -386,7 +395,6 @@ class SetupManagerTest {
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
-            String notChallenger = null;
             setupManager.setStartPlayer(null, Mirko.getNickname());
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
             assert true;
@@ -400,56 +408,6 @@ class SetupManagerTest {
 
     /**
      * The senderID is not the challenger.
-     */
-    @Test
-    void setStartPlayerTest2(){
-        try {
-            setupManager.setStartPlayer(Mirko.getNickname(), Mirko.getNickname());
-            assertEquals(setupManager.getSetupPhase(),SetupPhase.STARTING);
-        } catch (InvalidPacketException e) {
-            assert false;
-        }
-        setupManager.start();
-        try {
-            setupManager.setStartPlayer(Mirko.getNickname(), Mirko.getNickname());
-            assertEquals(setupManager.getSetupPhase(),SetupPhase.WAIT_CARDS);
-        } catch (InvalidPacketException e) {
-            assert false;
-        }
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
-        String challenger = packet.getTo();
-        try{
-            setupManager.setSelectedCards(challenger, selectedCards);
-            assert true;
-        } catch (InvalidPacketException e) {
-            assert false;
-        }
-        String next = null;
-        packet = client.container().getPacketCardsFromServer();
-        try{
-            next = packet.getTo();
-            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
-            next = packet.getTo();
-            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
-            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
-            String notChallenger = null;
-            if(challenger.equals(players.get(0))) notChallenger = players.get(1);
-            else if (challenger.equals(players.get(1))) notChallenger = players.get(2);
-            else notChallenger = players.get(0);
-            setupManager.setStartPlayer(notChallenger, Mirko.getNickname());
-            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
-            assert true;
-        } catch (InvalidPacketException e) {
-            assert false;
-        }
-
-
-
-    }
-
-    /**
-     * The startPlayer is null.
      */
     @Test
     void setStartPlayerTest3(){
@@ -474,7 +432,7 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        String next = null;
+        String next;
         packet = client.container().getPacketCardsFromServer();
         try{
             next = packet.getTo();
@@ -483,10 +441,15 @@ class SetupManagerTest {
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
-            setupManager.setStartPlayer(challenger, null);
-            assert false;
-        } catch (InvalidPacketException e) {
+            String notChallenger;
+            if(challenger.equals(players.get(0))) notChallenger = players.get(1);
+            else if (challenger.equals(players.get(1))) notChallenger = players.get(2);
+            else notChallenger = players.get(0);
+            setupManager.setStartPlayer(notChallenger, Mirko.getNickname());
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
             assert true;
+        } catch (InvalidPacketException e) {
+            assert false;
         }
 
 
@@ -494,7 +457,7 @@ class SetupManagerTest {
     }
 
     /**
-     * The startPlayer is not one of the players.
+     * The startPlayer is null.
      */
     @Test
     void setStartPlayerTest4(){
@@ -519,7 +482,7 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        String next = null;
+        String next;
         packet = client.container().getPacketCardsFromServer();
         try{
             next = packet.getTo();
@@ -528,7 +491,7 @@ class SetupManagerTest {
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
-            setupManager.setStartPlayer(challenger, "Giovanni");
+            setupManager.setStartPlayer(challenger, null);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
@@ -539,7 +502,7 @@ class SetupManagerTest {
     }
 
     /**
-     * Everything should be fine.
+     * The startPlayer is not one of the players.
      */
     @Test
     void setStartPlayerTest5(){
@@ -564,7 +527,52 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        String next = null;
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
+            setupManager.setStartPlayer(challenger, "Giovanni");
+            assert false;
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+
+
+    }
+
+    /**
+     * Everything should be fine.
+     */
+    @Test
+    void setStartPlayerTest6(){
+        try {
+            setupManager.setStartPlayer(Mirko.getNickname(), Mirko.getNickname());
+            assertEquals(setupManager.getSetupPhase(),SetupPhase.STARTING);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        setupManager.start();
+        try {
+            setupManager.setStartPlayer(Mirko.getNickname(), Mirko.getNickname());
+            assertEquals(setupManager.getSetupPhase(),SetupPhase.WAIT_CARDS);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+            assert true;
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
         packet = client.container().getPacketCardsFromServer();
         try{
             next = packet.getTo();
@@ -586,7 +594,440 @@ class SetupManagerTest {
 
     }
 
+    /**
+     * Start, setSelectedCards,setStartPlayer must be called before, otherwise nothing changes.
+     */
+    @Test
+    void testSetWorkersPosition1(){
+        Map<String, Point> mirkoWorkersPosition = new HashMap<>();
+        mirkoWorkersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
+        mirkoWorkersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
+        try {
+            setupManager.setWorkersPositions(Mirko.getNickname(), mirkoWorkersPosition);
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.STARTING);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        setupManager.start();
+        try {
+            setupManager.setWorkersPositions(Mirko.getNickname(), mirkoWorkersPosition);
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_CARDS);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+            setupManager.setWorkersPositions(Mirko.getNickname(), mirkoWorkersPosition);
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_CARDS);
+            assert true;
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            setupManager.setWorkersPositions(Mirko.getNickname(), mirkoWorkersPosition);
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_CARDS);
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setWorkersPositions(Mirko.getNickname(), mirkoWorkersPosition);
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
 
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+    }
+
+    /**
+     * The senderID is null.
+     */
+    @Test
+    void testSetWorkersPosition2(){
+        Map<String, Point> mirkoWorkersPosition = new HashMap<>();
+        mirkoWorkersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
+        mirkoWorkersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
+        setupManager.start();
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setStartPlayer(challenger, Mirko.getNickname());
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        try {
+            setupManager.setWorkersPositions(null, mirkoWorkersPosition);
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+    }
+
+    /**
+     * The senderID is not the starting player.
+     */
+    @Test
+    void testSetWorkersPosition3(){
+        Map<String, Point> mirkoWorkersPosition = new HashMap<>();
+        mirkoWorkersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
+        mirkoWorkersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
+        setupManager.start();
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setStartPlayer(challenger, Mirko.getNickname());
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        String notTheStartingPlayer = Andrea.getNickname();
+        try {
+            setupManager.setWorkersPositions(notTheStartingPlayer, mirkoWorkersPosition);
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+    }
+
+    /**
+     * myWorkersPositions Map is null.
+     */
+    @Test
+    void testSetWorkersPosition4(){
+        setupManager.start();
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setStartPlayer(challenger, Mirko.getNickname());
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        String startingPlayer = Mirko.getNickname();
+        try {
+            setupManager.setWorkersPositions(startingPlayer, null);
+        } catch (InvalidPacketException e) {
+            assert true;
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        }
+    }
+
+    /**
+     * myWorkersPositions Map 's size is not 2.
+     */
+    @Test
+    void testSetWorkersPosition5(){
+        Map<String, Point> mirkoWorkersPosition = new HashMap<>();
+        mirkoWorkersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
+        setupManager.start();
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setStartPlayer(challenger, Mirko.getNickname());
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        String startingPlayer = Mirko.getNickname();
+        try {
+            setupManager.setWorkersPositions(startingPlayer, mirkoWorkersPosition);
+        } catch (InvalidPacketException e) {
+            assert true;
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        }
+    }
+
+    /**
+     * One WorkerID is null.
+     */
+    @Test
+    void testSetWorkersPosition6(){
+        Map<String, Point> mirkoWorkersPosition = new HashMap<>();
+        mirkoWorkersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
+        mirkoWorkersPosition.put(null, new Point(0,0));
+        setupManager.start();
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setStartPlayer(challenger, Mirko.getNickname());
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        String startingPlayer = Mirko.getNickname();
+        try {
+            setupManager.setWorkersPositions(startingPlayer, mirkoWorkersPosition);
+        } catch (InvalidPacketException e) {
+            assert true;
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        }
+    }
+
+    /**
+     * A Worker's position is already occupied.
+     */
+    @Test
+    void testSetWorkersPosition7(){
+        Map<String, Point> workersPosition = new HashMap<>();
+        Point alreadyOccPos = new Point(0,0);
+        workersPosition.put(Mirko.getWorkers().get(0).getID(), alreadyOccPos);
+        workersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
+        setupManager.start();
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setStartPlayer(challenger, Mirko.getNickname());
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        String startingPlayer = Mirko.getNickname();
+        try {
+            setupManager.setWorkersPositions(startingPlayer, workersPosition);
+            PacketDoAction packetDoAction = client.action();
+            next = packetDoAction.getTo();
+            workersPosition = new HashMap<>();
+            workersPosition.put(model.getPlayerByNick(next).getWorkers().get(0).getID(), alreadyOccPos);
+            workersPosition.put(model.getPlayerByNick(next).getWorkers().get(1).getID(), new Point(0,2));
+            setupManager.setWorkersPositions(next, workersPosition);
+        } catch (InvalidPacketException e) {
+            assert true;
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        }
+    }
+
+    /**
+     * A Worker belongs to another Player.
+     */
+    @Test
+    void testSetWorkersPosition8(){
+        Map<String, Point> workersPosition = new HashMap<>();
+        workersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
+        workersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
+        setupManager.start();
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setStartPlayer(challenger, Mirko.getNickname());
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        String startingPlayer = Mirko.getNickname();
+        try {
+            setupManager.setWorkersPositions(startingPlayer, workersPosition);
+            PacketDoAction packetDoAction = client.action();
+            next = packetDoAction.getTo();
+            workersPosition = new HashMap<>();
+            workersPosition.put(model.getPlayerByNick(startingPlayer).getWorkers().get(0).getID(), new Point(0,3));
+            workersPosition.put(model.getPlayerByNick(next).getWorkers().get(1).getID(), new Point(0,2));
+            setupManager.setWorkersPositions(next, workersPosition);
+        } catch (InvalidPacketException e) {
+            assert true;
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        }
+    }
+
+    /**
+     * A position is not on the board.
+     */
+    @Test
+    void testSetWorkersPosition9(){
+        Map<String, Point> workersPosition = new HashMap<>();
+        workersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
+        workersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
+        setupManager.start();
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setStartPlayer(challenger, Mirko.getNickname());
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        String startingPlayer = Mirko.getNickname();
+        try {
+            setupManager.setWorkersPositions(startingPlayer, workersPosition);
+            PacketDoAction packetDoAction = client.action();
+            next = packetDoAction.getTo();
+            workersPosition = new HashMap<>();
+            workersPosition.put(model.getPlayerByNick(next).getWorkers().get(0).getID(), new Point(5,3));
+            workersPosition.put(model.getPlayerByNick(next).getWorkers().get(1).getID(), new Point(0,2));
+            setupManager.setWorkersPositions(next, workersPosition);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+    }
+
+    /**
+     * Everything should be fine.
+     */
+    @Test
+    void testSetWorkersPosition10(){
+        Map<String, Point> workersPosHelper = new HashMap<>();
+        workersPosHelper.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
+        workersPosHelper.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
+        setupManager.start();
+        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        String challenger = packet.getTo();
+        try{
+            setupManager.setSelectedCards(challenger, selectedCards);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        String next;
+        List<String> playersOrder = model.getPlayers().stream().map(Player::getNickname).collect(Collectors.toList());
+        packet = client.container().getPacketCardsFromServer();
+        try{
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(0,1));
+            packet = client.container().getPacketCardsFromServer();
+            next = packet.getTo();
+            setupManager.setSelectedCards(next, selectedCards.subList(1,2));
+            setupManager.setStartPlayer(challenger, Mirko.getNickname());
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        int curr = playersOrder.indexOf(Mirko.getNickname());
+        int nextPlayer;
+        if(curr == playersOrder.size() - 1) nextPlayer = 0;
+        else nextPlayer = curr + 1;
+        assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_WORKERS_CHOICE);
+        String startingPlayer = Mirko.getNickname();
+        assertEquals(client.packetDoAction.getTo(),startingPlayer);
+        Map<String, Point> mapForCheckUpdateBoard = new HashMap<>(workersPosHelper);
+        try {
+            setupManager.setWorkersPositions(startingPlayer, workersPosHelper);
+            PacketUpdateBoard updateBoard = client.board();
+            assertEquals(mapForCheckUpdateBoard,updateBoard.getWorkersPositions());
+            PacketDoAction packetDoAction = client.action();
+            assertEquals(packetDoAction.getTo(), playersOrder.get(nextPlayer));
+            workersPosHelper = new HashMap<>();
+            workersPosHelper.put(model.getPlayerByNick(playersOrder.get(nextPlayer)).getWorkers().get(0).getID(), new Point(0,3));
+            workersPosHelper.put(model.getPlayerByNick(playersOrder.get(nextPlayer)).getWorkers().get(1).getID(), new Point(0,2));
+            mapForCheckUpdateBoard.put(model.getPlayerByNick(playersOrder.get(nextPlayer)).getWorkers().get(0).getID(), new Point(0,3));
+            mapForCheckUpdateBoard.put(model.getPlayerByNick(playersOrder.get(nextPlayer)).getWorkers().get(1).getID(), new Point(0,2));
+            setupManager.setWorkersPositions(playersOrder.get(nextPlayer), workersPosHelper);
+            updateBoard = client.board();
+            assertEquals(mapForCheckUpdateBoard,updateBoard.getWorkersPositions());
+            if(nextPlayer == playersOrder.size() - 1) nextPlayer = 0;
+            else nextPlayer++;
+            packetDoAction = client.action();
+            assertEquals(packetDoAction.getTo(), playersOrder.get(nextPlayer));
+            workersPosHelper = new HashMap<>();
+            workersPosHelper.put(model.getPlayerByNick(playersOrder.get(nextPlayer)).getWorkers().get(0).getID(), new Point(1,3));
+            workersPosHelper.put(model.getPlayerByNick(playersOrder.get(nextPlayer)).getWorkers().get(1).getID(), new Point(1,2));
+            mapForCheckUpdateBoard.put(model.getPlayerByNick(playersOrder.get(nextPlayer)).getWorkers().get(0).getID(), new Point(1,3));
+            mapForCheckUpdateBoard.put(model.getPlayerByNick(playersOrder.get(nextPlayer)).getWorkers().get(1).getID(), new Point(1,2));
+            setupManager.setWorkersPositions(playersOrder.get(nextPlayer), workersPosHelper);
+            updateBoard = client.board();
+            assertEquals(mapForCheckUpdateBoard,updateBoard.getWorkersPositions());
+            assertEquals(setupManager.getSetupPhase(), SetupPhase.SETUP_FINISHED);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+    }
 
 
 
