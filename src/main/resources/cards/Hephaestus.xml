@@ -18,16 +18,16 @@
                     <verb>BUILD_NUM</verb>
                     <object>2</object>
                 </if>
-                <nif> <!--Non vuoi però costruire cupole sul terzo piano-->
-                    <subject>YOU</subject>
-                    <verb>BUILD_DOME</verb>
-                    <object>THIRD_FLOOR</object>
-                </nif>
                 <if> <!--Le posizioni dell'edificio 1 e 2 corrispondono-->
                     <subject>YOU</subject>
                     <verb>BUILD_IN_SAME_SPOT</verb>
                     <object>ALL</object>
                 </if>
+                <nif> <!--Non vuoi però costruire cupole sul terzo piano-->
+                    <subject>YOU</subject>
+                    <verb>BUILD_DOME</verb>
+                    <object>THIRD_FLOOR</object>
+                </nif>
                 <!--Verranno aggiunti
                 <if> Se ti sei mosso
                     <subject>YOU</subject>

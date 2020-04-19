@@ -64,7 +64,7 @@ public class SetupManager extends Observable<PacketContainer> {
         //CHOOSING THE CHALLENGER
         chooseChallenger();
 
-        //SENDIND THE CARDS TO CHOOSE TO THE CHALLENGER
+        //SENDING THE CARDS TO CHOOSE TO THE CHALLENGER
         PacketCardsFromServer packetCardsFromServer = new PacketCardsFromServer(challenger.getNickname(), numberOfCardsToChoose, allCards ,availableCards);
         PacketContainer packetContainer = new PacketContainer(packetCardsFromServer,null,null, null, null);
         notify(packetContainer);
@@ -75,7 +75,7 @@ public class SetupManager extends Observable<PacketContainer> {
         if(setupPhase != SetupPhase.WAIT_CARDS)
             return;
 
-        // IF THE SENDER IS WORNG -> IGNORE
+        // IF THE SENDER IS WRONG -> IGNORE
         if( SenderID == null || !SenderID.equals(players.get(activePlayerIndex).getNickname()))
             return;
 
@@ -92,16 +92,16 @@ public class SetupManager extends Observable<PacketContainer> {
             if(!availableCards.contains(card))
                 throw new InvalidPacketException();
 
-         //IF I DIDN'T RECIEVED THEM FORM THE CHALLENGER I SET THE ASSOCIATION AND UPDATE AVAILABLE CARDS
+         //IF I DIDN'T RECEIVED THEM FORM THE CHALLENGER I SET THE ASSOCIATION AND UPDATE AVAILABLE CARDS
         if(!(SenderID.equals(challenger.getNickname()))) {
             assert(chosenCards.size() == 1);
             cardAssociations.put(players.get(activePlayerIndex), cards.stream().filter(x -> x.getName().equals(chosenCards.get(0))).findAny().orElse(null));
             availableCards.remove(chosenCards.get(0));
-        } else{ //IF I DID RECIEVE THEM FROM THE CHALLENGER I SET THE NEXT CARDS TO CHOOSE TO 1 AND UPDATE THE AVAILABLE CARDS
+        } else{ //IF I DID RECEIVE THEM FROM THE CHALLENGER I SET THE NEXT CARDS TO CHOOSE TO 1 AND UPDATE THE AVAILABLE CARDS
             numberOfCardsToChoose = 1;
             availableCards = availableCards.stream().filter(chosenCards::contains).collect(Collectors.toList());
         }
-        //INCRELMENT THE PLAYER INDEX
+        //INCREMENT THE PLAYER INDEX
         incrementActivePlayerIndex();
 
         /*
@@ -146,13 +146,6 @@ public class SetupManager extends Observable<PacketContainer> {
             PacketContainer packetContainer = new PacketContainer(null,packetSetup,null, null, null);
             notify(packetContainer);
 
-            // SOME SLEEPING NOT TO SEND TWO PACKETS AT THE SAME TIME
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             PacketDoAction packetDoAction = new PacketDoAction(challenger.getNickname(), ActionType.CHOOSE_START_PLAYER);
             packetContainer = new PacketContainer(null,null,null, packetDoAction, null);
             notify(packetContainer);
@@ -173,7 +166,7 @@ public class SetupManager extends Observable<PacketContainer> {
 
         assert(challenger.equals(players.get(activePlayerIndex)));
 
-        //IF I AM NOT RECEIVEING IT FROM THE CHALLENGER  -> IGNORE
+        //IF I AM NOT RECEIVING IT FROM THE CHALLENGER  -> IGNORE
         if( SenderID == null || !(SenderID.equals(players.get(activePlayerIndex).getNickname())))
             return;
 
@@ -206,7 +199,7 @@ public class SetupManager extends Observable<PacketContainer> {
         Worker activePlayerWorker1 = activePlayer.getWorkers().get(0);
         Worker activePlayerWorker2 = activePlayer.getWorkers().get(1);
 
-        // IF THE SENDER IS WORNG -> IGNORE
+        // IF THE SENDER IS WRONG -> IGNORE
         if( SenderID == null || !SenderID.equals(activePlayer.getNickname()))
             return;
 
@@ -214,7 +207,7 @@ public class SetupManager extends Observable<PacketContainer> {
         if(myWorkersPositions == null)
             throw new InvalidPacketException();
 
-        // IF THE NUMBER OF POSITINS IS NOT RIGHT -> INVALID
+        // IF THE NUMBER OF POSITIONS IS NOT RIGHT -> INVALID
         if(myWorkersPositions.size() != 2)
             throw new InvalidPacketException();
 
@@ -248,12 +241,6 @@ public class SetupManager extends Observable<PacketContainer> {
         PacketContainer packetContainer = new PacketContainer(null,null,packetUpdateBoard, null, null);
         notify(packetContainer);
 
-        // SOME SLEEPING NOT TO SEND TWO PACKETS AT THE SAME TIME
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         incrementActivePlayerIndex();
 

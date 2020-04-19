@@ -494,4 +494,52 @@ class MapCompilerTest {
             }
         }
     }
+
+    /*
+       Test with not player equals, applicable to turn started
+    */
+    @Test
+    public void Test8(){
+        CardFile special = CardFileImplTest.getAllowAll(TriggerType.BUILD, PlayerState.TURN_STARTED);
+        CardFile demeter = cardFactory.getCards().stream().filter(c->c.getName().equals("Demeter")).findAny().orElse(null);
+        CardFile athena = cardFactory.getCards().stream().filter(c->c.getName().equals("Athena")).findAny().orElse(null);
+        assertNotNull(special);
+        assertNotNull(demeter);
+        assertNotNull(athena);
+
+        Andrea.setCard(special);
+        Mirko.setCard(demeter);
+        Matteo.setCard(athena);
+        model.compileCardStrategy();
+        MapCompiler.compileMap(model.getPlayers(), cardFactory.getDefaultStrategy());
+
+        Set<TriggerType> possibleActions;
+        for(Player player : model.getPlayers()){
+            for (PlayerState state : PlayerState.values()){
+                switch (state){
+                    case TURN_STARTED:
+                        player.setPlayerState(state);
+                        possibleActions = player.getPossibleActions();
+                        assert possibleActions.size() == 2;
+                        assert possibleActions.contains(TriggerType.MOVE);
+                        assert possibleActions.contains(TriggerType.BUILD);
+                        break;
+                    case MOVED:
+                        player.setPlayerState(state);
+                        possibleActions = player.getPossibleActions();
+                        assert possibleActions.size() == 1;
+                        assert possibleActions.contains(TriggerType.BUILD);
+                        break;
+                    case FIRST_BUILT:
+                    case BUILT:
+                        player.setPlayerState(state);
+                        possibleActions = player.getPossibleActions();
+                        assert possibleActions.size() == 0;
+                        break;
+                    default:
+                        assert false;
+                }
+            }
+        }
+    }
 }

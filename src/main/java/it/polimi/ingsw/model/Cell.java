@@ -179,12 +179,33 @@ public class Cell{
 
     /**
      * Returns next building that can be built on this cell
-     * @return
+     * @return Building type that can be built on this cell, or null if none is available
      */
     public BuildingType getNextBuildable(){
         switch (getTopBuilding()){
             case GROUND:
                 return BuildingType.FIRST_FLOOR;
+            case FIRST_FLOOR:
+                return BuildingType.SECOND_FLOOR;
+            case SECOND_FLOOR:
+                return BuildingType.THIRD_FLOOR;
+            case THIRD_FLOOR:
+                return BuildingType.DOME;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Return next building that can be built on this cell, on top of all the other
+     * buildings provided with the list.
+     * @param buildings List of buildings
+     * @return Building type that can be built, or null if none is available
+     */
+    public BuildingType getNextBuildable(List<BuildingType> buildings){
+        assert buildings!= null && !buildings.isEmpty();
+        if (!canBuild(buildings)) return null;
+        switch (buildings.get(buildings.size()-1)){
             case FIRST_FLOOR:
                 return BuildingType.SECOND_FLOOR;
             case SECOND_FLOOR:

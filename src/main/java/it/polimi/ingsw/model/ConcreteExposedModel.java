@@ -14,9 +14,9 @@ public class ConcreteExposedModel implements ObservableInterface<PacketContainer
     private final TurnLogic turnLogic;
     private final InternalModel internalModel;
 
-    public ConcreteExposedModel(List<String> players, CardFactory cardFactory){
+    public ConcreteExposedModel(List<String> players, CardFactory cardFactory, boolean isHardCore){
         this.factory = cardFactory;
-        this.internalModel = new InternalModel(players, factory);
+        this.internalModel = new InternalModel(players, factory, isHardCore);
         this.setupManager = new SetupManager(internalModel, factory.getCards());
         this.turnLogic = new TurnLogic(internalModel);
     }

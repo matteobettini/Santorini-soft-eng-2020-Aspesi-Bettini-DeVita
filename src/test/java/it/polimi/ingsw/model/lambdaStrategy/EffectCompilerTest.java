@@ -95,11 +95,6 @@ class EffectCompilerTest {
         model.getBoard().getCell(new Point(2,0)).addBuilding(BuildingType.SECOND_FLOOR);
     }
 
-    @AfterEach
-    void tearDown() {
-
-    }
-
     /*
         Tests an allow move effect both in simulation and in non simulation
      */
@@ -137,7 +132,7 @@ class EffectCompilerTest {
 
     /*
         Tests an allow build effect both in simulation and in non simulation
-        in a case where the workar can build
+        in a case where the worker can build
      */
     @Test
     void allowEffectBuild_Test1() throws PlayerWonSignal, PlayerLostSignal {
@@ -205,7 +200,7 @@ class EffectCompilerTest {
 
     /*
         Tests an allow build effect both in simulation and in non simulation
-        an a case where the workar cannot build
+        an a case where the worker cannot build
      */
     @Test
     void allowEffectBuild_Test2() throws PlayerWonSignal, PlayerLostSignal {
@@ -269,10 +264,10 @@ class EffectCompilerTest {
     }
 
     /*
-        Tests a scuccesfull push in a straight line
+        Tests a successful push in a straight line
      */
     @Test
-    void setOpponentPositonEffect_PUSH_STRAIGHT_Test1() throws PlayerWonSignal, PlayerLostSignal {
+    void setOpponentPositionEffect_PUSH_STRAIGHT_Test1() throws PlayerWonSignal, PlayerLostSignal {
            /*
           0    1     2    3    4
         +----+----+----+----+----+
@@ -323,18 +318,18 @@ class EffectCompilerTest {
     }
 
     /*
-       Tests a scuccesfull push in a straight line with more than one move
+       Tests a successful push in a straight line with more than one move
     */
     @Test
-    void setOpponentPositonEffect_PUSH_STRAIGHT_Test2() throws PlayerWonSignal, PlayerLostSignal {
+    void setOpponentPositionEffect_PUSH_STRAIGHT_Test2() throws PlayerWonSignal, PlayerLostSignal {
            /*
           0    1     2    3    4
         +----+----+----+----+----+
     0   | A1 | FF | SF |    |    |
         +----+----+----+----+----+
-    1   |    |    |    |    |    |
+    1   |    |    | A2 |    |    |
         +----+----+----+----+----+
-    2   |    | B1 | A2 | B2 |    |
+    2   |    | B1 |    | B2 |    |
         +----+----+----+----+----+
     3   |    |    |    | D2 |    |
         +----+----+----+----+----+
@@ -383,10 +378,10 @@ class EffectCompilerTest {
     }
 
     /*
-        Tests an unsuccesful push because of a worker
+        Tests an unsuccessful push because of a worker
      */
     @Test
-    void setOpponentPositonEffect_PUSH_STRAIGHT_Test3() throws PlayerWonSignal, PlayerLostSignal {
+    void setOpponentPositionEffect_PUSH_STRAIGHT_Test3() throws PlayerWonSignal, PlayerLostSignal {
            /*
           0    1     2    3    4
         +----+----+----+----+----+
@@ -440,10 +435,10 @@ class EffectCompilerTest {
     }
 
     /*
-       Tests an unsuccesful push because of a dome
+       Tests an unsuccessful push because of a dome
     */
     @Test
-    void setOpponentPositonEffect_PUSH_STRAIGHT_Test4() throws PlayerWonSignal, PlayerLostSignal {
+    void setOpponentPositionEffect_PUSH_STRAIGHT_Test4() throws PlayerWonSignal, PlayerLostSignal {
            /*
           0    1     2    3    4
         +----+----+----+----+----+
@@ -514,33 +509,34 @@ class EffectCompilerTest {
         try {
             lambdaEffect.apply(moveData, null, true);
         } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
-            fail();
+            assert false;
         }
 
         try {
             lambdaEffect.apply(moveData, null, false);
-            fail();
-        } catch (PlayerWonSignal ignored){
-
+            assert false;
+        } catch (PlayerWonSignal playerWonSignal){
+            assert true;
         } catch ( PlayerLostSignal playerLostSignal){
-            fail();
+            assert false;
         }
 
         BuildData buildData = new BuildData(null,null,null, null);
 
         try {
             lambdaEffect.apply(null, buildData, true);
+            assert true;
         } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
-            fail();
+            assert false;
         }
 
         try {
             lambdaEffect.apply(null, buildData, false);
-            fail();
-        } catch (PlayerWonSignal ignored){
-
+            assert false;
+        } catch (PlayerWonSignal playerWonSignal){
+            assert true;
         } catch ( PlayerLostSignal playerLostSignal){
-            fail();
+            assert false;
         }
     }
 
@@ -557,34 +553,34 @@ class EffectCompilerTest {
 
         try {
             lambdaEffect.apply(moveData, null, true);
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
-            fail();
+        } catch (PlayerWonSignal | PlayerLostSignal playerSignal) {
+            assert false;
         }
 
         try {
             lambdaEffect.apply(moveData, null, false);
-            fail();
+            assert false;
         } catch (PlayerWonSignal playerWonSignal){
-            fail();
-        } catch ( PlayerLostSignal ignored){
-
+            assert false;
+        } catch ( PlayerLostSignal playerLostSignal){
+            assert true;
         }
 
         BuildData buildData = new BuildData(null,null,null, null);
 
         try {
             lambdaEffect.apply(null, buildData, true);
-        } catch (PlayerWonSignal | PlayerLostSignal playerWonSignal) {
-            fail();
+        } catch (PlayerWonSignal | PlayerLostSignal playerSignal) {
+            assert false;
         }
 
         try {
             lambdaEffect.apply(null, buildData, false);
-            fail();
+            assert false;
         } catch (PlayerWonSignal playerWonSignal){
-            fail();
-        } catch ( PlayerLostSignal ignored){
-
+            assert false;
+        } catch ( PlayerLostSignal playerLostSignal){
+            assert true;
         }
 
 

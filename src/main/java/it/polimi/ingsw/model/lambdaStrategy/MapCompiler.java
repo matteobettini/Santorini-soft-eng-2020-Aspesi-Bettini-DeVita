@@ -29,11 +29,15 @@ public class MapCompiler {
                 if (rule.getEffect().getType() == EffectType.ALLOW || rule.getEffect().getType() == EffectType.SET_OPPONENT_POSITION){
                     if (ownsRule(rule.getStatements())){
                         allows.get(player).add(rule);
-                    }else{
+                    }else if (othersOwnRule(rule.getStatements())){
                         for (Player player1 : players){
                             if (!player1.equals(player)){
                                 allows.get(player1).add(rule);
                             }
+                        }
+                    }else{
+                        for (Player player1 : players){
+                            allows.get(player1).add(rule);
                         }
                     }
                 }
@@ -47,11 +51,21 @@ public class MapCompiler {
 
     private static boolean ownsRule(List<RuleStatement> statements){
         for(RuleStatement stm : statements){
-            if (stm.getType() == StatementType.NIF && stm.getVerb() == StatementVerbType.PLAYER_EQUALS){
-                return false;
+            if (stm.getType() == StatementType.IF && stm.getVerb() == StatementVerbType.PLAYER_EQUALS){
+                assert (stm.getObject().equals("CARD_OWNER"));
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+    private static boolean othersOwnRule(List<RuleStatement> statements){
+        for(RuleStatement stm : statements){
+            if (stm.getType() == StatementType.NIF && stm.getVerb() == StatementVerbType.PLAYER_EQUALS){
+                assert (stm.getObject().equals("CARD_OWNER"));
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void processPlayerRules(Player player, List<CardRule> allows){

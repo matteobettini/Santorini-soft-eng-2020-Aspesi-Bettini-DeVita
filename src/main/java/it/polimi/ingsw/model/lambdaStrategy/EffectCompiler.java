@@ -223,7 +223,7 @@ public class EffectCompiler {
                 }
 
                 int deltaX = finalPosition.x - mySecondToLastPosition.x;
-                int deltaY = -(finalPosition.y - mySecondToLastPosition.y);
+                int deltaY = finalPosition.y - mySecondToLastPosition.y;
 
                 Cell whereHeHasToGo = model.getBoard().getCell(new Point(finalPosition.x+deltaX,finalPosition.y+deltaY));
 
