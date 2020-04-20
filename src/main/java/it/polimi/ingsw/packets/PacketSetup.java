@@ -11,11 +11,13 @@ public class PacketSetup {
     private final Map<String, List<String>> ids;
     private final Map<String, Color> colors;
     private final Map<String, Pair<String, String >> cards;
+    private final boolean isHardcore;
 
-    public PacketSetup(Map<String, List<String>> ids, Map<String, Color> colors, Map<String, Pair<String, String>> cards) {
+    public PacketSetup(Map<String, List<String>> ids, Map<String, Color> colors, Map<String, Pair<String, String>> cards, boolean isHardcore) {
         this.ids = ids;
         this.colors = colors;
         this.cards = cards;
+        this.isHardcore = isHardcore;
     }
 
     public Map<String, List<String>> getIds() {
@@ -28,5 +30,9 @@ public class PacketSetup {
 
     public Map<String, Pair<String, String>> getCards() {
         return cards;
+    }
+
+    public boolean isHardcore() {
+        return isHardcore;
     }
 }

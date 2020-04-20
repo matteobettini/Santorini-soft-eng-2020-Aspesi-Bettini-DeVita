@@ -142,7 +142,7 @@ public class SetupManager extends Observable<PacketContainer> {
                 i++;
             }
 
-            PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards);
+            PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards, model.isHardCore());
             PacketContainer packetContainer = new PacketContainer(packetSetup);
             notify(packetContainer);
 
