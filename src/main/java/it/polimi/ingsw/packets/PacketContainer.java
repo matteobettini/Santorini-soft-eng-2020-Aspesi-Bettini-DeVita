@@ -10,7 +10,7 @@ public class PacketContainer {
     private final PacketPossibleBuilds packetPossibleBuilds;
 
 
-    public PacketContainer(PacketCardsFromServer packetCardsFromServer, PacketSetup packetSetup, PacketUpdateBoard packetUpdateBoard, PacketDoAction packetDoAction, PacketPossibleMoves packetPossibleMoves, PacketPossibleBuilds packetPossibleBuilds) {
+    private PacketContainer(PacketCardsFromServer packetCardsFromServer, PacketSetup packetSetup, PacketUpdateBoard packetUpdateBoard, PacketDoAction packetDoAction, PacketPossibleMoves packetPossibleMoves, PacketPossibleBuilds packetPossibleBuilds) {
         this.packetCardsFromServer = packetCardsFromServer;
         this.packetSetup = packetSetup;
         this.packetUpdateBoard = packetUpdateBoard;

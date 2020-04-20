@@ -196,9 +196,9 @@ public class SetupManager extends Observable<PacketContainer> {
             return;
 
         Player activePlayer = players.get(activePlayerIndex);
-        List<Worker> activePlayersWorkers = new ArrayList<>();
-        activePlayersWorkers.add(activePlayer.getWorkers().get(0));
-        activePlayersWorkers.add(activePlayer.getWorkers().get(1));
+
+        String W1 = activePlayer.getWorkers().get(0).getID();
+        String W2 = activePlayer.getWorkers().get(1).getID();
 
         // IF THE SENDER IS WRONG -> IGNORE
         if( SenderID == null || !SenderID.equals(activePlayer.getNickname()))
@@ -217,7 +217,7 @@ public class SetupManager extends Observable<PacketContainer> {
             if(workerID == null)
                 throw new InvalidPacketException();
             // IF ONE OF THE WORKERS IS NOT ONE OF MINE -> INVALID
-            if(!activePlayersWorkers.contains(model.getWorkerByID(workerID)))
+            if(!workerID.equals(W1) && !workerID.equals(W2))
                 throw new InvalidPacketException();
             // IF ONE OF THE CELLS I WANT TO SET HIM IN IS OUT OF THE BOARD OR HAS ANOTHER WORKER -> INVALID
             if(model.getBoard().getCell(myWorkersPositions.get(workerID)) == null || model.getBoard().getCell(myWorkersPositions.get(workerID)).isOccupied())

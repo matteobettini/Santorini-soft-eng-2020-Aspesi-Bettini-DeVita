@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.model.enums.BuildingType;
+import it.polimi.ingsw.model.enums.PlayerState;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
 import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
 import it.polimi.ingsw.model.turnInfo.BuildData;
@@ -56,6 +57,8 @@ public class TurnLogic extends Observable<PacketContainer> {
 
         currPlayer = stillInGamePlayers.get(activePlayerIndex);
         currWorker = null;
+        currPlayer.setPlayerState(PlayerState.TURN_STARTED);
+        currPlayer.clearFlags();
         currPossibleActions.clear();
 
         askNextPacket();
@@ -77,7 +80,7 @@ public class TurnLogic extends Observable<PacketContainer> {
         else if(currPossibleActions.contains(TriggerType.MOVE))
             nextPossibleAction = ActionType.MOVE;
 
-        assert(nextPossibleAction != null);
+        assert(currPlayer.getState() == PlayerState.BUILT || nextPossibleAction != null);
 
         switch (currPlayer.getState()) {
             case FIRST_BUILT:
@@ -105,7 +108,7 @@ public class TurnLogic extends Observable<PacketContainer> {
                 setNextPlayer();
                 return;
         }
-
+        //System.out.println("Sending do action to " + currPlayer.getNickname());
         PacketDoAction packetDoAction = new PacketDoAction(currPlayer.getNickname(), nextPossibleAction);
         PacketContainer packetContainer = new PacketContainer(packetDoAction);
         notify(packetContainer);
@@ -289,7 +292,7 @@ public class TurnLogic extends Observable<PacketContainer> {
                 return;
         }
 
-        if (!currPossibleActions.contains(TriggerType.MOVE))
+        if (!currPossibleActions.contains(TriggerType.BUILD))
             return;
 
         Worker myWorker = model.getWorkerByID(packetBuild.getWorkerID());
@@ -319,6 +322,8 @@ public class TurnLogic extends Observable<PacketContainer> {
             possibleBuilds.put(myWorker.getID(), model.getPossibleBuildsAdvanced(currPlayer,myWorker));
             if(forBothWorkers){
                 possibleBuilds.put(myOtherWorker.getID(),  model.getPossibleBuildsAdvanced(currPlayer, myOtherWorker));
+            }else{
+                possibleBuilds.put(myOtherWorker.getID(),  possibleBuildsW2);
             }
         }
         sendPossibleBuilds(currPlayer.getNickname(), possibleBuilds);
