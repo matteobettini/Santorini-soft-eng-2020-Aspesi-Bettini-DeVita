@@ -6,10 +6,11 @@
 <!ELEMENT name (#PCDATA) >
 <!ELEMENT description (#PCDATA) >
 <!ELEMENT statements ((if | nif)+) >
-<!ELEMENT effect (type, data?, nextstate?) >
+<!ELEMENT effect (type, subtype?, data?, nextstate?) >
 <!ELEMENT type (#PCDATA) >
 <!ELEMENT data (#PCDATA) >
 <!ELEMENT nextstate (#PCDATA)>
+<!ELEMENT subtype (#PCDATA)>
 <!ELEMENT if (subject, verb, object) >
 <!ELEMENT nif (subject, verb, object) >
 <!ELEMENT subject (#PCDATA)>

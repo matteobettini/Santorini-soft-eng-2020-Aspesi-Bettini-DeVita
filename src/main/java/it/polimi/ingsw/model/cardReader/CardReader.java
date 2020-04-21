@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model.cardReader;
 
-import it.polimi.ingsw.model.cardReader.enums.EffectType;
-import it.polimi.ingsw.model.cardReader.enums.StatementType;
-import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.model.cardReader.enums.*;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.PlayerState;
 import org.w3c.dom.Document;
@@ -23,11 +20,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This class permit read a card from a file.
+ * This class allows to read a card from a file.
  * The card returned (in form of CardFile) is completely checked syntactically and semantically.
  *
  * Syntax exceptions are maintained even if DTD syntax checking was introduced.
- * This is to be fully covered from external DTD manipulation
+ * Checks were maintained anyway in order to be fully covered from external DTD manipulation, during reading phase.
  */
 class CardReader {
 
@@ -40,6 +37,7 @@ class CardReader {
      *                              It's always indicated the cause as message
      */
     public static CardFile readCard(CardFile defaultCard, File file) throws InvalidCardException{
+        assert (defaultCard != null && file != null);
         Document document;
         try{
             document = getXMLDocument(file);
@@ -67,7 +65,7 @@ class CardReader {
         builder.setErrorHandler(
                 new ErrorHandler() {
                     public void warning(SAXParseException e) {
-                        System.out.println("[XML PARSE]: " + e.getMessage()); // do nothing
+                        System.err.println("[XML PARSE]: " + e.getMessage()); // do nothing
                     }
                     public void error(SAXParseException e) throws SAXException {
                         throw e;
@@ -82,28 +80,40 @@ class CardReader {
         return document;
     }
 
+    /**
+     * Parse the CardFile from the document XML
+     * @param xml Document to be parsed
+     * @return CardFileImpl containing CardFile data
+     * @throws InvalidCardException If Syntax error occurs during the process
+     */
     private static CardFileImpl parseCard(Document xml) throws InvalidCardException {
         //Check root node
         Element root = xml.getDocumentElement();
         if (!root.getNodeName().equals("Card")){
-            throw new InvalidCardException("Wrong root tag");
+            throw new InvalidCardException("[CARD PARSER]Wrong root tag");
         }
 
         //Get card name
         String cardName;
         NodeList nList = root.getElementsByTagName("name");
         if (nList.getLength() != 1){
-            throw new InvalidCardException("Missing/Multiple tag name");
+            throw new InvalidCardException("[CARD PARSER]Missing/Multiple tag name");
         }
         cardName = nList.item(0).getTextContent().trim();
+        if (cardName.length() == 0){
+            throw new InvalidCardException("[CARD PARSER]Invalid card name");
+        }
 
         //Get card description
         String cardDescription;
         nList = xml.getElementsByTagName("description");
         if (nList.getLength() != 1){
-            throw new InvalidCardException("Missing/Multiple tag description");
+            throw new InvalidCardException("[CARD PARSER]Missing/Multiple tag description");
         }
         cardDescription = nList.item(0).getTextContent().trim();
+        if (cardDescription.length() == 0){
+            throw new InvalidCardException("[CARD PARSER]Invalid card description");
+        }
 
         //Parse the rules
         List<CardRuleImpl> cardRules = extractCardRules(xml);
@@ -122,10 +132,10 @@ class CardReader {
         if (rulesNode.getNodeType() != Node.ELEMENT_NODE){
             throw new InvalidCardException("[RULE PARSER]Missing tags rule");
         }
-        Element rules = (Element)rulesNode;
+        Element rulesElement = (Element)rulesNode;
 
         //Let's extract all rules
-        nRules = rules.getElementsByTagName("rule");
+        nRules = rulesElement.getElementsByTagName("rule");
         for(int i = 0; i<nRules.getLength();i++){ //For each rule
             Node ruleNode = nRules.item(i);
             TriggerType eventType;
@@ -176,7 +186,7 @@ class CardReader {
             ruleEffect = nodeToRuleEffect((Element)effectNode);
 
             //Add rule to list
-            rulesList.add(new CardRuleImpl(eventType, statements,ruleEffect));
+            rulesList.add(new CardRuleImpl(eventType, statements, ruleEffect));
         }
         return rulesList;
     }
@@ -226,6 +236,21 @@ class CardReader {
             throw new InvalidCardException("[EFFECT PARSER]Cannot read tag effect");
         }
 
+        //Parse tag allow subtype if present
+        AllowType allowType = null;
+        nList = effectElement.getElementsByTagName("subtype");
+        if (nList.getLength() == 1){
+            try{
+                allowType = AllowType.valueOf(nList.item(0).getTextContent());
+            }catch (IllegalArgumentException ex){
+                throw  new InvalidCardException("[EFFECT PARSER]Allow subtype '" + nList.item(0).getTextContent() + "' not supported");
+            }catch (NullPointerException ex){
+                throw new InvalidCardException("[EFFECT PARSER]Cannot read tag effect");
+            }
+        }else if (nList.getLength() > 1){
+            throw new InvalidCardException("[EFFECT PARSER]Multiple tag subtype");
+        }
+
         //Parse tag data if present
         String effectData = null;
         nList = effectElement.getElementsByTagName("data");
@@ -239,11 +264,10 @@ class CardReader {
         PlayerState nextState = null;
         nList = effectElement.getElementsByTagName("nextstate");
         if (nList.getLength() == 1){
-            Node nextStateNode = nList.item(0);
             try{
-                nextState = PlayerState.valueOf(nextStateNode.getTextContent());
+                nextState = PlayerState.valueOf(nList.item(0).getTextContent());
             }catch (IllegalArgumentException ex){
-                throw  new InvalidCardException("[EFFECT PARSER]Player state '" + nextStateNode.getTextContent() + "' unknown");
+                throw  new InvalidCardException("[EFFECT PARSER]Player state '" + nList.item(0).getTextContent() + "' unknown");
             }catch (NullPointerException ex){
                 throw new InvalidCardException("[EFFECT PARSER]Cannot read tag nextstate");
             }
@@ -252,6 +276,6 @@ class CardReader {
         }
 
         //Return Rule Effect
-        return new RuleEffectImpl(effectType, nextState, effectData);
+        return new RuleEffectImpl(effectType, allowType, nextState, effectData);
     }
 }

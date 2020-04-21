@@ -225,7 +225,6 @@ public class InternalModel {
         CompiledCardRule compiledCardRule = RuleCompiler.compile(this, rule, owner);
         switch (rule.getEffect().getType()){
             case ALLOW:
-            case SET_OPPONENT_POSITION:
                 if (rule.getTrigger() == TriggerType.MOVE)
                     allowMoveRules.add(compiledCardRule);
                 else

@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.cardReader.CardFactory;
 import it.polimi.ingsw.model.cardReader.RuleEffect;
 import it.polimi.ingsw.model.cardReader.RuleEffectImplTest;
+import it.polimi.ingsw.model.cardReader.enums.AllowType;
 import it.polimi.ingsw.model.cardReader.enums.EffectType;
 import it.polimi.ingsw.model.cardReader.exceptions.CardLoadingException;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
@@ -101,7 +102,7 @@ class EffectCompilerTest {
     @Test
     void allowEffectMove_Test1() throws PlayerWonSignal, PlayerLostSignal {
 
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED, null);
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -150,7 +151,7 @@ class EffectCompilerTest {
     4   |    |    | D1 |    |    |
         +----+----+----+----+----+
 */
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.BUILT, null);
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.STANDARD, PlayerState.BUILT, null);
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -218,7 +219,7 @@ class EffectCompilerTest {
     4   |    |    | D1 |    |    |
         +----+----+----+----+----+
 */
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.BUILT, null);
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.STANDARD, PlayerState.BUILT, null);
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -283,7 +284,7 @@ class EffectCompilerTest {
         +----+----+----+----+----+
 */
 
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "PUSH_STRAIGHT");
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.SET_OPPONENT, PlayerState.MOVED, "PUSH_STRAIGHT");
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -340,7 +341,7 @@ class EffectCompilerTest {
         model.getBoard().getCell(new Point(2,2)).removeWorker();
         model.getBoard().getCell(new Point(2,1)).setWorker(AndreaW2.getID());
         AndreaW2.setPosition(new Point(2,1));
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "PUSH_STRAIGHT");
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.SET_OPPONENT, PlayerState.MOVED, "PUSH_STRAIGHT");
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -397,7 +398,7 @@ class EffectCompilerTest {
         +----+----+----+----+----+
 */
 
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "PUSH_STRAIGHT");
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.SET_OPPONENT, PlayerState.MOVED, "PUSH_STRAIGHT");
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -456,7 +457,7 @@ class EffectCompilerTest {
         model.getBoard().getCell(new Point(3,2)).removeWorker();
         model.getBoard().getCell(new Point(3,2)).addBuilding(BuildingType.DOME);
 
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "PUSH_STRAIGHT");
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.SET_OPPONENT, PlayerState.MOVED, "PUSH_STRAIGHT");
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -501,7 +502,7 @@ class EffectCompilerTest {
     @Test
     void winEffect(){
 
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.WIN,null,null);
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.WIN,null,null,null);
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
         MoveData moveData = new MoveData(null,null,null);
@@ -546,7 +547,7 @@ class EffectCompilerTest {
     @Test
     void denyEffect(){
 
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.DENY,null,null);
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.DENY,null,null,null);
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
         MoveData moveData = new MoveData(null,null,null);
@@ -606,7 +607,7 @@ class EffectCompilerTest {
         +----+----+----+----+----+
 */
 
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "SWAP");
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.SET_OPPONENT, PlayerState.MOVED, "SWAP");
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -664,7 +665,7 @@ class EffectCompilerTest {
         model.getBoard().getCell(new Point(2,2)).removeWorker();
         model.getBoard().getCell(new Point(2,1)).setWorker(AndreaW2.getID());
         AndreaW2.setPosition(new Point(2,1));
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "SWAP");
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.SET_OPPONENT, PlayerState.MOVED, "SWAP");
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -724,7 +725,7 @@ class EffectCompilerTest {
         model.getBoard().getCell(new Point(2,2)).removeWorker();
         model.getBoard().getCell(new Point(2,1)).setWorker(AndreaW2.getID());
         AndreaW2.setPosition(new Point(2,1));
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "SWAP");
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.SET_OPPONENT, PlayerState.MOVED, "SWAP");
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
@@ -786,7 +787,7 @@ class EffectCompilerTest {
         model.getBoard().getCell(new Point(3,2)).removeWorker();
         assertTrue(model.getBoard().getCell(new Point(2,1)).setWorker(MatteoW2.getID()));
         MatteoW2.setPosition(new Point(2,1));
-        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.SET_OPPONENT_POSITION, PlayerState.MOVED, "SWAP");
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.SET_OPPONENT, PlayerState.MOVED, "SWAP");
 
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 

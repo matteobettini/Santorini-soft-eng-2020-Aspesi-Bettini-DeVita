@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.cardReader;
 
+import it.polimi.ingsw.model.cardReader.enums.AllowType;
 import it.polimi.ingsw.model.cardReader.enums.EffectType;
 import it.polimi.ingsw.model.enums.PlayerState;
 
@@ -10,15 +11,18 @@ public interface RuleEffect {
      */
     EffectType getType();
     /**
+     * Getter for the subtype of a rule effect.
+     * @return AllowType value if the rule is allow, otherwise null
+     */
+    AllowType getAllowType();
+    /**
      * Getter for the player's next state
      * @return Enum value corresponding to the desired player next state
      */
     PlayerState getNextState();
     /**
-     * Getter for the unconverted data tag of the effect.
-     * Will be compiled into code during rule compilation.
-     * @return XML Element containing effect additional info
-     *         null, if data is not present
+     * Getter for additional personalization of the effect
+     * @return String element, containing info to personalize the effect. Null if none is present
      */
     String getData();
 }

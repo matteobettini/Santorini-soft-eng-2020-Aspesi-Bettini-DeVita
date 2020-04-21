@@ -57,6 +57,8 @@ class StatementValidator {
             case EXISTS_DELTA_LESS:
                 existsDeltaLessValidate(stm);
                 break;
+            default:
+                assert false;
         }
     }
 

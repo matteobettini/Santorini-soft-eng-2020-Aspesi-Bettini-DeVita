@@ -18,9 +18,10 @@ public class CardRuleImplTest {
         List<RuleStatementImpl> statementsT = RuleStatementImplTest.getMoveStatementList();
         RuleEffectImpl effectT = RuleEffectImplTest.getRuleEffectWithData();
 
-        CardRule rule = new CardRuleImpl(triggerT,statementsT,effectT);
+        CardRuleImpl rule = new CardRuleImpl(triggerT,statementsT,effectT);
         assertEquals(rule.getTrigger(), triggerT);
         assertEquals(rule.getStatements(), statementsT);
+        assertEquals(rule.getStatementsInternal(), statementsT);
         assertEquals(rule.getEffect(), effectT);
     }
 
@@ -91,7 +92,7 @@ public class CardRuleImplTest {
 
     public static List<CardRuleImpl> getRulesWithAllTriggerTypes(){
         List<CardRuleImpl> res = new ArrayList<>();
-        res.add(new CardRuleImpl(TriggerType.BUILD, RuleStatementImplTest.getBuildStatementList(), RuleEffectImplTest.getRuleEffectWithData()));
+        res.add(new CardRuleImpl(TriggerType.BUILD, RuleStatementImplTest.getBuildStatementList(), RuleEffectImplTest.getRuleEffectWithNullData()));
         res.add(new CardRuleImpl(TriggerType.MOVE, RuleStatementImplTest.getMoveStatementList(), RuleEffectImplTest.getRuleEffectWithNullData()));
         res.add(new CardRuleImpl(TriggerType.BUILD, RuleStatementImplTest.getBuildStatementList(), RuleEffectImplTest.getRuleEffectWithNullData()));
         res.add(new CardRuleImpl(TriggerType.MOVE, RuleStatementImplTest.getMoveStatementList(), RuleEffectImplTest.getRuleEffectWithData()));
@@ -122,6 +123,11 @@ public class CardRuleImplTest {
     public static List<CardRuleImpl> getRuleWithMixedStatementsOnBuild(){
         List<CardRuleImpl> res = new ArrayList<>();
         res.add(new CardRuleImpl(TriggerType.BUILD, RuleStatementImplTest.getMixedStatementOnBuildList(), RuleEffectImplTest.getRuleEffectWithNullData()));
+        return res;
+    }
+    public static List<CardRuleImpl> getRuleWithMixedAllowSubtypesOnBuild(){
+        List<CardRuleImpl> res = new ArrayList<>();
+        res.add(new CardRuleImpl(TriggerType.BUILD, RuleStatementImplTest.getBuildStatementList(), RuleEffectImplTest.getRuleEffectWithWrongSubtype()));
         return res;
     }
 

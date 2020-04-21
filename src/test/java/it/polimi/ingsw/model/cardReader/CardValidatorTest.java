@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 
 class CardValidatorTest {
 
+    /*
+        Test1: Check correct CardFile
+     */
     @Test
-    void checkCardFile() {
-        //Check correct CardFile
+    void testCorrectCardFile(){
         CardFile cardFileOkay = CardFileImplTest.getNormalCardFile();
         try{
             CardValidator.checkCardFile(cardFileOkay);
@@ -15,7 +17,12 @@ class CardValidatorTest {
         } catch (InvalidCardException e) {
             assert false;
         }
-        //Check CardFile with at least one rule with one statement with wrong subject
+    }
+    /*
+        Test2: Check CardFile with at least one rule with one statement with wrong subject
+     */
+    @Test
+    void checkWrongSubject(){
         CardFile cardFileWrong = CardFileImplTest.getCardFileWithWrongStatementSubject();
         try{
             CardValidator.checkCardFile(cardFileWrong);
@@ -23,24 +30,39 @@ class CardValidatorTest {
         } catch (InvalidCardException e) {
             assert true;
         }
-        //Check CardFile with at least one rule with one statement with wrong object
-        cardFileWrong = CardFileImplTest.getCardFileWithWrongStatementObject();
+    }
+    /*
+        Test3: Check CardFile with at least one rule with one statement with wrong object
+     */
+    @Test
+    void checkWrongObject(){
+        CardFile cardFileWrong = CardFileImplTest.getCardFileWithWrongStatementObject();
         try{
             CardValidator.checkCardFile(cardFileWrong);
             assert false;
         } catch (InvalidCardException e) {
             assert true;
         }
-        //Check CardFile with at least one rule with one effect with wrong data
-        cardFileWrong = CardFileImplTest.getCardFileWithWrongEffect();
+    }
+    /*
+        Test4: Check CardFile with at least one rule with one effect with wrong data
+     */
+    @Test
+    void checkWrongData(){
+        CardFile cardFileWrong = CardFileImplTest.getCardFileWithWrongEffect();
         try{
             CardValidator.checkCardFile(cardFileWrong);
             assert false;
         } catch (InvalidCardException e) {
             assert true;
         }
-        //Check CardFile with at least one rule with mixed statements
-        cardFileWrong = CardFileImplTest.getCardFileWithMixedStatementsOnMove();
+    }
+    /*
+        Test5: Check CardFile with at least one rule with mixed statements
+     */
+    @Test
+    void checkMixedStatements(){
+        CardFile cardFileWrong = CardFileImplTest.getCardFileWithMixedStatementsOnMove();
         try{
             CardValidator.checkCardFile(cardFileWrong);
             assert false;
@@ -52,6 +74,21 @@ class CardValidatorTest {
             CardValidator.checkCardFile(cardFileWrong);
             assert false;
         } catch (InvalidCardException e) {
+            assert true;
+        }
+    }
+
+    /*
+       Test6: Check CardFile with at least one rule with mixed allow subtypes
+    */
+    @Test
+    void checkMixedAllowSubtypes() {
+        CardFile cardFileWrong = CardFileImplTest.getCardFileWithMixedAllowSubtypesOnBuild();
+        try{
+            CardValidator.checkCardFile(cardFileWrong);
+            assert false;
+        } catch (InvalidCardException e) {
+            System.out.println(e.getMessage());
             assert true;
         }
     }

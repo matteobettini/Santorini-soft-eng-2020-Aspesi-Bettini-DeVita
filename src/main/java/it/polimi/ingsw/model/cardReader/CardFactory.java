@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model.cardReader;
 
-import it.polimi.ingsw.model.cardReader.enums.EffectType;
-import it.polimi.ingsw.model.cardReader.enums.StatementType;
-import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.model.cardReader.enums.*;
 import it.polimi.ingsw.model.cardReader.exceptions.CardLoadingException;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.PlayerState;
@@ -51,6 +48,14 @@ public class CardFactory {
         return new LinkedList<>(cards);
     }
 
+    /**
+     * This CardFile generator must be managed carefully.
+     * To permit the whole model to work correctly, every default strategy must have:
+     * - Exactly 1 CardRule with trigger MOVE, effect type ALLOW, subtype STANDARD and without PLAYER_EQUALS
+     * - Exactly 1 CardRule with trigger BUILD, effect type ALLOW, subtype STANDARD and without PLAYER_EQUALS
+     * - At least one CardRule with effect type WIN
+     * @return CardFile of the default strategy
+     */
     private CardFile generateDefaultStrategy(){
         List<CardRuleImpl> rules = new LinkedList<>();
         List<RuleStatementImpl> statements = new LinkedList<>();
@@ -59,20 +64,20 @@ public class CardFactory {
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.MOVE_LENGTH, "1"));
         statements.add(new RuleStatementImpl(StatementType.NIF,"YOU", StatementVerbType.EXISTS_DELTA_MORE, "1"));
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.INTERACTION_NUM, "0"));
-        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, PlayerState.MOVED,null);
+        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED,null);
         rules.add(new CardRuleImpl(TriggerType.MOVE,statements,effect));
         //BUILD ALLOW
         statements = new LinkedList<>();
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.STATE_EQUALS, "MOVED"));
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.BUILD_NUM, "1"));
         statements.add(new RuleStatementImpl(StatementType.NIF,"YOU", StatementVerbType.BUILD_DOME_EXCEPT, "THIRD_FLOOR"));
-        effect = new RuleEffectImpl(EffectType.ALLOW,PlayerState.BUILT,null);
+        effect = new RuleEffectImpl(EffectType.ALLOW,AllowType.STANDARD, PlayerState.BUILT,null);
         rules.add(new CardRuleImpl(TriggerType.BUILD,statements,effect));
         //MOVE WIN
         statements = new LinkedList<>();
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.EXISTS_DELTA_MORE, "0"));
         statements.add(new RuleStatementImpl(StatementType.IF,"FINAL_POSITION", StatementVerbType.LEVEL_TYPE, "THIRD_FLOOR"));
-        effect = new RuleEffectImpl(EffectType.WIN,null,null);
+        effect = new RuleEffectImpl(EffectType.WIN,null);
         rules.add(new CardRuleImpl(TriggerType.MOVE,statements,effect));
         //Generate card
         CardFile defaultCard = new CardFileImpl("Default Strategy", "None", rules);
@@ -83,6 +88,7 @@ public class CardFactory {
         }
         return defaultCard;
     }
+
     private List<CardFile> loadCards() throws InvalidCardException, CardLoadingException {
         List<CardFile> result = new LinkedList<>();
         try{
@@ -94,8 +100,8 @@ public class CardFactory {
             for(File card : files){
                 result.add(CardReader.readCard(defaultCard,card));
             }
-        }catch (NullPointerException ex){
-            throw new CardLoadingException("Card's dir not found");
+        }catch (NullPointerException | SecurityException ex){
+            throw new CardLoadingException("Card's dir not found or not accessible");
         }
         return result;
     }

@@ -34,10 +34,16 @@ public class EffectCompiler {
 
         switch (effectType){
             case ALLOW:
-                compiledEffect = compileAllowEffect(model, effect);
-                break;
-            case SET_OPPONENT_POSITION:
-                compiledEffect = compileSetOpponentPositionEffect(model, effect);
+                switch (effect.getAllowType()){
+                    case STANDARD:
+                        compiledEffect = compileAllowStandardEffect(model, effect);
+                        break;
+                    case SET_OPPONENT:
+                        compiledEffect = compileAllowSetOpponentEffect(model, effect);
+                        break;
+                    default:
+                        assert false;
+                }
                 break;
             case DENY:
                 compiledEffect = ((moveData, buildData, simulate) -> {
@@ -65,8 +71,7 @@ public class EffectCompiler {
         return compiledEffect;
     }
 
-
-    private static LambdaEffect compileAllowEffect(InternalModel model, RuleEffect effect) {
+    private static LambdaEffect compileAllowStandardEffect(InternalModel model, RuleEffect effect) {
 
 
         PlayerState nextPlayerState = effect.getNextState();
@@ -185,9 +190,7 @@ public class EffectCompiler {
         return  lambdaEffect;
     }
 
-
-
-    private static LambdaEffect compileSetOpponentPositionEffect(InternalModel model, RuleEffect effect) {
+    private static LambdaEffect compileAllowSetOpponentEffect(InternalModel model, RuleEffect effect) {
 
         PlayerState nextPlayerState = effect.getNextState();
         LambdaEffect lambdaEffect = null;

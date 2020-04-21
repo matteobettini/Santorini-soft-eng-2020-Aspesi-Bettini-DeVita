@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.cardReader;
 
+import it.polimi.ingsw.model.cardReader.enums.AllowType;
 import it.polimi.ingsw.model.cardReader.enums.EffectType;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.enums.PlayerState;
@@ -31,6 +32,8 @@ class CardPatcher {
                 for(RuleStatement stm : rule.getStatements()){
                     applyStatementToCardRule(rule.getTrigger(), stm, card);
                 }
+                //Add its default allow type where missing
+                applySubtypeToCardFile(rule.getTrigger(), rule.getEffect().getAllowType(), card);
                 //Add its default next state where missing
                 applyNextStateToCardFile(rule.getTrigger(),rule.getEffect().getNextState(),card);
             }
@@ -98,12 +101,39 @@ class CardPatcher {
     }
 
     /**
+     * This method patches the cardFile allow subtype in the compatible rules where was not specified.
+     * @param triggerDefault Default card rule trigger
+     * @param typeDefault Default allow subtype
+     * @param card CardFile where we want to add the subtype
+     */
+    private static void applySubtypeToCardFile(TriggerType triggerDefault, AllowType typeDefault, CardFileImpl card){
+        List<CardRuleImpl> similarRules = card.getRulesInternal(triggerDefault);
+        for(CardRuleImpl rule : similarRules){
+            if (isPatchableCompliant(rule)){
+                applySubtypeToCardRule(typeDefault, rule);
+            }
+        }
+    }
+
+    /**
+     * This method patches the cardRule allow subtype in the compatible rules where was not specified.
+     * @param typeDefault Default allow subtype
+     * @param rule Rule to be patched
+     */
+    private static void applySubtypeToCardRule(AllowType typeDefault, CardRuleImpl rule){
+        RuleEffectImpl ruleEffect = rule.getEffectInternal();
+        if (ruleEffect.getAllowType() == null){
+            ruleEffect.setAllowType(typeDefault);
+        }
+    }
+
+    /**
      * This methods returns true if the rule can be patched be used to patch
      * @param rule CardRule to analyse
-     * @return True if the rule can be patchedbe used to patch, False otherwise
+     * @return True if the rule can be patched, False otherwise
      */
     private static boolean isPatchableCompliant(CardRule rule){
-        return rule.getEffect().getType() == EffectType.ALLOW || rule.getEffect().getType() == EffectType.SET_OPPONENT_POSITION;
+        return rule.getEffect().getType() == EffectType.ALLOW;
     }
     /**
      * This methods returns true if the rule can be used to patch
@@ -111,6 +141,6 @@ class CardPatcher {
      * @return True if the rule can be used to patch, False otherwise
      */
     private static boolean canBeUsedToPatch(CardRule rule){
-        return rule.getEffect().getType() == EffectType.ALLOW;
+        return rule.getEffect().getType() == EffectType.ALLOW && rule.getEffect().getAllowType() == AllowType.STANDARD;
     }
 }

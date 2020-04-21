@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.cardReader;
 
+import it.polimi.ingsw.model.cardReader.enums.EffectType;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidRuleEffectException;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidStatementObjectException;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidStatementSubjectException;
@@ -32,9 +33,9 @@ class CardValidator {
                 StatementValidator.checkRuleStatement(stm);
             }
         } catch (InvalidStatementSubjectException e) {
-            throw new InvalidCardException("[SUBJECT]" + e.getMessage());
+            throw new InvalidCardException("[RULE_STATEMENTS][SUBJECT]" + e.getMessage());
         } catch (InvalidStatementObjectException e) {
-            throw new InvalidCardException("[OBJECT]" + e.getMessage());
+            throw new InvalidCardException("[RULE_STATEMENTS][OBJECT]" + e.getMessage());
         }
         //Check Effect
         try{
@@ -42,17 +43,19 @@ class CardValidator {
         } catch (InvalidRuleEffectException e) {
             throw new InvalidCardException("[EFFECT]" + e.getMessage());
         }
+        //Check effect allow subtypes
+        checkAllowSubtypes(rule);
     }
 
     private static void checkMixedStatements(CardRule rule) throws InvalidCardException{
         for(RuleStatement stm : rule.getStatements()){
-            if (!isPlacementValid(stm,rule.getTrigger())){
+            if (!isStatementPlacementValid(stm,rule.getTrigger())){
                 throw new InvalidCardException("[RULE]Mixed statements: '" + stm.getVerb().toString() + "' found in '" + rule.getTrigger().toString() + "'");
             }
         }
     }
 
-    private static boolean isPlacementValid(RuleStatement stm, TriggerType ruleTrigger){
+    private static boolean isStatementPlacementValid(RuleStatement stm, TriggerType ruleTrigger){
         switch (ruleTrigger){
             case MOVE:
                 switch (stm.getVerb()){
@@ -66,9 +69,8 @@ class CardValidator {
                     case LEVEL_TYPE:
                     case POSITION_EQUALS:
                         return true;
-                    default:
-                        return false;
                 }
+                break;
             case BUILD:
                 switch (stm.getVerb()){
                     case PLAYER_EQUALS:
@@ -79,12 +81,32 @@ class CardValidator {
                     case BUILD_DOME_EXCEPT:
                     case BUILD_IN_SAME_SPOT:
                         return true;
-                    default:
-                        return false;
                 }
+                break;
             default:
                 assert false;
-                return false;
         }
+        return false;
+    }
+
+    private static void checkAllowSubtypes(CardRule rule) throws InvalidCardException{
+        if (rule.getEffect().getType() != EffectType.ALLOW) return; //Obviously skip if it's not allow
+        if (rule.getEffect().getAllowType() == null) return; //Will be patched
+        switch (rule.getTrigger()){
+            case MOVE:
+                switch (rule.getEffect().getAllowType()){
+                    case STANDARD:
+                    case SET_OPPONENT:
+                        return;
+                }
+                break;
+            case BUILD:
+                switch (rule.getEffect().getAllowType()){
+                    case STANDARD:
+                        return;
+                }
+                break;
+        }
+        throw new InvalidCardException("[RULE]Mixed allow subtypes: '" + rule.getEffect().getAllowType().toString() + "' found in '" + rule.getTrigger().toString() + "'");
     }
 }

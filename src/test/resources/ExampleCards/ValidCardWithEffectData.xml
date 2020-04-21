@@ -25,7 +25,8 @@
                 </if>
             </statements>
             <effect> <!--Sposta l'avversario al tuo posto-->
-                <type>SET_OPPONENT_POSITION</type>
+                <type>ALLOW</type>
+                <subtype>SET_OPPONENT</subtype>
                 <data>SWAP</data>
             </effect>
         </rule>

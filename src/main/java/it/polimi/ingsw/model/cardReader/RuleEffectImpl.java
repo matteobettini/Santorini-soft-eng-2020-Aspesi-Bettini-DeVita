@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.cardReader;
 
+import it.polimi.ingsw.model.cardReader.enums.AllowType;
 import it.polimi.ingsw.model.cardReader.enums.EffectType;
 import it.polimi.ingsw.model.enums.PlayerState;
 
@@ -13,14 +14,19 @@ import java.util.Objects;
 class RuleEffectImpl implements RuleEffect {
 
     private final EffectType type;
+    private AllowType allowType;
     private PlayerState playerNextState;
     private final String data;
 
-    public RuleEffectImpl(EffectType type, PlayerState playerNextState, String data) {
+    public RuleEffectImpl(EffectType type, AllowType allowType, PlayerState playerNextState, String data) {
         assert(type != null);
         this.type = type;
+        this.allowType = allowType;
         this.playerNextState = playerNextState;
         this.data = data;
+    }
+    public RuleEffectImpl(EffectType type, PlayerState playerNextState) {
+        this(type,null,playerNextState,null);
     }
 
     /**
@@ -48,13 +54,25 @@ class RuleEffectImpl implements RuleEffect {
     }
 
     /**
-     * Getter for the unconverted data tag of the effect.
-     * Will be compiled into code during rule compilation.
-     * @return XML Element containing effect additional info
-     *         null, if data is not present
+     * Setter for the allow subtype
+     * @param type Enum value corresponding at the subtype of this allow
+     */
+    public void setAllowType(AllowType type){ this.allowType = type;}
+
+    /**
+     * Getter for additional personalization of the effect
+     * @return String element, containing info to personalize the effect. Null if none is present
      */
     public String getData(){
         return this.data;
+    }
+
+    /**
+     * Getter for the subtype of a rule effect.
+     * @return AllowType value if the rule is allow, otherwise null
+     */
+    public AllowType getAllowType(){
+        return this.allowType;
     }
 
     /**
@@ -68,6 +86,7 @@ class RuleEffectImpl implements RuleEffect {
         if (o == null || getClass() != o.getClass()) return false;
         RuleEffectImpl that = (RuleEffectImpl) o;
         return type == that.type &&
+                Objects.equals(allowType,that.allowType) &&
                 Objects.equals(playerNextState,that.playerNextState) &&
                 Objects.equals(data, that.data);
     }
@@ -78,6 +97,6 @@ class RuleEffectImpl implements RuleEffect {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(type, playerNextState, data);
+        return Objects.hash(type, allowType, playerNextState, data);
     }
 }

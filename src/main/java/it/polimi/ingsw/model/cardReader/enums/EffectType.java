@@ -6,7 +6,6 @@ package it.polimi.ingsw.model.cardReader.enums;
  */
 public enum EffectType {
     ALLOW,
-    SET_OPPONENT_POSITION,
     DENY,
     WIN
 }

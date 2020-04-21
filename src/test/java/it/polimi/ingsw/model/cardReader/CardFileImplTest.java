@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model.cardReader;
 
-import it.polimi.ingsw.model.cardReader.enums.EffectType;
-import it.polimi.ingsw.model.cardReader.enums.StatementType;
-import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.model.cardReader.enums.*;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.Test;
@@ -26,10 +23,11 @@ public class CardFileImplTest {
         String descrTest = "DESCR01";
         List<CardRuleImpl> rules = new ArrayList<>();
 
-        CardFile cardFile = new CardFileImpl(nameTest, descrTest, rules);
+        CardFileImpl cardFile = new CardFileImpl(nameTest, descrTest, rules);
         assertEquals(cardFile.getName(), nameTest);
         assertEquals(cardFile.getDescription(), descrTest);
         assertEquals(cardFile.getRules(), rules);
+        assertEquals(cardFile.getRulesInternal(), rules);
     }
 
     /**
@@ -59,11 +57,11 @@ public class CardFileImplTest {
         String descrTest = "DESCR01";
         List<CardRuleImpl> rules = CardRuleImplTest.getRulesWithAllTriggerTypes();
 
-        CardFile cardFile = new CardFileImpl(nameTest,descrTest,rules);
+        CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
         for(TriggerType trigger : TriggerType.values()){
             List<CardRule> correctFilteredRules = rules.stream().filter(r->r.getTrigger() == trigger).collect(Collectors.toList());
-            List<CardRule> output = cardFile.getRules(trigger);
-            assertEquals(correctFilteredRules, output);
+            assertEquals(correctFilteredRules, cardFile.getRules(trigger));
+            assertEquals(correctFilteredRules, cardFile.getRulesInternal(trigger));
         }
     }
 
@@ -128,7 +126,7 @@ public class CardFileImplTest {
         statements.add(stmt);
         stmt = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, state.name());
         statements.add(stmt);
-        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED, null);
         List<CardRuleImpl> rules = new LinkedList<>();
         rules.add(CardRuleImplTest.getRule(triggerType, statements, effect));
         CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
@@ -145,7 +143,7 @@ public class CardFileImplTest {
         List<RuleStatementImpl> statements = new LinkedList<>();
         RuleStatementImpl stmt = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.PLAYER_EQUALS, "CARD_OWNER");
         statements.add(stmt);
-        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED, null);
         List<CardRuleImpl> rules = new LinkedList<>();
         rules.add(CardRuleImplTest.getRule(triggerType, statements, effect));
         CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
@@ -164,7 +162,7 @@ public class CardFileImplTest {
         statements.add(stmt);
         stmt = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.STATE_EQUALS, state.name());
         statements.add(stmt);
-        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED, null);
         List<CardRuleImpl> rules = new LinkedList<>();
         rules.add(CardRuleImplTest.getRule(triggerType, statements, effect));
         CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
@@ -183,7 +181,7 @@ public class CardFileImplTest {
         statements.add(stmt);
         stmt = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.STATE_EQUALS, state.name());
         statements.add(stmt);
-        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED, null);
         List<CardRuleImpl> rules = new LinkedList<>();
         rules.add(CardRuleImplTest.getRule(triggerType, statements, effect));
         CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
@@ -200,7 +198,7 @@ public class CardFileImplTest {
         List<RuleStatementImpl> statements = new LinkedList<>();
         RuleStatementImpl stmt = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, state.name());
         statements.add(stmt);
-        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, PlayerState.MOVED, null);
+        RuleEffectImpl effect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED, null);
         List<CardRuleImpl> rules = new LinkedList<>();
         rules.add(CardRuleImplTest.getRule(triggerType, statements, effect));
         CardFileImpl cardFile = new CardFileImpl(nameTest,descrTest,rules);
@@ -210,5 +208,11 @@ public class CardFileImplTest {
             assert false;
         }
         return cardFile;
+    }
+    public static CardFileImpl getCardFileWithMixedAllowSubtypesOnBuild(){
+        String nameTest = "TEST11";
+        String descrTest = "MixedAllowSubtypes";
+        List<CardRuleImpl> rules = CardRuleImplTest.getRuleWithMixedAllowSubtypesOnBuild();
+        return new CardFileImpl(nameTest,descrTest,rules);
     }
 }

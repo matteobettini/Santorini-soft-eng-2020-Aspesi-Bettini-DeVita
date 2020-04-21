@@ -26,7 +26,7 @@ public class MapCompiler {
             CardFile hisCard = player.getCard();
             if (hisCard == null) continue; //Skip if has not card
             for(CardRule rule : hisCard.getRules()){
-                if (rule.getEffect().getType() == EffectType.ALLOW || rule.getEffect().getType() == EffectType.SET_OPPONENT_POSITION){
+                if (rule.getEffect().getType() == EffectType.ALLOW){
                     if (ownsRule(rule.getStatements())){
                         allows.get(player).add(rule);
                     }else if (othersOwnRule(rule.getStatements())){

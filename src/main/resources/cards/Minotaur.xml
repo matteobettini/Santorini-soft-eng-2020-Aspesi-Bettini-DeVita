@@ -42,7 +42,8 @@
                 -->
             </statements>
             <effect>
-                <type>SET_OPPONENT_POSITION</type> <!--Sposta l'avversario avanti di uno, se possibile-->
+                <type>ALLOW</type> <!--Sposta l'avversario avanti di uno, se possibile-->
+                <subtype>SET_OPPONENT</subtype>
                 <data>PUSH_STRAIGHT</data>
                 <!--Verrà aggiunto
                 <nextstate>MOVED</nextstate>

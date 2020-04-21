@@ -27,6 +27,7 @@
             </statements>
             <effect>
                 <type>ALLOW</type> <!--La mossa è consentita-->
+                <subtype>STANDARD</subtype>
                 <nextstate>MOVED</nextstate> <!--Sarà impostato solo se l'effetto sarà ritenuto applicabile-->
             </effect>
         </rule>
@@ -50,6 +51,7 @@
             </statements>
             <effect>
                 <type>ALLOW</type> <!--Permette la costruzione-->
+                <subtype>STANDARD</subtype>
                 <nextstate>BUILT</nextstate> <!--Sarà impostato solo se l'effetto sarà ritenuto applicabile-->
             </effect>
         </rule>

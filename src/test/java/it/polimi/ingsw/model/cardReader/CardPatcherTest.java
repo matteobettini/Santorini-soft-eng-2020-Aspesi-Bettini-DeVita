@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model.cardReader;
 
-import it.polimi.ingsw.model.cardReader.enums.EffectType;
-import it.polimi.ingsw.model.cardReader.enums.StatementType;
-import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.model.cardReader.enums.*;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.Test;
@@ -30,11 +27,11 @@ public class CardPatcherTest {
 
         //Check inherited statements
         for(CardRule rule : defaultStrategy.getRules()){
-            if (rule.getEffect().getType() == EffectType.ALLOW || rule.getEffect().getType() == EffectType.SET_OPPONENT_POSITION){
+            if (rule.getEffect().getType() == EffectType.ALLOW){
                 for(RuleStatement stm : rule.getStatements()){
                     for(CardRule cardRule : card.getRules()){
                         if(cardRule.getTrigger() == rule.getTrigger()){
-                            if(cardRule.getEffect().getType() == EffectType.ALLOW || cardRule.getEffect().getType() == EffectType.SET_OPPONENT_POSITION){
+                            if(cardRule.getEffect().getType() == EffectType.ALLOW){
                                 boolean found = false;
                                 for(RuleStatement cardStm : cardRule.getStatements()){
                                     if (cardStm.getVerb() == stm.getVerb() && cardStm.getSubject().equals(stm.getSubject())) {
@@ -73,23 +70,23 @@ public class CardPatcherTest {
         List<RuleStatementImpl> statements = new ArrayList<>();
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "TURN_STARTED"));
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.MOVE_LENGTH, "1"));
-        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, null, null);
+        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, AllowType.STANDARD,null, null);
         List<CardRuleImpl> rules = new ArrayList<>();
         rules.add(new CardRuleImpl(TriggerType.MOVE, statements,effect));
         //Generate default BUILD ALLOW strategy
         statements = new ArrayList<>();
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "MOVED"));
-        effect = new RuleEffectImpl(EffectType.ALLOW, PlayerState.FIRST_BUILT, null);
+        effect = new RuleEffectImpl(EffectType.ALLOW, AllowType.STANDARD, PlayerState.FIRST_BUILT, null);
         rules.add(new CardRuleImpl(TriggerType.BUILD, statements,effect));
         //Generate default BUILD DENY strategy
         statements = new ArrayList<>();
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "MOVED"));
-        effect = new RuleEffectImpl(EffectType.DENY, null, null);
+        effect = new RuleEffectImpl(EffectType.DENY, null);
         rules.add(new CardRuleImpl(TriggerType.BUILD, statements,effect));
         //Generate default MOVE WIN strategy
         statements = new ArrayList<>();
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "MOVED"));
-        effect = new RuleEffectImpl(EffectType.WIN, null, null);
+        effect = new RuleEffectImpl(EffectType.WIN, null);
         rules.add(new CardRuleImpl(TriggerType.MOVE, statements,effect));
         CardFileImpl cardFile = new CardFileImpl("Card Test", "", rules);
         try{
@@ -106,14 +103,14 @@ public class CardPatcherTest {
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "TURN_STARTED"));
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.MOVE_LENGTH, "1"));
         statements.add(new RuleStatementImpl(StatementType.NIF, "YOU", StatementVerbType.EXISTS_DELTA_MORE, "1"));
-        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, PlayerState.MOVED, null);
+        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED, null);
         List<CardRuleImpl> rules = new ArrayList<>();
         rules.add(new CardRuleImpl(TriggerType.MOVE, statements,effect));
         //Generate default BUILD ALLOW strategy
         statements = new ArrayList<>();
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.STATE_EQUALS, "MOVED"));
         statements.add(new RuleStatementImpl(StatementType.IF, "YOU", StatementVerbType.BUILD_NUM, "1"));
-        effect = new RuleEffectImpl(EffectType.ALLOW, PlayerState.BUILT, null);
+        effect = new RuleEffectImpl(EffectType.ALLOW, AllowType.STANDARD, PlayerState.BUILT, null);
         rules.add(new CardRuleImpl(TriggerType.BUILD, statements,effect));
 
         CardFileImpl defaultStrategy = new CardFileImpl("Default", "", rules);
