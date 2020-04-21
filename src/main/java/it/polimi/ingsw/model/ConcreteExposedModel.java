@@ -1,11 +1,15 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.cardReader.CardFactory;
+import it.polimi.ingsw.model.enums.SetupPhase;
 import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.*;
-import java.util.List;
 
-public class ConcreteExposedModel implements ObservableModel {
+import java.awt.*;
+import java.util.List;
+import java.util.Map;
+
+public class ConcreteExposedModel implements ObservableModel, Model {
 
     private final CardFactory factory;
     private final SetupManager setupManager;
@@ -19,6 +23,10 @@ public class ConcreteExposedModel implements ObservableModel {
         this.turnLogic = new TurnLogic(internalModel);
     }
 
+    public void start(){
+        if(setupManager.getSetupPhase() == SetupPhase.STARTING)
+            setupManager.start();
+    }
 
     @Override
     public void addPacketCardsFromServerObserver(Observer<PacketCardsFromServer> observer) {
@@ -50,5 +58,50 @@ public class ConcreteExposedModel implements ObservableModel {
     public void addPacketUpdateBoardObserver(Observer<PacketUpdateBoard> observer) {
         setupManager.addPacketUpdateBoardObserver(observer);
         turnLogic.addPacketUpdateBoardObserver(observer);
+    }
+
+    @Override
+    public void makeMove(String senderID, PacketMove packetMove) throws InvalidPacketException {
+        if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
+            turnLogic.consumePacketMove(senderID,packetMove);
+    }
+
+    @Override
+    public void makeBuild(String senderID, PacketBuild packetBuild) throws InvalidPacketException {
+        if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
+            turnLogic.consumePacketBuild(senderID, packetBuild);
+    }
+
+    @Override
+    public void getPossibeMoves(String senderID, PacketMove packetMove) {
+        if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
+            turnLogic.getPossibleMoves(senderID,packetMove);
+    }
+
+    @Override
+    public void getPossibleBuilds(String senderID, PacketBuild packetBuild) {
+        if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
+            turnLogic.getPossibleBuilds(senderID,packetBuild);
+    }
+
+    @Override
+    public void setSelectedCards(String senderID, List<String> selectedCards) throws InvalidPacketException {
+        setupManager.setSelectedCards(senderID,selectedCards);
+    }
+
+    @Override
+    public void setStartPlayer(String senderID, String startPlayer) throws InvalidPacketException {
+        setupManager.setStartPlayer(senderID,startPlayer);
+    }
+
+    @Override
+    public void setWorkersPositions(String senderID, Map<String, Point> workersPositions) throws InvalidPacketException {
+        setupManager.setWorkersPositions(senderID,workersPositions);
+    }
+
+    @Override
+    public Board getClonedBoard() {
+        //TODO
+        return null;
     }
 }
