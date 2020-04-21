@@ -21,29 +21,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TurnLogicMatteoTest {
 
-    static class Client implements Observer<PacketContainer> {
+    static class Client {
         private final Queue<PacketPossibleBuilds> packetPossibleBuilds;
         private final Queue<PacketPossibleMoves> packetPossibleMoves;
         private final Queue<PacketDoAction> packetDoAction;
         private final Queue<PacketUpdateBoard> packetUpdateBoard;
 
-        public Client(){
+        public Client(TurnLogic turnLogic){
             packetDoAction = new LinkedList<>();
             packetPossibleBuilds = new LinkedList<>();
             packetPossibleMoves = new LinkedList<>();
             packetUpdateBoard = new LinkedList<>();
+
+            turnLogic.addPacketDoActionObserver(this.packetDoAction::add);
+            turnLogic.addPacketPossibleBuildsObserver(this.packetPossibleBuilds::add);
+            turnLogic.addPacketPossibleMovesObserver(this.packetPossibleMoves::add);
+            turnLogic.addPacketUpdateBoardObserver(this.packetUpdateBoard::add);
+
         }
 
-        public void update(PacketContainer packetContainer){
-            if(packetContainer.getPacketPossibleMoves() != null)
-                this.packetPossibleMoves.add(packetContainer.getPacketPossibleMoves());
-            if(packetContainer.getPacketDoAction() != null)
-                this.packetDoAction.add(packetContainer.getPacketDoAction());
-            if(packetContainer.getPacketUpdateBoard() != null)
-                this.packetUpdateBoard.add(packetContainer.getPacketUpdateBoard());
-            if(packetContainer.getPacketPossibleBuilds() != null)
-                this.packetPossibleBuilds.add(packetContainer.getPacketPossibleBuilds());
-        }
         public PacketPossibleBuilds getPacketPossibleBuilds() {
             return packetPossibleBuilds.poll();
         }
@@ -123,10 +119,10 @@ class TurnLogicMatteoTest {
         players.add("Andrea");
         players.add("Matteo");
         players.add("Mirko");
-        client = new Client();
+
         model = new InternalModel(players, cardFactory, true);
         turnLogic = new TurnLogic(model);
-        turnLogic.addObserver(client);
+        client = new Client(turnLogic);
         Andrea = model.getPlayerByNick("Andrea");
         Matteo = model.getPlayerByNick("Matteo");
         Mirko = model.getPlayerByNick("Mirko");
@@ -817,10 +813,9 @@ class TurnLogicMatteoTest {
         List<String> players = new ArrayList<>();
         players.add("Andrea");
         players.add("Mirko");
-        client = new Client();
         model = new InternalModel(players, cardFactory, true);
         turnLogic = new TurnLogic(model);
-        turnLogic.addObserver(client);
+        client = new Client(turnLogic);
         Andrea = model.getPlayerByNick("Andrea");
         Mirko = model.getPlayerByNick("Mirko");
 

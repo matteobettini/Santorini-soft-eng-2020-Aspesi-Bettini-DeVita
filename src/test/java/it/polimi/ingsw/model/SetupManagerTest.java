@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.cardReader.exceptions.CardLoadingException;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.model.enums.SetupPhase;
-import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.*;
 import javafx.util.Pair;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,27 +23,42 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SetupManagerTest {
 
-    static class Client implements Observer<PacketContainer> {
-        private PacketContainer packetContainer;
+    static class Client  {
+      
         private PacketSetup packetSetup;
         private PacketDoAction packetDoAction;
         private PacketUpdateBoard packetUpdateBoard;
-        public void update(PacketContainer packet){
-            this.packetContainer = packet;
-            if(packetContainer.getPacketSetup() != null) this.packetSetup = packetContainer.getPacketSetup();
-            if(packetContainer.getPacketDoAction() != null) this.packetDoAction = packetContainer.getPacketDoAction();
-            if(packetContainer.getPacketUpdateBoard() != null) this.packetUpdateBoard = packetContainer.getPacketUpdateBoard();
+        private PacketCardsFromServer packetCardsFromServer;
+        
+       
+        public Client(SetupManager setupManager){
+            setupManager.addPacketCardsFromServerObserver((packetCardsFromServer)->{
+                this.packetCardsFromServer = packetCardsFromServer;
+            });
+            setupManager.addPacketDoActionObserver((packetDoAction)->{
+                this.packetDoAction = packetDoAction;
+            });
+            setupManager.addPacketSetupObserver((packetSetup)->{
+                this.packetSetup = packetSetup;
+            });
+            setupManager.addPacketUpdateBoardObserver((packetUpdateBoard)->{
+                this.packetUpdateBoard = packetUpdateBoard;
+            });
         }
-        public PacketContainer container(){
-            return packetContainer;
+
+        public PacketCardsFromServer cards() {
+            return packetCardsFromServer;
         }
-        public PacketSetup setup(){
+
+        public PacketSetup setup() {
             return packetSetup;
         }
-        public PacketDoAction action(){
+
+        public PacketDoAction action() {
             return packetDoAction;
         }
-        public PacketUpdateBoard board(){
+
+        public PacketUpdateBoard board() {
             return packetUpdateBoard;
         }
     }
@@ -91,8 +105,7 @@ class SetupManagerTest {
         Matteo = model.getPlayerByNick("Matteo");
         Mirko = model.getPlayerByNick("Mirko");
         setupManager = new SetupManager(model, cardFiles);
-        client = new Client();
-        setupManager.addObserver(client);
+        client = new Client(setupManager);
 
     }
 
@@ -104,13 +117,10 @@ class SetupManagerTest {
         assertEquals(setupManager.getSetupPhase(), SetupPhase.STARTING);
         setupManager.start();
         assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_CARDS);
-        PacketContainer packetContainer = client.container();
-        assert packetContainer != null;
-        PacketCardsFromServer packetCardsFromServer = packetContainer.getPacketCardsFromServer();
+        
+        PacketCardsFromServer packetCardsFromServer = client.cards();
         assert packetCardsFromServer != null;
-        assert packetContainer.getPacketDoAction() == null;
-        assert packetContainer.getPacketSetup() == null;
-        assert packetContainer.getPacketUpdateBoard() == null;
+       
         for(String card : packetCardsFromServer.getAllCards().keySet()){
             boolean found = false;
             for(CardFile cardFile : cardFiles){
@@ -147,7 +157,7 @@ class SetupManagerTest {
     @Test
     void testSelectedCards2(){
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         assert packet != null;
         String challenger = packet.getTo();
         String notChallenger;
@@ -172,7 +182,7 @@ class SetupManagerTest {
     @Test
     void testSelectedCards3(){
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         assert packet != null;
         String challenger = packet.getTo();
         try{
@@ -192,7 +202,7 @@ class SetupManagerTest {
         setupManager.start();
         CardFile apollo = cardFactory.getCards().stream().filter(x -> x.getName().equals("Apollo")).findFirst().orElse(null);
         selectedCards.clear();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         assert packet != null;
         String challenger = packet.getTo();
         assert apollo != null;
@@ -215,7 +225,7 @@ class SetupManagerTest {
         selectedCards.remove("Apollo");
         assert pan != null;
         selectedCards.add(pan.getName());
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         assert packet != null;
         String challenger = packet.getTo();
         try{
@@ -232,7 +242,7 @@ class SetupManagerTest {
     @Test
     void testSelectedCards6(){
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         assert packet != null;
         String challenger = packet.getTo();
         try{
@@ -242,12 +252,12 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         List<String> availableCards = new ArrayList<>(packet.getAvailableCards());
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, availableCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, availableCards.subList(0,1));
             assert false;
@@ -268,7 +278,7 @@ class SetupManagerTest {
     @Test
     void testSelectedCards7(){
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         assert packet != null;
         String challenger = packet.getTo();
         try{
@@ -282,7 +292,7 @@ class SetupManagerTest {
 
         assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_CARDS);
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         List<String> availableCards = new ArrayList<>(packet.getAvailableCards());
 
         Pair<String,String> helperCards;
@@ -305,7 +315,7 @@ class SetupManagerTest {
             helperCards = new Pair<>(availableCards.get(0),packet.getAllCards().get(availableCards.get(0)));
             playerCardAssociation.put(next,helperCards);
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_CARDS);
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             assertNotEquals(next, challenger);
             assertTrue(players.contains(next));
@@ -378,7 +388,7 @@ class SetupManagerTest {
     @Test
     void setStartPlayerTest2(){
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -387,11 +397,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
@@ -424,7 +434,7 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -433,11 +443,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
@@ -474,7 +484,7 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -483,11 +493,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
@@ -519,7 +529,7 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -528,11 +538,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
@@ -564,7 +574,7 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -573,11 +583,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_START_PLAYER);
@@ -615,7 +625,7 @@ class SetupManagerTest {
         } catch (InvalidPacketException e) {
             assert false;
         }
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -626,13 +636,13 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
             setupManager.setWorkersPositions(Mirko.getNickname(), mirkoWorkersPosition);
             assertEquals(setupManager.getSetupPhase(), SetupPhase.WAIT_CARDS);
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setWorkersPositions(Mirko.getNickname(), mirkoWorkersPosition);
@@ -652,7 +662,7 @@ class SetupManagerTest {
         mirkoWorkersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
         mirkoWorkersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -660,11 +670,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setStartPlayer(challenger, Mirko.getNickname());
@@ -689,7 +699,7 @@ class SetupManagerTest {
         mirkoWorkersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
         mirkoWorkersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -697,11 +707,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setStartPlayer(challenger, Mirko.getNickname());
@@ -724,7 +734,7 @@ class SetupManagerTest {
     @Test
     void testSetWorkersPosition4(){
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -732,11 +742,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setStartPlayer(challenger, Mirko.getNickname());
@@ -761,7 +771,7 @@ class SetupManagerTest {
         Map<String, Point> mirkoWorkersPosition = new HashMap<>();
         mirkoWorkersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -769,11 +779,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setStartPlayer(challenger, Mirko.getNickname());
@@ -799,7 +809,7 @@ class SetupManagerTest {
         mirkoWorkersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
         mirkoWorkersPosition.put(null, new Point(0,0));
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -807,11 +817,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setStartPlayer(challenger, Mirko.getNickname());
@@ -838,7 +848,7 @@ class SetupManagerTest {
         workersPosition.put(Mirko.getWorkers().get(0).getID(), alreadyOccPos);
         workersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -846,11 +856,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setStartPlayer(challenger, Mirko.getNickname());
@@ -882,7 +892,7 @@ class SetupManagerTest {
         workersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
         workersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -890,11 +900,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setStartPlayer(challenger, Mirko.getNickname());
@@ -926,7 +936,7 @@ class SetupManagerTest {
         workersPosition.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
         workersPosition.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -934,11 +944,11 @@ class SetupManagerTest {
             assert false;
         }
         String next;
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setStartPlayer(challenger, Mirko.getNickname());
@@ -969,7 +979,7 @@ class SetupManagerTest {
         workersPosHelper.put(Mirko.getWorkers().get(0).getID(), new Point(0,0));
         workersPosHelper.put(Mirko.getWorkers().get(1).getID(), new Point(0,1));
         setupManager.start();
-        PacketCardsFromServer packet = client.container().getPacketCardsFromServer();
+        PacketCardsFromServer packet = client.cards();
         String challenger = packet.getTo();
         try{
             setupManager.setSelectedCards(challenger, selectedCards);
@@ -978,11 +988,11 @@ class SetupManagerTest {
         }
         String next;
         List<String> playersOrder = model.getPlayers().stream().map(Player::getNickname).collect(Collectors.toList());
-        packet = client.container().getPacketCardsFromServer();
+        packet = client.cards();
         try{
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(0,1));
-            packet = client.container().getPacketCardsFromServer();
+            packet = client.cards();
             next = packet.getTo();
             setupManager.setSelectedCards(next, selectedCards.subList(1,2));
             setupManager.setStartPlayer(challenger, Mirko.getNickname());

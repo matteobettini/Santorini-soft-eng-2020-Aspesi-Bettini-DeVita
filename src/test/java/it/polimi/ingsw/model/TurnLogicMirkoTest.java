@@ -24,27 +24,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TurnLogicMirkoTest {
 
-    static class Client implements Observer<PacketContainer> {
-        private Queue<PacketPossibleBuilds> packetPossibleBuilds;
-        private Queue<PacketPossibleMoves> packetPossibleMoves;
-        private Queue<PacketDoAction> packetDoAction;
-        private Queue<PacketUpdateBoard> packetUpdateBoard;
-        public Client(){
+    static class Client {
+        private final Queue<PacketPossibleBuilds> packetPossibleBuilds;
+        private final Queue<PacketPossibleMoves> packetPossibleMoves;
+        private final Queue<PacketDoAction> packetDoAction;
+        private final Queue<PacketUpdateBoard> packetUpdateBoard;
+
+        public Client(TurnLogic turnLogic){
             packetDoAction = new LinkedList<>();
             packetPossibleBuilds = new LinkedList<>();
             packetPossibleMoves = new LinkedList<>();
             packetUpdateBoard = new LinkedList<>();
+
+            turnLogic.addPacketDoActionObserver(this.packetDoAction::add);
+            turnLogic.addPacketPossibleBuildsObserver(this.packetPossibleBuilds::add);
+            turnLogic.addPacketPossibleMovesObserver(this.packetPossibleMoves::add);
+            turnLogic.addPacketUpdateBoardObserver(this.packetUpdateBoard::add);
+
         }
-        public void update(PacketContainer packetContainer){
-            if(packetContainer.getPacketPossibleMoves() != null)
-                this.packetPossibleMoves.add(packetContainer.getPacketPossibleMoves());
-            if(packetContainer.getPacketDoAction() != null)
-                this.packetDoAction.add(packetContainer.getPacketDoAction());
-            if(packetContainer.getPacketUpdateBoard() != null)
-                this.packetUpdateBoard.add(packetContainer.getPacketUpdateBoard());
-            if(packetContainer.getPacketPossibleBuilds() != null)
-                this.packetPossibleBuilds.add(packetContainer.getPacketPossibleBuilds());
-        }
+
         public PacketPossibleBuilds getPacketPossibleBuilds() {
             return packetPossibleBuilds.poll();
         }
@@ -58,6 +56,7 @@ class TurnLogicMirkoTest {
             return packetUpdateBoard.poll();
         }
     }
+
     private static CardFactory cardFactory;
     private InternalModel model;
     private TurnLogic turnLogic;
@@ -111,8 +110,7 @@ class TurnLogicMirkoTest {
         players.add("Mirko");
         model = new InternalModel(players, cardFactory, false);
         turnLogic = new TurnLogic(model);
-        mockView = new Client();
-        turnLogic.addObserver(mockView);
+        mockView = new Client(turnLogic);
         Andrea = model.getPlayerByNick("Andrea");
         Matteo = model.getPlayerByNick("Matteo");
         Mirko = model.getPlayerByNick("Mirko");

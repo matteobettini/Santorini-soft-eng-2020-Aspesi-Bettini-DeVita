@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SetupManager extends Observable<PacketContainer> {
+public class SetupManager{
 
     private final List<Player> players;
     private SetupPhase setupPhase;
@@ -26,6 +26,11 @@ public class SetupManager extends Observable<PacketContainer> {
     private List<String> availableCards;
     private final Map<String, String> allCards;
     private int numberOfCardsToChoose;
+
+    private final List<Observer<PacketSetup>> packetSetupObservers;
+    private final List<Observer<PacketCardsFromServer>> packetCardsFromServerObservers;
+    private final List<Observer<PacketDoAction>> packetDoActionObservers;
+    private final List<Observer<PacketUpdateBoard>> packetUpdateBoardObservers;
 
     
 
@@ -40,6 +45,11 @@ public class SetupManager extends Observable<PacketContainer> {
         this.players = model.getPlayers();
         this.numberOfCardsToChoose = players.size();
         this.startingPlayer = null;
+
+        this.packetCardsFromServerObservers = new ArrayList<>();
+        this.packetDoActionObservers = new ArrayList<>();
+        this.packetSetupObservers = new ArrayList<>();
+        this.packetUpdateBoardObservers = new ArrayList<>();
 
 
 
@@ -66,8 +76,7 @@ public class SetupManager extends Observable<PacketContainer> {
 
         //SENDING THE CARDS TO CHOOSE TO THE CHALLENGER
         PacketCardsFromServer packetCardsFromServer = new PacketCardsFromServer(challenger.getNickname(), numberOfCardsToChoose, allCards ,availableCards);
-        PacketContainer packetContainer = new PacketContainer(packetCardsFromServer);
-        notify(packetContainer);
+        notifyPacketCardsFromServerObservers(packetCardsFromServer);
         this.setupPhase = SetupPhase.WAIT_CARDS;
 
     }
@@ -143,19 +152,16 @@ public class SetupManager extends Observable<PacketContainer> {
             }
 
             PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards, model.isHardCore());
-            PacketContainer packetContainer = new PacketContainer(packetSetup);
-            notify(packetContainer);
+            notifyPacketSetupObservers(packetSetup);
 
             PacketDoAction packetDoAction = new PacketDoAction(challenger.getNickname(), ActionType.CHOOSE_START_PLAYER);
-            packetContainer = new PacketContainer(packetDoAction);
-            notify(packetContainer);
+            notifyPacketDoActionObservers(packetDoAction);
 
 
             this.setupPhase = SetupPhase.WAIT_START_PLAYER;
         }else{ //IF THE NEXT PLAYER IS NOT THE CHALLENGER I ASK HIM TO CHOOSE
             PacketCardsFromServer packetCardsFromServer = new PacketCardsFromServer(players.get(activePlayerIndex).getNickname(), numberOfCardsToChoose, allCards ,availableCards);
-            PacketContainer packetContainer = new PacketContainer(packetCardsFromServer);
-            notify(packetContainer);
+            notifyPacketCardsFromServerObservers(packetCardsFromServer);
         }
 
     }
@@ -185,8 +191,7 @@ public class SetupManager extends Observable<PacketContainer> {
         assert (activePlayerIndex == 0);
 
         PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);
-        PacketContainer packetContainer = new PacketContainer(packetDoAction);
-        notify(packetContainer);
+        notifyPacketDoActionObservers(packetDoAction);
 
         this.setupPhase = SetupPhase.WAIT_WORKERS_CHOICE;
 
@@ -239,8 +244,7 @@ public class SetupManager extends Observable<PacketContainer> {
             }
         }
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPositions, null, null, null);
-        PacketContainer packetContainer = new PacketContainer(packetUpdateBoard);
-        notify(packetContainer);
+        notifyPacketUpdateBoardObservers(packetUpdateBoard);
 
 
         incrementActivePlayerIndex();
@@ -251,8 +255,7 @@ public class SetupManager extends Observable<PacketContainer> {
             model.compileCardStrategy();
         }else{ // IF NOT WE ASK FOR OTHER WORKERS POSITIONING
             PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);
-            packetContainer = new PacketContainer(packetDoAction);
-            notify(packetContainer);
+            notifyPacketDoActionObservers(packetDoAction);
         }
 
     }
@@ -272,5 +275,38 @@ public class SetupManager extends Observable<PacketContainer> {
             activePlayerIndex = 0;
     }
 
+    public void addPacketSetupObserver(Observer<PacketSetup> o){
+        this.packetSetupObservers.add(o);
+    }
+    public void addPacketDoActionObserver(Observer<PacketDoAction> o){
+        this.packetDoActionObservers.add(o);
+    }
+    public void addPacketUpdateBoardObserver(Observer<PacketUpdateBoard> o){
+        this.packetUpdateBoardObservers.add(o);
+    }
+    public void addPacketCardsFromServerObserver(Observer<PacketCardsFromServer> o){
+        this.packetCardsFromServerObservers.add(o);
+    }
+
+    public void notifyPacketSetupObservers(PacketSetup p){
+        for(Observer<PacketSetup> o : packetSetupObservers){
+            o.update(p);
+        }
+    }
+    public void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
+        for(Observer<PacketUpdateBoard> o : packetUpdateBoardObservers){
+            o.update(p);
+        }
+    }
+    public void notifyPacketCardsFromServerObservers(PacketCardsFromServer p){
+        for(Observer<PacketCardsFromServer> o : packetCardsFromServerObservers){
+            o.update(p);
+        }
+    }
+    public void notifyPacketDoActionObservers(PacketDoAction p){
+        for(Observer<PacketDoAction> o : packetDoActionObservers){
+            o.update(p);
+        }
+    }
  
 }
