@@ -24,7 +24,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InternalModelTestMirko {
+class InternalModelMirkoTest {
 
     private static CardFactory cardFactory;
     private InternalModel model;
