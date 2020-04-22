@@ -9,14 +9,14 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
-public class ConcreteExposedModel implements ObservableModel, Model {
+public class ConcreteModel implements ObservableModel, Model {
 
     private final CardFactory factory;
     private final SetupManager setupManager;
     private final TurnLogic turnLogic;
     private final InternalModel internalModel;
 
-    public ConcreteExposedModel(List<String> players, CardFactory cardFactory, boolean isHardCore){
+    public ConcreteModel(List<String> players, CardFactory cardFactory, boolean isHardCore){
         this.factory = cardFactory;
         this.internalModel = new InternalModel(players, factory, isHardCore);
         this.setupManager = new SetupManager(internalModel, factory.getCards());
@@ -62,24 +62,28 @@ public class ConcreteExposedModel implements ObservableModel, Model {
 
     @Override
     public void makeMove(String senderID, PacketMove packetMove) throws InvalidPacketException {
+        assert (!packetMove.isSimulate());
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
             turnLogic.consumePacketMove(senderID,packetMove);
     }
 
     @Override
     public void makeBuild(String senderID, PacketBuild packetBuild) throws InvalidPacketException {
+        assert (!packetBuild.isSimulate());
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
             turnLogic.consumePacketBuild(senderID, packetBuild);
     }
 
     @Override
     public void getPossibeMoves(String senderID, PacketMove packetMove) {
+        assert (packetMove.isSimulate());
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
             turnLogic.getPossibleMoves(senderID,packetMove);
     }
 
     @Override
     public void getPossibleBuilds(String senderID, PacketBuild packetBuild) {
+        assert (packetBuild.isSimulate());
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
             turnLogic.getPossibleBuilds(senderID,packetBuild);
     }

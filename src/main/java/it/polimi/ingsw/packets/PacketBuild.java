@@ -20,6 +20,8 @@ public class PacketBuild {
      * This is the ID of Worker that is used by the Player in his action.
      */
     private final String workerID;
+
+    private final boolean simulate;
     /**
      * This is a map that associates the Point where the Player has built to a List of BuildingType that he used on that Point.
      */
@@ -27,8 +29,9 @@ public class PacketBuild {
 
     private final List<Point> dataOrder;
 
-    public PacketBuild(String playerNickname, String workerID, Map<Point, List<BuildingType>> builds, List<Point> dataOrder){
+    public PacketBuild(String playerNickname, String workerID, boolean simulate, Map<Point, List<BuildingType>> builds, List<Point> dataOrder){
         assert(playerNickname != null && workerID != null && builds != null && dataOrder != null);
+        this.simulate = simulate;
         this.playerNickname = playerNickname;
         this.workerID = workerID;
         this.builds = new HashMap<>();
@@ -43,7 +46,13 @@ public class PacketBuild {
             this.dataOrder.add(new Point(p));
         }
 
+    }
+    public PacketBuild(String playerNickname, String workerID, Map<Point, List<BuildingType>> builds, List<Point> dataOrder){
+        this(playerNickname,workerID,true,builds,dataOrder);
+    }
 
+    public boolean isSimulate() {
+        return simulate;
     }
 
     public List<Point> getDataOrder() {

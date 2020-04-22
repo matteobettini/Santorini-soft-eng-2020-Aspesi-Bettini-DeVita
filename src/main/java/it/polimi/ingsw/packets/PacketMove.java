@@ -17,13 +17,16 @@ public class PacketMove {
      * This is the ID of Worker that is used by the Player in his action.
      */
     private final String workerID;
+    private final boolean simulate;
     /**
      * This is an ordered List of Points that the Player has reached during his action.
      */
     private final List<Point> move;
 
-    public PacketMove(String playerNickname, String workerID, List<Point> move){
+
+    public PacketMove(String playerNickname, String workerID, boolean simulate, List<Point> move){
         assert (playerNickname != null && workerID != null && move != null);
+        this.simulate = simulate;
         this.playerNickname = playerNickname;
         this.workerID = workerID;
         this.move = new ArrayList<>();
@@ -31,6 +34,14 @@ public class PacketMove {
             assert(p != null);
             this.move.add(new Point(p));
         }
+    }
+
+    public PacketMove(String playerNickname, String workerID, List<Point> move){
+        this(playerNickname,workerID,true, move);
+    }
+
+    public boolean isSimulate() {
+        return simulate;
     }
 
     /**
