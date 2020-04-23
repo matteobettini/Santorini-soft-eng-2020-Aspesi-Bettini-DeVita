@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * This class contains all the info about a Worker. In particular its ID and the Player associated to it.
@@ -12,13 +13,13 @@ public class Worker {
      * This is the ID of the Worker which is the concatenation of the Player nickname + "." + the number starting from 1.
      */
     private final String ID;
-    private Player player;
+    private String playerID;
     private Point position;
 
 
-    Worker(String ID, Player p){
+    Worker(String ID, String playerID){
         this.ID = ID;
-        this.player = p;
+        this.playerID = playerID;
         this.position = null;
     }
 
@@ -33,6 +34,7 @@ public class Worker {
      * set worker's position to null
      */
     public void removeFromBoard(){
+        assert (this.position != null);
         this.position = null;
     }
 
@@ -55,10 +57,10 @@ public class Worker {
     public Point getPosition(){ return (this.position != null ? new Point(this.position) : null); }
 
     /**
-     * Getter that returns the Player associated to the Worker.
-     * @return an instance of Player.
+     * Getter that returns the Player (ID) associated to the Worker.
+     * @return ID of the player.
      */
-    public Player getPlayer(){ return this.player; }
+    public String getPlayerID(){ return this.playerID; }
 
     /**
      * This method checks if the given obj equals the Worker.
@@ -74,4 +76,24 @@ public class Worker {
         return this.ID.equals(other.ID);
     }
 
+    /**
+     * This method returns a clone of the Worker.
+     * @return an cloned instance of the Worker.
+     */
+    @Override
+    protected Worker clone(){
+        Worker w = new Worker(this.ID, this.playerID);
+        if (this.position != null)
+            w.setPosition(this.position);
+        return w;
+    }
+
+    /**
+     * Get the hash code for this worker
+     * @return Hashcode
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.ID, this.playerID);
+    }
 }

@@ -23,6 +23,7 @@ public class Cell{
 
 
     Cell(Point position){
+        assert (position != null);
         this.position = new Point(position);
         this.buildings = new ArrayList<>();
     }
@@ -54,7 +55,6 @@ public class Cell{
         }
 
         return false;
-
     }
 
     /**
@@ -102,7 +102,7 @@ public class Cell{
         BuildingType temp;
         assert b != null;
         if(workerID != null) return false;
-        if (b.size() <= 0 || !canBuild(b.get(0))) return false;
+        if (b.isEmpty() || !canBuild(b.get(0))) return false;
         temp = b.get(0);
         for(int i = 1; i < b.size(); ++i) {
             if(b.get(i) == BuildingType.FIRST_FLOOR) return false;
@@ -244,6 +244,10 @@ public class Cell{
         return clonedCell;
     }
 
+    /**
+     * Returns hashcode for this cell
+     * @return Hashcode
+     */
     @Override
     public int hashCode() {
         return Objects.hash(position);

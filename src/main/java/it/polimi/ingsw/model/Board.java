@@ -126,7 +126,6 @@ public class Board {
      * @return true if are they adjacent
      */
     public static boolean areAdjacent(Point p1, Point p2,boolean considerEquals){
-
         assert (p1 != null && p2 != null);
         if(considerEquals && p1.equals(p2))
             return true;

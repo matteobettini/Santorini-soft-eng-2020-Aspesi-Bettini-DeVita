@@ -4,9 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import it.polimi.ingsw.model.cardReader.CardFile;
 import it.polimi.ingsw.model.cardReader.CardFileImplTest;
+import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.Test;
+
+import java.util.*;
 
 class PlayerTest {
 
@@ -83,9 +86,12 @@ class PlayerTest {
     void testClone(){
         String playerNick = "N1";
         Player playerT = new Player(playerNick);
+        CardFile cardFile = CardFileImplTest.getNormalCardFile();
+        playerT.setCard(cardFile);
 
         Player clonedPlayer = playerT.clone();
 
+        //Assert equals but not the same object
         assertNotSame(playerT, clonedPlayer);
         assertEquals(playerT, clonedPlayer);
 
@@ -107,6 +113,9 @@ class PlayerTest {
             else
                 assertFalse(clonedPlayer.hasFlag(flag));
         }
+
+        //Check same card
+        assertEquals(clonedPlayer.getCard(), cardFile);
     }
 
     /**
@@ -120,12 +129,35 @@ class PlayerTest {
         Player p3 = new Player(nickname + "2");
 
         assertEquals(p1,p2);
+        assertEquals(p1.hashCode(),p2.hashCode());
         assertNotEquals(p1,p3);
 
         p1.setPlayerState(PlayerState.MOVED);
         p2.setPlayerState(PlayerState.BUILT);
         assertEquals(p1,p2);
+    }
 
+    /**
+     * Test possible actions
+     */
+    @Test
+    void testPossibleActions(){
+        Player p = new Player("NICK");
+        assertNull(p.getPossibleActions());
+
+        Map<PlayerState, Set<TriggerType>> data = new HashMap<>();
+        for(PlayerState state : PlayerState.values()){
+            Set<TriggerType> stateData = new HashSet<>();
+            stateData.add(TriggerType.MOVE);
+            data.put(state, stateData);
+        }
+        p.addActionData(data);
+        for(PlayerState state : PlayerState.values()){
+            p.setPlayerState(state);
+            assertNotNull(p.getPossibleActions());
+            assert p.getPossibleActions().size() == 1;
+            assert p.getPossibleActions().contains(TriggerType.MOVE);
+        }
     }
 
 }

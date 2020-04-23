@@ -26,20 +26,33 @@ public class Player {
     private Map<PlayerState,Set<TriggerType>>  statePossibleActions;
 
     Player(String nickname){
+        assert (nickname != null);
         this.nickname = nickname;
         this.statePossibleActions = new HashMap<>();
         this.flags = new HashSet<>();
         this.workers = new ArrayList<>();
-        this.workers.add(new Worker(this.nickname + ".1", this));
-        this.workers.add(new Worker(this.nickname + ".2", this));
+        this.workers.add(new Worker(this.nickname + ".1", this.nickname));
+        this.workers.add(new Worker(this.nickname + ".2", this.nickname));
         this.state = PlayerState.TURN_STARTED;
     }
 
+    /**
+     * Get possible actions (MOVE, BUILD) for the player from the current state
+     * @return Set of possible actions (MOVE, BUILD)
+     */
     public Set<TriggerType> getPossibleActions(){
-        return new HashSet<>(statePossibleActions.get(state));
+        if (statePossibleActions.containsKey(state)){
+            return new HashSet<>(statePossibleActions.get(state));
+        }
+        return null;
     }
 
+    /**
+     * Set the possible action data of this player
+     * @param association Map where for each possible state is specified some possible actions (or none)
+     */
     public void addActionData(Map<PlayerState, Set<TriggerType>> association){
+        assert (association != null);
         statePossibleActions = new HashMap<>();
         for(PlayerState state : PlayerState.values()){
             assert (association.containsKey(state));
@@ -141,18 +154,26 @@ public class Player {
         Player clonedPlayer = new Player(this.nickname);
 
         clonedPlayer.setPlayerState(this.state);
-        if(this.card != null )clonedPlayer.setCard(this.card);
+
+        if(this.card != null)
+            clonedPlayer.setCard(this.card);
 
         for(Worker w : this.workers){
-            Worker cloneW = new Worker(w.getID(), clonedPlayer);
-            if(w.getPosition() != null) cloneW.setPosition(new Point(w.getPosition()));
-            clonedWorkers.add(cloneW);
+            clonedWorkers.add(w.clone());
         }
 
         clonedPlayer.workers = clonedWorkers;
         clonedPlayer.flags = clonedFlags;
 
         return clonedPlayer;
+    }
 
+    /**
+     * Get the hash code for this player
+     * @return Hashcode
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.nickname);
     }
 }
