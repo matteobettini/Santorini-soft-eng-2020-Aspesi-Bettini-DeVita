@@ -1,11 +1,13 @@
 package it.polimi.ingsw.packets;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PacketWorkersPositions {
+public class PacketWorkersPositions implements Serializable {
 
+    private static final long serialVersionUID = -6159631003731760627L;
     private final Map<String, Point> workersPositions;
 
     public PacketWorkersPositions(Map<String, Point> workersPositions) {

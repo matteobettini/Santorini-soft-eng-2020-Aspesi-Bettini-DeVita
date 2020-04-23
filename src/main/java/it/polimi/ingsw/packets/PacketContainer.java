@@ -18,7 +18,6 @@ public class PacketContainer {
         this.packetPossibleMoves = packetPossibleMoves;
         this.packetPossibleBuilds = packetPossibleBuilds;
     }
-
     public PacketContainer(PacketCardsFromServer packetCardsFromServer) {
         this(packetCardsFromServer,null,null,null,null,null);
     }

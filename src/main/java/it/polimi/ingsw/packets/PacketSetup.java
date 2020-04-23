@@ -3,11 +3,13 @@ package it.polimi.ingsw.packets;
 import javafx.util.Pair;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class PacketSetup {
+public class PacketSetup implements Serializable {
 
+    private static final long serialVersionUID = 6831715670161158668L;
     private final Map<String, List<String>> ids;
     private final Map<String, Color> colors;
     private final Map<String, Pair<String, String >> cards;

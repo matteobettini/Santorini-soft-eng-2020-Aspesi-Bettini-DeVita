@@ -3,6 +3,7 @@ package it.polimi.ingsw.packets;
 import it.polimi.ingsw.model.enums.BuildingType;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,8 @@ import java.util.Map;
 /**
  * This class contains the info about a build action performed by a Player.
  */
-public class PacketBuild {
+public class PacketBuild implements Serializable {
+    private static final long serialVersionUID = -6803132829637177106L;
     /**
      * This is the nickname of the Player who performed the action.
      */

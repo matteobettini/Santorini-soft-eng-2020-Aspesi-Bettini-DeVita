@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.cardReader.CardFactory;
+import it.polimi.ingsw.model.cardReader.exceptions.CardLoadingException;
+import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.SetupPhase;
 import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.*;
@@ -11,13 +13,18 @@ import java.util.Map;
 
 public class ConcreteModel implements ObservableModel, Model {
 
-    private final CardFactory factory;
+    private CardFactory factory;
     private final SetupManager setupManager;
     private final TurnLogic turnLogic;
     private final InternalModel internalModel;
 
-    public ConcreteModel(List<String> players, CardFactory cardFactory, boolean isHardCore){
-        this.factory = cardFactory;
+    public ConcreteModel(List<String> players, boolean isHardCore){
+        this.factory = null;
+        try {
+            this.factory = CardFactory.getInstance();
+        } catch (CardLoadingException | InvalidCardException e) {
+            assert false;
+        }
         this.internalModel = new InternalModel(players, factory, isHardCore);
         this.setupManager = new SetupManager(internalModel, factory.getCards());
         this.turnLogic = new TurnLogic(internalModel);
@@ -103,9 +110,4 @@ public class ConcreteModel implements ObservableModel, Model {
         setupManager.setWorkersPositions(senderID,workersPositions);
     }
 
-    @Override
-    public Board getClonedBoard() {
-        //TODO
-        return null;
-    }
 }

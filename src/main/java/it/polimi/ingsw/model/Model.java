@@ -29,11 +29,6 @@ public interface Model{
 
     void setWorkersPositions(String senderID, Map<String,Point> workersPositions) throws InvalidPacketException;
 
-    /**
-     * This method performs a cloning of the Board.
-     * @return the cloned Board.
-     */
-    Board getClonedBoard();
 
 
 

@@ -1,10 +1,12 @@
 package it.polimi.ingsw.packets;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class PacketCardsFromServer {
+public class PacketCardsFromServer implements Serializable {
 
+    private static final long serialVersionUID = 7440406814331172895L;
     private final String to;
     private final int numberToChoose;
     private final Map<String, String> allCards;

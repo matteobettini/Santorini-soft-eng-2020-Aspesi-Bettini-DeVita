@@ -2,11 +2,13 @@ package it.polimi.ingsw.packets;
 
 import it.polimi.ingsw.model.enums.BuildingType;
 import java.awt.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class PacketPossibleBuilds {
+public class PacketPossibleBuilds implements Serializable {
 
+    private static final long serialVersionUID = 6144421728412629857L;
     private final String to;
     private final Map<String, Map<Point, List<BuildingType>>> possibleBuilds;
 

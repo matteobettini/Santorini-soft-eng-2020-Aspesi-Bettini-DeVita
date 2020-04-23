@@ -2,8 +2,11 @@ package it.polimi.ingsw.packets;
 
 import it.polimi.ingsw.model.enums.ActionType;
 
-public class PacketDoAction {
+import java.io.Serializable;
 
+public class PacketDoAction implements Serializable {
+
+    private static final long serialVersionUID = 5586378055260580426L;
     private final String to;
     private final ActionType actionType;
 

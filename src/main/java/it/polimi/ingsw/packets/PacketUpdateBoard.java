@@ -3,11 +3,13 @@ package it.polimi.ingsw.packets;
 import it.polimi.ingsw.model.enums.BuildingType;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class PacketUpdateBoard {
+public class PacketUpdateBoard implements Serializable {
 
+    private static final long serialVersionUID = 1431886725229125334L;
     private final Map<String, Point> workersPositions;
     private final Map<Point, List<BuildingType>> newBuildings;
     private final String playerLostID;

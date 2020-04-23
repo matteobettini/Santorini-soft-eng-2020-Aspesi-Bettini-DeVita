@@ -2,13 +2,15 @@ package it.polimi.ingsw.packets;
 
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This class contains the info about a move action performed by a Player.
  */
-public class PacketMove {
+public class PacketMove implements Serializable {
+    private static final long serialVersionUID = 6117802389323885746L;
     /**
      * This is the nickname of the Player who performed the action.
      */
