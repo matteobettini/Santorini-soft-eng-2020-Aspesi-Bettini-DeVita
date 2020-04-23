@@ -29,7 +29,7 @@ public class InternalModel {
 
     private final CardFactory cardFactory;
     private final Board board;
-    private final List<Player> players;
+    private List<Player> players;
     private Player winner;
     private final List<Player> losers;
     private List<CompiledCardRule> allowMoveRules;
@@ -40,23 +40,37 @@ public class InternalModel {
     private List<CompiledCardRule> winBuildRules;
     private boolean isHardCore;
 
+    /**
+     * Create a data model instance, with the given settings
+     * @param players List of players nicknames
+     * @param factory Singleton instance of the card reader object
+     * @param isHardCore True if hardcore mode must be enabled
+     */
     public InternalModel(List<String> players, CardFactory factory, boolean isHardCore){
-        this.players = new ArrayList<>();
+        assert (players != null && factory != null && players.size() >= 2);
+        this.players = new LinkedList<>();
         for(String p : players){
             this.players.add(new Player(p));
         }
         this.board = new Board();
-        this.losers = new ArrayList<>();
+        this.winner = null;
+        this.losers = new LinkedList<>();
         this.cardFactory = factory;
         this.isHardCore = isHardCore;
     }
+
+    /**
+     * Create a data model instance, with the given settings in hardcore mode
+     * @param players List of players nicknames
+     * @param factory Singleton instance of the card reader object
+     */
     public InternalModel(List<String> players, CardFactory factory){
         this(players,factory,true);
     }
 
     /**
      * Getter for strategy mode
-     * @return True if hardcore is enabled
+     * @return True if hardcore is enabled, False otherwise
      */
     public boolean isHardCore(){
         return this.isHardCore;
@@ -72,7 +86,7 @@ public class InternalModel {
      * Getter that returns the List of subscribed Players to the match.
      * @return a List of instances of Players.
      */
-    public List<Player> getPlayers(){ return this.players; }
+    public List<Player> getPlayers(){ return new LinkedList<>(this.players); }
 
     /**
      * Getter that returns the Player given his nickname.
@@ -80,32 +94,11 @@ public class InternalModel {
      * @return the Player that has playerNick as nickname.
      */
     public Player getPlayerByNick(String playerNick){
-        assert playerNick != null;
+        if (playerNick == null) return null;
         for(Player p : this.players){
             if(p.getNickname().equals(playerNick)) return p;
         }
         return null;
-    }
-
-    public Player getWinner() { return this.winner; }
-
-    public List<Player> getLosers() { return this.losers; }
-
-    public void addLoser(Player loser){
-        assert loser != null;
-        assert !losers.contains(loser);
-        assert players.contains(loser);
-        losers.add(loser);
-        board.getCell(loser.getWorkers().get(0).getPosition()).removeWorker();
-        board.getCell(loser.getWorkers().get(1).getPosition()).removeWorker();
-        loser.getWorkers().get(0).removeFromBoard();
-        loser.getWorkers().get(1).removeFromBoard();
-    }
-
-    public void setWinner(Player winner){
-        assert this.winner == null;
-        assert winner != null;
-        this.winner = winner;
     }
 
     /**
@@ -121,6 +114,63 @@ public class InternalModel {
             }
         }
         return null;
+    }
+
+    /**
+     * Gets the winner of the match
+     * @return Player instance of the winner. Null if there is no winner yet.
+     */
+    public Player getWinner() { return this.winner; }
+
+    /**
+     * Gets the losers of the match
+     * @return List of Player instances of the losers. Null if there are no losers.
+     */
+    public List<Player> getLosers() { return new LinkedList<>(this.losers); }
+
+    /**
+     * Removes player and its workers from the board.
+     * Adds the player to the losers list
+     * @param loser Player instance of the loser
+     */
+    public void addLoser(Player loser){
+        assert loser != null;
+        assert !losers.contains(loser);
+        assert players.contains(loser);
+        losers.add(loser);
+        board.getCell(loser.getWorkers().get(0).getPosition()).removeWorker();
+        board.getCell(loser.getWorkers().get(1).getPosition()).removeWorker();
+        loser.getWorkers().get(0).removeFromBoard();
+        loser.getWorkers().get(1).removeFromBoard();
+    }
+
+    /**
+     * Sets a player as the winner of the match
+     * @param winner Player instance of the winner
+     */
+    public void setWinner(Player winner){
+        assert this.winner == null;
+        assert winner != null;
+        this.winner = winner;
+    }
+
+    /**
+     * Reorders match players, from the given starting player.
+     * The original list is shifted left to make the starting player the first of the list.
+     * @param player Player instance to make the first.
+     */
+    public void setStartPlayer(Player player){
+        assert (player != null);
+        assert (players.contains(player));
+        int indexOfPlayer = players.indexOf(player);
+        List<Player> tmpList = new LinkedList<>();
+        for(int i=indexOfPlayer;i<players.size();i++){
+            tmpList.add(players.get(i));
+        }
+        for(int i=0;i<indexOfPlayer;i++){
+            tmpList.add(players.get(i));
+        }
+        players = tmpList;
     }
 
     /**
@@ -190,10 +240,9 @@ public class InternalModel {
 
     /**
      * Compiles Card Rules, creating executable lambdas adapted to this particular
-     * instance.
+     * model instance.
      */
     public void compileCardStrategy(){
-
         allowMoveRules = new ArrayList<>();
         denyMoveRules = new ArrayList<>();
         winMoveRules = new ArrayList<>();
@@ -242,6 +291,8 @@ public class InternalModel {
                 else
                     winBuildRules.add(compiledCardRule);
                 break;
+            default:
+                assert false;
         }
     }
 
@@ -413,10 +464,11 @@ public class InternalModel {
     /**
      * Gets all possible points accessible for the worker (based on a started move path), with a single movement.
      * Already visited points will be excluded from results.
-     * @param moveData Data of the path from where starting the check
+     * @param moveData Data of the path from where starting the check. Must contain at least one point.
      * @return List of visitable points for the player's worker
      */
     public Set<Point> getPossibleMoves(MoveData moveData){
+        assert (moveData != null && !moveData.getData().isEmpty());
         Set<Point> result = new HashSet<>();
         List<Point> currTry = new ArrayList<>(moveData.getData());
         Point startPoint = currTry.get(currTry.size()-1); //Take last point in the packet, granted not empty
@@ -482,10 +534,11 @@ public class InternalModel {
 
     /**
      * Gets all possible points where the worker can build at the next opportunity it has, based on a build history.
-     * @param buildData Data of the history from where starting the check
+     * @param buildData Data of the history from where starting the check. Must contain at least one build.
      * @return Set of points, representing all possible cells where the worker can build
      */
     public Set<Point> getPossibleBuilds(BuildData buildData){
+        assert (buildData != null && !buildData.getData().isEmpty() && !buildData.getDataOrder().isEmpty());
         Set<Point> result = new HashSet<>();
         List<Point> currTry = new ArrayList<>(buildData.getDataOrder());
         Map<Point, List<BuildingType>> builds = new HashMap<>();
@@ -584,10 +637,11 @@ public class InternalModel {
 
     /**
      * Function similar to getPossibleBuilds(BuildData), but this returns also which building you can build where
-     * @param buildData Data of the history from where starting the check
+     * @param buildData Data of the history from where starting the check. Must contain at least one build.
      * @return Map where every point (representing cells where the worker can build) contains a list of building types allowed
      */
     public Map<Point, List<BuildingType>> getPossibleBuildsAdvanced(BuildData buildData){
+        assert (buildData != null && !buildData.getData().isEmpty() && !buildData.getDataOrder().isEmpty());
         Map<Point, List<BuildingType>> result = new HashMap<>();
         List<Point> currTry = new ArrayList<>(buildData.getDataOrder());
         Map<Point, List<BuildingType>> builds = new HashMap<>();
@@ -667,7 +721,7 @@ public class InternalModel {
     }
 
     private CompiledCardRule getAllowMoveRule(MoveData moveData){
-        assert (moveData != null && allowMoveRules != null);
+        assert (moveData != null && allowMoveRules != null && denyMoveRules != null);
         CompiledCardRule fired = null;
         try{
             for(CompiledCardRule rule : allowMoveRules){
@@ -692,7 +746,7 @@ public class InternalModel {
     }
 
     private CompiledCardRule getAllowBuildRule(BuildData buildData){
-        assert (buildData != null && allowBuildRules != null);
+        assert (buildData != null && allowBuildRules != null && denyBuildRules != null);
         CompiledCardRule fired = null;
         try{
             for(CompiledCardRule rule : allowBuildRules){

@@ -23,10 +23,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -156,14 +154,17 @@ class EffectCompilerTest {
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
         Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
 
         Point point1 = new Point(0,1);
+        buildOrder.add(point1);
         List<BuildingType> buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.FIRST_FLOOR);
         buildsInPoint.add(BuildingType.DOME);
         builds.put(point1, buildsInPoint);
 
         Point point2 = new Point(1,1);
+        buildOrder.add(point2);
         buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.FIRST_FLOOR);
         buildsInPoint.add(BuildingType.SECOND_FLOOR);
@@ -171,12 +172,13 @@ class EffectCompilerTest {
         builds.put(point2, buildsInPoint);
 
         Point point3 = new Point(1,0);
+        buildOrder.add(point3);
         buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.SECOND_FLOOR);
         builds.put(point3, buildsInPoint);
 
 
-        BuildData buildData = new BuildData(Andrea, AndreaW1, builds, null);
+        BuildData buildData = new BuildData(Andrea, AndreaW1, builds, buildOrder);
 
 
         assertTrue(lambdaEffect.apply(null,buildData,true));
@@ -224,14 +226,17 @@ class EffectCompilerTest {
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
         Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
 
         Point point1 = new Point(0,1);
+        buildOrder.add(point1);
         List<BuildingType> buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.DOME);
         buildsInPoint.add(BuildingType.FIRST_FLOOR);
         builds.put(point1, buildsInPoint);
 
         Point point2 = new Point(1,1);
+        buildOrder.add(point2);
         buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.FIRST_FLOOR);
         buildsInPoint.add(BuildingType.SECOND_FLOOR);
@@ -239,12 +244,13 @@ class EffectCompilerTest {
         builds.put(point2, buildsInPoint);
 
         Point point3 = new Point(1,0);
+        buildOrder.add(point3);
         buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.DOME);
         builds.put(point3, buildsInPoint);
 
 
-        BuildData buildData = new BuildData(Andrea, AndreaW1, builds, null);
+        BuildData buildData = new BuildData(Andrea, AndreaW1, builds, buildOrder);
 
 
         assertFalse(lambdaEffect.apply(null,buildData,true));
@@ -505,7 +511,10 @@ class EffectCompilerTest {
         RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.WIN,null,null,null);
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
-        MoveData moveData = new MoveData(null,null,null);
+        Player testPlayer = model.getPlayers().get(0);
+        Worker workerTest = testPlayer.getWorkers().get(0);
+        List<Point> emptyList = new LinkedList<>();
+        MoveData moveData = new MoveData(testPlayer,workerTest,emptyList);
 
         try {
             lambdaEffect.apply(moveData, null, true);
@@ -522,7 +531,8 @@ class EffectCompilerTest {
             assert false;
         }
 
-        BuildData buildData = new BuildData(null,null,null, null);
+        Map<Point, List<BuildingType>> data = new HashMap<>();
+        BuildData buildData = new BuildData(testPlayer,workerTest,data, emptyList);
 
         try {
             lambdaEffect.apply(null, buildData, true);
@@ -550,7 +560,10 @@ class EffectCompilerTest {
         RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.DENY,null,null,null);
         LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
 
-        MoveData moveData = new MoveData(null,null,null);
+        Player testPlayer = model.getPlayers().get(0);
+        Worker workerTest = testPlayer.getWorkers().get(0);
+        List<Point> emptyList = new LinkedList<>();
+        MoveData moveData = new MoveData(testPlayer,workerTest,emptyList);
 
         try {
             lambdaEffect.apply(moveData, null, true);
@@ -567,7 +580,8 @@ class EffectCompilerTest {
             assert true;
         }
 
-        BuildData buildData = new BuildData(null,null,null, null);
+        Map<Point, List<BuildingType>> data = new HashMap<>();
+        BuildData buildData = new BuildData(testPlayer,workerTest,data, emptyList);
 
         try {
             lambdaEffect.apply(null, buildData, true);

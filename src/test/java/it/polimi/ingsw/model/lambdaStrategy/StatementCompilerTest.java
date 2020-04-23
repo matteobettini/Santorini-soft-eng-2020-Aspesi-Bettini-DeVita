@@ -107,8 +107,12 @@ class StatementCompilerTest {
 
             // WITH IF
             for (Player p : model.getPlayers()) {
-                MoveData moveData = new MoveData(p, null, null);
-                BuildData buildData = new BuildData(p, null, null, null);
+                Worker w = p.getWorkers().get(0);
+                List<Point> emptyList = new LinkedList<>();
+                Map<Point, List<BuildingType>> data = new HashMap<>();
+
+                MoveData moveData = new MoveData(p, w, emptyList);
+                BuildData buildData = new BuildData(p, w, data, emptyList);
                 if (p.equals(cardOwner)) {
                     assert (compiledStatement.evaluate(moveData, null));
                     assert (compiledStatement.evaluate(null, buildData));
@@ -123,8 +127,12 @@ class StatementCompilerTest {
 
             // WITH NIF
             for (Player p : model.getPlayers()) {
-                MoveData moveData = new MoveData(p, null, null);
-                BuildData buildData = new BuildData(p, null, null, null);
+                Worker w = p.getWorkers().get(0);
+                List<Point> emptyList = new LinkedList<>();
+                Map<Point, List<BuildingType>> data = new HashMap<>();
+
+                MoveData moveData = new MoveData(p, w, emptyList);
+                BuildData buildData = new BuildData(p, w, data, emptyList);
                 if (p.equals(cardOwner)) {
                     assert (!compiledStatement.evaluate(moveData, null));
                     assert (!compiledStatement.evaluate(null, buildData));
@@ -148,8 +156,12 @@ class StatementCompilerTest {
 
         // WITH IF AND TURN_STARTED
         Player p = Andrea;
-        MoveData moveData = new MoveData(p, null, null);
-        BuildData buildData = new BuildData(p, null, null, null);
+        Worker w = p.getWorkers().get(0);
+        List<Point> emptyList = new LinkedList<>();
+        Map<Point, List<BuildingType>> data = new HashMap<>();
+
+        MoveData moveData = new MoveData(p, w, emptyList);
+        BuildData buildData = new BuildData(p, w, data, emptyList);
         assert (compiledStatement.evaluate(moveData, null));
         assert (compiledStatement.evaluate(null, buildData));
 
@@ -211,8 +223,12 @@ class StatementCompilerTest {
         LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
 
         Player p = Andrea;
-        MoveData moveData = new MoveData(p, null, null);
-        BuildData buildData = new BuildData(p, null, null, null);
+        Worker w = p.getWorkers().get(0);
+        List<Point> emptyList = new LinkedList<>();
+        Map<Point, List<BuildingType>> data = new HashMap<>();
+
+        MoveData moveData = new MoveData(p, w, emptyList);
+        BuildData buildData = new BuildData(p, w, data, emptyList);
 
         // WITH IF AND MOVED
         p.setPlayerState(PlayerState.MOVED);
@@ -271,8 +287,12 @@ class StatementCompilerTest {
         LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
 
         Player p = Andrea;
-        MoveData moveData = new MoveData(p, null, null);
-        BuildData buildData = new BuildData(p, null, null, null);
+        Worker w = p.getWorkers().get(0);
+        List<Point> emptyList = new LinkedList<>();
+        Map<Point, List<BuildingType>> data = new HashMap<>();
+
+        MoveData moveData = new MoveData(p, w, emptyList);
+        BuildData buildData = new BuildData(p, w, data, emptyList);
 
 
         // WITH IF AND BUILT
@@ -334,8 +354,12 @@ class StatementCompilerTest {
         LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
 
         Player p = Andrea;
-        MoveData moveData = new MoveData(p, null, null);
-        BuildData buildData = new BuildData(p, null, null, null);
+        Worker w = p.getWorkers().get(0);
+        List<Point> emptyList = new LinkedList<>();
+        Map<Point, List<BuildingType>> data = new HashMap<>();
+
+        MoveData moveData = new MoveData(p, w, emptyList);
+        BuildData buildData = new BuildData(p, w, data, emptyList);
 
         // WITH IF AND FIRST_BUILT
         p.setPlayerState(PlayerState.FIRST_BUILT);
@@ -393,8 +417,12 @@ class StatementCompilerTest {
         LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
 
         Player p = Andrea;
-        MoveData moveData = new MoveData(p, null, null);
-        BuildData buildData = new BuildData(p, null, null, null);
+        Worker w = p.getWorkers().get(0);
+        List<Point> emptyList = new LinkedList<>();
+        Map<Point, List<BuildingType>> data = new HashMap<>();
+
+        MoveData moveData = new MoveData(p, w, emptyList);
+        BuildData buildData = new BuildData(p, w, data, emptyList);
 
         assert (compiledStatement.evaluate(moveData, null));
         assert (compiledStatement.evaluate(null, buildData));
@@ -429,8 +457,12 @@ class StatementCompilerTest {
         LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
 
         Player p = Andrea;
-        MoveData moveData = new MoveData(p, null, null);
-        BuildData buildData = new BuildData(p, null, null, null);
+        Worker w = p.getWorkers().get(0);
+        List<Point> emptyList = new LinkedList<>();
+        Map<Point, List<BuildingType>> data = new HashMap<>();
+
+        MoveData moveData = new MoveData(p, w, emptyList);
+        BuildData buildData = new BuildData(p, w, data, emptyList);
 
         assert (compiledStatement.evaluate(moveData, null));
         assert (compiledStatement.evaluate(null, buildData));
@@ -1215,13 +1247,13 @@ class StatementCompilerTest {
      * Testing also NIF with false in the first case and true in the other
      */
     @Test
-    void laevelType_Test1(){
+    void levelType_Test1(){
         RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"START_POSITION", StatementVerbType.LEVEL_TYPE,"GROUND");
         LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
 
         Player p = Andrea;
-
-        MoveData moveData = new MoveData(p, AndreaW1, null);
+        List<Point> emptyList = new LinkedList<>();
+        MoveData moveData = new MoveData(p, AndreaW1, emptyList);
 
         assert (!compiledStatement.evaluate(moveData, null));
 
@@ -1654,15 +1686,17 @@ class StatementCompilerTest {
         +----+----+----+----+----+
 */
         Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
 
         Point point1 = new Point(2,3);
+        buildOrder.add(point1);
         List<BuildingType> buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.DOME);
         builds.put(point1, buildsInPoint);
 
 
 
-        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
         RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_NUM, "1");
         LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
@@ -1720,19 +1754,23 @@ class StatementCompilerTest {
         +----+----+----+----+----+
 */
         Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
 
         Point point1 = new Point(2,3);
+        buildOrder.add(point1);
         List<BuildingType> buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.DOME);
         builds.put(point1, buildsInPoint);
 
         Point point2 = new Point(1,3);
+        buildOrder.add(point2);
         List<BuildingType> buildsInPoint2 = new ArrayList<>();
         buildsInPoint2.add(BuildingType.FIRST_FLOOR);
         buildsInPoint2.add(BuildingType.DOME);
         builds.put(point2, buildsInPoint2);
 
         Point point3 = new Point(0,3);
+        buildOrder.add(point3);
         List<BuildingType> buildsInPoint3 = new ArrayList<>();
         buildsInPoint3.add(BuildingType.FIRST_FLOOR);
         buildsInPoint3.add(BuildingType.SECOND_FLOOR);
@@ -1740,6 +1778,7 @@ class StatementCompilerTest {
         builds.put(point3, buildsInPoint3);
 
         Point point4 = new Point(0, 2);
+        buildOrder.add(point4);
         List<BuildingType> buildsInPoint4 = new ArrayList<>();
         buildsInPoint4.add(BuildingType.FIRST_FLOOR);
         buildsInPoint4.add(BuildingType.SECOND_FLOOR);
@@ -1749,7 +1788,7 @@ class StatementCompilerTest {
 
 
 
-        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
         RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_NUM, "10");
         LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
@@ -1815,8 +1854,10 @@ class StatementCompilerTest {
             LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
 
             Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<Point> buildOrder = new LinkedList<>();
 
             Point point1 = new Point(2,3);
+            buildOrder.add(point1);
             List<BuildingType> buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point1, buildsInPoint);
@@ -1840,7 +1881,7 @@ class StatementCompilerTest {
             Point point6 = new Point(1, 1);
             Point point7 = new Point(2,1);*/
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
             if(lt == LevelType.GROUND)
                 assertFalse(lambdaStatement.evaluate(null, buildData));
@@ -1877,6 +1918,7 @@ class StatementCompilerTest {
             LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
 
             Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<Point> buildOrder = new LinkedList<>();
 
        /*     Point point1 = new Point(2,3);
             List<BuildingType> buildsInPoint = new ArrayList<>();
@@ -1890,6 +1932,7 @@ class StatementCompilerTest {
             builds.put(point2, buildsInPoint2);*/
 
             Point point3 = new Point(0,3);
+            buildOrder.add(point3);
             List<BuildingType> buildsInPoint3 = new ArrayList<>();
             buildsInPoint3.add(BuildingType.FIRST_FLOOR);
             buildsInPoint3.add(BuildingType.SECOND_FLOOR);
@@ -1897,6 +1940,7 @@ class StatementCompilerTest {
             builds.put(point3, buildsInPoint3);
 
             Point point4 = new Point(0, 2);
+            buildOrder.add(point4);
             List<BuildingType> buildsInPoint4 = new ArrayList<>();
             buildsInPoint4.add(BuildingType.FIRST_FLOOR);
             buildsInPoint4.add(BuildingType.SECOND_FLOOR);
@@ -1904,13 +1948,8 @@ class StatementCompilerTest {
             buildsInPoint4.add(BuildingType.DOME);
             builds.put(point4, buildsInPoint4);
 
-            Point point5 = new Point(0, 1);
-            Point point6 = new Point(1, 1);
-            Point point7 = new Point(2,1);
 
-
-
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
             assertFalse(lambdaStatement.evaluate(null, buildData));
 
@@ -1958,23 +1997,28 @@ class StatementCompilerTest {
             LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
 
             Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<Point> buildOrder = new LinkedList<>();
 
             Point point1 = new Point(2,3);
+            buildOrder.add(point1);
             List<BuildingType> buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point1, buildsInPoint);
 
             Point point2 = new Point(1,3);
+            buildOrder.add(point2);
             buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point2, buildsInPoint);
 
             Point point3 = new Point(0,3);
+            buildOrder.add(point3);
             buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point3, buildsInPoint);
 
             Point point4 = new Point(0, 2);
+            buildOrder.add(point4);
             buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point4, buildsInPoint);
@@ -1984,7 +2028,7 @@ class StatementCompilerTest {
             Point point7 = new Point(2,1);*/
 
 
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
             if(lt == LevelType.SECOND_FLOOR)
                 assertFalse(lambdaStatement.evaluate(null, buildData));
@@ -2036,16 +2080,19 @@ class StatementCompilerTest {
 
 
             Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<Point> buildOrder = new LinkedList<>();
             List<BuildingType> buildsInPoint = new ArrayList<>();
 
             if(lt == LevelType.THIRD_FLOOR) {
                 Point point1 = new Point(2, 3);
+                buildOrder.add(point1);
                 buildsInPoint.add(BuildingType.DOME);
                 builds.put(point1, buildsInPoint);
             }
 
             if(lt == LevelType.SECOND_FLOOR) {
                 Point point2 = new Point(1, 3);
+                buildOrder.add(point2);
                 buildsInPoint = new ArrayList<>();
                 buildsInPoint.add(BuildingType.DOME);
                 builds.put(point2, buildsInPoint);
@@ -2053,6 +2100,7 @@ class StatementCompilerTest {
 
             if(lt == LevelType.FIRST_FLOOR) {
                 Point point3 = new Point(0, 3);
+                buildOrder.add(point3);
                 buildsInPoint = new ArrayList<>();
                 buildsInPoint.add(BuildingType.DOME);
                 builds.put(point3, buildsInPoint);
@@ -2060,17 +2108,13 @@ class StatementCompilerTest {
 
             if(lt == LevelType.GROUND) {
                 Point point4 = new Point(0, 2);
+                buildOrder.add(point4);
                 buildsInPoint = new ArrayList<>();
                 buildsInPoint.add(BuildingType.DOME);
                 builds.put(point4, buildsInPoint);
             }
 
-          /*  Point point5 = new Point(0, 1);
-            Point point6 = new Point(1, 1);
-            Point point7 = new Point(2,1);*/
-
-
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
             RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_DOME_EXCEPT, lt.toString());
             LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
@@ -2123,33 +2167,34 @@ class StatementCompilerTest {
             }
 
             Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<Point> buildOrder = new LinkedList<>();
 
             Point point1 = new Point(2,3);
+            buildOrder.add(point1);
             List<BuildingType> buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point1, buildsInPoint);
 
             Point point2 = new Point(1,3);
+            buildOrder.add(point2);
             buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point2, buildsInPoint);
 
             Point point3 = new Point(0,3);
+            buildOrder.add(point3);
             buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point3, buildsInPoint);
 
             Point point4 = new Point(0, 2);
+            buildOrder.add(point4);
             buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point4, buildsInPoint);
 
-            Point point5 = new Point(0, 1);
-            Point point6 = new Point(1, 1);
-            Point point7 = new Point(2,1);
 
-
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
             RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_DOME, lt.toString());
             LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
@@ -2199,6 +2244,7 @@ class StatementCompilerTest {
             LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
 
             Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<Point> buildOrder = new LinkedList<>();
 
             /*Point point1 = new Point(2,3);
             List<BuildingType> buildsInPoint = new ArrayList<>();
@@ -2211,6 +2257,7 @@ class StatementCompilerTest {
             builds.put(point2, buildsInPoint);*/
 
             Point point3 = new Point(0,3);
+            buildOrder.add(point3);
             List<BuildingType> buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point3, buildsInPoint);
@@ -2220,12 +2267,8 @@ class StatementCompilerTest {
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point4, buildsInPoint);*/
 
-            Point point5 = new Point(0, 1);
-            Point point6 = new Point(1, 1);
-            Point point7 = new Point(2,1);
 
-
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
             if(lt == LevelType.SECOND_FLOOR)
                 assertFalse(lambdaStatement.evaluate(null, buildData));
@@ -2279,33 +2322,33 @@ class StatementCompilerTest {
             LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
 
             Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<Point> buildOrder = new LinkedList<>();
 
             Point point1 = new Point(2,3);
+            buildOrder.add(point1);
             List<BuildingType> buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point1, buildsInPoint);
 
             Point point2 = new Point(1,3);
+            buildOrder.add(point2);
             buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point2, buildsInPoint);
 
             Point point3 = new Point(0,3);
+            buildOrder.add(point3);
             buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point3, buildsInPoint);
 
             Point point4 = new Point(0, 2);
+            buildOrder.add(point4);
             buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point4, buildsInPoint);
 
-            Point point5 = new Point(0, 1);
-            Point point6 = new Point(1, 1);
-            Point point7 = new Point(2,1);
-
-
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
             assertFalse(lambdaStatement.evaluate(null, buildData));
         }
@@ -2338,19 +2381,23 @@ class StatementCompilerTest {
 
 
             Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<Point> buildOrder = new LinkedList<>();
 
             Point point1 = new Point(2,3);
+            buildOrder.add(point1);
             List<BuildingType> buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.DOME);
             builds.put(point1, buildsInPoint);
 
             Point point2 = new Point(1,3);
+            buildOrder.add(point2);
             List<BuildingType> buildsInPoint2 = new ArrayList<>();
             buildsInPoint2.add(BuildingType.FIRST_FLOOR);
             buildsInPoint2.add(BuildingType.DOME);
             builds.put(point2, buildsInPoint2);
 
             Point point3 = new Point(0,3);
+            buildOrder.add(point3);
             List<BuildingType> buildsInPoint3 = new ArrayList<>();
             buildsInPoint3.add(BuildingType.FIRST_FLOOR);
             buildsInPoint3.add(BuildingType.SECOND_FLOOR);
@@ -2358,6 +2405,7 @@ class StatementCompilerTest {
             builds.put(point3, buildsInPoint3);
 
             Point point4 = new Point(0, 2);
+            buildOrder.add(point4);
             List<BuildingType> buildsInPoint4 = new ArrayList<>();
             buildsInPoint4.add(BuildingType.FIRST_FLOOR);
             buildsInPoint4.add(BuildingType.SECOND_FLOOR);
@@ -2365,13 +2413,8 @@ class StatementCompilerTest {
             buildsInPoint4.add(BuildingType.DOME);
             builds.put(point4, buildsInPoint4);
 
-            Point point5 = new Point(0, 1);
-            Point point6 = new Point(1, 1);
-            Point point7 = new Point(2,1);
 
-
-
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
             RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_DOME, lt.toString());
             LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
@@ -2410,19 +2453,23 @@ class StatementCompilerTest {
             LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
 
             Map<Point,List<BuildingType>> builds = new HashMap<>();
+            List<Point> buildOrder = new LinkedList<>();
 
             Point point1 = new Point(2,3);
+            buildOrder.add(point1);
             List<BuildingType> buildsInPoint = new ArrayList<>();
             buildsInPoint.add(BuildingType.FIRST_FLOOR);
             builds.put(point1, buildsInPoint);
 
             Point point2 = new Point(1,3);
+            buildOrder.add(point2);
             List<BuildingType> buildsInPoint2 = new ArrayList<>();
             buildsInPoint2.add(BuildingType.FIRST_FLOOR);
             buildsInPoint2.add(BuildingType.SECOND_FLOOR);
             builds.put(point2, buildsInPoint2);
 
             Point point3 = new Point(0,3);
+            buildOrder.add(point3);
             List<BuildingType> buildsInPoint3 = new ArrayList<>();
             buildsInPoint3.add(BuildingType.FIRST_FLOOR);
             buildsInPoint3.add(BuildingType.SECOND_FLOOR);
@@ -2430,6 +2477,7 @@ class StatementCompilerTest {
             builds.put(point3, buildsInPoint3);
 
             Point point4 = new Point(0, 2);
+            buildOrder.add(point4);
             List<BuildingType> buildsInPoint4 = new ArrayList<>();
             buildsInPoint4.add(BuildingType.FIRST_FLOOR);
             buildsInPoint4.add(BuildingType.SECOND_FLOOR);
@@ -2437,13 +2485,8 @@ class StatementCompilerTest {
             buildsInPoint4.add(BuildingType.DOME);
             builds.put(point4, buildsInPoint4);
 
-            Point point5 = new Point(0, 1);
-            Point point6 = new Point(1, 1);
-            Point point7 = new Point(2,1);
 
-
-
-            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+            BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
             if(lt == LevelType.GROUND || lt == LevelType.FIRST_FLOOR)
                 assertFalse(lambdaStatement.evaluate(null, buildData));
@@ -2479,14 +2522,16 @@ class StatementCompilerTest {
         LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
 
         Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
 
         Point point1 = new Point(2,3);
+        buildOrder.add(point1);
         List<BuildingType> buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.DOME);
         builds.put(point1, buildsInPoint);
 
 
-        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
         assertTrue(lambdaStatement.evaluate(null, buildData));
     }
@@ -2510,19 +2555,23 @@ class StatementCompilerTest {
         +----+----+----+----+----+
 */
         Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
 
         Point point1 = new Point(2,3);
+        buildOrder.add(point1);
         List<BuildingType> buildsInPoint = new ArrayList<>();
         buildsInPoint.add(BuildingType.DOME);
         builds.put(point1, buildsInPoint);
 
         Point point2 = new Point(1,3);
+        buildOrder.add(point2);
         List<BuildingType> buildsInPoint2 = new ArrayList<>();
         buildsInPoint2.add(BuildingType.FIRST_FLOOR);
         buildsInPoint2.add(BuildingType.DOME);
         builds.put(point2, buildsInPoint2);
 
         Point point3 = new Point(0,3);
+        buildOrder.add(point3);
         List<BuildingType> buildsInPoint3 = new ArrayList<>();
         buildsInPoint3.add(BuildingType.FIRST_FLOOR);
         buildsInPoint3.add(BuildingType.SECOND_FLOOR);
@@ -2530,6 +2579,7 @@ class StatementCompilerTest {
         builds.put(point3, buildsInPoint3);
 
         Point point4 = new Point(0, 2);
+        buildOrder.add(point4);
         List<BuildingType> buildsInPoint4 = new ArrayList<>();
         buildsInPoint4.add(BuildingType.FIRST_FLOOR);
         buildsInPoint4.add(BuildingType.SECOND_FLOOR);
@@ -2539,7 +2589,7 @@ class StatementCompilerTest {
 
 
 
-        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
         RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_IN_SAME_SPOT, "ALL");
         LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
@@ -2572,8 +2622,10 @@ class StatementCompilerTest {
         +----+----+----+----+----+
 */
         Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
 
         Point point4 = new Point(0, 2);
+        buildOrder.add(point4);
         List<BuildingType> buildsInPoint4 = new ArrayList<>();
         buildsInPoint4.add(BuildingType.FIRST_FLOOR);
         buildsInPoint4.add(BuildingType.SECOND_FLOOR);
@@ -2582,8 +2634,7 @@ class StatementCompilerTest {
         builds.put(point4, buildsInPoint4);
 
 
-
-        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, null);
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
 
         RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.BUILD_IN_SAME_SPOT, "ALL");
         LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
@@ -2594,8 +2645,5 @@ class StatementCompilerTest {
         lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
 
         assertFalse(lambdaStatement.evaluate(null, buildData));
-
-
-
     }
 }

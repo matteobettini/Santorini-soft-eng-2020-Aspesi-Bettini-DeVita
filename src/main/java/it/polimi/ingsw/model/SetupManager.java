@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class SetupManager{
 
-    private final List<Player> players;
+    private List<Player> players;
     private SetupPhase setupPhase;
     private int activePlayerIndex;
     private Player challenger;
@@ -184,9 +184,12 @@ public class SetupManager{
         if(players.stream().filter(x -> x.getNickname().equals(startPlayer)).count() != 1){
             throw new InvalidPacketException();
         }
+        //Setting start player
         startingPlayer = model.getPlayerByNick(startPlayer);
-        players.remove(startingPlayer);
-        players.add(0, startingPlayer);
+        model.setStartPlayer(startingPlayer);
+
+        //Reload data and check
+        players = model.getPlayers();
         activePlayerIndex = players.indexOf(startingPlayer);
         assert (activePlayerIndex == 0);
 

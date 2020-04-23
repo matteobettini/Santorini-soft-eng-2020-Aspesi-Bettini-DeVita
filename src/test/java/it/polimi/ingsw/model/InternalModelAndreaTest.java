@@ -1514,4 +1514,43 @@ class InternalModelAndreaTest {
             assertEquals(expected.get(point),result.get(point));
         }
     }
+
+    /*
+        Player start test
+     */
+    @Test
+    void playerStartTest(){
+        List<String> players = new ArrayList<String>();
+        players.add("Andrea");
+        players.add("Matteo");
+        players.add("Mirko");
+        model = new InternalModel(players, cardFactory);
+        Andrea = model.getPlayerByNick("Andrea");
+        Matteo = model.getPlayerByNick("Matteo");
+        Mirko = model.getPlayerByNick("Mirko");
+        List<Player> playerList = model.getPlayers();
+        assertEquals(playerList.get(0), Andrea);
+        assertEquals(playerList.get(1), Matteo);
+        assertEquals(playerList.get(2), Mirko);
+        model.setStartPlayer(Matteo);
+        playerList = model.getPlayers();
+        assertEquals(playerList.get(0), Matteo);
+        assertEquals(playerList.get(1), Mirko);
+        assertEquals(playerList.get(2), Andrea);
+        model.setStartPlayer(Matteo);
+        playerList = model.getPlayers();
+        assertEquals(playerList.get(0), Matteo);
+        assertEquals(playerList.get(1), Mirko);
+        assertEquals(playerList.get(2), Andrea);
+        model.setStartPlayer(Andrea);
+        playerList = model.getPlayers();
+        assertEquals(playerList.get(0), Andrea);
+        assertEquals(playerList.get(1), Matteo);
+        assertEquals(playerList.get(2), Mirko);
+        model.setStartPlayer(Mirko);
+        playerList = model.getPlayers();
+        assertEquals(playerList.get(0), Mirko);
+        assertEquals(playerList.get(1), Andrea);
+        assertEquals(playerList.get(2), Matteo);
+    }
 }
