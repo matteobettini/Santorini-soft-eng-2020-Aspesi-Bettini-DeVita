@@ -32,57 +32,32 @@ public class VirtualView implements Observer<Object> {
 
         model.addPacketCardsFromServerObserver((packetCardsFromServer) -> {
             if(packetCardsFromServer.getTo().equals(connectionToClient.getClientNickname())) {
-                connectionToClient.startTimer();
-                try {
-                    connectionToClient.send(packetCardsFromServer);
-                } catch (IOException e) {
-                    connectionToClient.closeRoutineFull();
-                }
+                connectionToClient.send(packetCardsFromServer, true);
             }
         });
         model.addPacketDoActionObserver((packetDoAction) -> {
             if (packetDoAction.getTo().equals(connectionToClient.getClientNickname())) {
-                connectionToClient.startTimer();
-                try {
-                    connectionToClient.send(packetDoAction);
-                } catch (IOException e) {
-                    connectionToClient.closeRoutineFull();
-                }
+                connectionToClient.send(packetDoAction, true);
             }
         });
         model.addPacketPossibleBuildsObserver((packetPossibleBuilds)-> {
             if (packetPossibleBuilds.getTo().equals(connectionToClient.getClientNickname())) {
-                try {
-                    connectionToClient.send(packetPossibleBuilds);
-                } catch (IOException e) {
-                    connectionToClient.closeRoutineFull();
-                }
+                connectionToClient.send(packetPossibleBuilds, false);
             }
         });
         model.addPacketPossibleMovesObserver((packetPossibleMoves)-> {
             if (packetPossibleMoves.getTo().equals(connectionToClient.getClientNickname()))
-                try {
-                    connectionToClient.send(packetPossibleMoves);
-                } catch (IOException e) {
-                    connectionToClient.closeRoutineFull();
-                }
+                connectionToClient.send(packetPossibleMoves, false);
         });
         model.addPacketSetupObserver((packetSetup) -> {
-            try {
-                connectionToClient.send(packetSetup);
-            } catch (IOException e) {
-                connectionToClient.closeRoutineFull();
-            }
+                connectionToClient.send(packetSetup, false);
         });
         model.addPacketUpdateBoardObserver((packetUpdateBoard) -> {
-            try {
-                connectionToClient.send(packetUpdateBoard);
-                if(packetUpdateBoard.getPlayerWonID() != null)
-                    connectionToClient.closeRoutineFull();
-            } catch (IOException e) {
+            connectionToClient.send(packetUpdateBoard, false);
+            if(packetUpdateBoard.getPlayerWonID() != null)
                 connectionToClient.closeRoutineFull();
-            }
         });
+
     }
 
 
@@ -104,11 +79,7 @@ public class VirtualView implements Observer<Object> {
     }
 
     public void sendInvalidPacketMessage(){
-        try {
-            connectionToClient.send(ConnectionMessages.INVALID_PACKET);
-        } catch (IOException e) {
-            connectionToClient.closeRoutineFull();
-        }
+        connectionToClient.send(ConnectionMessages.INVALID_PACKET, true);
     }
 
     public String getClientNickname(){

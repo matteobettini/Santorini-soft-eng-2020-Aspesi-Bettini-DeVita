@@ -4,7 +4,7 @@ import it.polimi.ingsw.view.ConnectionToClient;
 
 public interface ServerConnectionUtils {
 
-    void lobby(ConnectionToClient connection);
+    void lobby(ConnectionToClient connectionToClient);
     void deregister(ConnectionToClient connectionToClient);
 
 }

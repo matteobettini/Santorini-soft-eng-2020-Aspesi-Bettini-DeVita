@@ -32,12 +32,8 @@ public class Match {
         this.model = new ConcreteModel(players, isHardcore);
 
         for(ConnectionToClient c : clientConnections){
-            c.setInMatch();
-            try {
-                c.send(new PacketMatchStarted(players, isHardcore));
-            } catch (IOException e) {
-                c.closeRoutineFull();
-            }
+            c.send(new PacketMatchStarted(players, isHardcore), false);
+            System.out.println("Match: sending started to: " + c.getClientNickname());
             VirtualView virtualView = new VirtualView(c, model);
             this.clients.put(c, virtualView);
         }
@@ -58,9 +54,7 @@ public class Match {
         assert(clients.containsKey(connectionToClient));
         for(ConnectionToClient c : clients.keySet()){
             if(!c.equals(connectionToClient)) {
-                try {
-                    c.send(ConnectionMessages.MATCH_ENDED);
-                } catch (IOException ignored) { }
+                c.send(ConnectionMessages.MATCH_ENDED, false);
                 c.closeRoutine();
             }
         }

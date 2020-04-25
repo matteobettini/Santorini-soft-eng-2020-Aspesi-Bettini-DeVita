@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.InputMismatchException;
 
 public class ConnectionToClient extends Observable<Object> implements Runnable{
 
@@ -18,7 +19,6 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private ObjectInputStream is;
 
     private boolean active;
-    private boolean inMatch;
 
     private int desiredNumOfPlayers;
     private boolean desiredHardcore;
@@ -30,16 +30,15 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         this.server = server;
         this.socket = socket;
         this.active = true;
-        this.inMatch = false;
         this.desiredNumOfPlayers = -1;
         this.desiredHardcore = false;
         this.clientNickname = null;
     }
 
-    public void startTimer(){
+    private void startTimer(int milliseconds){
         timer = new Thread(() -> {
             try {
-                Thread.sleep(120000);
+                Thread.sleep(milliseconds);
                 System.out.println("Conection [" + getClientNickname() + "]: timer is ended");
                 closeRoutine();
             } catch (InterruptedException e) {
@@ -49,17 +48,34 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         timer.start();
     }
 
+    private void startTimer1Min(){
+        startTimer(60000);
+    }
+    private void startTimer2Min(){
+        startTimer(120000);
+    }
+
     private void stopTimer(){
         timer.interrupt();
     }
 
-    public void send(Object packet) throws IOException{
+    private void internalSend(Object packet) throws IOException{
         try {
             os.writeObject(packet);
             os.flush();
         }catch (IOException e){
             System.err.println("Conection [" + getClientNickname() + "]: error in send");
             throw e;
+        }
+    }
+
+    public void send(Object packet, boolean withTimer){
+        try {
+            if(withTimer)
+                startTimer2Min();
+            internalSend(packet);
+        }catch (IOException e){
+            closeRoutineFull();
         }
     }
 
@@ -71,8 +87,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
         try {
             do {
-                send(ConnectionMessages.INSERT_NUMBER_OF_PLAYERS);
-                startTimer();
+                internalSend(ConnectionMessages.INSERT_NUMBER_OF_PLAYERS);
+                startTimer1Min();
                 System.out.println("Conection [" + getClientNickname() + "]: asking num of players");
                 desiredNumOfPlayers = is.readInt();
                 System.out.println("Conection [" + getClientNickname() + "]: got num of players, is: " + desiredNumOfPlayers);
@@ -80,13 +96,13 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             } while (desiredNumOfPlayers != 2 && desiredNumOfPlayers != 3);
 
             System.out.println("Conection [" + getClientNickname() + "]: asking gamemode");
-            send(ConnectionMessages.IS_IT_HARDCORE);
-            startTimer();
+            internalSend(ConnectionMessages.IS_IT_HARDCORE);
+            startTimer1Min();
             desiredHardcore = is.readBoolean();
             System.out.println("Conection [" + getClientNickname() + "]: got gamemode, is: " + desiredHardcore);
             stopTimer();
 
-        } catch (IOException e){
+        } catch (IOException | InputMismatchException e){
             System.err.println("Conection [" + getClientNickname() + "]: error in ask desires");
             closeRoutineFull();
         }
@@ -96,12 +112,12 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private void askNickname() throws IOException{
         try {
             System.out.println("Conection: asking nickname");
-            send(ConnectionMessages.INSERT_NICKNAME);
-            startTimer();
+            internalSend(ConnectionMessages.INSERT_NICKNAME);
+            startTimer1Min();
             clientNickname = is.readUTF();
             System.out.println("Conection: nickname acquired: " + clientNickname);
             stopTimer();
-        } catch (IOException e){
+        } catch (IOException | InputMismatchException e){
             System.err.println("Conection [" + getClientNickname() + "]: error in ask nick");
             throw e;
         }
@@ -110,12 +126,12 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     public void askNicknameAgain(){
         try {
             System.out.println("Conection [" + getClientNickname() + "]: asking nick again");
-            send(ConnectionMessages.INVALID_NICKNAME);
-            startTimer();
+            internalSend(ConnectionMessages.INVALID_NICKNAME);
+            startTimer1Min();
             clientNickname = is.readUTF();
             System.out.println("Conection [" + getClientNickname() + "]: got nick again : " + clientNickname);
             stopTimer();
-        } catch (IOException e){
+        } catch (IOException | InputMismatchException e){
             System.err.println("Conection [" + getClientNickname() + "]: error in ask nick again");
             closeRoutineFull();
         }
@@ -144,10 +160,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         }
     }
 
-    public void setInMatch() {
-        assert !inMatch;
-        inMatch = true;
-    }
+
 
     public synchronized void closeRoutineFull(){
 
@@ -156,6 +169,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         server.deregister(this);
 
         closeRoutine();
+
     }
 
     public synchronized void closeRoutine(){
@@ -176,16 +190,12 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         }catch (IOException ignored){ }
 
         active = false;
-        inMatch = false;
     }
 
     public boolean isActive() {
         return active;
     }
 
-    public boolean inMatch() {
-        return inMatch;
-    }
 
     public int getDesiredNumOfPlayers() {
         return desiredNumOfPlayers;
