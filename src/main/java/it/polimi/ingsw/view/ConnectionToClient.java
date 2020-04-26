@@ -1,6 +1,6 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.ServerConnectionUtils;
+import it.polimi.ingsw.server.ServerConnectionUtils;
 import it.polimi.ingsw.observe.Observable;
 import it.polimi.ingsw.packets.ConnectionMessages;
 import java.io.IOException;
@@ -41,22 +41,23 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
                 Thread.sleep(milliseconds);
                 System.out.println("Conection [" + getClientNickname() + "]: timer is ended");
                 closeRoutine();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            } catch (InterruptedException ignored) { }
         });
         timer.start();
     }
 
-    private void startTimer1Min(){
-        startTimer(60000);
+    private void startTimerShorter(){
+        startTimer(30000);
     }
-    private void startTimer2Min(){
+    private void startTimerLonger(){
         startTimer(120000);
     }
 
     private void stopTimer(){
-        timer.interrupt();
+        if(timer != null && timer.isAlive()) {
+            timer.interrupt();
+            timer = null;
+        }
     }
 
     private void internalSend(Object packet) throws IOException{
@@ -72,7 +73,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     public void send(Object packet, boolean withTimer){
         try {
             if(withTimer)
-                startTimer2Min();
+                startTimerLonger();
             internalSend(packet);
         }catch (IOException e){
             closeRoutineFull();
@@ -88,7 +89,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         try {
             do {
                 internalSend(ConnectionMessages.INSERT_NUMBER_OF_PLAYERS);
-                startTimer1Min();
+                startTimerShorter();
                 System.out.println("Conection [" + getClientNickname() + "]: asking num of players");
                 desiredNumOfPlayers = is.readInt();
                 System.out.println("Conection [" + getClientNickname() + "]: got num of players, is: " + desiredNumOfPlayers);
@@ -97,7 +98,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
             System.out.println("Conection [" + getClientNickname() + "]: asking gamemode");
             internalSend(ConnectionMessages.IS_IT_HARDCORE);
-            startTimer1Min();
+            startTimerShorter();
             desiredHardcore = is.readBoolean();
             System.out.println("Conection [" + getClientNickname() + "]: got gamemode, is: " + desiredHardcore);
             stopTimer();
@@ -113,7 +114,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         try {
             System.out.println("Conection: asking nickname");
             internalSend(ConnectionMessages.INSERT_NICKNAME);
-            startTimer1Min();
+            startTimerShorter();
             clientNickname = is.readUTF();
             System.out.println("Conection: nickname acquired: " + clientNickname);
             stopTimer();
@@ -127,7 +128,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         try {
             System.out.println("Conection [" + getClientNickname() + "]: asking nick again");
             internalSend(ConnectionMessages.INVALID_NICKNAME);
-            startTimer1Min();
+            startTimerShorter();
             clientNickname = is.readUTF();
             System.out.println("Conection [" + getClientNickname() + "]: got nick again : " + clientNickname);
             stopTimer();
@@ -148,14 +149,16 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
             server.lobby(this);
 
-            while(isActive()){
+            while(active){
+                System.out.println("Conection [" + getClientNickname() + "]: I'M WAITING FOR AN OBJECT");
                 Object packetFromClient = is.readObject();
                 stopTimer();
                 notify(packetFromClient);
             }
+            System.err.println("Conection [" + getClientNickname() + "]: error i'm inactive");
 
         }catch (IOException | ClassNotFoundException e){
-            System.err.println("Conection [" + getClientNickname() + "]: error in run {" + e.getMessage() + "}");
+            //System.out.println("Conection [" + getClientNickname() + "]: exception in run {" + e.getMessage() + "}");
             closeRoutineFull();
         }
     }
@@ -204,4 +207,15 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     public boolean isDesiredHardcore() {
         return desiredHardcore;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ConnectionToClient that = (ConnectionToClient) o;
+
+        return socket.equals(that.socket);
+    }
+
 }

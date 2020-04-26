@@ -96,6 +96,10 @@ public class SetupManager{
         if(chosenCards.size() != numberOfCardsToChoose)
             throw new InvalidPacketException();
 
+        //IF THERE ARE IDENTIC CARDS -> INVALID
+        if(chosenCards.stream().distinct().count() != chosenCards.size())
+            throw new InvalidPacketException();
+
         // IF ONE OF THE CARDS IS NOT AVAILABLE -> INVALID
         for(String card : chosenCards)
             if(!availableCards.contains(card))

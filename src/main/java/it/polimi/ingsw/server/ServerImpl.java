@@ -1,4 +1,4 @@
-package it.polimi.ingsw;
+package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.view.ConnectionToClient;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ServerImpl implements Server, ServerConnectionUtils {
+class ServerImpl implements Server, ServerConnectionUtils {
 
     private static final int port = 4567;
     private ServerSocket serverSocket;
@@ -20,6 +20,7 @@ public class ServerImpl implements Server, ServerConnectionUtils {
 
     private final List<ConnectionToClient> waitingClients;
     private final List<Match> activeMatches;
+    private final List<ConnectionToClient> toDeregister;
 
     ReentrantLock lockLobby = new ReentrantLock(true);
     ReentrantLock lockMatches = new ReentrantLock(true);
@@ -32,6 +33,7 @@ public class ServerImpl implements Server, ServerConnectionUtils {
         this.executor = Executors.newCachedThreadPool();
         this.waitingClients = new LinkedList<>();
         this.activeMatches = new ArrayList<>();
+        this.toDeregister = new ArrayList<>();
         this.currMatchSize = -1;
         this.currMatchHardcore = false;
         this.currMatchID = 1;
@@ -69,9 +71,6 @@ public class ServerImpl implements Server, ServerConnectionUtils {
                 connection.askForDesiredPlayersAndGamemode();
                 currMatchSize = connection.getDesiredNumOfPlayers();
                 currMatchHardcore = connection.isDesiredHardcore();
-                for(ConnectionToClient c : waitingClients)
-                    if(!c.isActive())
-                        deregister(c);
 
             } else {
                 assert ((currMatchSize == 2 && waitingClients.size() == 1) || (currMatchSize == 3 && (waitingClients.size() == 1 || waitingClients.size() == 2)));
@@ -79,14 +78,20 @@ public class ServerImpl implements Server, ServerConnectionUtils {
 
                 while (alreadyTaken()) {
                     connection.askNicknameAgain();
-                    for(ConnectionToClient c : waitingClients)
-                        if(!c.isActive())
-                            deregister(c);
+                    toDeregister.clear();
+                    for(ConnectionToClient c : waitingClients) {
+                        if (!c.isActive()) {
+                            toDeregister.add(c);
+                        }
+                    }
+                    for(ConnectionToClient c : toDeregister){
+                        deregister(c);
+                    }
                 }
             }
 
             if(waitingClients.size() == currMatchSize){
-                System.out.println("Server: creating match");
+                System.out.println("Server: creating match with thread of: " + connection.getClientNickname());
                 createMatch();
             }
 
@@ -157,7 +162,7 @@ public class ServerImpl implements Server, ServerConnectionUtils {
     private boolean alreadyTaken(){
         lockLobby.lock();
         try{
-            if(waitingClients.size() > 0){
+            if(waitingClients.size() > 1){
                 for(int i = 0; i < waitingClients.size()-1; i++ ){
                     if(waitingClients.get(i).getClientNickname().equals(waitingClients.get(waitingClients.size()-1).getClientNickname())){
                         return true;
