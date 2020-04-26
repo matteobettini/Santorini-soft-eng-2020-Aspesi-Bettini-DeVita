@@ -19,6 +19,14 @@ public class VirtualView implements Observer<Object> {
     private final List<Observer<PacketStartPlayer>> packetStartPlayerObservers;
     private final List<Observer<PacketWorkersPositions>> packetWorkersPositionsObservers;
 
+    /**
+     * This is the constructor for the Virtual View
+     * The virtual view subscribes to all the events notified
+     * by the model and sends messages to its connection to client
+     * accordingly to filtering and sending policies
+     * @param connectionToClient the connection to client associated to the virtual view (the association is 1:1)
+     * @param model the observable model to which it subscribes
+     */
     public VirtualView(ConnectionToClient connectionToClient, ObservableModel model){
         this.connectionToClient = connectionToClient;
 
@@ -60,7 +68,10 @@ public class VirtualView implements Observer<Object> {
 
     }
 
-
+    /**
+     * Update method called upon arrival of a packet to the connection to client associated
+     * @param packetFromClient the packet arriving from the connection
+     */
     @Override
     public void update(Object packetFromClient) {
         if(packetFromClient instanceof PacketMove){
@@ -78,10 +89,17 @@ public class VirtualView implements Observer<Object> {
         }
     }
 
+    /**
+     * This method sends an invalid packet answer to the client
+     */
     public void sendInvalidPacketMessage(){
         connectionToClient.send(ConnectionMessages.INVALID_PACKET, true);
     }
 
+    /**
+     * Returns the associated client nickname
+     * @return  the client nickname
+     */
     public String getClientNickname(){
         return connectionToClient.getClientNickname();
     }

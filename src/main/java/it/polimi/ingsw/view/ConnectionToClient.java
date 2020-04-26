@@ -26,6 +26,14 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     private Thread timer;
 
+
+    /**
+     * The constructor of the connection
+     * saves the client socket in a local variable
+     * saves also a reference to the server connection utils
+     * @param socket the client socket it manages
+     * @param server a pointer to the server interface
+     */
     public ConnectionToClient(Socket socket, ServerConnectionUtils server)  {
         this.server = server;
         this.socket = socket;
@@ -39,7 +47,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         timer = new Thread(() -> {
             try {
                 Thread.sleep(milliseconds);
-                System.out.println("Conection [" + getClientNickname() + "]: timer is ended");
+                System.out.println("Connection [" + getClientNickname() + "]: timer is ended");
                 closeRoutine();
             } catch (InterruptedException ignored) { }
         });
@@ -65,11 +73,18 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             os.writeObject(packet);
             os.flush();
         }catch (IOException e){
-            System.err.println("Conection [" + getClientNickname() + "]: error in send");
+            System.err.println("Connection [" + getClientNickname() + "]: error in send");
             throw e;
         }
     }
 
+    /**
+     * Method for sending ONLY serialized objects to the client
+     * Upon failure sending the information, closes the connection
+     * @param packet the serialized object
+     * @param withTimer a flag to activate a timer that closes the connection if it doesn't receive an answer
+     *                  within the prescribed time limit
+     */
     public void send(Object packet, boolean withTimer){
         try {
             if(withTimer)
@@ -80,65 +95,92 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         }
     }
 
+    /**
+     * Returns the client nickname
+     * @return the client nickname, null if it hasn't been chosen yet
+     */
     public String getClientNickname() {
         return clientNickname;
     }
 
+
+    /**
+     * Method use by the server to ask the client the desired number of players in a match
+     * and if it wants to play in hardcore mode or not
+     * Upon failure retrieving the information, closes the connection
+     */
     public void askForDesiredPlayersAndGamemode(){
 
         try {
             do {
                 internalSend(ConnectionMessages.INSERT_NUMBER_OF_PLAYERS);
                 startTimerShorter();
-                System.out.println("Conection [" + getClientNickname() + "]: asking num of players");
+                System.out.println("Connection [" + getClientNickname() + "]: asking num of players");
                 desiredNumOfPlayers = is.readInt();
-                System.out.println("Conection [" + getClientNickname() + "]: got num of players, is: " + desiredNumOfPlayers);
+                System.out.println("Connection [" + getClientNickname() + "]: got num of players, is: " + desiredNumOfPlayers);
                 stopTimer();
             } while (desiredNumOfPlayers != 2 && desiredNumOfPlayers != 3);
 
-            System.out.println("Conection [" + getClientNickname() + "]: asking gamemode");
+            System.out.println("Connection [" + getClientNickname() + "]: asking gamemode");
             internalSend(ConnectionMessages.IS_IT_HARDCORE);
             startTimerShorter();
             desiredHardcore = is.readBoolean();
-            System.out.println("Conection [" + getClientNickname() + "]: got gamemode, is: " + desiredHardcore);
+            System.out.println("Connection [" + getClientNickname() + "]: got gamemode, is: " + desiredHardcore);
             stopTimer();
 
         } catch (IOException | InputMismatchException e){
-            System.err.println("Conection [" + getClientNickname() + "]: error in ask desires");
+            System.err.println("Connection [" + getClientNickname() + "]: error in ask desires");
             closeRoutineFull();
         }
 
     }
 
+    /**
+     * Method used to ask the client his nickname
+     * Upon failure retrieving the information, closes the connection
+     */
     private void askNickname() throws IOException{
         try {
-            System.out.println("Conection: asking nickname");
+            System.out.println("Connection: asking nickname");
             internalSend(ConnectionMessages.INSERT_NICKNAME);
             startTimerShorter();
             clientNickname = is.readUTF();
-            System.out.println("Conection: nickname acquired: " + clientNickname);
+            System.out.println("Connection: nickname acquired: " + clientNickname);
             stopTimer();
         } catch (IOException | InputMismatchException e){
-            System.err.println("Conection [" + getClientNickname() + "]: error in ask nick");
+            System.err.println("Connection [" + getClientNickname() + "]: error in ask nick");
             throw e;
         }
     }
 
+    /**
+     * Method use by the server to ask the client his nickname again
+     * because it has already been selected by another player
+     * Upon failure retrieving the information, closes the connection
+     */
     public void askNicknameAgain(){
         try {
-            System.out.println("Conection [" + getClientNickname() + "]: asking nick again");
+            System.out.println("Connection [" + getClientNickname() + "]: asking nick again");
             internalSend(ConnectionMessages.INVALID_NICKNAME);
             startTimerShorter();
             clientNickname = is.readUTF();
-            System.out.println("Conection [" + getClientNickname() + "]: got nick again : " + clientNickname);
+            System.out.println("Connection [" + getClientNickname() + "]: got nick again : " + clientNickname);
             stopTimer();
         } catch (IOException | InputMismatchException e){
-            System.err.println("Conection [" + getClientNickname() + "]: error in ask nick again");
+            System.err.println("Connection [" + getClientNickname() + "]: error in ask nick again");
             closeRoutineFull();
         }
     }
 
-
+    /**
+     * This is the run method used by the server to start the client
+     * After creating the object streams to the client,
+     * it asks the desired nickname
+     * Then it calls the lobby method to put the client in the waiting list (lobby) on the server
+     * If the client is inserted successfully and/or a match is created
+     * it loops continuing to listen for incoming objects from the connection
+     * Upon failure of any kind it closes the connection
+     */
     @Override
     public void run() {
         try{
@@ -164,7 +206,11 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
 
-
+    /**
+     * This method calls the closeRoutine method,
+     * additionally it calls the deregister method on the server
+     * which handles the full de-registration of the connection according to its state
+     */
     public synchronized void closeRoutineFull(){
 
         System.err.println("Conection [" + getClientNickname() + "]: closing socket");
@@ -175,6 +221,12 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     }
 
+    /**
+     * This method tries to send a connection ended message and
+     * then tries to close the streams and the socket
+     * It is used from the timer and the match when full
+     * de-registration is not required
+     */
     public synchronized void closeRoutine(){
 
         try {
@@ -195,27 +247,28 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         active = false;
     }
 
+    /**
+     * Returns the active status of the connection
+     * @return the active flag
+     */
     public boolean isActive() {
         return active;
     }
 
-
+    /**
+     * Returns the desired number of players of the client
+     * @return the desired number of players
+     */
     public int getDesiredNumOfPlayers() {
         return desiredNumOfPlayers;
     }
 
+    /**
+     * Returns the desired number gamemode of the client
+     * @return true if hardcore is desired
+     */
     public boolean isDesiredHardcore() {
         return desiredHardcore;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ConnectionToClient that = (ConnectionToClient) o;
-
-        return socket.equals(that.socket);
     }
 
 }

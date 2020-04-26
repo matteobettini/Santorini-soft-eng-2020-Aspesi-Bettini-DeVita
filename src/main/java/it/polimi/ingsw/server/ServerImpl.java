@@ -29,6 +29,9 @@ class ServerImpl implements Server, ServerConnectionUtils {
     private boolean currMatchHardcore;
     private int currMatchID;
 
+    /**
+     * The constructor initializes the variables
+     */
     public ServerImpl(){
         this.executor = Executors.newCachedThreadPool();
         this.waitingClients = new LinkedList<>();
@@ -39,6 +42,12 @@ class ServerImpl implements Server, ServerConnectionUtils {
         this.currMatchID = 1;
     }
 
+    /**
+     * This method creates a server socket
+     * and then loops continuing to accept incoming connections
+     * and assigning them to a thread in the thread pool
+     * @throws IOException when it occurs during server shutdown
+     */
     public void startServer() throws IOException {
         try {
             serverSocket = new ServerSocket(port);
@@ -57,7 +66,14 @@ class ServerImpl implements Server, ServerConnectionUtils {
         }
     }
 
-
+    /**
+     * This method puts the selected client into the lobby
+     * If the lobby is empty it asks the desired num of players and the gamemode
+     * If the lobby is not empty it keeps asking a new username till a valid one is obtained
+     * When the lobby size reaches the desired match size, a new match is created and started
+     * If anything fails de-registration is handled
+     * @param connection the connection to put in the lobby
+     */
     public void lobby(ConnectionToClient connection){
         lockLobby.lock();
         try {
@@ -120,6 +136,14 @@ class ServerImpl implements Server, ServerConnectionUtils {
         }
     }
 
+    /**
+     * This methods de-registers the selected client from the server
+     * First it looks in the existing matches if the client is present and if it is it sends the termination
+     * signal to that match and removes it from the active matches
+     * Then it looks if the client is in the lobby and, if it is,
+     * the client is removed from the lobby
+     * @param connectionToClient the client to be de-registered
+     */
     public void deregister(ConnectionToClient connectionToClient){
 
         lockMatches.lock();
@@ -128,7 +152,7 @@ class ServerImpl implements Server, ServerConnectionUtils {
                 if(match.contains(connectionToClient)){
                     match.notifyEnd(connectionToClient);
                     deregisterMatch(match);
-                    break;
+                    return;
                 }
             }
         }finally {

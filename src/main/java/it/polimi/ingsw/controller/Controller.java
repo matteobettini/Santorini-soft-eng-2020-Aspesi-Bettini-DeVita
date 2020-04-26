@@ -17,6 +17,15 @@ public class Controller {
     private final List<VirtualView> virtualViews;
     private final Model model;
 
+    /**
+     * This is the constructor of the controller: for each given virtual view
+     * the controller subscribes to all the possible packets coming from that view
+     * and forwards them to the Model
+     * Eventually, upon rejection of the packet by the model, the controller notifies
+     * the failure back the virtual view
+     * @param virtualViews the list of the virtual views in the match
+     * @param model the model interface
+     */
     public Controller(List<VirtualView> virtualViews, Model model) {
 
         this.model = model;
@@ -26,9 +35,9 @@ public class Controller {
             virtualView.addPacketMoveObserver((packetMove) ->{
                 try{
                     if(packetMove.isSimulate())
-                        model.getPossibeMoves(virtualView.getClientNickname(), packetMove);
+                        this.model.getPossibeMoves(virtualView.getClientNickname(), packetMove);
                     else
-                        model.makeMove(virtualView.getClientNickname(), packetMove);
+                        this.model.makeMove(virtualView.getClientNickname(), packetMove);
                 } catch (InvalidPacketException invalidPacketException){
                     virtualView.sendInvalidPacketMessage();
                 }
@@ -36,30 +45,30 @@ public class Controller {
             virtualView.addPacketBuildObserver((packetBuild) ->{
                 try{
                     if(packetBuild.isSimulate())
-                        model.getPossibleBuilds(virtualView.getClientNickname(), packetBuild);
+                        this.model.getPossibleBuilds(virtualView.getClientNickname(), packetBuild);
                     else
-                        model.makeBuild(virtualView.getClientNickname(), packetBuild);
+                        this.model.makeBuild(virtualView.getClientNickname(), packetBuild);
                 } catch (InvalidPacketException invalidPacketException){
                     virtualView.sendInvalidPacketMessage();
                 }
             });
             virtualView.addPacketCardsFromClientdObserver((packetCardsFromClient) ->{
                 try{
-                    model.setSelectedCards(virtualView.getClientNickname(), packetCardsFromClient.getChosenCards());
+                    this.model.setSelectedCards(virtualView.getClientNickname(), packetCardsFromClient.getChosenCards());
                 } catch (InvalidPacketException invalidPacketException){
                     virtualView.sendInvalidPacketMessage();
                 }
             });
             virtualView.addPacketStartPlayerObserver((packetStartPlayer) ->{
                 try{
-                    model.setStartPlayer(virtualView.getClientNickname(), packetStartPlayer.getStartPlayer());
+                    this.model.setStartPlayer(virtualView.getClientNickname(), packetStartPlayer.getStartPlayer());
                 } catch (InvalidPacketException invalidPacketException){
                     virtualView.sendInvalidPacketMessage();
                 }
             });
             virtualView.addPacketWorkersPositionsObserver((packetWorkersPositions) ->{
                 try{
-                    model.setWorkersPositions(virtualView.getClientNickname(), packetWorkersPositions.getWorkersPositions());
+                    this.model.setWorkersPositions(virtualView.getClientNickname(), packetWorkersPositions.getWorkersPositions());
                 } catch (InvalidPacketException invalidPacketException){
                     virtualView.sendInvalidPacketMessage();
                 }
