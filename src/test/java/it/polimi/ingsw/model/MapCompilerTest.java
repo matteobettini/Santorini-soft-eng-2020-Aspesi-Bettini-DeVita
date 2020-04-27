@@ -1,9 +1,9 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.cardReader.*;
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
-import it.polimi.ingsw.model.cardReader.exceptions.CardLoadingException;
-import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
+import it.polimi.ingsw.cards.*;
+import it.polimi.ingsw.cards.enums.TriggerType;
+import it.polimi.ingsw.cards.exceptions.CardLoadingException;
+import it.polimi.ingsw.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

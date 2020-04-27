@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.cardReader.RuleStatement;
-import it.polimi.ingsw.model.cardReader.enums.StatementType;
-import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
+import it.polimi.ingsw.cards.RuleStatement;
+import it.polimi.ingsw.cards.enums.StatementType;
+import it.polimi.ingsw.cards.enums.StatementVerbType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerFlag;

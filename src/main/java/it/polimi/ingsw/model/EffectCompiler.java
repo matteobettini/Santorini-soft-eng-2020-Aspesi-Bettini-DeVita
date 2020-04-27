@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.cardReader.RuleEffect;
-import it.polimi.ingsw.model.cardReader.enums.EffectType;
+import it.polimi.ingsw.cards.RuleEffect;
+import it.polimi.ingsw.cards.enums.EffectType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerFlag;

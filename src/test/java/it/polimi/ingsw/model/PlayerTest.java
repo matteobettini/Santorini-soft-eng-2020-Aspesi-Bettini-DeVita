@@ -2,9 +2,9 @@ package it.polimi.ingsw.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import it.polimi.ingsw.model.cardReader.CardFile;
-import it.polimi.ingsw.model.cardReader.CardFileImplTest;
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.cards.CardFile;
+import it.polimi.ingsw.cards.CardFileImplTest;
+import it.polimi.ingsw.cards.enums.TriggerType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
 import org.junit.jupiter.api.Test;

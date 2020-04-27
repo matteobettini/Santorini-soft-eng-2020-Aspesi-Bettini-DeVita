@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.cardReader.CardRule;
-import it.polimi.ingsw.model.cardReader.RuleStatement;
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.cards.CardRule;
+import it.polimi.ingsw.cards.RuleStatement;
+import it.polimi.ingsw.cards.enums.TriggerType;
 
 import java.util.ArrayList;
 import java.util.List;

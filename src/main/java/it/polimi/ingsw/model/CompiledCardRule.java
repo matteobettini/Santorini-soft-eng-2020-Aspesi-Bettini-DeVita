@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.cards.enums.TriggerType;
 import it.polimi.ingsw.model.exceptions.PlayerLostSignal;
 import it.polimi.ingsw.model.exceptions.PlayerWonSignal;
 

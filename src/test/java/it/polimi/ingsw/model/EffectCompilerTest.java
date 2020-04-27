@@ -1,13 +1,12 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.cardReader.CardFactory;
-import it.polimi.ingsw.model.cardReader.RuleEffect;
-import it.polimi.ingsw.model.cardReader.RuleEffectImplTest;
-import it.polimi.ingsw.model.cardReader.enums.AllowType;
-import it.polimi.ingsw.model.cardReader.enums.EffectType;
-import it.polimi.ingsw.model.cardReader.exceptions.CardLoadingException;
-import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
+import it.polimi.ingsw.cards.CardFactory;
+import it.polimi.ingsw.cards.RuleEffect;
+import it.polimi.ingsw.cards.RuleEffectImplTest;
+import it.polimi.ingsw.cards.enums.AllowType;
+import it.polimi.ingsw.cards.enums.EffectType;
+import it.polimi.ingsw.cards.exceptions.CardLoadingException;
+import it.polimi.ingsw.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerState;

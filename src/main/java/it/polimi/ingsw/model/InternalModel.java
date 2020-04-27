@@ -1,9 +1,9 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.cardReader.CardFactory;
-import it.polimi.ingsw.model.cardReader.CardFile;
-import it.polimi.ingsw.model.cardReader.CardRule;
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.cards.CardFactory;
+import it.polimi.ingsw.cards.CardFile;
+import it.polimi.ingsw.cards.CardRule;
+import it.polimi.ingsw.cards.enums.TriggerType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.exceptions.PlayerLostSignal;

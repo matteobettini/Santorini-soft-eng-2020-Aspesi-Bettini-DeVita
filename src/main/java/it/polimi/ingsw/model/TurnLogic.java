@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.cardReader.enums.TriggerType;
+import it.polimi.ingsw.cards.enums.TriggerType;
 import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.PlayerState;
