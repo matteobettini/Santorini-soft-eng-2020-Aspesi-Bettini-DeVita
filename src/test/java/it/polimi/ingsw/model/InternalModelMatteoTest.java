@@ -44,7 +44,7 @@ public class InternalModelMatteoTest {
 
     @BeforeEach
     void createModel(){
-        List<String> players = new ArrayList<String>();
+        List<String> players = new ArrayList<>();
         players.add("Andrea");
         players.add("Matteo");
         players.add("Mirko");
@@ -376,7 +376,6 @@ public class InternalModelMatteoTest {
                 +----+----+----+----+----+
             Y
         */
-        moves.clear();
         moves.add(point03);
         packetMove = new PacketMove("Matteo", "Matteo.1", moves);
         moveData = null;
@@ -562,9 +561,6 @@ public class InternalModelMatteoTest {
                 +----+----+----+----+----+
             Y
         */
-        buildsInThisPoint.clear();
-        builds.clear();
-        buildsOrder.clear();
         buildsInThisPoint.add(BuildingType.THIRD_FLOOR);
         builds.put(point04,buildsInThisPoint);
         buildsOrder.add(point04);
@@ -587,7 +583,6 @@ public class InternalModelMatteoTest {
         assertEquals(PlayerState.FIRST_BUILT, Matteo.getState());
 
         //NOW TRY TO WIN BY MOVING UP
-        moves.clear();
         moves.add(point04);
         packetMove = new PacketMove("Matteo", "Matteo.1", moves);
         moveData = null;
@@ -599,9 +594,7 @@ public class InternalModelMatteoTest {
         assertNotNull(moveData);
         try {
             assertFalse(model.makeMove(moveData));
-        } catch (PlayerWonSignal e) {
-            assert false;
-        } catch (PlayerLostSignal e){
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
             assert false;
         }
         assertEquals(PlayerState.FIRST_BUILT, Matteo.getState());
@@ -645,9 +638,7 @@ public class InternalModelMatteoTest {
         assertNotNull(moveData);
         try {
             assertTrue(model.makeMove(moveData));
-        } catch (PlayerWonSignal e) {
-            assert false;
-        } catch (PlayerLostSignal e){
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
             assert false;
         }
         assertEquals(PlayerState.MOVED, Matteo.getState());
@@ -785,7 +776,6 @@ public class InternalModelMatteoTest {
                 +----+----+----+----+----+
             Y
         */
-        moves.clear();
         moves.add(point04);
         packetMove = new PacketMove("Matteo", "Matteo.1", moves);
         moveData = null;
@@ -1005,7 +995,7 @@ public class InternalModelMatteoTest {
         Point point21 = new Point(2, 1);
 
         // Build utils
-        Set<Point> realPossibleBuilds = new HashSet<>();
+        //Set<Point> realPossibleBuilds = new HashSet<>();
         Map<Point, List<BuildingType>> builds = new HashMap<>();
         List<Point> buildsOrder = new ArrayList<>();
         List<BuildingType> buildsInThisPoint = new ArrayList<>();
@@ -1052,7 +1042,6 @@ public class InternalModelMatteoTest {
                   0    1     2    3    4
             Y
         */
-        moves.clear();
         moves.add(point23);
         moves.add(point22);
         packetMove = new PacketMove("Andrea", "Andrea.1", moves);
@@ -1065,9 +1054,7 @@ public class InternalModelMatteoTest {
         assertNotNull(moveData);
         try {
             assertTrue(model.makeMove(moveData));
-        } catch (PlayerWonSignal e) {
-            assert false;
-        } catch (PlayerLostSignal e){
+        } catch (PlayerWonSignal | PlayerLostSignal e) {
             assert false;
         }
         assertEquals(PlayerState.MOVED, Andrea.getState());
@@ -1096,9 +1083,6 @@ public class InternalModelMatteoTest {
             Y
         */
 
-        buildsInThisPoint.clear();
-        builds.clear();
-        buildsOrder.clear();
         buildsInThisPoint.add(BuildingType.FIRST_FLOOR);
         builds.put(point13,buildsInThisPoint);
         buildsOrder.add(point13);
@@ -1141,7 +1125,6 @@ public class InternalModelMatteoTest {
                   0    1     2    3    4
             Y
         */
-        realPossibleMoves.clear();
         realPossibleMoves.add(point02);
         realPossibleMoves.add(point01);
         realPossibleMoves.add(point11);

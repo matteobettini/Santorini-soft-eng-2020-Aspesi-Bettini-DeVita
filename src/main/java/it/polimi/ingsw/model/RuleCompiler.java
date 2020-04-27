@@ -25,7 +25,7 @@ class RuleCompiler {
         assert (internalModel != null && cardRule != null);
 
         List<LambdaStatement> compiledStatements = new ArrayList<>();
-        LambdaEffect compiledEffect = null;
+        LambdaEffect compiledEffect;
         TriggerType trigger = cardRule.getTrigger();
 
         for(RuleStatement s : cardRule.getStatements()){

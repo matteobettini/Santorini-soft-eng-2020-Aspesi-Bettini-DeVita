@@ -29,7 +29,7 @@ class MapCompilerTest {
 
     @BeforeEach
     void createModel(){
-        List<String> players = new ArrayList<String>();
+        List<String> players = new ArrayList<>();
         players.add("Andrea");
         players.add("Matteo");
         players.add("Mirko");

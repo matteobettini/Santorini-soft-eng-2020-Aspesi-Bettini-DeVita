@@ -41,7 +41,7 @@ class InternalModelAndreaTest {
 
     @BeforeEach
     void createModel(){
-        List<String> players = new ArrayList<String>();
+        List<String> players = new ArrayList<>();
         players.add("Andrea");
         players.add("Matteo");
         players.add("Mirko");
@@ -1518,7 +1518,7 @@ class InternalModelAndreaTest {
      */
     @Test
     void playerStartTest(){
-        List<String> players = new ArrayList<String>();
+        List<String> players = new ArrayList<>();
         players.add("Andrea");
         players.add("Matteo");
         players.add("Mirko");

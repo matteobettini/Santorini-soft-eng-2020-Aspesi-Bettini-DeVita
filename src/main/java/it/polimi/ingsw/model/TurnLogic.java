@@ -139,7 +139,7 @@ class TurnLogic {
 
         String winner = null;
 
-        Map<String, Point> workersPosition = null;
+        Map<String, Point> workersPosition;
         MoveData moveData = model.packetMoveToMoveData(packetMove);
         try {
 
@@ -196,7 +196,7 @@ class TurnLogic {
 
         String winner = null;
 
-        Map<Point, List<BuildingType>> newBuildings = null;
+        Map<Point, List<BuildingType>> newBuildings;
         BuildData buildData = model.packetBuildToBuildData(packetBuild);
         try {
             if (!model.makeBuild(buildData))
@@ -258,7 +258,7 @@ class TurnLogic {
         possibleMoves.put(myOtherWorker.getID(), possiblePointsW2);
 
         if (!packetMove.getMove().isEmpty()) {
-            MoveData moveData = null;
+            MoveData moveData;
             try {
                 moveData = model.packetMoveToMoveData(packetMove);
             } catch (InvalidPacketException e) {
@@ -306,7 +306,7 @@ class TurnLogic {
         Map<Point, List<BuildingType>> possibleBuildsW2 = new HashMap<>();
 
         if (!packetBuild.getBuilds().isEmpty()) {
-            BuildData buildData = null;
+            BuildData buildData;
             try {
                 buildData = model.packetBuildToBuildData(packetBuild);
             } catch (InvalidPacketException e) {
