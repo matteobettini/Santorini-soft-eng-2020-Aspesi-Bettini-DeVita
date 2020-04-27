@@ -1,7 +1,8 @@
-package it.polimi.ingsw.model.turnInfo;
+package it.polimi.ingsw.model;
 
 
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.TurnData;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.enums.BuildingType;
 
@@ -13,12 +14,12 @@ import java.util.List;
  * Contains a purpose of build to be validated by the model and eventually applied to the game.
  * Contains info about build order, build points and list of buildings for each point
  */
-public class BuildData extends TurnData {
+class BuildData extends TurnData {
 
     private final Map<Point, List<BuildingType>> data;
     private final List<Point> dataOrder;
 
-    public BuildData(Player player, Worker worker, Map<Point,List<BuildingType>> data, List<Point> dataOrder ) {
+    BuildData(Player player, Worker worker, Map<Point,List<BuildingType>> data, List<Point> dataOrder ) {
         super( player, worker);
         assert (data != null && dataOrder != null);
         this.data = data;

@@ -1,6 +1,5 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cardReader.CardFile;
 import it.polimi.ingsw.model.cardReader.CardRule;
 import it.polimi.ingsw.model.cardReader.RuleStatement;
@@ -13,7 +12,7 @@ import it.polimi.ingsw.model.enums.PlayerState;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MapCompiler {
+class MapCompiler {
 
     public static void compileMap(List<Player> players, CardFile defaultStrategy){
         Map<Player, List<CardRule>> allows = new HashMap<>();

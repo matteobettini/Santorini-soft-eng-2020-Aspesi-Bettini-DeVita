@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SetupManager{
+class SetupManager{
 
     private List<Player> players;
     private SetupPhase setupPhase;
@@ -34,7 +34,7 @@ public class SetupManager{
 
     
 
-    public SetupManager(InternalModel model, List<CardFile> cards) {
+    SetupManager(InternalModel model, List<CardFile> cards) {
         super();
         this.setupPhase = SetupPhase.STARTING;
         this.challenger = null;
@@ -96,7 +96,7 @@ public class SetupManager{
         if(chosenCards.size() != numberOfCardsToChoose)
             throw new InvalidPacketException();
 
-        //IF THERE ARE IDENTIC CARDS -> INVALID
+        //IF THERE ARE IDENTICAL CARDS -> INVALID
         if(chosenCards.stream().distinct().count() != chosenCards.size())
             throw new InvalidPacketException();
 
@@ -139,8 +139,9 @@ public class SetupManager{
             Map<String, List<String>> ids = new HashMap<>();
             for( Player p : players){
                 List<String> hisWorkers = new ArrayList<>();
-                hisWorkers.add(p.getWorkers().get(0).getID());
-                hisWorkers.add(p.getWorkers().get(1).getID());
+                for(Worker w : p.getWorkers()){
+                    hisWorkers.add(w.getID());
+                }
                 ids.put(p.getNickname(), hisWorkers);
             }
 
@@ -209,9 +210,6 @@ public class SetupManager{
 
         Player activePlayer = players.get(activePlayerIndex);
 
-        String W1 = activePlayer.getWorkers().get(0).getID();
-        String W2 = activePlayer.getWorkers().get(1).getID();
-
         // IF THE SENDER IS WRONG -> IGNORE
         if( SenderID == null || !SenderID.equals(activePlayer.getNickname()))
             return;
@@ -229,7 +227,7 @@ public class SetupManager{
             if(workerID == null)
                 throw new InvalidPacketException();
             // IF ONE OF THE WORKERS IS NOT ONE OF MINE -> INVALID
-            if(!workerID.equals(W1) && !workerID.equals(W2))
+            if(activePlayer.getWorkers().stream().noneMatch(w->w.getID().equals(workerID)))
                 throw new InvalidPacketException();
             // IF ONE OF THE CELLS I WANT TO SET HIM IN IS OUT OF THE BOARD OR HAS ANOTHER WORKER -> INVALID
             if(model.getBoard().getCell(myWorkersPositions.get(workerID)) == null || model.getBoard().getCell(myWorkersPositions.get(workerID)).isOccupied())

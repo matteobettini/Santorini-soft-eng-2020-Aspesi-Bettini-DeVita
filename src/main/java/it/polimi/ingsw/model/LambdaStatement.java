@@ -1,7 +1,7 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.turnInfo.BuildData;
-import it.polimi.ingsw.model.turnInfo.MoveData;
+import it.polimi.ingsw.model.BuildData;
+import it.polimi.ingsw.model.MoveData;
 
 /**
  * Thi is a lmabda function that encapsulates the logic of one statement of a certain rule.
@@ -9,7 +9,7 @@ import it.polimi.ingsw.model.turnInfo.MoveData;
  * It can be both the statement of a move rule or of a build rule.
  */
 @FunctionalInterface
-public interface LambdaStatement {
+interface LambdaStatement {
 
     /**
      * This method runs the statement
@@ -17,6 +17,5 @@ public interface LambdaStatement {
      * @param buildData if it is a build statement, this parameter will contain the associated data otherwise it will be null
      * @return returns true if the statement is true or false if it is wrong
      */
-    public boolean evaluate(MoveData moveData, BuildData buildData);
-
+    boolean evaluate(MoveData moveData, BuildData buildData);
 }

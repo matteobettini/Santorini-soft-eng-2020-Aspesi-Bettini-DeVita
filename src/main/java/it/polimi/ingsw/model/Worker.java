@@ -7,7 +7,7 @@ import java.util.Objects;
  * This class contains all the info about a Worker. In particular its ID and the Player associated to it.
  * Furthermore it contains the info about the current position of the Worker on the Board.
  */
-public class Worker {
+class Worker {
 
     /**
      * This is the ID of the Worker which is the concatenation of the Player nickname + "." + the number starting from 1.

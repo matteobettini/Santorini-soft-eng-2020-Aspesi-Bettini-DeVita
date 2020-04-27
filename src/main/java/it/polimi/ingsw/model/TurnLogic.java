@@ -4,10 +4,8 @@ import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.PlayerState;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
-import it.polimi.ingsw.model.turnInfo.BuildData;
-import it.polimi.ingsw.model.turnInfo.MoveData;
+import it.polimi.ingsw.model.exceptions.PlayerLostSignal;
+import it.polimi.ingsw.model.exceptions.PlayerWonSignal;
 import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.*;
 
@@ -15,7 +13,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class TurnLogic {
+class TurnLogic {
 
     private List<Player> stillInGamePlayers;
     private final InternalModel model;
@@ -30,7 +28,7 @@ public class TurnLogic {
     private final List<Observer<PacketPossibleBuilds>> packetPossibleBuildsObservers;
 
 
-    public TurnLogic(InternalModel model) {
+    TurnLogic(InternalModel model) {
         super();
         this.model = model;
         this.currPossibleActions = new HashSet<>();
@@ -100,7 +98,7 @@ public class TurnLogic {
                 }
                 break;
             case TURN_STARTED:
-                if (!(model.canMove(currPlayer, currPlayer.getWorkers().get(0)) || model.canMove(currPlayer, currPlayer.getWorkers().get(1)))) {
+                if (!model.canMove(currPlayer)) {
                     makePlayerLoose();
                     return;
                 }
@@ -155,7 +153,6 @@ public class TurnLogic {
                     workersPosition.put(w.getID(), w.getPosition());
 
         } catch (PlayerWonSignal playerWonSignal) {
-            assert playerWonSignal.getPlayer().equals(currPlayer);
 
             model.setWinner(currPlayer);
             winner = currPlayer.getNickname();
@@ -169,7 +166,6 @@ public class TurnLogic {
             stillInGamePlayers.clear();
 
         } catch (PlayerLostSignal playerLostSignal) {
-            assert playerLostSignal.getPlayer().equals(currPlayer);
             makePlayerLoose();
             return;
         }
@@ -210,7 +206,6 @@ public class TurnLogic {
             currWorker = buildData.getWorker();
 
         } catch (PlayerWonSignal playerWonSignal) {
-            assert playerWonSignal.getPlayer().equals(currPlayer);
 
             model.setWinner(currPlayer);
             winner = currPlayer.getNickname();
@@ -220,7 +215,6 @@ public class TurnLogic {
 
             stillInGamePlayers.clear();
         } catch (PlayerLostSignal playerLostSignal) {
-            assert playerLostSignal.getPlayer().equals(currPlayer);
             makePlayerLoose();
             return;
         }
@@ -246,7 +240,8 @@ public class TurnLogic {
                 return;
         } else {
             forBothWorkers = true;
-            if (!packetMove.getWorkerID().equals(currPlayer.getWorkers().get(0).getID()) && !packetMove.getWorkerID().equals(currPlayer.getWorkers().get(1).getID()))
+            //It's not a worker owned by the active player
+            if (currPlayer.getWorkers().stream().noneMatch(w->w.getID().equals(packetMove.getWorkerID())))
                 return;
         }
 
@@ -294,7 +289,7 @@ public class TurnLogic {
                 return;
         } else {
             forBothWorkers = true;
-            if (!packetBuild.getWorkerID().equals(currPlayer.getWorkers().get(0).getID()) && !packetBuild.getWorkerID().equals(currPlayer.getWorkers().get(1).getID()))
+            if (currPlayer.getWorkers().stream().noneMatch(w->w.getID().equals(packetBuild.getWorkerID())))
                 return;
         }
 

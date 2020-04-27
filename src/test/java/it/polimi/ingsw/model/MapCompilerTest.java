@@ -1,11 +1,6 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.InternalModel;
-import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.cardReader.*;
-import it.polimi.ingsw.model.cardReader.enums.EffectType;
-import it.polimi.ingsw.model.cardReader.enums.StatementType;
-import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.cardReader.exceptions.CardLoadingException;
 import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
@@ -15,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 

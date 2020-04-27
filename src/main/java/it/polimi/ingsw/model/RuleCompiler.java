@@ -1,10 +1,8 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.cardReader.CardRule;
 import it.polimi.ingsw.model.cardReader.RuleStatement;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
-import it.polimi.ingsw.model.InternalModel;
-import it.polimi.ingsw.model.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +10,7 @@ import java.util.List;
 /**
  *  Translates a CardRule into a CompiledCardRule
  */
-public class RuleCompiler {
+class RuleCompiler {
 
 
     /**

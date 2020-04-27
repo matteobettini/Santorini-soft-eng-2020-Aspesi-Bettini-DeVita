@@ -1,10 +1,10 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
 
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
-import it.polimi.ingsw.model.turnInfo.BuildData;
-import it.polimi.ingsw.model.turnInfo.MoveData;
+import it.polimi.ingsw.model.exceptions.PlayerLostSignal;
+import it.polimi.ingsw.model.exceptions.PlayerWonSignal;
+import it.polimi.ingsw.model.BuildData;
+import it.polimi.ingsw.model.MoveData;
 
 /**
  * Thi is a lmabda function that encapsulates the logic of the effect of a certain rule.
@@ -12,7 +12,7 @@ import it.polimi.ingsw.model.turnInfo.MoveData;
  * It can be both the effect of a move rule or of a build rule.
  */
 @FunctionalInterface
-public interface LambdaEffect {
+interface LambdaEffect {
 
     /**
      * This method applies the effect to the internal model
@@ -21,6 +21,5 @@ public interface LambdaEffect {
      * @param simulate if true gives the possibility to simulate the effect without modifying the internal model
      * @return returns true if the effect is consistent and false if it violates board consistency
      */
-    public boolean apply(MoveData moveData, BuildData buildData, boolean simulate) throws PlayerWonSignal, PlayerLostSignal;
-
+    boolean apply(MoveData moveData, BuildData buildData, boolean simulate) throws PlayerWonSignal, PlayerLostSignal;
 }

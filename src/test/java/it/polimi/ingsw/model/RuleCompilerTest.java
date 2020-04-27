@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.cardReader.CardRule;
 import org.junit.jupiter.api.AfterEach;

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.turnInfo;
+package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.Worker;
@@ -7,12 +7,12 @@ import it.polimi.ingsw.model.Worker;
 /**
  * Data common in each packet proposal used to pass and validate info in the model strategy.
  */
-public abstract class TurnData {
+abstract class TurnData {
 
     private final Player player;
     private final Worker worker;
 
-    public TurnData(Player player, Worker worker) {
+    TurnData(Player player, Worker worker) {
         assert (player != null && worker != null);
         this.player = player;
         this.worker = worker;

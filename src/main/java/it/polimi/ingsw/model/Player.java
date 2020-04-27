@@ -4,9 +4,7 @@ import it.polimi.ingsw.model.cardReader.CardFile;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
-import it.polimi.ingsw.model.turnInfo.MoveData;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -16,7 +14,7 @@ import java.util.List;
  * Furthermore each Player has an associated GodCard and can have one of
  * the states specified in PlayerState during his turn.
  */
-public class Player {
+class Player {
 
     private final String nickname;
     private Set<PlayerFlag> flags;

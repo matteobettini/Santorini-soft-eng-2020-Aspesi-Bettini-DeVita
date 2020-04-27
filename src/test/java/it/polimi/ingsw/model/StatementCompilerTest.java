@@ -1,10 +1,7 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.InternalModel;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.cardReader.CardFactory;
-import it.polimi.ingsw.model.cardReader.RuleEffectImplTest;
 import it.polimi.ingsw.model.cardReader.RuleStatement;
 import it.polimi.ingsw.model.cardReader.RuleStatementImplTest;
 import it.polimi.ingsw.model.cardReader.enums.StatementType;
@@ -15,8 +12,6 @@ import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
-import it.polimi.ingsw.model.turnInfo.BuildData;
-import it.polimi.ingsw.model.turnInfo.MoveData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

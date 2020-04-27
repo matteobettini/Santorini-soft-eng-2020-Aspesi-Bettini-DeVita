@@ -1,15 +1,13 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.cardReader.RuleEffect;
 import it.polimi.ingsw.model.cardReader.enums.EffectType;
-import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
-import it.polimi.ingsw.model.turnInfo.MoveData;
+import it.polimi.ingsw.model.exceptions.PlayerLostSignal;
+import it.polimi.ingsw.model.exceptions.PlayerWonSignal;
 
 import java.awt.*;
 import java.util.*;
@@ -18,7 +16,7 @@ import java.util.List;
 /**
  * Translates Rule Effects into Compiled Effects
  */
-public class EffectCompiler {
+class EffectCompiler {
 
     /** Compiles the given effect
      * @param model the internal model is needed to incapsulate it in the lambdas
@@ -49,9 +47,9 @@ public class EffectCompiler {
                 compiledEffect = ((moveData, buildData, simulate) -> {
                     if (!simulate) {
                         if (moveData == null)
-                            throw new PlayerLostSignal(buildData.getPlayer());
+                            throw new PlayerLostSignal();
                         else
-                            throw new PlayerLostSignal(moveData.getPlayer());
+                            throw new PlayerLostSignal();
                     }
                     return true;
                 });
@@ -60,9 +58,9 @@ public class EffectCompiler {
                 compiledEffect = ((moveData, buildData, simulate) -> {
                     if (!simulate) {
                         if (moveData == null)
-                            throw new PlayerWonSignal(buildData.getPlayer());
+                            throw new PlayerWonSignal();
                         else
-                            throw new PlayerWonSignal(moveData.getPlayer());
+                            throw new PlayerWonSignal();
                     }
                     return true;
                 });
@@ -220,8 +218,10 @@ public class EffectCompiler {
                 assert (finalPositionCell.getTopBuilding() != LevelType.DOME);
 
                 // Check there is someone in my final position and it is not me
-                if(hisWorker == null || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(0).getID()) || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(1).getID())) {
-                    System.err.println("There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos push effect of worker " + moveData.getWorker().getID());
+
+                if(hisWorker == null || moveData.getPlayer().getWorkers().contains(hisWorker)) {
+                    //System.err.println("There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos push effect of worker " + moveData.getWorker().getID());
+                    //NOTE: if the card was written correctly, no way i can enter here.
                     return false;
                 }
 
@@ -287,7 +287,7 @@ public class EffectCompiler {
 
                  //System.out.println(finalPosition);
                  // Check there is someone in my final position and it is not me
-                 if(hisWorker == null || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(0).getID()) || hisWorker.getID().equals(moveData.getPlayer().getWorkers().get(1).getID())) {
+                 if(hisWorker == null || moveData.getPlayer().getWorkers().contains(hisWorker)) {
                      //System.err.println("There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos swap effect of worker " + moveData.getWorker().getID());
                      //NOTE: if the card was written correctly, no way i can enter here.
                      return false;

@@ -1,21 +1,19 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
-import it.polimi.ingsw.model.turnInfo.BuildData;
-import it.polimi.ingsw.model.turnInfo.MoveData;
+import it.polimi.ingsw.model.exceptions.PlayerLostSignal;
+import it.polimi.ingsw.model.exceptions.PlayerWonSignal;
 
 import java.util.*;
 
 /**
- * This is a compiled car rule, it is the same as a normal card rule but has some differencies:
- * It is sepcific of a given player and istead of rule statements and rule effects it has compiled ones.
- * It represents a certain rule pf a specific card and has to be run every turn checking the consistancy
+ * This is a compiled car rule, it is the same as a normal card rule but has some differences:
+ * It is specific of a given player and instead of rule statements and rule effects it has compiled ones.
+ * It represents a certain rule pf a specific card and has to be run every turn checking the consistency
  * of the turn itself.
  * 
  */
-public class CompiledCardRule {
+class CompiledCardRule {
 
 
 
@@ -40,7 +38,7 @@ public class CompiledCardRule {
     /**
      * The constructor of the class
      */
-    public CompiledCardRule(List<LambdaStatement> lambdaStatements, LambdaEffect lambdaEffect, TriggerType trigger) {
+    CompiledCardRule(List<LambdaStatement> lambdaStatements, LambdaEffect lambdaEffect, TriggerType trigger) {
         assert (lambdaStatements != null && lambdaEffect != null && trigger != null);
         this.effect = lambdaEffect;
         this.statements = lambdaStatements;

@@ -1,9 +1,6 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.InternalModel;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.cardReader.CardFactory;
 import it.polimi.ingsw.model.cardReader.RuleEffect;
 import it.polimi.ingsw.model.cardReader.RuleEffectImplTest;
@@ -14,11 +11,8 @@ import it.polimi.ingsw.model.cardReader.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerState;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
-import it.polimi.ingsw.model.turnInfo.BuildData;
-import it.polimi.ingsw.model.turnInfo.MoveData;
-import org.junit.jupiter.api.AfterEach;
+import it.polimi.ingsw.model.exceptions.PlayerLostSignal;
+import it.polimi.ingsw.model.exceptions.PlayerWonSignal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

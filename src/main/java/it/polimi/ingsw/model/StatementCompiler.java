@@ -1,16 +1,12 @@
-package it.polimi.ingsw.model.lambdaStrategy;
+package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.cardReader.RuleStatement;
 import it.polimi.ingsw.model.cardReader.enums.StatementType;
 import it.polimi.ingsw.model.cardReader.enums.StatementVerbType;
-import it.polimi.ingsw.model.InternalModel;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerFlag;
 import it.polimi.ingsw.model.enums.PlayerState;
-import it.polimi.ingsw.model.turnInfo.MoveData;
 
 import java.awt.*;
 import java.util.*;
@@ -19,7 +15,7 @@ import java.util.List;
 /**
  * Translates a Rule Statement into a Compiled Statement
  */
-public class StatementCompiler {
+class StatementCompiler {
 
 
     /** Compiles the given statement
@@ -341,7 +337,8 @@ public class StatementCompiler {
 
 
                 String presentWID = model.getBoard().getCell(finalPosition).getWorkerID();
-                if(presentWID != null && !presentWID.equals(myWorkers.get(0).getID()) && !presentWID.equals(myWorkers.get(1).getID()))
+
+                if(presentWID != null && myWorkers.stream().noneMatch(w -> w.getID().equals(presentWID)))
                     result = true;
 
 

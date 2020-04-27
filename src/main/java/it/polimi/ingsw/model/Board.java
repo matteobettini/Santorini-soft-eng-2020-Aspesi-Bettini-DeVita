@@ -13,7 +13,7 @@ import java.util.Map;
  * that has as parameters the number of row and columns. It contains rows * columns Cells and the number of available
  * buildings that can be used by the Players in order to build on the Cells.
  */
-public class Board {
+class Board {
 
     private Cell[][] boardRep;
     private Map<BuildingType, Integer> buildingsCounter;

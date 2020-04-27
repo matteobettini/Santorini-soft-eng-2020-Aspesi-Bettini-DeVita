@@ -6,13 +6,8 @@ import it.polimi.ingsw.model.cardReader.CardRule;
 import it.polimi.ingsw.model.cardReader.enums.TriggerType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
-import it.polimi.ingsw.model.lambdaStrategy.CompiledCardRule;
-import it.polimi.ingsw.model.lambdaStrategy.MapCompiler;
-import it.polimi.ingsw.model.lambdaStrategy.RuleCompiler;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerLostSignal;
-import it.polimi.ingsw.model.lambdaStrategy.exceptions.PlayerWonSignal;
-import it.polimi.ingsw.model.turnInfo.BuildData;
-import it.polimi.ingsw.model.turnInfo.MoveData;
+import it.polimi.ingsw.model.exceptions.PlayerLostSignal;
+import it.polimi.ingsw.model.exceptions.PlayerWonSignal;
 import it.polimi.ingsw.packets.InvalidPacketException;
 import it.polimi.ingsw.packets.PacketBuild;
 import it.polimi.ingsw.packets.PacketMove;
@@ -25,7 +20,7 @@ import java.util.List;
  * This class contains all the actual instances of the Model data.
  * It is protected from the external of the package and it handles the entry points of the Model.
  */
-public class InternalModel {
+class InternalModel {
 
     private final CardFactory cardFactory;
     private final Board board;
@@ -46,7 +41,7 @@ public class InternalModel {
      * @param factory Singleton instance of the card reader object
      * @param isHardCore True if hardcore mode must be enabled
      */
-    public InternalModel(List<String> players, CardFactory factory, boolean isHardCore){
+    InternalModel(List<String> players, CardFactory factory, boolean isHardCore){
         assert (players != null && factory != null && players.size() >= 2);
         this.players = new LinkedList<>();
         for(String p : players){
@@ -64,7 +59,7 @@ public class InternalModel {
      * @param players List of players nicknames
      * @param factory Singleton instance of the card reader object
      */
-    public InternalModel(List<String> players, CardFactory factory){
+    InternalModel(List<String> players, CardFactory factory){
         this(players,factory,true);
     }
 
@@ -138,10 +133,10 @@ public class InternalModel {
         assert !losers.contains(loser);
         assert players.contains(loser);
         losers.add(loser);
-        board.getCell(loser.getWorkers().get(0).getPosition()).removeWorker();
-        board.getCell(loser.getWorkers().get(1).getPosition()).removeWorker();
-        loser.getWorkers().get(0).removeFromBoard();
-        loser.getWorkers().get(1).removeFromBoard();
+        for (Worker worker : loser.getWorkers()){
+            board.getCell(worker.getPosition()).removeWorker();
+            worker.removeFromBoard();
+        }
     }
 
     /**
@@ -398,6 +393,21 @@ public class InternalModel {
     }
 
     /**
+     * Tests if at least one of the workers owned by the specified player can move at least once, in any direction.
+     * This will be checked according to his specific rules (abilities), not just using default movements.
+     * @param player Player instance
+     * @return True, if exists one possible move for at least one of his worker, False otherwise
+     */
+    public boolean canMove(Player player){
+        assert player != null;
+        for(Worker worker : player.getWorkers()){
+            if (canMove(player,worker))
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * Tests if the worker of the supplied player can build at least once, in any direction.
      * This will be checked according to his specific rules (abilities), not just using default builds rules.
      * @param player Player instance
@@ -428,6 +438,21 @@ public class InternalModel {
                     }
                 }
             }
+        }
+        return false;
+    }
+
+    /**
+     * Tests if at least one of the workers owned by the specified playercan build at least once, in any direction.
+     * This will be checked according to his specific rules (abilities), not just using default builds rules.
+     * @param player Player instance
+     * @return True, if exists one possible build for at least one of his workers worker, False otherwise
+     */
+    public boolean canBuild(Player player){
+        assert player != null;
+        for (Worker worker : player.getWorkers()){
+            if (canBuild(player,worker))
+                return true;
         }
         return false;
     }

@@ -15,7 +15,7 @@ import java.util.Objects;
  * @version 1.0
  */
 
-public class Cell{
+class Cell{
 
     private String workerID;
     private final Point position;
