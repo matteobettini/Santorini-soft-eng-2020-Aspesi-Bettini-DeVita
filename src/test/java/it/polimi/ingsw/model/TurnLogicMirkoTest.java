@@ -8,17 +8,15 @@ import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.LevelType;
 import it.polimi.ingsw.model.enums.PlayerState;
-import it.polimi.ingsw.model.turnInfo.BuildData;
-import it.polimi.ingsw.model.turnInfo.MoveData;
-import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -965,8 +963,6 @@ class TurnLogicMirkoTest {
 
 
         //WE CHECK THAT A SECOND BUILDING IS NOT POSSIBLE
-        possibleBuilds = new HashMap<>();
-        buildsHelper = new ArrayList<>();
 
         buildings.add(BuildingType.FIRST_FLOOR);
         builds.put(point00, buildings);
@@ -1500,12 +1496,12 @@ class TurnLogicMirkoTest {
 
     }
 
-    /** !!!PROBLEM WITH PACKETDOACTION
+    /** 
      * In this test we try to move up after Athena has moved up:
-     * If the mode is set to hardcore the players should lose.
+     * If the mode is not set to hardcore -> InvalidPacketException
      */
     @Test
-    void invalidPacketVsLostTest(){
+    void invalidPacket(){
 
         /*
 
@@ -1608,9 +1604,6 @@ class TurnLogicMirkoTest {
             assertEquals(model.getWorkerByID(worker).getPosition(), packetUpdateBoard.getWorkersPositions().get(worker));
         }
 
-        PacketDoAction packetDoAction = mockView.getPacketDoAction();
-        assertEquals(packetDoAction.getTo(), Andrea.getNickname());
-        //assertEquals(packetDoAction.getActionType(), ActionType.BUILD); FIX?
 
         //ANDREA'S WORKER 2 BUILDS A FIRST_FLOOR INTO 2,3
         /*
@@ -1676,7 +1669,7 @@ class TurnLogicMirkoTest {
                 |    | D1 |  x | M1 | x  |
                 +----+----+----+----+----+
             2   |    |    |    |    |    |
-                |    |A2FF| D2 | x  | x  |
+                |    |A2FF| D2 | no | x  |
                 +----+----+----+----+----+
             3   |    | A1 | FF | M2 | x  |
                 +----+----+----+----+----+
@@ -1717,10 +1710,10 @@ class TurnLogicMirkoTest {
 
         moves.add(point23);
 
-        packetMove = new PacketMove(Andrea.getNickname(), AndreaW2.getID(), moves);
+        packetMove = new PacketMove(Matteo.getNickname(), MatteoW2.getID(), moves);
 
         try {
-            turnLogic.consumePacketMove(Andrea.getNickname(),packetMove);
+            turnLogic.consumePacketMove(Matteo.getNickname(),packetMove);
         } catch (InvalidPacketException e) {
             assert true;
         }
@@ -1728,8 +1721,736 @@ class TurnLogicMirkoTest {
 
     }
 
+    /**
+     * In this test we try to move up after Athena has moved up:
+     * If the mode is set to hardcore the Player should lose after the forbidden move.
+     */
+    @Test
+    void hardcoreLoss(){
+
+        //FIRST WE SET THE MODE TO HARDCORE
+
+        List<String> players = new ArrayList<>();
+        players.add("Andrea");
+        players.add("Matteo");
+        players.add("Mirko");
+        model = new InternalModel(players, cardFactory, true);
+        turnLogic = new TurnLogic(model);
+        mockView = new Client(turnLogic);
+        Andrea = model.getPlayerByNick("Andrea");
+        Matteo = model.getPlayerByNick("Matteo");
+        Mirko = model.getPlayerByNick("Mirko");
+        MatteoW1 = Matteo.getWorkers().get(0);
+        MatteoW2 = Matteo.getWorkers().get(1);
+        MirkoW1 = Mirko.getWorkers().get(0);
+        MirkoW2 = Mirko.getWorkers().get(1);
+        AndreaW1 = Andrea.getWorkers().get(0);
+        AndreaW2 = Andrea.getWorkers().get(1);
+
+        /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | D1 |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |A2  |    | D2 |    |    |
+                +----+----+----+----+----+
+            3   |    | A1 |    | M2 |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //MOVE UTILS
+        List<Point> moves = new ArrayList<>();
+        PacketMove packetMove;
+        Set<Point> possibleMovesW1 = new HashSet<>();
+        Set<Point> possibleMovesW2 = new HashSet<>();
+
+        //BUILDS UTILS
+        List<BuildingType> buildings = new ArrayList<>();
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildsOrder = new ArrayList<>();
+        PacketBuild packetBuild;
+        Map<Point, List<BuildingType>> possibleBuilds = new HashMap<>();
+        List<BuildingType> buildsHelper = new ArrayList<>();
+
+        // Initializing cards
+        CardFile pan = cardFactory.getCards().stream().filter(x -> x.getName().equals("Pan")).findFirst().orElse(null);
+        CardFile athena = cardFactory.getCards().stream().filter(x -> x.getName().equals("Athena")).findFirst().orElse(null);
+        CardFile minotaur = cardFactory.getCards().stream().filter(x -> x.getName().equals("Minotaur")).findFirst().orElse(null);
+        Matteo.setCard(pan); //MX
+        Andrea.setCard(athena); //AX
+        Mirko.setCard(minotaur); //DX
+        model.compileCardStrategy();
+
+        model.getBoard().getCell(point11).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(point11);
+        model.getBoard().getCell(point22).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(point22);
+
+        model.getBoard().getCell(point31).setWorker(MatteoW1.getID());
+        MatteoW1.setPosition(point31);
+        model.getBoard().getCell(point33).setWorker(MatteoW2.getID());
+        MatteoW2.setPosition(point33);
+
+        model.getBoard().getCell(point13).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(point13);
+        model.getBoard().getCell(point02).setWorker(AndreaW2.getID());
+        AndreaW2.setPosition(point02);
+
+        turnLogic.start();
+
+        //FIRST WE SET A FIRST_FLOOR SO THAT ANDREA'S WORKER CAN MOVE UP
+
+        model.getBoard().getCell(point12).addBuilding(BuildingType.FIRST_FLOOR);
+
+        PacketDoAction packetDoAction = mockView.getPacketDoAction();
+        assertEquals(packetDoAction.getTo(), "Andrea");
+        assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
+
+        /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | D1 |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |A2  -> FF| D2 |    |    |
+                +----+----+----+----+----+
+            3   |    | A1 |    | M2 |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        moves.add(point12);
+
+        packetMove = new PacketMove(Andrea.getNickname(), AndreaW2.getID(), moves);
+
+        try {
+            turnLogic.consumePacketMove(Andrea.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+        assertEquals(point12, AndreaW2.getPosition());
+        assertEquals(AndreaW2.getID(), model.getBoard().getCell(point12).getWorkerID());
+        assertNull(model.getBoard().getCell(point02).getWorkerID());
+
+        PacketUpdateBoard packetUpdateBoard = mockView.getPacketUpdateBoard();
+        for(String worker : packetUpdateBoard.getWorkersPositions().keySet()){
+            assertEquals(model.getWorkerByID(worker).getPosition(), packetUpdateBoard.getWorkersPositions().get(worker));
+        }
+
+        packetDoAction = mockView.getPacketDoAction();
+        assertEquals(packetDoAction.getTo(), "Andrea");
+        assertEquals(packetDoAction.getActionType(), ActionType.BUILD);
+
+
+        //ANDREA'S WORKER 2 BUILDS A FIRST_FLOOR INTO 2,3
+        /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | D1 |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |    |A2FF| D2 |    |    |
+                +----+----+----+----+----+
+            3   |    | A1 | xFF| M2 |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point23, buildings);
+        buildsOrder.add(point23);
+        packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW2.getID(),builds, buildsOrder);
+
+        try {
+            turnLogic.consumePacketBuild(Andrea.getNickname(),packetBuild);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(), PlayerState.BUILT);
+        assertSame(model.getBoard().getCell(point23).getTopBuilding(), LevelType.FIRST_FLOOR);
+
+        packetUpdateBoard = mockView.getPacketUpdateBoard();
+        for(Point pos : packetUpdateBoard.getNewBuildings().keySet()){
+            List<BuildingType> helper = packetUpdateBoard.getNewBuildings().get(pos);
+            assertEquals(model.getBoard().getCell(pos).getTopBuilding().toString(), helper.get(helper.size() - 1).toString());
+        }
+
+        packetDoAction = mockView.getPacketDoAction();
+        assertEquals(packetDoAction.getTo(), "Matteo");
+        assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
+
+        //RESET
+
+        //MOVE UTILS
+        moves = new ArrayList<>();
+        possibleMovesW1 = new HashSet<>();
+        possibleMovesW2 = new HashSet<>();
+
+        //BUILDS UTILS
+        buildings = new ArrayList<>();
+        builds = new HashMap<>();
+        buildsOrder = new ArrayList<>();
+
+        //FIRST WE CHECK THAT POINT 2,3 IS NOT A POSSIBILITY
+
+        /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |  x | x  | x  |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | D1 |  x | M1 | x  |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |    |A2FF| D2 | x  | x  |
+                +----+----+----+----+----+
+            3   |    | A1 | FF | M2 | x  |
+                +----+----+----+----+----+
+            4   |    |    | x  | x  | x  |
+                +----+----+----+----+----+
+            Y
+       */
+
+        possibleMovesW1.add(point20);
+        possibleMovesW1.add(point30);
+        possibleMovesW1.add(point40);
+        possibleMovesW1.add(point21);
+        possibleMovesW1.add(point32);
+        possibleMovesW1.add(point42);
+        possibleMovesW1.add(point41);
+
+        possibleMovesW2.add(point32);
+        possibleMovesW2.add(point42);
+        possibleMovesW2.add(point24);
+        possibleMovesW2.add(point34);
+        possibleMovesW2.add(point44);
+        possibleMovesW2.add(point43);
+        possibleMovesW2.add(point23);
+
+
+        packetMove = new PacketMove(Matteo.getNickname(),MatteoW2.getID(),moves);
+        turnLogic.getPossibleMoves(Matteo.getNickname(), packetMove);
+        PacketPossibleMoves packetPossibleMoves = mockView.getPacketPossibleMoves();
+        assertEquals(packetPossibleMoves.getTo(), Matteo.getNickname());
+
+        for(String worker : packetPossibleMoves.getPossibleMoves().keySet()){
+            if(worker.equals(MatteoW1.getID())) assertEquals(packetPossibleMoves.getPossibleMoves().get(worker), possibleMovesW1);
+            else if(worker.equals(MatteoW2.getID())) assertEquals(packetPossibleMoves.getPossibleMoves().get(worker), possibleMovesW2);
+            else assert false;
+        }
+
+
+        //NOW MATTEO'S WORKER 2 TRIES TO STEP UP ONTO POSITION 2,3 BUT HE CAN'T BECAUSE ANDREA HAS ATHENA AS GODCARD AND HE LOSES
+
+        moves.add(point23);
+
+        packetMove = new PacketMove(Matteo.getNickname(), MatteoW2.getID(), moves);
+
+        try {
+            turnLogic.consumePacketMove(Matteo.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+
+        packetUpdateBoard = mockView.getPacketUpdateBoard();
+        assertEquals(packetUpdateBoard.getPlayerLostID(), "Matteo");
+        packetDoAction = mockView.getPacketDoAction();
+        assertEquals(packetDoAction.getTo(), "Mirko");
+        assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
+
+        assertTrue(model.getLosers().contains(Matteo));
+        assertEquals(model.getLosers().size(), 1);
+
+    }
+
+
     //PACKETS MALFORMATIONS
 
+    /**
+     * A player not in the match tries to send a valid packet.
+     * A player during his turn tries to send a packet generated by a player not in the match.
+     * A player not in the match tries to send a packet generated by himself.
+     */
+    @Test
+    void playerNotInTheMatch(){
+        CardFile pan = cardFactory.getCards().stream().filter(x -> x.getName().equals("Pan")).findFirst().orElse(null);
+        CardFile hephaestus = cardFactory.getCards().stream().filter(x -> x.getName().equals("Hephaestus")).findFirst().orElse(null);
+        CardFile minotaur = cardFactory.getCards().stream().filter(x -> x.getName().equals("Minotaur")).findFirst().orElse(null);
+        Matteo.setCard(pan); //MX
+        Andrea.setCard(hephaestus); //AX
+        Mirko.setCard(minotaur); //DX
+        model.compileCardStrategy();
+
+        model.getBoard().getCell(point11).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(point11);
+        model.getBoard().getCell(point22).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(point22);
+
+        model.getBoard().getCell(point31).setWorker(MatteoW1.getID());
+        MatteoW1.setPosition(point31);
+        model.getBoard().getCell(point33).setWorker(MatteoW2.getID());
+        MatteoW2.setPosition(point33);
+
+        model.getBoard().getCell(point13).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(point13);
+        model.getBoard().getCell(point02).setWorker(AndreaW2.getID());
+        AndreaW2.setPosition(point02);
+
+        turnLogic.start();
+
+        PacketDoAction packetDoAction = mockView.getPacketDoAction();
+        assertEquals(packetDoAction.getTo(), Andrea.getNickname());
+        assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
+
+        List<Point> moves = new ArrayList<>();
+        moves.add(point23);
+        PacketMove packetMove = new PacketMove("Not In The Match", AndreaW1.getID(), moves);
+
+        //A PLAYER NOT IN THE MATCH TRIES THE MOVE
+
+        try {
+            turnLogic.consumePacketMove("Not In The Match",packetMove);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(AndreaW1.getPosition(), point13);
+        assertEquals(model.getBoard().getCell(point13).getWorkerID(), AndreaW1.getID());
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        //A PLAYER NOT IN THE MATCH TRIES THE MOVE WITH ANDREA'S PACKET
+
+        packetMove = new PacketMove(Andrea.getNickname(), AndreaW1.getID(), moves);
+
+        try {
+            turnLogic.consumePacketMove("Not In The Match",packetMove);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(AndreaW1.getPosition(), point13);
+        assertEquals(model.getBoard().getCell(point13).getWorkerID(), AndreaW1.getID());
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        //ANDREA TRIES THE MOVE WITH THE PLAYER NOT IN THE MATCH'S PACKET
+
+        packetMove = new PacketMove("Not In The Match", AndreaW1.getID(), moves);
+
+        try {
+            turnLogic.consumePacketMove(Andrea.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(AndreaW1.getPosition(), point13);
+        assertEquals(model.getBoard().getCell(point13).getWorkerID(), AndreaW1.getID());
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        //THE SAME SHOULD HAPPEN WITH PACKET BUILD
+
+        //first a correct move by Andrea
+        moves.clear();
+        moves.add(point12);
+        packetMove = new PacketMove(Andrea.getNickname(), AndreaW1.getID(), moves);
+
+        try {
+            turnLogic.consumePacketMove(Andrea.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+
+        //A PLAYER NOT IN THE MATCH TRIES THE BUILD
+        List<BuildingType> buildings = new ArrayList<>();
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildsOrder = new ArrayList<>();
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point13, buildings);
+        buildsOrder.add(point13);
+
+        PacketBuild packetBuild = new PacketBuild("Not In The Match",AndreaW1.getID(),builds, buildsOrder);
+
+        try {
+            turnLogic.consumePacketBuild("Not In The Match",packetBuild);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(model.getBoard().getCell(point13).getTopBuilding(), LevelType.GROUND);
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+
+        //A PLAYER NOT IN THE MATCH TRIES THE BUILD WITH ANDREA'S PACKET
+
+        packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW1.getID(),builds, buildsOrder);
+
+        try {
+            turnLogic.consumePacketBuild("Not In The Match",packetBuild);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(model.getBoard().getCell(point13).getTopBuilding(), LevelType.GROUND);
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+
+        //ANDREA TRIES THE BUILD WITH THE PLAYER NOT IN THE MATCH'S PACKET
+
+        packetBuild = new PacketBuild("Not In The Match",AndreaW1.getID(),builds, buildsOrder);
+
+        try {
+            turnLogic.consumePacketBuild(Andrea.getNickname(),packetBuild);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(model.getBoard().getCell(point13).getTopBuilding(), LevelType.GROUND);
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+    }
+
+    /**
+     * A Player during his turn tries to move another Player's worker.
+     * A Player during his turn tries to build with another Player's worker.
+     */
+    @Test
+    void notTheirWorker(){
+         /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | D1 |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |A2  |    | D2 |    |    |
+                +----+----+----+----+----+
+            3   |    | A1 |    | M2 |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile pan = cardFactory.getCards().stream().filter(x -> x.getName().equals("Pan")).findFirst().orElse(null);
+        CardFile hephaestus = cardFactory.getCards().stream().filter(x -> x.getName().equals("Hephaestus")).findFirst().orElse(null);
+        CardFile minotaur = cardFactory.getCards().stream().filter(x -> x.getName().equals("Minotaur")).findFirst().orElse(null);
+        Matteo.setCard(pan); //MX
+        Andrea.setCard(hephaestus); //AX
+        Mirko.setCard(minotaur); //DX
+        model.compileCardStrategy();
+
+        model.getBoard().getCell(point11).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(point11);
+        model.getBoard().getCell(point22).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(point22);
+
+        model.getBoard().getCell(point31).setWorker(MatteoW1.getID());
+        MatteoW1.setPosition(point31);
+        model.getBoard().getCell(point33).setWorker(MatteoW2.getID());
+        MatteoW2.setPosition(point33);
+
+        model.getBoard().getCell(point13).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(point13);
+        model.getBoard().getCell(point02).setWorker(AndreaW2.getID());
+        AndreaW2.setPosition(point02);
+
+        turnLogic.start();
+
+        PacketDoAction packetDoAction = mockView.getPacketDoAction();
+        assertEquals(packetDoAction.getTo(), Andrea.getNickname());
+        assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
+
+        List<Point> moves = new ArrayList<>();
+        moves.add(point20);
+        PacketMove packetMove = new PacketMove(Andrea.getNickname(), MatteoW1.getID(), moves);
+
+        //ANDREA TRIES THE MOVE WITH MATTEO'S WORKER
+
+        try {
+            turnLogic.consumePacketMove(Andrea.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(MatteoW1.getPosition(), point31);
+        assertEquals(model.getBoard().getCell(point31).getWorkerID(), MatteoW1.getID());
+
+        assertEquals(AndreaW1.getPosition(), point13);
+        assertEquals(model.getBoard().getCell(point13).getWorkerID(), AndreaW1.getID());
+
+        assertEquals(AndreaW2.getPosition(), point02);
+        assertEquals(model.getBoard().getCell(point02).getWorkerID(), AndreaW2.getID());
+
+        //first a correct move by Andrea
+        moves.clear();
+        moves.add(point12);
+        packetMove = new PacketMove(Andrea.getNickname(), AndreaW1.getID(), moves);
+
+        try {
+            turnLogic.consumePacketMove(Andrea.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+
+        //ANDREA TRIES THE BUILD WITH MATTEO'S WORKER
+
+        List<BuildingType> buildings = new ArrayList<>();
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildsOrder = new ArrayList<>();
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point23, buildings);
+        buildsOrder.add(point23);
+
+        PacketBuild packetBuild = new PacketBuild(Andrea.getNickname(),MatteoW1.getID(),builds, buildsOrder);
+
+        try {
+            turnLogic.consumePacketBuild(Andrea.getNickname(),packetBuild);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(model.getBoard().getCell(point23).getTopBuilding(), LevelType.GROUND);
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+        assertEquals(Matteo.getState(), PlayerState.TURN_STARTED);
+
+    }
+
+    /**
+     * Another Player tries to send a packet generated by the Player that is currently trying the action.
+     */
+    @Test
+    void notTheRightPlayerWithTheCorrectWorker(){
+         /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | D1 |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |A2  |    | D2 |    |    |
+                +----+----+----+----+----+
+            3   |    | A1 |    | M2 |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile pan = cardFactory.getCards().stream().filter(x -> x.getName().equals("Pan")).findFirst().orElse(null);
+        CardFile hephaestus = cardFactory.getCards().stream().filter(x -> x.getName().equals("Hephaestus")).findFirst().orElse(null);
+        CardFile minotaur = cardFactory.getCards().stream().filter(x -> x.getName().equals("Minotaur")).findFirst().orElse(null);
+        Matteo.setCard(pan); //MX
+        Andrea.setCard(hephaestus); //AX
+        Mirko.setCard(minotaur); //DX
+        model.compileCardStrategy();
+
+        model.getBoard().getCell(point11).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(point11);
+        model.getBoard().getCell(point22).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(point22);
+
+        model.getBoard().getCell(point31).setWorker(MatteoW1.getID());
+        MatteoW1.setPosition(point31);
+        model.getBoard().getCell(point33).setWorker(MatteoW2.getID());
+        MatteoW2.setPosition(point33);
+
+        model.getBoard().getCell(point13).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(point13);
+        model.getBoard().getCell(point02).setWorker(AndreaW2.getID());
+        AndreaW2.setPosition(point02);
+
+        turnLogic.start();
+
+        PacketDoAction packetDoAction = mockView.getPacketDoAction();
+        assertEquals(packetDoAction.getTo(), Andrea.getNickname());
+        assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
+
+        List<Point> moves = new ArrayList<>();
+        moves.add(point12);
+        PacketMove packetMove = new PacketMove(Andrea.getNickname(), AndreaW1.getID(), moves);
+
+        //MATTEO TRIES TO SEND A PACKET MOVE GENERATED BY ANDREA
+
+        try {
+            turnLogic.consumePacketMove(Matteo.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(AndreaW1.getPosition(), point13);
+        assertEquals(model.getBoard().getCell(point13).getWorkerID(), AndreaW1.getID());
+
+        //first a correct move by Andrea
+        moves.clear();
+        moves.add(point12);
+        packetMove = new PacketMove(Andrea.getNickname(), AndreaW1.getID(), moves);
+
+        try {
+            turnLogic.consumePacketMove(Andrea.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+
+        //MATTEO TRIES TO SEND A PACKET BUILD GENERATED BY ANDREA
+
+        List<BuildingType> buildings = new ArrayList<>();
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildsOrder = new ArrayList<>();
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point13, buildings);
+        buildsOrder.add(point13);
+
+        PacketBuild packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW1.getID(),builds, buildsOrder);
+
+        try {
+            turnLogic.consumePacketBuild(Matteo.getNickname(),packetBuild);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(model.getBoard().getCell(point13).getTopBuilding(), LevelType.GROUND);
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+        assertEquals(Matteo.getState(), PlayerState.TURN_STARTED);
+
+    }
+
+    /**
+     * A Player during his turn tries to move with a non-existing worker.
+     * A Player during his turn tries to build with a non-existing worker.
+     */
+    @Test
+    void notValidWorker(){
+         /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | D1 |    | M1 |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |A2  |    | D2 |    |    |
+                +----+----+----+----+----+
+            3   |    | A1 |    | M2 |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile pan = cardFactory.getCards().stream().filter(x -> x.getName().equals("Pan")).findFirst().orElse(null);
+        CardFile hephaestus = cardFactory.getCards().stream().filter(x -> x.getName().equals("Hephaestus")).findFirst().orElse(null);
+        CardFile minotaur = cardFactory.getCards().stream().filter(x -> x.getName().equals("Minotaur")).findFirst().orElse(null);
+        Matteo.setCard(pan); //MX
+        Andrea.setCard(hephaestus); //AX
+        Mirko.setCard(minotaur); //DX
+        model.compileCardStrategy();
+
+        model.getBoard().getCell(point11).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(point11);
+        model.getBoard().getCell(point22).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(point22);
+
+        model.getBoard().getCell(point31).setWorker(MatteoW1.getID());
+        MatteoW1.setPosition(point31);
+        model.getBoard().getCell(point33).setWorker(MatteoW2.getID());
+        MatteoW2.setPosition(point33);
+
+        model.getBoard().getCell(point13).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(point13);
+        model.getBoard().getCell(point02).setWorker(AndreaW2.getID());
+        AndreaW2.setPosition(point02);
+
+        turnLogic.start();
+
+        PacketDoAction packetDoAction = mockView.getPacketDoAction();
+        assertEquals(packetDoAction.getTo(), Andrea.getNickname());
+        assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
+
+        List<Point> moves = new ArrayList<>();
+        moves.add(point12);
+        PacketMove packetMove = new PacketMove(Andrea.getNickname(), "non-existing Worker", moves);
+
+        //ANDREA TRIES TO MOVE WITH A NON-EXISTING WORKER
+
+        try {
+            turnLogic.consumePacketMove(Andrea.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(AndreaW1.getPosition(), point13);
+        assertEquals(model.getBoard().getCell(point13).getWorkerID(), AndreaW1.getID());
+
+        //first a correct move by Andrea
+        moves.clear();
+        moves.add(point12);
+        packetMove = new PacketMove(Andrea.getNickname(), AndreaW1.getID(), moves);
+
+        try {
+            turnLogic.consumePacketMove(Andrea.getNickname(),packetMove);
+        } catch (InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+
+        //ANDREA TRIES TO BUILD WITH A NON-EXISTING WORKER
+
+        List<BuildingType> buildings = new ArrayList<>();
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildsOrder = new ArrayList<>();
+
+        buildings.add(BuildingType.FIRST_FLOOR);
+        builds.put(point13, buildings);
+        buildsOrder.add(point13);
+
+        PacketBuild packetBuild = new PacketBuild(Andrea.getNickname(),"non-existing Worker",builds, buildsOrder);
+
+        try {
+            turnLogic.consumePacketBuild(Andrea.getNickname(),packetBuild);
+        } catch (InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(model.getBoard().getCell(point13).getTopBuilding(), LevelType.GROUND);
+        assertEquals(Andrea.getState(), PlayerState.MOVED);
+    }
 
 
 }
