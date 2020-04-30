@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.InputMismatchException;
 
 public class ConnectionToClient extends Observable<Object> implements Runnable{
+    private static final int MAX_NICK_LENGTH = 20;
 
     private final ServerConnectionUtils server;
 
@@ -56,10 +57,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
     private void startTimerShorter(){
-        startTimer(20000);
+        startTimer(40000);
     }
     private void startTimerLonger(){
-        startTimer(20000);
+        startTimer(30000);
     }
 
     private void stopTimer(){
@@ -149,7 +150,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
                 clientNickname = is.readUTF();
                 System.out.println("Connection: nickname acquired: " + clientNickname);
                 stopTimer();
-            }while(clientNickname.contains("\n") || clientNickname.contains(" "));
+            }while(clientNickname == null ||  clientNickname.length() < 1 || clientNickname.length() > MAX_NICK_LENGTH || clientNickname.contains("\n") || clientNickname.contains(" "));
         } catch (IOException | InputMismatchException e){
             System.err.println("Connection [" + getClientNickname() + "]: error in ask nick");
             throw e;
@@ -170,7 +171,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
                 clientNickname = is.readUTF();
                 System.out.println("Connection [" + getClientNickname() + "]: got nick again : " + clientNickname);
                 stopTimer();
-            }while(clientNickname.contains("\n") || clientNickname.contains(" "));
+            }while(clientNickname == null ||  clientNickname.length() < 1 || clientNickname.length() > MAX_NICK_LENGTH || clientNickname.contains("\n") || clientNickname.contains(" "));
         } catch (IOException | InputMismatchException e){
             System.err.println("Connection [" + getClientNickname() + "]: error in ask nick again");
             closeRoutineFull();
