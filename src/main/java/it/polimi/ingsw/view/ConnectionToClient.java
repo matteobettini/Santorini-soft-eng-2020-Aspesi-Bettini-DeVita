@@ -26,7 +26,6 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     private Thread timer;
 
-
     /**
      * The constructor of the connection
      * saves the client socket in a local variable
@@ -48,17 +47,19 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             try {
                 Thread.sleep(milliseconds);
                 System.out.println("Connection [" + getClientNickname() + "]: timer is ended");
-                closeRoutine();
-            } catch (InterruptedException ignored) { }
+                closeRoutine(true);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         });
         timer.start();
     }
 
     private void startTimerShorter(){
-        startTimer(30000);
+        startTimer(20000);
     }
     private void startTimerLonger(){
-        startTimer(120000);
+        startTimer(20000);
     }
 
     private void stopTimer(){
@@ -141,12 +142,14 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      */
     private void askNickname() throws IOException{
         try {
-            System.out.println("Connection: asking nickname");
-            internalSend(ConnectionMessages.INSERT_NICKNAME);
-            startTimerShorter();
-            clientNickname = is.readUTF();
-            System.out.println("Connection: nickname acquired: " + clientNickname);
-            stopTimer();
+            do {
+                System.out.println("Connection: asking nickname");
+                internalSend(ConnectionMessages.INSERT_NICKNAME);
+                startTimerShorter();
+                clientNickname = is.readUTF();
+                System.out.println("Connection: nickname acquired: " + clientNickname);
+                stopTimer();
+            }while(clientNickname.contains("\n") || clientNickname.contains(" "));
         } catch (IOException | InputMismatchException e){
             System.err.println("Connection [" + getClientNickname() + "]: error in ask nick");
             throw e;
@@ -160,12 +163,14 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      */
     public void askNicknameAgain(){
         try {
-            System.out.println("Connection [" + getClientNickname() + "]: asking nick again");
-            internalSend(ConnectionMessages.INVALID_NICKNAME);
-            startTimerShorter();
-            clientNickname = is.readUTF();
-            System.out.println("Connection [" + getClientNickname() + "]: got nick again : " + clientNickname);
-            stopTimer();
+            do {
+                System.out.println("Connection [" + getClientNickname() + "]: asking nick again");
+                internalSend(ConnectionMessages.INSERT_NICKNAME);
+                startTimerShorter();
+                clientNickname = is.readUTF();
+                System.out.println("Connection [" + getClientNickname() + "]: got nick again : " + clientNickname);
+                stopTimer();
+            }while(clientNickname.contains("\n") || clientNickname.contains(" "));
         } catch (IOException | InputMismatchException e){
             System.err.println("Connection [" + getClientNickname() + "]: error in ask nick again");
             closeRoutineFull();
@@ -192,15 +197,15 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             server.lobby(this);
 
             while(active){
-                System.out.println("Conection [" + getClientNickname() + "]: I'M WAITING FOR AN OBJECT");
+                System.out.println("Connection [" + getClientNickname() + "]: I'M WAITING FOR AN OBJECT");
                 Object packetFromClient = is.readObject();
                 stopTimer();
                 notify(packetFromClient);
             }
-            System.err.println("Conection [" + getClientNickname() + "]: error i'm inactive");
+            System.err.println("Connection [" + getClientNickname() + "]: error i'm inactive");
 
         }catch (IOException | ClassNotFoundException e){
-            //System.out.println("Conection [" + getClientNickname() + "]: exception in run {" + e.getMessage() + "}");
+            //System.out.println("Connection [" + getClientNickname() + "]: exception in run {" + e.getMessage() + "}");
             closeRoutineFull();
         }
     }
@@ -213,7 +218,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      */
     public synchronized void closeRoutineFull(){
 
-        System.err.println("Conection [" + getClientNickname() + "]: closing socket");
+        System.err.println("Connection [" + getClientNickname() + "]: closing socket");
+        stopTimer();
         active = false;
         server.deregister(this);
 
@@ -228,8 +234,28 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      * de-registration is not required
      */
     public synchronized void closeRoutine(){
+        closeRoutine(false);
+    }
 
+
+    /**
+     * This method tries to send a connection ended message and
+     * then tries to close the streams and the socket
+     * It is used from the timer and the match when full
+     * de-registration is not required
+     */
+    private synchronized void closeRoutine(boolean timerEnded){
+
+        active = false;
+        stopTimer();
         try {
+            if(timerEnded){
+                os.writeObject(ConnectionMessages.TIMER_ENDED);
+                os.flush();
+            }
+        }catch (IOException ignored){ }
+
+        try{
             os.writeObject(ConnectionMessages.CONNECTION_CLOSED);
             os.flush();
         }catch (IOException ignored){ }
@@ -244,7 +270,6 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             socket.close();
         }catch (IOException ignored){ }
 
-        active = false;
     }
 
     /**

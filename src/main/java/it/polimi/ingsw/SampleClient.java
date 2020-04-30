@@ -38,7 +38,8 @@ public class SampleClient {
             
             while (true) {
                 Object packetFromServer = is.readObject();
-                manageIncomingPacket(packetFromServer);
+                new Thread(() -> manageIncomingPacket(packetFromServer)).start();
+
                 if(!(packetFromServer instanceof ConnectionMessages))
                     lastPacketRecieved = packetFromServer;
             }
@@ -71,10 +72,6 @@ public class SampleClient {
                 boolean hardcore = input.nextBoolean();
                 input.nextLine();
                 sendBool(hardcore);
-            } else if (messageFromServer == ConnectionMessages.INVALID_NICKNAME) {
-                System.out.println("\n" + messageFromServer.getMessage());
-                String name = input.nextLine();
-                sendString(name);
             } else if (messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
                 System.out.println("\n" + messageFromServer.getMessage());
             } else if (messageFromServer == ConnectionMessages.MATCH_ENDED) {
@@ -82,6 +79,8 @@ public class SampleClient {
             }else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
                 System.out.println("\n" + messageFromServer.getMessage() + "\nRedo this action:");
                 manageIncomingPacket(lastPacketRecieved);
+            } else if (messageFromServer == ConnectionMessages.TIMER_ENDED) {
+                System.out.println("\n" + messageFromServer.getMessage());
             }
         } else if(packetFromServer instanceof PacketMatchStarted){
             PacketMatchStarted packetMatchStarted = (PacketMatchStarted) packetFromServer;
@@ -159,6 +158,7 @@ public class SampleClient {
     }
 
     public void closeRoutine(){
+
 
         try {
             is.close();
