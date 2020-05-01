@@ -1,9 +1,11 @@
-package it.polimi.ingsw.CLI;
+package it.polimi.ingsw.CLI.boats;
 
+import it.polimi.ingsw.CLI.CharStream;
+import it.polimi.ingsw.CLI.GraphicalBoat;
 import it.polimi.ingsw.CLI.enums.BackColor;
 import it.polimi.ingsw.CLI.enums.ForeColor;
 
-public class BoatType0 extends GraphicalBoat{
+public class BoatType0 extends GraphicalBoat {
     private final CharStream stream;
 
     public BoatType0(CharStream stream){

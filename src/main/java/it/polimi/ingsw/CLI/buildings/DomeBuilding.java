@@ -1,9 +1,11 @@
-package it.polimi.ingsw.CLI;
+package it.polimi.ingsw.CLI.buildings;
 
+import it.polimi.ingsw.CLI.CharStream;
+import it.polimi.ingsw.CLI.GraphicalBuilding;
 import it.polimi.ingsw.CLI.enums.BackColor;
 import it.polimi.ingsw.CLI.enums.ForeColor;
 
-public class DomeBuilding extends GraphicalBuilding{
+public class DomeBuilding extends GraphicalBuilding {
     private final CharStream stream;
 
     public DomeBuilding(CharStream stream){

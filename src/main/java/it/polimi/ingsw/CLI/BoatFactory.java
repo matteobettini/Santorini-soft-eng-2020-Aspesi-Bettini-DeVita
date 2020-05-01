@@ -1,5 +1,10 @@
 package it.polimi.ingsw.CLI;
 
+import it.polimi.ingsw.CLI.boats.BoatType0;
+import it.polimi.ingsw.CLI.boats.BoatType1;
+import it.polimi.ingsw.CLI.boats.BoatType2;
+import it.polimi.ingsw.CLI.boats.BoatType3;
+
 public class BoatFactory {
     public static GraphicalBoat getBoat(CharStream stream, int boardNumber){
         switch (boardNumber){
