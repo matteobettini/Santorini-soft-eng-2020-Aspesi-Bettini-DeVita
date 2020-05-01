@@ -9,9 +9,9 @@ import java.util.Map;
 
 public class CLI {
     public static void main(String[] args){
-        CharStream stream = new CharStream(160, 50);
+        CharStream stream = new CharStream(159, 50);
         GraphicalBoard graphicalBoard = new GraphicalBoard(stream);
-        GraphicalOcean graphicalOcean = new GraphicalOcean(stream,160, 50);
+        GraphicalOcean graphicalOcean = new GraphicalOcean(stream,159, 50);
         graphicalBoard.getCell(new Point(0,0)).addBuilding(BuildingType.FIRST_FLOOR);
         graphicalBoard.getCell(new Point(0,0)).addBuilding(BuildingType.SECOND_FLOOR);
         graphicalBoard.getCell(new Point(0,0)).addBuilding(BuildingType.THIRD_FLOOR);
@@ -80,8 +80,8 @@ public class CLI {
         stream.reset();
 
 
-        stream = new CharStream(160, 30);
-        GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream,160, 30);
+        stream = new CharStream(150, 30);
+        GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream,159, 30);
         graphicalStartMenu.draw();
         stream.print(System.out);
     }
