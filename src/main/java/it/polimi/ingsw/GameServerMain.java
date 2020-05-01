@@ -17,7 +17,7 @@ public class GameServerMain {
             System.err.println("[" + e.getClass().toString() + "]" + e.getMessage());
             return; //Do not load the server if there are errors with the cards
         }
-        Server server = ServerFactory.createServer();
+        Server server = ServerFactory.createServer(4567);
         server.startServer();
     }
 }

@@ -57,10 +57,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
     private void startTimerShorter(){
-        startTimer(40000);
+        startTimer(30000);
     }
     private void startTimerLonger(){
-        startTimer(30000);
+        startTimer(40000);
     }
 
     private void stopTimer(){
@@ -239,12 +239,6 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
 
-    /**
-     * This method tries to send a connection ended message and
-     * then tries to close the streams and the socket
-     * It is used from the timer and the match when full
-     * de-registration is not required
-     */
     private synchronized void closeRoutine(boolean timerEnded){
 
         active = false;

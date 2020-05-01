@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 class ServerImpl implements Server, ServerConnectionUtils {
 
-    private static final int port = 4567;
+    private final int port;
     private ServerSocket serverSocket;
     private final ExecutorService executor;
 
@@ -32,7 +32,7 @@ class ServerImpl implements Server, ServerConnectionUtils {
     /**
      * The constructor initializes the variables
      */
-    public ServerImpl(){
+    ServerImpl(int port){
         this.executor = Executors.newCachedThreadPool();
         this.waitingClients = new LinkedList<>();
         this.activeMatches = new ArrayList<>();
@@ -40,6 +40,7 @@ class ServerImpl implements Server, ServerConnectionUtils {
         this.currMatchSize = -1;
         this.currMatchHardcore = false;
         this.currMatchID = 1;
+        this.port = port;
     }
 
     /**
