@@ -110,7 +110,7 @@ public class VirtualView implements Observer<Object> {
     public void addPacketBuildObserver(Observer<PacketBuild> o){
         this.packetBuildObservers.add(o);
     }
-    public void addPacketCardsFromClientdObserver(Observer<PacketCardsFromClient> o){
+    public void addPacketCardsFromClientObserver(Observer<PacketCardsFromClient> o){
         this.packetCardsFromClientObservers.add(o);
     }
     public void addPacketStartPlayerObserver(Observer<PacketStartPlayer> o){

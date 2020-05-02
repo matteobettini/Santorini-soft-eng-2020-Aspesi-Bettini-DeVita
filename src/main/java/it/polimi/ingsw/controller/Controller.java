@@ -52,7 +52,7 @@ public class Controller {
                     virtualView.sendInvalidPacketMessage();
                 }
             });
-            virtualView.addPacketCardsFromClientdObserver((packetCardsFromClient) ->{
+            virtualView.addPacketCardsFromClientObserver((packetCardsFromClient) ->{
                 try{
                     this.model.setSelectedCards(virtualView.getClientNickname(), packetCardsFromClient.getChosenCards());
                 } catch (InvalidPacketException invalidPacketException){

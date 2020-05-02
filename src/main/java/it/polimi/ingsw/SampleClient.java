@@ -21,7 +21,7 @@ public class SampleClient {
     private ObjectInputStream is;
     private Scanner input;
     
-    private Object lastPacketRecieved;
+    private Object lastPacketReceived;
 
     private final ExecutorService executor;
     private final ReentrantLock lockReceive = new ReentrantLock(true);
@@ -87,7 +87,7 @@ public class SampleClient {
                     System.out.println("\n" + messageFromServer.getMessage());
                 } else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
                     System.out.println("\n" + messageFromServer.getMessage() + "\nRedo this action:");
-                    manageIncomingPacket(lastPacketRecieved);
+                    manageIncomingPacket(lastPacketReceived);
                 } else if (messageFromServer == ConnectionMessages.TIMER_ENDED) {
                     System.out.println("\n" + messageFromServer.getMessage());
                 }
@@ -118,7 +118,7 @@ public class SampleClient {
                 }
             }
             if(!(packetFromServer instanceof ConnectionMessages))
-                lastPacketRecieved = packetFromServer;
+                lastPacketReceived = packetFromServer;
         }finally {
             lockReceive.unlock();
         }
@@ -141,7 +141,7 @@ public class SampleClient {
             os.writeInt(n);
             os.flush();
         }catch (IOException e){
-            System.out.println("Errror when sending message");
+            System.out.println("Error when sending message");
             closeRoutine();
         }
     }
@@ -151,7 +151,7 @@ public class SampleClient {
             os.writeBoolean(b);
             os.flush();
         }catch (IOException e){
-            System.out.println("Errror when sending message");
+            System.out.println("Error when sending message");
             closeRoutine();
         }
     }
@@ -161,7 +161,7 @@ public class SampleClient {
             os.writeObject(packet);
             os.flush();
         }catch (IOException e){
-            System.out.println("Errror when sending message");
+            System.out.println("Error when sending message");
             closeRoutine();
         }
     }

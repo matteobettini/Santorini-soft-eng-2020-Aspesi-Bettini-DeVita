@@ -28,9 +28,9 @@ public class Match {
      * the gamemode to all the players
      * It creates the model, controller and virtual views involved in the match and keeps track of them
      *
-     * @param clientConnections
-     * @param isHardcore
-     * @param id
+     * @param clientConnections the client connections in the match
+     * @param isHardcore the match gamemode
+     * @param id the match id
      */
     public Match(List<ConnectionToClient> clientConnections, boolean isHardcore, int id) {
         assert(clientConnections != null);
