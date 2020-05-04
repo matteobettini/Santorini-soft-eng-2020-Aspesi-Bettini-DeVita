@@ -41,7 +41,7 @@ public class ClientImpl implements Client {
     private final ReentrantLock lockReceive = new ReentrantLock(true);
     private final AtomicBoolean started = new AtomicBoolean(false);
 
-    ClientImpl(){
+    public ClientImpl(){
         this.packetCardsFromServerObservers = new ArrayList<>();
         this.packetDoActionObservers = new ArrayList<>();
         this.packetPossibleBuildsObservers = new ArrayList<>();
@@ -69,13 +69,18 @@ public class ClientImpl implements Client {
 
             try {
                 this.socket = new Socket(address, port);
-                System.out.println("Connection established to server at: " + address + " port: " + port);
 
                 os = new ObjectOutputStream(socket.getOutputStream());
                 is = new ObjectInputStream(socket.getInputStream());
 
-                notifyConnectionStatusObservers(new ConnectionStatus(false, null));
+            } catch (IOException e) {
+                manageClosure("Impossible to establish connection");
+                return;
+            }
 
+            notifyConnectionStatusObservers(new ConnectionStatus(false, null));
+
+            try{
                 while (true) {
                     Object packetFromServer = is.readObject();
                     if(packetFromServer instanceof ConnectionMessages) {
@@ -185,8 +190,12 @@ public class ClientImpl implements Client {
     }
 
     private void manageClosure(){
+        manageClosure(ConnectionMessages.CONNECTION_CLOSED.getMessage());
+    }
+
+    private void manageClosure(String reasonOfClosure){
         executor.shutdownNow();
-        notifyConnectionStatusObservers(new ConnectionStatus(true, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
+        notifyConnectionStatusObservers(new ConnectionStatus(true, reasonOfClosure));
         closeRoutine();
     }
 
@@ -202,52 +211,42 @@ public class ClientImpl implements Client {
             socket.close();
         }catch (IOException ignored){ }
 
-        System.out.println("Socket has been closed");
+        started.set(false);
+
     }
 
 
 
-    @Override
     public void addConnectionStatusObserver(Observer<ConnectionStatus> o) {
         this.connectionStatusObservers.add(o);
     }
-    @Override
     public void addInsertNickRequestObserver(Observer<String> o) {
         this.insertNickRequestObservers.add(o);
     }
-    @Override
     public void addInsertNumOfPlayersRequestObserver(Observer<String> o) {
         this.insertNumOfPlayersRequestObservers.add(o);
     }
-    @Override
     public void addInsertGamemodeRequestObserver(Observer<String> o) {
         this.insertGamemodeRequestObservers.add(o);
     }
-    @Override
     public void addPacketMatchStartedObserver(Observer<PacketMatchStarted> o) {
         this.packetMatchStartedObservers.add(o);
     }
-    @Override
     public void addPacketPossibleMovesObserver(Observer<PacketPossibleMoves> o) {
         this.packetPossibleMovesObservers.add(o);
     }
-    @Override
     public void addPacketPossibleBuildsObserver(Observer<PacketPossibleBuilds> o) {
         this.packetPossibleBuildsObservers.add(o);
     }
-    @Override
     public void addPacketSetupObserver(Observer<PacketSetup> o){
         this.packetSetupObservers.add(o);
     }
-    @Override
     public void addPacketDoActionObserver(Observer<PacketDoAction> o){
         this.packetDoActionObservers.add(o);
     }
-    @Override
     public void addPacketUpdateBoardObserver(Observer<PacketUpdateBoard> o){
         this.packetUpdateBoardObservers.add(o);
     }
-    @Override
     public void addPacketCardsFromServerObserver(Observer<PacketCardsFromServer> o){
         this.packetCardsFromServerObservers.add(o);
     }

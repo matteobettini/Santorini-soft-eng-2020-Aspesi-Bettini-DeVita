@@ -57,10 +57,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
     private void startTimerShorter(){
-        startTimer(30000);
+        startTimer(20000);
     }
     private void startTimerLonger(){
-        startTimer(40000);
+        startTimer(30000);
     }
 
     private void stopTimer(){
