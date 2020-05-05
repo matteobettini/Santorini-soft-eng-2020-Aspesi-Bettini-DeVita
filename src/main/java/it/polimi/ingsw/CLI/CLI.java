@@ -1,5 +1,6 @@
 package it.polimi.ingsw.CLI;
 
+import it.polimi.ingsw.CLI.Strategies.*;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.ClientImpl;
 import it.polimi.ingsw.model.enums.ActionType;
@@ -25,9 +26,21 @@ public class CLI {
     private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEXP);
 
     private Client client;
+    private String address;
+    private int port;
+    private boolean restartConnection;
 
     private ConnectionStrategy connectionStrategy;
     private ActionStrategy actionStrategy;
+    private NicknameStrategy nicknameStrategy;
+    private NumberOfPlayersStrategy numberOfPlayersStrategy;
+    private RequestGameModeStrategy requestGameModeStrategy;
+    private MatchStartedStrategy matchStartedStrategy;
+    private SelectCardStrategy selectCardStrategy;
+    private SetupStrategy setupStrategy;
+    private ChooseStarterStrategy chooseStarterStrategy;
+    private SetWorkersPositionStrategy setWorkersPositionStrategy;
+    private UpdateBoardStrategy updateBoardStrategy;
 
     private Board board;
     private GraphicalBoard graphicalBoard;
@@ -35,7 +48,9 @@ public class CLI {
     private CharStream stream;
 
     public CLI(){
+        this.restartConnection = true;
         this.board = new Board();
+
         this.stream = new CharStream(159, 30);
         GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream,159, 30);
 
@@ -52,250 +67,81 @@ public class CLI {
 
     public void run(){
 
-
         stream = new CharStream(159, 50);
         graphicalBoard = new GraphicalBoard(stream);
         graphicalMatchMenu = new GraphicalMatchMenu(stream);
 
-        start();
-        setup();
-        match();
-        startConnection();
-    }
+        setInitialStrategies();
 
-    public void match(){
-        client.addPacketUpdateBoardObserver( packetUpdateBoard -> {
+        client = new ClientImpl();
 
-            //FIRST WE UPDATE THE BOTH THE BOARD AND THE GRAPHICAL ONE
-            if(packetUpdateBoard.getNewBuildings() != null){
-                for(Point pos : packetUpdateBoard.getNewBuildings().keySet()){
-                    for(BuildingType building : packetUpdateBoard.getNewBuildings().get(pos)){
-                        board.getCell(pos).addBuilding(building);
-                        graphicalBoard.getCell(pos).addBuilding(building);
-                        graphicalMatchMenu.decrementCounter(building, 1);
-                    }
-                }
-
-            }
-
-            //RESET GAME OVER AND YOU WIN
-            graphicalMatchMenu.setGameOver(false);
-            graphicalMatchMenu.setYouWin(false);
-
-
-            //SET UPDATED WORKERS' POSITIONS
-            if(packetUpdateBoard.getWorkersPositions() != null){
-                //RESET WORKERS' POSITIONS
-                board.resetWorkers();
-                graphicalBoard.resetWorkers();
-
-                for(String worker : packetUpdateBoard.getWorkersPositions().keySet()){
-                    board.getCell(packetUpdateBoard.getWorkersPositions().get(worker)).setWorker(worker);
-
-                    //UPDATE FOR THE GRAPHICAL BOARD
-                    String workerOwner = "";
-                    char workerNumber = '\0';
-                    for(String player : board.getIds().keySet()){
-                        for(int i = 1; i <= 2; ++i){
-                            if(board.getIds().get(player).get(i).equals(worker)){
-                                if(i == 1) workerNumber = '1';
-                                else workerNumber = '2';
-                                workerOwner = player;
-                            }
-                        }
-
-                    }
-                    Color colorOwner = board.getPlayersColor().get(workerOwner);
-                    graphicalBoard.getCell(packetUpdateBoard.getWorkersPositions().get(worker)).setWorker(colorOwner, workerNumber, workerOwner);
-                }
-            }
-
-
-            //IF THERE IS A LOSER OR A WINNER WE SET IT
-            if(packetUpdateBoard.getPlayerLostID() != null){
-                String loser = packetUpdateBoard.getPlayerLostID();
-                board.setLoser(loser);
-
-                //WE ALSO SET IT IN THE MATCH MENU
-                graphicalMatchMenu.setLoser(loser);
-                if(loser.equals(board.getPlayerName())) graphicalMatchMenu.setGameOver(true);
-            }
-            if(packetUpdateBoard.getPlayerWonID() != null){
-                String winner = packetUpdateBoard.getPlayerWonID();
-                board.setWinner(winner);
-
-                //IF THE ACTIVE PLAYER WON WE SET YOU WIN
-                if(winner.equals(board.getPlayerName())) graphicalMatchMenu.setYouWin(true);
-            }
-
-
-            GraphicalOcean graphicalOcean = new GraphicalOcean(stream,159, 50);
-            graphicalOcean.draw();
-            graphicalBoard.draw();
-            graphicalMatchMenu.draw();
-            stream.print(System.out);
-            stream.reset();
-
+        client.addConnectionStatusObserver(connectionStatus -> {
+            connectionStrategy.handleConnection(connectionStatus, this);
         });
-    }
 
-    public void setup(){
         client.addInsertNickRequestObserver(message -> {
-            String nickname;
-            do{
-                System.out.print("Insert your nickname: ");
-                nickname = InputUtilities.getLine();
-                if(nickname == null) return;
-            }while(!NICKNAME_PATTERN.matcher(nickname).matches());
-            board.setPlayerName(nickname);
-            client.sendString(nickname);
+            nicknameStrategy.handleNickname(message,this);
         });
 
         client.addInsertNumOfPlayersRequestObserver( message -> {
-            Integer number;
-            do{
-                System.out.print("Insert the number of players: ");
-                number = InputUtilities.getInt();
-                if(number == null) number = 0;
-            }while(!(number == 2 || number == 3));
-            client.sendInt(number);
+            numberOfPlayersStrategy.handNumberOfPlayers(message, this);
         });
 
         client.addInsertGamemodeRequestObserver( message -> {
-            String choice;
-            do{
-                System.out.println("Do you want to play in hardcore mode? (y | n)");
-                choice = InputUtilities.getLine();
-                if(choice == null) choice = "";
-            }while(!(choice.equals("y") || choice.equals("n") || choice.equals("Y") || choice.equals("N")));
-
-            client.sendBoolean(choice.equals("y") || choice.equals("Y"));
+            requestGameModeStrategy.handleRequestGameMode(message, this);
         });
 
         client.addPacketMatchStartedObserver( packetMatchStarted -> {
-            System.out.println("\n" +"The match has started!");
-            System.out.println("Players in game: ");
-            for(String player : packetMatchStarted.getPlayers()){
-                System.out.println("- " + player);
-            }
-            System.out.print("Selected mode: ");
-            if(packetMatchStarted.isHardcore()) System.out.println("Hardcore");
-            else System.out.println("Normal");
-            board.setHardcore(packetMatchStarted.isHardcore());
-
+            matchStartedStrategy.handleMatchStarted(packetMatchStarted, this);
         });
 
         client.addPacketCardsFromServerObserver( packetCardsFromServer -> {
-            if(packetCardsFromServer.getAllCards() != null) board.setAllCards(packetCardsFromServer.getAllCards());
-            if(!packetCardsFromServer.getTo().equals(board.getPlayerName())) return;
-            GraphicalCardsMenu graphicalCardsMenu = new GraphicalCardsMenu();
-            graphicalCardsMenu.setGodCards(board.getAllCards());
-            if(packetCardsFromServer.getAvailableCards().size() <= 3) graphicalCardsMenu.setAvailableCards(packetCardsFromServer.getAvailableCards());
-            CharStream stream = new CharStream(graphicalCardsMenu.getRequiredWidth(),graphicalCardsMenu.getRequiredHeight());
-            graphicalCardsMenu.setStream(stream);
-            graphicalCardsMenu.draw();
-            stream.print(System.out);
-            stream.reset();
-            int number = packetCardsFromServer.getNumberToChoose();
-            if(number > 1) System.out.println("\n" +"You are the challenger!");
-            String chosenCards;
-            Set<String> chosenCardsSet;
-            boolean check = false;
-            do{
-                System.out.println("Choose " + number + " " + (number == 1 ? "card" : "cards (ex. Athena, Apollo, ...)"));
-                chosenCards = InputUtilities.getLine();
-                if(chosenCards == null) chosenCards = "";
-                chosenCardsSet = new HashSet<>(Arrays.asList(chosenCards.split("\\s*,\\s*")));
-                if(packetCardsFromServer.getAvailableCards().containsAll(chosenCardsSet) && chosenCardsSet.size() == number) check = true;
-            }while(!check);
-            List<String> chosenCardsList = new ArrayList<>(chosenCardsSet);
-            PacketCardsFromClient packetCardsFromClient = new PacketCardsFromClient(chosenCardsList);
-            client.send(packetCardsFromClient);
+            selectCardStrategy.handleCardStrategy(packetCardsFromServer, this);
         });
 
         client.addPacketSetupObserver( packetSetup -> {
-            board.setIds(packetSetup.getIds());
-            board.setPlayersColor(packetSetup.getColors());
-            board.setPlayersCards(packetSetup.getCards());
-            board.setHardcore(packetSetup.isHardcore());
-            setActionStrategy(packetSetup.isHardcore());
-
-            //UPDATE THE MATH MENU
-            graphicalMatchMenu.setPlayers(packetSetup.getColors());
-            Map<String, String> playersCardAssociation = new HashMap<>();
-            for(String player : packetSetup.getCards().keySet()){
-                playersCardAssociation.put(player, packetSetup.getCards().get(player).getKey());
-            }
-            graphicalMatchMenu.setPlayersGodCardAssociation(playersCardAssociation);
+            setupStrategy.handleSetup(packetSetup, this);
         });
 
         client.addPacketDoActionObserver( packetDoAction -> {
             //WE UPDATE THE CURRENT PLAYER IN THE MATCH MENU
             graphicalMatchMenu.setActivePlayer(packetDoAction.getTo());
             if(!packetDoAction.getTo().equals(board.getPlayerName())) return;
-            if(packetDoAction.getActionType() == ActionType.CHOOSE_START_PLAYER){
-                String startPlayer;
-                do{
-                    System.out.print("\n" + "Choose a start player by writing his name ( ");
-                    Set<String> players = board.getIds().keySet();
-                    int size = players.size();
-                    int count = 1;
-                    for(String player : players){
-                        if(count != size) System.out.print(player + ", ");
-                        else System.out.print(player + " ");
-                        ++count;
-                    }
-                    System.out.print("): ");
-                    startPlayer = InputUtilities.getLine();
-                    if(startPlayer == null) startPlayer = "";
-                }while (!board.getIds().containsKey(startPlayer));
 
-                PacketStartPlayer packetStartPlayer = new PacketStartPlayer(startPlayer);
-                client.send(packetStartPlayer);
+            if(packetDoAction.getActionType() == ActionType.CHOOSE_START_PLAYER){
+                chooseStarterStrategy.handleChooseStartPlayer(this);
             }
             else if (packetDoAction.getActionType() == ActionType.SET_WORKERS_POSITION){
-                Map<String, Point> positions = new HashMap<>();
-                List<String> workersID = board.getIds().get(board.getPlayerName());
-                for(int i = 1; i <= 2; ++i){
-                    String pos;
-                    List<String> coordinates;
-                    boolean check = false;
-                    do{
-                        System.out.print("Choose your worker" + i + "'s position" + (i == 1 ? " (ex. 1, 2)" : "") + ": ");
-                        pos = InputUtilities.getLine();
-                        if(pos == null) pos = "";
-                        coordinates = Arrays.asList(pos.split("\\s*,\\s*"));
-                        if(coordinates.size() == 2){
-                            int x = Integer.parseInt(coordinates.get(0));
-                            int y = Integer.parseInt(coordinates.get(1));
-                            Point helper = new Point(x, y);
-                            if(positions.containsValue(helper)) System.out.println("Position already chosen!");
-                            if(board.getCell(helper) != null && !positions.containsValue(helper)){
-                                positions.put(workersID.get(i - 1), helper);
-                                check = true;
-                            }
-                        }
-                    }while(!check);
-                }
-
-                PacketWorkersPositions packetWorkersPositions = new PacketWorkersPositions(positions);
-                client.send(packetWorkersPositions);
-
+                setWorkersPositionStrategy.handleSetWorkersPosition(this);
             }
         });
-    }
 
-    public void start(){
-        connectionStrategy = new ConnectionSetupStrategy();
-        client = new ClientImpl();
-
-        client.addConnectionStatusObserver(connectionStatus -> {
-            if(connectionStrategy.handleConnection(connectionStatus)) run();
+        client.addPacketUpdateBoardObserver( packetUpdateBoard -> {
+            updateBoardStrategy.handleUpdateBoard(packetUpdateBoard, this);
         });
 
+        if(restartConnection) setConnectionParameters();
+        client.start(address, port);
     }
 
-    public void startConnection(){
+    public void setRestartConnection(boolean restartConnection) {
+        this.restartConnection = restartConnection;
+    }
+
+    private void setInitialStrategies(){
+        connectionStrategy = new ConnectionSetupStrategy();
+        nicknameStrategy = new NormalNicknameStrategy();
+        numberOfPlayersStrategy = new NormalNumberOfPlayers();
+        requestGameModeStrategy = new NormalRequestGameModeStrategy();
+        matchStartedStrategy = new NormalMatchStartedStrategy();
+        selectCardStrategy = new NormalSelectCardStrategy();
+        setupStrategy = new NormalSetupStrategy();
+        chooseStarterStrategy = new NormalChooseStarterStrategy();
+        setWorkersPositionStrategy = new NormalSetWorkersPositionStrategy();
+        updateBoardStrategy = new NormalUpdateBoardStrategy();
+    }
+
+    private void setConnectionParameters(){
         String address;
         Integer port;
 
@@ -307,7 +153,12 @@ public class CLI {
             if(port == null) port = - 1;
         }while (!addressIsValid(address, port));
 
-        client.start(address, port);
+        this.address = address;
+        this.port = port;
+    }
+
+    public void setConnectionInGameStrategy(){
+        connectionStrategy = new ConnectionInGameStrategy();
     }
 
     public void setActionStrategy(boolean hardcore){
@@ -318,6 +169,18 @@ public class CLI {
     public static boolean addressIsValid(String address, int port) {
         if(address == null || port == -1) return false;
         return IP_PATTERN.matcher(address).matches() && port >= 1 && port <= 65535;
+    }
+
+    public GraphicalBoard getGraphicalBoard() {
+        return graphicalBoard;
+    }
+
+    public GraphicalMatchMenu getGraphicalMatchMenu() {
+        return graphicalMatchMenu;
+    }
+
+    public CharStream getStream() {
+        return stream;
     }
 
     public Board getBoard() {

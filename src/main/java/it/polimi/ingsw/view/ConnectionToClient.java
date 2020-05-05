@@ -47,6 +47,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
     private void startTimer(int milliseconds){
+        System.out.println("TIMERS HAS STARTED");
         timer = new Thread(() -> {
             try {
                 Thread.sleep(milliseconds);
@@ -59,9 +60,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         timer.start();
     }
 
-    private void startTimerShorter(){
-        startTimer(20000);
-    }
+    private void startTimerShorter(){ startTimer(20000); }
     private void startTimerLonger(){
         startTimer(30000);
     }

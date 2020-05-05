@@ -108,6 +108,7 @@ public class ConcreteModel implements ObservableModel, Model {
     @Override
     public void setWorkersPositions(String senderID, Map<String, Point> workersPositions) throws InvalidPacketException {
         setupManager.setWorkersPositions(senderID,workersPositions);
+        if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED) turnLogic.start();
     }
 
 }

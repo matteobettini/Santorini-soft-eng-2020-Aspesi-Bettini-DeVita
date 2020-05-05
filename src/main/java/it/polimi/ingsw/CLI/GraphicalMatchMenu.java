@@ -80,13 +80,13 @@ public class GraphicalMatchMenu implements CharFigure{
         stream.addString(relX + 25, relY + + nextLine + 1, "GODCARD", null, BackColor.ANSI_BG_BLUE);
         nextLine += 3;
         for(String player : players.keySet()){
-            if(players.get(player) == Color.CYAN){
+            if(players.get(player).equals(Color.CYAN)){
                 col = BackColor.ANSI_BRIGHT_BG_CYAN;
             }
-            else if(players.get(player) == Color.WHITE){
+            else if(players.get(player).equals(Color.WHITE)){
                 col = BackColor.ANSI_BG_PURPLE;
             }
-            else if(players.get(player) == Color.ORANGE){
+            else if(players.get(player).equals(Color.ORANGE)){
                 col = BackColor.ANSI_BG_YELLOW;
             }
             else col = BackColor.ANSI_BG_WHITE;
