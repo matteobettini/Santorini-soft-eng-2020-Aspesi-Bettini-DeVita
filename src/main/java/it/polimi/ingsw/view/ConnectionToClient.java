@@ -116,13 +116,18 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     public void askForDesiredPlayersAndGamemode(){
 
         try {
+            int i = 0;
             do {
-                internalSend(ConnectionMessages.INSERT_NUMBER_OF_PLAYERS);
+                if(i == 0)
+                    internalSend(ConnectionMessages.INSERT_NUMBER_OF_PLAYERS);
+                else
+                    internalSend(ConnectionMessages.INVALID_PACKET);
                 startTimerShorter();
                 System.out.println("Connection [" + getClientNickname() + "]: asking num of players");
                 desiredNumOfPlayers = is.readInt();
                 System.out.println("Connection [" + getClientNickname() + "]: got num of players, is: " + desiredNumOfPlayers);
                 stopTimer();
+                i++;
             } while (desiredNumOfPlayers != 2 && desiredNumOfPlayers != 3);
 
             System.out.println("Connection [" + getClientNickname() + "]: asking gamemode");
