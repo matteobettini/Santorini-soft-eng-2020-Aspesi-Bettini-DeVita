@@ -9,20 +9,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NormalSetWorkersPositionStrategy implements SetWorkersPositionStrategy {
+public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStrategy {
     @Override
-    public void handleSetWorkersPosition(CLI cli) {
+    public void handleSetWorkersPosition(CLI cli, boolean isRetry) {
         CharStream stream = cli.getStream();
         Board board = cli.getBoard();
         GraphicalMatchMenu graphicalMatchMenu = cli.getGraphicalMatchMenu();
         GraphicalBoard graphicalBoard = cli.getGraphicalBoard();
 
-        GraphicalOcean graphicalOcean = new GraphicalOcean(stream,159, 50);
-        graphicalOcean.draw();
-        graphicalBoard.draw();
-        graphicalMatchMenu.draw();
-        stream.print(System.out);
-        stream.reset();
+        if(!isRetry){
+            GraphicalOcean graphicalOcean = new GraphicalOcean(stream,159, 50);
+            graphicalOcean.draw();
+            graphicalBoard.draw();
+            graphicalMatchMenu.draw();
+            stream.print(System.out);
+            stream.reset();
+        }
 
         Map<String, Point> positions = new HashMap<>();
         List<String> workersID = board.getIds().get(board.getPlayerName());

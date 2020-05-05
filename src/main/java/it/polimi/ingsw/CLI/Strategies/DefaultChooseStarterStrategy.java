@@ -7,7 +7,7 @@ import it.polimi.ingsw.packets.PacketStartPlayer;
 
 import java.util.Set;
 
-public class NormalChooseStarterStrategy implements ChooseStarterStrategy {
+public class DefaultChooseStarterStrategy implements ChooseStarterStrategy {
     @Override
     public void handleChooseStartPlayer(CLI cli) {
         Board board = cli.getBoard();

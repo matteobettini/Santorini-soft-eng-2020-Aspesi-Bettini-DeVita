@@ -6,9 +6,17 @@ import it.polimi.ingsw.packets.PacketCardsFromServer;
 
 import java.util.*;
 
-public class NormalSelectCardStrategy implements SelectCardStrategy {
+public class DefaultSelectCardStrategy implements SelectCardStrategy {
     @Override
     public void handleCardStrategy(PacketCardsFromServer packetCardsFromServer, CLI cli) {
+
+        if (!packetCardsFromServer.getTo().equals(cli.getBoard().getPlayerName())) {
+            String name = packetCardsFromServer.getTo();
+            int num = packetCardsFromServer.getNumberToChoose();
+            if (num > 1) System.out.println("\n" + name + " is the challenger and he is choosing " + num + " cards...");
+            else System.out.println("\n" + name + " is choosing his card...");
+            return;
+        }
 
         GraphicalCardsMenu graphicalCardsMenu = new GraphicalCardsMenu();
         if (packetCardsFromServer.getAllCards() != null) {
@@ -24,13 +32,6 @@ public class NormalSelectCardStrategy implements SelectCardStrategy {
         graphicalCardsMenu.draw();
         stream.print(System.out);
         stream.reset();
-        if (!packetCardsFromServer.getTo().equals(cli.getBoard().getPlayerName())) {
-            String name = packetCardsFromServer.getTo();
-            int num = packetCardsFromServer.getNumberToChoose();
-            if (num > 1) System.out.println(name + " is the challenger and he is choosing " + num + " cards...");
-            else System.out.println(name + " is choosing his card...");
-            return;
-        }
 
 
         int number = packetCardsFromServer.getNumberToChoose();

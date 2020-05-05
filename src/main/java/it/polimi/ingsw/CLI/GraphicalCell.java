@@ -1,5 +1,6 @@
 package it.polimi.ingsw.CLI;
 
+import it.polimi.ingsw.CLI.buildings.BuildingFactory;
 import it.polimi.ingsw.model.enums.BuildingType;
 
 import java.awt.*;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class GraphicalCell implements CharFigure{
     private final CharStream stream;
-    private final List<GraphicalBuilding> buildings;
+    private final List<CharFigure> buildings;
     private GraphicalWorker worker;
     private final Point position;
     private final int RATEOX;
@@ -45,7 +46,7 @@ public class GraphicalCell implements CharFigure{
 
     @Override
     public void draw(int relX, int relY) {
-        for(GraphicalBuilding building : buildings){
+        for(CharFigure building : buildings){
             building.draw(relX, relY);
         }
         if(worker != null) worker.draw(relX, relY);

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.CLI;
 
 
+import it.polimi.ingsw.CLI.buildings.BuildingFactory;
 import it.polimi.ingsw.CLI.enums.BackColor;
 import it.polimi.ingsw.CLI.enums.ForeColor;
 import it.polimi.ingsw.model.enums.BuildingType;
@@ -121,13 +122,13 @@ public class GraphicalMatchMenu implements CharFigure{
         GraphicalPane buildingsBox = new GraphicalPane(stream, 35, 25, null, BackColor.ANSI_BG_RED);
         buildingsBox.draw(relX + 5, relY + 18);
         stream.addString(relX + 14, relY + 19, "AVAILABLE BUILDINGS", null, BackColor.ANSI_BG_RED);
-        GraphicalBuilding dome = BuildingFactory.getBuilding(stream, BuildingType.DOME, 20, 8);
+        CharFigure dome = BuildingFactory.getBuilding(stream, BuildingType.DOME, 20, 8);
         if(dome != null) dome.draw(relX + 12,relY + 18);
         stream.addString(relX + 22, relY + 22, buildingsCounter.get(BuildingType.DOME).toString(), null, BackColor.ANSI_BG_BLUE);
-        GraphicalBuilding third = BuildingFactory.getBuilding(stream, BuildingType.THIRD_FLOOR, 20, 8);
+        CharFigure third = BuildingFactory.getBuilding(stream, BuildingType.THIRD_FLOOR, 20, 8);
         stream.addString(relX + 22, relY + 26, buildingsCounter.get(BuildingType.THIRD_FLOOR).toString(), null, null);
         if(third != null) third.draw(relX + 12,relY + 22);
-        GraphicalBuilding second = BuildingFactory.getBuilding(stream, BuildingType.SECOND_FLOOR, 20, 8);
+        CharFigure second = BuildingFactory.getBuilding(stream, BuildingType.SECOND_FLOOR, 20, 8);
         stream.addString(relX + 22, relY + 31, buildingsCounter.get(BuildingType.SECOND_FLOOR).toString(), null, null);
         if(second != null) second.draw(relX + 13,relY + 27);
         GraphicalPane first = new GraphicalPane(stream, 18, 7, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_WHITE);

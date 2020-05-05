@@ -4,14 +4,7 @@ import it.polimi.ingsw.CLI.Strategies.*;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.ClientImpl;
 import it.polimi.ingsw.model.enums.ActionType;
-import it.polimi.ingsw.model.enums.BuildingType;
-import it.polimi.ingsw.packets.PacketCardsFromClient;
-import it.polimi.ingsw.packets.PacketStartPlayer;
-import it.polimi.ingsw.packets.PacketWorkersPositions;
 
-import java.awt.*;
-import java.util.*;
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class CLI {
@@ -28,7 +21,8 @@ public class CLI {
     private Client client;
     private String address;
     private int port;
-    private boolean restartConnection;
+    private boolean askConnectionParameters;
+    private boolean isToRestart;
 
     private ConnectionStrategy connectionStrategy;
     private ActionStrategy actionStrategy;
@@ -48,7 +42,7 @@ public class CLI {
     private CharStream stream;
 
     public CLI(){
-        this.restartConnection = true;
+        this.askConnectionParameters = true;
         this.board = new Board();
 
         this.stream = new CharStream(159, 30);
@@ -75,15 +69,15 @@ public class CLI {
 
         client = new ClientImpl();
 
-        client.addConnectionStatusObserver(connectionStatus -> {
+        client.addConnectionStatusObserver( connectionStatus -> {
             connectionStrategy.handleConnection(connectionStatus, this);
         });
 
-        client.addInsertNickRequestObserver(message -> {
-            nicknameStrategy.handleNickname(message,this);
+        client.addInsertNickRequestObserver( (message, isRetry) -> {
+            nicknameStrategy.handleNickname(message, this);
         });
 
-        client.addInsertNumOfPlayersRequestObserver( message -> {
+        client.addInsertNumOfPlayersRequestObserver( (message, isRetry) -> {
             numberOfPlayersStrategy.handNumberOfPlayers(message, this);
         });
 
@@ -95,7 +89,7 @@ public class CLI {
             matchStartedStrategy.handleMatchStarted(packetMatchStarted, this);
         });
 
-        client.addPacketCardsFromServerObserver( packetCardsFromServer -> {
+        client.addPacketCardsFromServerObserver( (packetCardsFromServer, isRetry) -> {
             selectCardStrategy.handleCardStrategy(packetCardsFromServer, this);
         });
 
@@ -103,16 +97,19 @@ public class CLI {
             setupStrategy.handleSetup(packetSetup, this);
         });
 
-        client.addPacketDoActionObserver( packetDoAction -> {
+        client.addPacketDoActionObserver( (packetDoAction, isRetry) -> {
             //WE UPDATE THE CURRENT PLAYER IN THE MATCH MENU
             graphicalMatchMenu.setActivePlayer(packetDoAction.getTo());
-            if(!packetDoAction.getTo().equals(board.getPlayerName())) return;
+            if(!packetDoAction.getTo().equals(board.getPlayerName())){
+                System.out.println("\nIt's " + packetDoAction.getTo() + "'s turn...");
+                return;
+            }
 
             if(packetDoAction.getActionType() == ActionType.CHOOSE_START_PLAYER){
                 chooseStarterStrategy.handleChooseStartPlayer(this);
             }
             else if (packetDoAction.getActionType() == ActionType.SET_WORKERS_POSITION){
-                setWorkersPositionStrategy.handleSetWorkersPosition(this);
+                setWorkersPositionStrategy.handleSetWorkersPosition(this, isRetry);
             }
         });
 
@@ -120,25 +117,25 @@ public class CLI {
             updateBoardStrategy.handleUpdateBoard(packetUpdateBoard, this);
         });
 
-        if(restartConnection) setConnectionParameters();
+        if(askConnectionParameters) setConnectionParameters();
         client.start(address, port);
     }
 
-    public void setRestartConnection(boolean restartConnection) {
-        this.restartConnection = restartConnection;
+    public void setAskConnectionParameters(boolean askConnectionParameters) {
+        this.askConnectionParameters = askConnectionParameters;
     }
 
     private void setInitialStrategies(){
         connectionStrategy = new ConnectionSetupStrategy();
-        nicknameStrategy = new NormalNicknameStrategy();
-        numberOfPlayersStrategy = new NormalNumberOfPlayers();
-        requestGameModeStrategy = new NormalRequestGameModeStrategy();
-        matchStartedStrategy = new NormalMatchStartedStrategy();
-        selectCardStrategy = new NormalSelectCardStrategy();
-        setupStrategy = new NormalSetupStrategy();
-        chooseStarterStrategy = new NormalChooseStarterStrategy();
-        setWorkersPositionStrategy = new NormalSetWorkersPositionStrategy();
-        updateBoardStrategy = new NormalUpdateBoardStrategy();
+        nicknameStrategy = new DefaultNicknameStrategy();
+        numberOfPlayersStrategy = new DefaultNumberOfPlayers();
+        requestGameModeStrategy = new DefaultRequestGameModeStrategy();
+        matchStartedStrategy = new DefaultMatchStartedStrategy();
+        selectCardStrategy = new DefaultSelectCardStrategy();
+        setupStrategy = new DefaultSetupStrategy();
+        chooseStarterStrategy = new DefaultChooseStarterStrategy();
+        setWorkersPositionStrategy = new DefaultSetWorkersPositionStrategy();
+        updateBoardStrategy = new DefaultUpdateBoardStrategy();
     }
 
     private void setConnectionParameters(){

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.CLI;
 
+import it.polimi.ingsw.CLI.boats.BoatFactory;
 import it.polimi.ingsw.CLI.enums.BackColor;
 
 import java.awt.*;
@@ -66,7 +67,7 @@ public class GraphicalOcean implements CharFigure{
     private void drawBoat(int relX, int relY){
         Random random = new Random();
         int boatType = random.nextInt(4);
-        GraphicalBoat boat = BoatFactory.getBoat(stream, boatType);
+        CharFigure boat = BoatFactory.getBoat(stream, boatType);
         if(boat != null) boat.draw(relX, relY);
 
     }

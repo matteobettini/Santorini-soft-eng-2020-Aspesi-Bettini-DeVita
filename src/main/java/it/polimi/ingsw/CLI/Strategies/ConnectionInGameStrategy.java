@@ -14,10 +14,10 @@ public class ConnectionInGameStrategy implements ConnectionStrategy {
             do{
                 choice = InputUtilities.getLine();
                 if(choice == null) choice = "";
-            }while(!(choice.equals("y") || choice.equals("n") || choice.equals("Y") || choice.equals("N")));
+            }while(!(choice.toLowerCase().equals("y") || choice.toLowerCase().equals("n")));
 
-            if(choice.equals("y") || choice.equals("Y")){
-                cli.setRestartConnection(false);
+            if(choice.toLowerCase().equals("y")){
+                cli.setAskConnectionParameters(false);
                 cli.getClient().destroy();
                 cli.run();
             }

@@ -39,13 +39,17 @@ public class VirtualView implements Observer<Object> {
         connectionToClient.addObserver(this);
 
         model.addPacketCardsFromServerObserver((packetCardsFromServer) -> {
-            //if(packetCardsFromServer.getTo().equals(connectionToClient.getClientNickname()))
-                connectionToClient.send(packetCardsFromServer, true);
+            boolean withTimer = false;
+            if(packetCardsFromServer.getTo().equals(connectionToClient.getClientNickname()))
+                withTimer = true;
+            connectionToClient.send(packetCardsFromServer, withTimer);
 
         });
         model.addPacketDoActionObserver((packetDoAction) -> {
-            //if (packetDoAction.getTo().equals(connectionToClient.getClientNickname()))
-                connectionToClient.send(packetDoAction, true);
+            boolean withTimer = false;
+            if(packetDoAction.getTo().equals(connectionToClient.getClientNickname()))
+                withTimer = true;
+            connectionToClient.send(packetDoAction, withTimer);
 
         });
         model.addPacketPossibleBuildsObserver((packetPossibleBuilds)-> {

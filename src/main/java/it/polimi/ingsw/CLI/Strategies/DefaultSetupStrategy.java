@@ -8,7 +8,7 @@ import it.polimi.ingsw.packets.PacketSetup;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NormalSetupStrategy implements SetupStrategy {
+public class DefaultSetupStrategy implements SetupStrategy {
     @Override
     public void handleSetup(PacketSetup packetSetup, CLI cli) {
         Board board = cli.getBoard();

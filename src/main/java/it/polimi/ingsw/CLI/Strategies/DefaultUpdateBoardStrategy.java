@@ -6,7 +6,7 @@ import it.polimi.ingsw.packets.PacketUpdateBoard;
 
 import java.awt.*;
 
-public class NormalUpdateBoardStrategy implements UpdateBoardStrategy {
+public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
     @Override
     public void handleUpdateBoard(PacketUpdateBoard packetUpdateBoard, CLI cli) {
         Board board = cli.getBoard();

@@ -4,7 +4,7 @@ import it.polimi.ingsw.CLI.CLI;
 import it.polimi.ingsw.CLI.Strategies.MatchStartedStrategy;
 import it.polimi.ingsw.packets.PacketMatchStarted;
 
-public class NormalMatchStartedStrategy implements MatchStartedStrategy {
+public class DefaultMatchStartedStrategy implements MatchStartedStrategy {
     @Override
     public void handleMatchStarted(PacketMatchStarted packetMatchStarted, CLI cli) {
         System.out.println("\n" + "The match has started!");

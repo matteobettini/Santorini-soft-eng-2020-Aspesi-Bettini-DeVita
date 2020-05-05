@@ -1,12 +1,14 @@
-package it.polimi.ingsw.CLI;
+package it.polimi.ingsw.CLI.boats;
 
+import it.polimi.ingsw.CLI.CharFigure;
+import it.polimi.ingsw.CLI.CharStream;
 import it.polimi.ingsw.CLI.boats.BoatType0;
 import it.polimi.ingsw.CLI.boats.BoatType1;
 import it.polimi.ingsw.CLI.boats.BoatType2;
 import it.polimi.ingsw.CLI.boats.BoatType3;
 
 public class BoatFactory {
-    public static GraphicalBoat getBoat(CharStream stream, int boardNumber){
+    public static CharFigure getBoat(CharStream stream, int boardNumber){
         switch (boardNumber){
             case 0:
                 return new BoatType0(stream);
