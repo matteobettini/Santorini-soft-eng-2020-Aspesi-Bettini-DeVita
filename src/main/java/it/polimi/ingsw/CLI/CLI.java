@@ -25,8 +25,10 @@ public class CLI {
     private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEXP);
 
     private Client client;
+
     private ConnectionStrategy connectionStrategy;
     private ActionStrategy actionStrategy;
+
     private Board board;
     private GraphicalBoard graphicalBoard;
     private GraphicalMatchMenu graphicalMatchMenu;
@@ -34,25 +36,22 @@ public class CLI {
 
     public CLI(){
         this.board = new Board();
-    }
+        this.stream = new CharStream(159, 30);
+        GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream,159, 30);
 
+        graphicalStartMenu.draw();
+        stream.print(System.out);
+        stream.reset();
+    }
 
     public static void main(String[] args){
         CLI cli = new CLI();
-        cli.run(false);
+        cli.run();
 
     }
 
-    public void run(boolean restart){
-        if(!restart){
-            CharStream stream = new CharStream(159, 30);
-            GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream,159, 30);
+    public void run(){
 
-            graphicalStartMenu.draw();
-            stream.print(System.out);
-            stream.reset();
-
-        }
 
         stream = new CharStream(159, 50);
         graphicalBoard = new GraphicalBoard(stream);
@@ -129,6 +128,7 @@ public class CLI {
                 if(winner.equals(board.getPlayerName())) graphicalMatchMenu.setYouWin(true);
             }
 
+
             GraphicalOcean graphicalOcean = new GraphicalOcean(stream,159, 50);
             graphicalOcean.draw();
             graphicalBoard.draw();
@@ -145,7 +145,7 @@ public class CLI {
             do{
                 System.out.print("Insert your nickname: ");
                 nickname = InputUtilities.getLine();
-                if(nickname == null) nickname = "";
+                if(nickname == null) return;
             }while(!NICKNAME_PATTERN.matcher(nickname).matches());
             board.setPlayerName(nickname);
             client.sendString(nickname);
@@ -169,13 +169,7 @@ public class CLI {
                 if(choice == null) choice = "";
             }while(!(choice.equals("y") || choice.equals("n") || choice.equals("Y") || choice.equals("N")));
 
-            if(choice.equals("y") || choice.equals("Y")){
-                client.sendBoolean(true);
-
-            }
-            else{
-                client.sendBoolean(false);
-            }
+            client.sendBoolean(choice.equals("y") || choice.equals("Y"));
         });
 
         client.addPacketMatchStartedObserver( packetMatchStarted -> {
@@ -188,6 +182,7 @@ public class CLI {
             if(packetMatchStarted.isHardcore()) System.out.println("Hardcore");
             else System.out.println("Normal");
             board.setHardcore(packetMatchStarted.isHardcore());
+
         });
 
         client.addPacketCardsFromServerObserver( packetCardsFromServer -> {
@@ -295,7 +290,7 @@ public class CLI {
         client = new ClientImpl();
 
         client.addConnectionStatusObserver(connectionStatus -> {
-            if(connectionStrategy.handleConnection(connectionStatus)) run(true);
+            if(connectionStrategy.handleConnection(connectionStatus)) run();
         });
 
     }
