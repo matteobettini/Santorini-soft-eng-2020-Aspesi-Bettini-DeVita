@@ -218,9 +218,12 @@ class SetupManager{
             throw new InvalidPacketException();
 
         // IF THE NUMBER OF POSITIONS IS NOT RIGHT -> INVALID
-        if(myWorkersPositions.size() != 2)
+        if(myWorkersPositions.size() != activePlayer.getWorkers().size())
             throw new InvalidPacketException();
 
+        //ID DUPLICATED POSITIONS IN PACKET -> INVALID
+        if (myWorkersPositions.values().stream().distinct().count() != myWorkersPositions.values().size())
+            throw new InvalidPacketException();
 
         for(String workerID : myWorkersPositions.keySet()){
             if(workerID == null)
