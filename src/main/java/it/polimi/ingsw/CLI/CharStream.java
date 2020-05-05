@@ -45,8 +45,7 @@ public class CharStream {
         if (x < 0 || x + str.length() >= width || y < 0 || y  >= height) return false;
         for(int x1 = 0 ; x1 <str.length(); x1++){
             content[y][x + x1] = str.charAt(x1);
-            if (foreColor == null && backColor == null) colors[y][x + x1] = null;
-            else colors[y][x + x1] = (foreColor != null ? foreColor.getCode() : "") + (backColor!= null ? backColor.getCode() : "");
+            addColor(x + x1, y, foreColor, backColor);
         }
         return true;
     }

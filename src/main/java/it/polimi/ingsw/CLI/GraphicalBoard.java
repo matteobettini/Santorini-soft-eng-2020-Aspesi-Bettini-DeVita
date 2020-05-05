@@ -29,7 +29,9 @@ public class GraphicalBoard implements CharFigure{
 
     @Override
     public void draw() {
-        draw(50,5);
+        int defaultX = 50;
+        int defaultY = 5;
+        draw(defaultX, defaultY);
     }
 
     @Override
@@ -87,7 +89,6 @@ public class GraphicalBoard implements CharFigure{
         }
 
         if(possiblePositions != null) possibleActions(possiblePositions, relX, relY);
-        if(notPossiblePositions != null) notPossibleActions(notPossiblePositions, relX, relY);
 
         for(int i = 0; i < rows; ++i){
             for(int j = 0; j < columns; ++j){
@@ -99,10 +100,6 @@ public class GraphicalBoard implements CharFigure{
 
     public void setPossibleActions(List<Point> possiblePositions){
         this.possiblePositions = possiblePositions;
-    }
-
-    public void setNotPossibleActions(List<Point> notPossiblePositions){
-        this.notPossiblePositions = notPossiblePositions;
     }
 
     private void possibleActions(List<Point> possiblePositions, int relX, int relY){
@@ -126,31 +123,17 @@ public class GraphicalBoard implements CharFigure{
         }
     }
 
-    private void notPossibleActions(List<Point> possiblePositions, int relX, int relY){
-        ForeColor parentFore = ForeColor.ANSI_BLACK;
-        BackColor parentBack = BackColor.ANSI_BRIGHT_BG_RED;
-        for(Point pos : possiblePositions){
-            int X = pos.x * RATEOX;
-            int Y = pos.y * RATEOY;
-            for(int i = 0; i <= RATEOX; ++ i){
-                stream.addColor(i + relX + X, relY + Y, parentFore, parentBack);
-            }
-            for(int i = 0; i <= RATEOY; ++ i){
-                stream.addColor(relX + X, i + relY + Y, parentFore, parentBack);
-            }
-            for(int i = 0; i <= RATEOX; ++ i){
-                stream.addColor(i + relX + X, relY + Y + RATEOY, parentFore, parentBack);
-            }
-            for(int i = 0; i <= RATEOY; ++ i){
-                stream.addColor(relX + X + RATEOX, i + relY + Y, parentFore, parentBack);
-            }
-        }
-    }
-
     public GraphicalCell getCell(Point pos){
-        if (pos.x < 0 || pos.x >= 5 || pos.y < 0 || pos.y >= 5) return null;
+        if (pos.x < 0 || pos.x >= rows || pos.y < 0 || pos.y >= columns) return null;
         return graphicalCells[pos.x][pos.y];
     }
 
+    public void resetWorkers(){
+        for(int i = 0; i < rows; ++i) {
+            for (int j = 0; j < columns; ++j) {
+                graphicalCells[i][j].removeWorker();
+            }
+        }
+    }
 
 }

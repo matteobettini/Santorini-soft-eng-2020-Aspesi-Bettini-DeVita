@@ -2,32 +2,30 @@ package it.polimi.ingsw.CLI;
 
 
 import it.polimi.ingsw.CLI.enums.BackColor;
-import it.polimi.ingsw.CLI.enums.BuildingType;
 import it.polimi.ingsw.CLI.enums.ForeColor;
+import it.polimi.ingsw.model.enums.BuildingType;
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GraphicalMatchMenu implements CharFigure{
 
     private final CharStream stream;
-    private final Map<String, Color> players;
-    private final Map<String, String> playersGodCardAssociation;
+    private Map<String, Color> players;
+    private Map<String, String> playersGodCardAssociation;
     private String activePlayer;
-    private String currentAction;
     private String loser;
     private Map<BuildingType, Integer> buildingsCounter;
     private boolean gameOver;
     private boolean youWin;
 
-    public GraphicalMatchMenu(CharStream stream, Map<String, Color> players, Map<String, String> playersGodCardAssociation){
+    public GraphicalMatchMenu(CharStream stream){
         this.stream = stream;
-        this.players = players;
+        this.players = new HashMap<>();
         this.activePlayer = "DEFAULT";
         this.loser = "DEFAULT";
-        this.playersGodCardAssociation = playersGodCardAssociation;
+        this.playersGodCardAssociation = new HashMap<>();
         this.buildingsCounter = new HashMap<>();
         buildingsCounter.put(BuildingType.FIRST_FLOOR, 22);
         buildingsCounter.put(BuildingType.SECOND_FLOOR, 18);
@@ -42,22 +40,16 @@ public class GraphicalMatchMenu implements CharFigure{
         buildingsCounter.put(building, count - howMany);
     }
 
-    public void setActivePlayer(String activePlayer) {
-        this.activePlayer = activePlayer;
+    public void setPlayers(Map<String, Color> players) {
+        this.players = players;
     }
 
-    public void setCurrentAction(String currentAction) {
-        switch (currentAction){
-            case "MOVE":
-                this.currentAction = "⇒";
-                break;
-            case "BUILD":
-                this.currentAction = "⚒";
-                break;
-            default:
-                this.currentAction = "\0";
-                break;
-        }
+    public void setPlayersGodCardAssociation(Map<String, String> playersGodCardAssociation) {
+        this.playersGodCardAssociation = playersGodCardAssociation;
+    }
+
+    public void setActivePlayer(String activePlayer) {
+        this.activePlayer = activePlayer;
     }
 
     public void setGameOver(boolean set){
@@ -79,6 +71,7 @@ public class GraphicalMatchMenu implements CharFigure{
 
     @Override
     public void draw(int relX, int relY) {
+        if(players.isEmpty() || playersGodCardAssociation.isEmpty()) return;
         BackColor col;
         int nextLine = 5;
         GraphicalPane playersBox = new GraphicalPane(stream, 35, 8, null, BackColor.ANSI_BG_BLUE);
@@ -108,8 +101,8 @@ public class GraphicalMatchMenu implements CharFigure{
                 }
             }
             else {
-                stream.addString(relX + 8, relY + nextLine, currentAction, null, BackColor.ANSI_BRIGHT_BG_GREEN);
                 stream.addColor(relX + 7, relY + nextLine, null, BackColor.ANSI_BRIGHT_BG_GREEN);
+                stream.addColor(relX + 8, relY + nextLine, null, BackColor.ANSI_BRIGHT_BG_GREEN);
             }
             String godCard = playersGodCardAssociation.get(player);
             if(godCard.length() >= 15){

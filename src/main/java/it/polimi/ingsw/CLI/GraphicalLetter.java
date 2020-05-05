@@ -133,6 +133,13 @@ public class GraphicalLetter {
                 letterRows.add("| |_| |");
                 letterRows.add("|____/");
                 break;
+            case 'H':
+                letterRows.add(" _   _ ");
+                letterRows.add("| | | |");
+                letterRows.add("| |_| |");
+                letterRows.add("|  _  |");
+                letterRows.add("|_| |_|");
+                break;
 
             default:
                 letterRows.add("\0");
@@ -261,6 +268,13 @@ public class GraphicalLetter {
                 letterRows.add("1110111");
                 letterRows.add("1110111");
                 letterRows.add("1111110");
+                break;
+            case 'H':
+                letterRows.add("0000000");
+                letterRows.add("1110111");
+                letterRows.add("1110111");
+                letterRows.add("1111111");
+                letterRows.add("1110111");
                 break;
             default:
                 letterRows.add("\0");

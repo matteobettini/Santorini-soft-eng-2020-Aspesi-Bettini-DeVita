@@ -4,7 +4,7 @@ import it.polimi.ingsw.CLI.buildings.DomeBuilding;
 import it.polimi.ingsw.CLI.buildings.FirstFloorBuilding;
 import it.polimi.ingsw.CLI.buildings.SecondFloorBuilding;
 import it.polimi.ingsw.CLI.buildings.ThirdFloorBuilding;
-import it.polimi.ingsw.CLI.enums.BuildingType;
+import it.polimi.ingsw.model.enums.BuildingType;
 
 public class BuildingFactory {
     public static GraphicalBuilding getBuilding(CharStream stream, BuildingType buildingType, int RATEOX, int RATEOY){

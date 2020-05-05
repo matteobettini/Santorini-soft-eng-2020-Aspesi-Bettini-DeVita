@@ -1,6 +1,6 @@
 package it.polimi.ingsw.CLI;
 
-import it.polimi.ingsw.CLI.enums.BuildingType;
+import it.polimi.ingsw.model.enums.BuildingType;
 
 import java.awt.*;
 import java.util.ArrayList;

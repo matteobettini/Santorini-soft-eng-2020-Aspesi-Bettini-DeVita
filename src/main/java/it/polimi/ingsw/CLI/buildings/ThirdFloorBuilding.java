@@ -16,14 +16,6 @@ public class ThirdFloorBuilding extends GraphicalBuilding {
         this.stream = stream;
     }
 
-    public int getRATEOX() {
-        return RATEOX;
-    }
-
-    public int getRATEOY() {
-        return RATEOY;
-    }
-
     @Override
     public void draw() {
         draw(0,0);
