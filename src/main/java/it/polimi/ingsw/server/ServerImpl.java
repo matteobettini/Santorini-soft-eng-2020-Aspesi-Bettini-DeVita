@@ -57,7 +57,7 @@ class ServerImpl implements Server, ServerConnectionUtils {
             while(true){
                 System.out.println("=======================");
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Server: received connection");
+                System.out.println("Server: recieved connection");
                 ConnectionToClient clientConnection = new ConnectionToClient(clientSocket, this);
                 executor.submit(clientConnection);
             }

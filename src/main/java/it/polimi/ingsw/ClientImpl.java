@@ -18,14 +18,14 @@ public class ClientImpl implements Client {
 
 
     private final List<Observer<PacketSetup>> packetSetupObservers;
-    private final List<ClientObserver<PacketCardsFromServer>> packetCardsFromServerObservers;
-    private final List<ClientObserver<PacketDoAction>> packetDoActionObservers;
+    private final List<Observer<PacketCardsFromServer>> packetCardsFromServerObservers;
+    private final List<Observer<PacketDoAction>> packetDoActionObservers;
     private final List<Observer<PacketUpdateBoard>> packetUpdateBoardObservers;
     private final List<Observer<PacketPossibleMoves>> packetPossibleMovesObservers;
     private final List<Observer<PacketPossibleBuilds>> packetPossibleBuildsObservers;
     private final List<Observer<PacketMatchStarted>> packetMatchStartedObservers;
-    private final List<ClientObserver<String>> insertNickRequestObservers;
-    private final List<ClientObserver<String>> insertNumOfPlayersRequestObservers;
+    private final List<Observer<String>> insertNickRequestObservers;
+    private final List<Observer<String>> insertNumOfPlayersRequestObservers;
     private final List<Observer<String>> insertGamemodeRequestObservers;
     private final List<Observer<ConnectionStatus>> connectionStatusObservers;
 
@@ -103,40 +103,35 @@ public class ClientImpl implements Client {
             }
         }
     }
-    private void manageIncomingPacket(Object packetFromServer){
-        manageIncomingPacket(packetFromServer, false);
-    }
 
-    private void manageIncomingPacket(Object packetFromServer, boolean isRetry){
+    private void manageIncomingPacket(Object packetFromServer){
         lockReceive.lock();
         try {
             if (packetFromServer instanceof ConnectionMessages) {
                 ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
-                if (messageFromServer == ConnectionMessages.INSERT_NICKNAME ) {
-                    notifyInsertNickRequestObserver(messageFromServer.getMessage(), false);
-                }else if(messageFromServer == ConnectionMessages.INVALID_NICKNAME || messageFromServer == ConnectionMessages.TAKEN_NICKNAME){
-                    notifyInsertNickRequestObserver(messageFromServer.getMessage(), true);
+                if (messageFromServer == ConnectionMessages.INSERT_NICKNAME || messageFromServer == ConnectionMessages.INVALID_NICKNAME || messageFromServer == ConnectionMessages.TAKEN_NICKNAME) {
+                    notifyInsertNickRequestObserver(messageFromServer.getMessage());
                 } else if (messageFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS) {
-                    notifyInsertNumOfPlayersRequestObservers(messageFromServer.getMessage(), isRetry);
+                    notifyInsertNumOfPlayersRequestObservers(messageFromServer.getMessage());
                 } else if (messageFromServer == ConnectionMessages.IS_IT_HARDCORE) {
                     notifyInsertGamemodeRequestObservers(messageFromServer.getMessage());
                 } else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
                     System.out.println("[FROM SERVER]: INVALID PACKET");
                     assert (lastPacketReceived != null);
-                    manageIncomingPacket(lastPacketReceived, true);
+                    manageIncomingPacket(lastPacketReceived);
                 }
             } else if (packetFromServer instanceof PacketMatchStarted) {
                 PacketMatchStarted packetMatchStarted = (PacketMatchStarted) packetFromServer;
                 notifyPacketMatchStartedObservers(packetMatchStarted);
             } else if (packetFromServer instanceof PacketCardsFromServer) {
                 PacketCardsFromServer packetCardsFromServer = (PacketCardsFromServer) packetFromServer;
-                notifyPacketCardsFromServerObservers(packetCardsFromServer, isRetry);
+                notifyPacketCardsFromServerObservers(packetCardsFromServer);
             } else if (packetFromServer instanceof PacketSetup) {
                 PacketSetup packetSetup = (PacketSetup) packetFromServer;
                 notifyPacketSetupObservers(packetSetup);
             } else if (packetFromServer instanceof PacketDoAction) {
                 PacketDoAction packetDoAction = (PacketDoAction) packetFromServer;
-                notifyPacketDoActionObservers(packetDoAction, isRetry);
+                notifyPacketDoActionObservers(packetDoAction);
             }else if (packetFromServer instanceof PacketUpdateBoard) {
                 PacketUpdateBoard packetUpdateBoard = (PacketUpdateBoard) packetFromServer;
                 notifyPacketUpdateBoardObservers(packetUpdateBoard);
@@ -148,7 +143,7 @@ public class ClientImpl implements Client {
                 notifyPacketPossibleMovesObservers(packetPossibleMoves);
             }
 
-            if(packetFromServer instanceof PacketDoAction || packetFromServer instanceof PacketCardsFromServer || packetFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS )
+            if(packetFromServer instanceof PacketDoAction || packetFromServer instanceof PacketCardsFromServer)
                 lastPacketReceived = packetFromServer;
 
         }finally {
@@ -242,11 +237,11 @@ public class ClientImpl implements Client {
         this.connectionStatusObservers.add(o);
     }
     @Override
-    public void addInsertNickRequestObserver(ClientObserver<String> o) {
+    public void addInsertNickRequestObserver(Observer<String> o) {
         this.insertNickRequestObservers.add(o);
     }
     @Override
-    public void addInsertNumOfPlayersRequestObserver(ClientObserver<String> o) {
+    public void addInsertNumOfPlayersRequestObserver(Observer<String> o) {
         this.insertNumOfPlayersRequestObservers.add(o);
     }
     @Override
@@ -270,7 +265,7 @@ public class ClientImpl implements Client {
         this.packetSetupObservers.add(o);
     }
     @Override
-    public void addPacketDoActionObserver(ClientObserver<PacketDoAction> o){
+    public void addPacketDoActionObserver(Observer<PacketDoAction> o){
         this.packetDoActionObservers.add(o);
     }
     @Override
@@ -278,7 +273,7 @@ public class ClientImpl implements Client {
         this.packetUpdateBoardObservers.add(o);
     }
     @Override
-    public void addPacketCardsFromServerObserver(ClientObserver<PacketCardsFromServer> o){
+    public void addPacketCardsFromServerObserver(Observer<PacketCardsFromServer> o){
         this.packetCardsFromServerObservers.add(o);
     }
 
@@ -287,14 +282,14 @@ public class ClientImpl implements Client {
             o.update(p);
         }
     }
-    public void notifyInsertNickRequestObserver(String p, boolean isRetry){
-        for(ClientObserver<String> o : insertNickRequestObservers){
-            o.update(p,isRetry);
+    public void notifyInsertNickRequestObserver(String p){
+        for(Observer<String> o : insertNickRequestObservers){
+            o.update(p);
         }
     }
-    public void notifyInsertNumOfPlayersRequestObservers(String p, boolean isRetry){
-        for(ClientObserver<String> o : insertNumOfPlayersRequestObservers){
-            o.update(p,isRetry);
+    public void notifyInsertNumOfPlayersRequestObservers(String p){
+        for(Observer<String> o : insertNumOfPlayersRequestObservers){
+            o.update(p);
         }
     }
     public void notifyInsertGamemodeRequestObservers(String p){
@@ -313,14 +308,14 @@ public class ClientImpl implements Client {
             o.update(p);
         }
     }
-    public void notifyPacketCardsFromServerObservers(PacketCardsFromServer p, boolean isRetry){
-        for(ClientObserver<PacketCardsFromServer> o : packetCardsFromServerObservers){
-            o.update(p, isRetry);
+    public void notifyPacketCardsFromServerObservers(PacketCardsFromServer p){
+        for(Observer<PacketCardsFromServer> o : packetCardsFromServerObservers){
+            o.update(p);
         }
     }
-    public void notifyPacketDoActionObservers(PacketDoAction p, boolean isRetry){
-        for(ClientObserver<PacketDoAction> o : packetDoActionObservers){
-            o.update(p, isRetry);
+    public void notifyPacketDoActionObservers(PacketDoAction p){
+        for(Observer<PacketDoAction> o : packetDoActionObservers){
+            o.update(p);
         }
     }
     public void notifyPacketPossibleMovesObservers(PacketPossibleMoves p){
