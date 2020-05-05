@@ -57,13 +57,13 @@ public class ClientImpl implements Client {
         this.executor = Executors.newCachedThreadPool();
 
     }
-
+    @Override
     public void asyncStart(String address, int port){
         if(!started.get()) {
             new Thread(()->start(address, port)).start();
         }
     }
-
+    @Override
     public void start(String address, int port){
         if(started.compareAndSet(false, true)) {
 
@@ -109,7 +109,7 @@ public class ClientImpl implements Client {
         try {
             if (packetFromServer instanceof ConnectionMessages) {
                 ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
-                if (messageFromServer == ConnectionMessages.INSERT_NICKNAME) {
+                if (messageFromServer == ConnectionMessages.INSERT_NICKNAME || messageFromServer == ConnectionMessages.INVALID_NICKNAME || messageFromServer == ConnectionMessages.TAKEN_NICKNAME) {
                     notifyInsertNickRequestObserver(messageFromServer.getMessage());
                 } else if (messageFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS) {
                     notifyInsertNumOfPlayersRequestObservers(messageFromServer.getMessage());
@@ -151,7 +151,7 @@ public class ClientImpl implements Client {
         }
     }
 
-
+    @Override
     public void sendString(String s) {
         try {
             os.writeUTF(s);
@@ -161,7 +161,7 @@ public class ClientImpl implements Client {
         }
     }
 
-
+    @Override
     public void sendInt(int n){
         try {
             os.writeInt(n);
@@ -170,7 +170,7 @@ public class ClientImpl implements Client {
             manageClosure();
         }
     }
-
+    @Override
     public void sendBoolean(boolean b){
         try {
             os.writeBoolean(b);
@@ -179,7 +179,7 @@ public class ClientImpl implements Client {
             manageClosure();
         }
     }
-
+    @Override
     public void send(Object packet){
         try {
             os.writeObject(packet);
@@ -199,6 +199,7 @@ public class ClientImpl implements Client {
         closeRoutine();
     }
 
+
     private void closeRoutine(){
 
         try {
@@ -215,38 +216,63 @@ public class ClientImpl implements Client {
 
     }
 
+    @Override
+    public void destroy(){
+        this.connectionStatusObservers.clear();
+        this.insertGamemodeRequestObservers.clear();
+        this.insertNickRequestObservers.clear();
+        this.insertNumOfPlayersRequestObservers.clear();
+        this.packetCardsFromServerObservers.clear();
+        this.packetDoActionObservers.clear();
+        this.packetMatchStartedObservers.clear();
+        this.packetSetupObservers.clear();
+        this.packetUpdateBoardObservers.clear();
+        this.packetPossibleMovesObservers.clear();
+        this.packetPossibleBuildsObservers.clear();
+    }
 
 
+    @Override
     public void addConnectionStatusObserver(Observer<ConnectionStatus> o) {
         this.connectionStatusObservers.add(o);
     }
+    @Override
     public void addInsertNickRequestObserver(Observer<String> o) {
         this.insertNickRequestObservers.add(o);
     }
+    @Override
     public void addInsertNumOfPlayersRequestObserver(Observer<String> o) {
         this.insertNumOfPlayersRequestObservers.add(o);
     }
+    @Override
     public void addInsertGamemodeRequestObserver(Observer<String> o) {
         this.insertGamemodeRequestObservers.add(o);
     }
+    @Override
     public void addPacketMatchStartedObserver(Observer<PacketMatchStarted> o) {
         this.packetMatchStartedObservers.add(o);
     }
+    @Override
     public void addPacketPossibleMovesObserver(Observer<PacketPossibleMoves> o) {
         this.packetPossibleMovesObservers.add(o);
     }
+    @Override
     public void addPacketPossibleBuildsObserver(Observer<PacketPossibleBuilds> o) {
         this.packetPossibleBuildsObservers.add(o);
     }
+    @Override
     public void addPacketSetupObserver(Observer<PacketSetup> o){
         this.packetSetupObservers.add(o);
     }
+    @Override
     public void addPacketDoActionObserver(Observer<PacketDoAction> o){
         this.packetDoActionObservers.add(o);
     }
+    @Override
     public void addPacketUpdateBoardObserver(Observer<PacketUpdateBoard> o){
         this.packetUpdateBoardObservers.add(o);
     }
+    @Override
     public void addPacketCardsFromServerObserver(Observer<PacketCardsFromServer> o){
         this.packetCardsFromServerObservers.add(o);
     }

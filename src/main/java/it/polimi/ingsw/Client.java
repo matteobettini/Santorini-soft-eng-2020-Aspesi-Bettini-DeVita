@@ -12,6 +12,7 @@ public interface Client {
     void sendInt(int n);
     void sendBoolean(boolean b);
     void send(Object packet);
+    void destroy();
 
     void addPacketCardsFromServerObserver(Observer<PacketCardsFromServer> observer);
     void addPacketDoActionObserver(Observer<PacketDoAction> observer);

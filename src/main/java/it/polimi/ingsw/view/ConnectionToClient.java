@@ -8,9 +8,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.InputMismatchException;
+import java.util.regex.Pattern;
 
 public class ConnectionToClient extends Observable<Object> implements Runnable{
-    private static final int MAX_NICK_LENGTH = 20;
+
+    private static final String NICKNAME_REGEXP = "[a-zA-Z0-9._\\-]{1,20}";
+    private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEXP);
+
 
     private final ServerConnectionUtils server;
 
@@ -23,7 +27,6 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     private int desiredNumOfPlayers;
     private boolean desiredHardcore;
-
 
     private Thread timer;
 
@@ -143,14 +146,19 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      */
     private void askNickname() throws IOException{
         try {
+            int i = 0;
             do {
                 System.out.println("Connection: asking nickname");
-                internalSend(ConnectionMessages.INSERT_NICKNAME);
+                if( i == 0)
+                    internalSend(ConnectionMessages.INSERT_NICKNAME);
+                else
+                    internalSend(ConnectionMessages.INVALID_NICKNAME);
                 startTimerShorter();
                 clientNickname = is.readUTF();
                 System.out.println("Connection: nickname acquired: " + clientNickname);
                 stopTimer();
-            }while(clientNickname == null ||  clientNickname.length() < 1 || clientNickname.length() > MAX_NICK_LENGTH || clientNickname.contains("\n") || clientNickname.contains(" "));
+                i++;
+            }while(clientNickname == null || !NICKNAME_PATTERN.matcher(clientNickname).matches());
         } catch (IOException | InputMismatchException e){
             System.err.println("Connection [" + getClientNickname() + "]: error in ask nick");
             throw e;
@@ -164,14 +172,19 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      */
     public void askNicknameAgain(){
         try {
+            int i = 0;
             do {
                 System.out.println("Connection [" + getClientNickname() + "]: asking nick again");
-                internalSend(ConnectionMessages.INSERT_NICKNAME);
+                if(i == 0)
+                    internalSend(ConnectionMessages.TAKEN_NICKNAME);
+                else
+                    internalSend(ConnectionMessages.INVALID_NICKNAME);
                 startTimerShorter();
                 clientNickname = is.readUTF();
                 System.out.println("Connection [" + getClientNickname() + "]: got nick again : " + clientNickname);
                 stopTimer();
-            }while(clientNickname == null ||  clientNickname.length() < 1 || clientNickname.length() > MAX_NICK_LENGTH || clientNickname.contains("\n") || clientNickname.contains(" "));
+                i++;
+            }while(clientNickname == null || !NICKNAME_PATTERN.matcher(clientNickname).matches());
         } catch (IOException | InputMismatchException e){
             System.err.println("Connection [" + getClientNickname() + "]: error in ask nick again");
             closeRoutineFull();

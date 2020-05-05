@@ -91,7 +91,7 @@ public class SampleClient {
         try {
             if (packetFromServer instanceof ConnectionMessages) {
                 ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
-                if (messageFromServer == ConnectionMessages.INSERT_NICKNAME) {
+                if (messageFromServer == ConnectionMessages.INSERT_NICKNAME || messageFromServer == ConnectionMessages.INVALID_NICKNAME || messageFromServer == ConnectionMessages.TAKEN_NICKNAME) {
                     System.out.println("\n" + messageFromServer.getMessage());
                     String name = getLine();
                     if(name == null)
@@ -104,7 +104,7 @@ public class SampleClient {
                         return;
                     sendInt(numOfPlayers);
                 } else if (messageFromServer == ConnectionMessages.IS_IT_HARDCORE) {
-                    System.out.println("\n" + messageFromServer.getMessage());
+                    System.out.println("\n" + "Do you want to play in hardcore mode? (true, false): ");
                     Boolean hardcore = getBoolean();
                     if(hardcore == null)
                         return;
