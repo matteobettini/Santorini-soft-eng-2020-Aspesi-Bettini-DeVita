@@ -8,7 +8,6 @@ public class ConnectionSetupStrategy implements ConnectionStrategy {
     public void handleConnection(ConnectionStatus connectionStatus, CLI cli) {
         if(connectionStatus.isClosed()){
             System.out.println("\n" + connectionStatus.getReasonOfClosure());
-            cli.getClient().destroy();
             cli.run();
         }
         else{

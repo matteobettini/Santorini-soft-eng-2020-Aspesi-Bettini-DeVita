@@ -14,10 +14,6 @@ public class CLI {
 
     private static final Pattern IP_PATTERN = Pattern.compile(IP_REGEXP);
 
-    private static final String NICKNAME_REGEXP = "[a-zA-Z0-9._\\-]{3,}";
-
-    private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEXP);
-
     private Client client;
     private String address;
     private int port;
@@ -27,8 +23,7 @@ public class CLI {
     private ConnectionStrategy connectionStrategy;
     private ActionStrategy actionStrategy;
     private NicknameStrategy nicknameStrategy;
-    private NumberOfPlayersStrategy numberOfPlayersStrategy;
-    private RequestGameModeStrategy requestGameModeStrategy;
+    private RequestNumberOfPlayersGameModeStrategy requestNumberOfPlayersGameModeStrategy;
     private MatchStartedStrategy matchStartedStrategy;
     private SelectCardStrategy selectCardStrategy;
     private SetupStrategy setupStrategy;
@@ -77,13 +72,9 @@ public class CLI {
             nicknameStrategy.handleNickname(message, this);
         });
 
-        client.addInsertNumOfPlayersRequestObserver( (message, isRetry) -> {
-            numberOfPlayersStrategy.handNumberOfPlayers(message, this);
-        });
-
-        client.addInsertGamemodeRequestObserver( message -> {
-            requestGameModeStrategy.handleRequestGameMode(message, this);
-        });
+        client.addInsertNumOfPlayersAndGamemodeRequestObserver( ((message, isRetry) -> {
+            requestNumberOfPlayersGameModeStrategy.handleRequestNumberOfPlayerGameMode(message, this);
+        }));
 
         client.addPacketMatchStartedObserver( packetMatchStarted -> {
             matchStartedStrategy.handleMatchStarted(packetMatchStarted, this);
@@ -128,8 +119,7 @@ public class CLI {
     private void setInitialStrategies(){
         connectionStrategy = new ConnectionSetupStrategy();
         nicknameStrategy = new DefaultNicknameStrategy();
-        numberOfPlayersStrategy = new DefaultNumberOfPlayers();
-        requestGameModeStrategy = new DefaultRequestGameModeStrategy();
+        requestNumberOfPlayersGameModeStrategy = new DefaultRequestNumberOfplayersGameModeStrategy();
         matchStartedStrategy = new DefaultMatchStartedStrategy();
         selectCardStrategy = new DefaultSelectCardStrategy();
         setupStrategy = new DefaultSetupStrategy();

@@ -18,7 +18,6 @@ public class ConnectionInGameStrategy implements ConnectionStrategy {
 
             if(choice.toLowerCase().equals("y")){
                 cli.setAskConnectionParameters(false);
-                cli.getClient().destroy();
                 cli.run();
             }
             else{
