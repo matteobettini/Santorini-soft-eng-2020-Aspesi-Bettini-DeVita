@@ -19,10 +19,13 @@ public class PacketUpdateBoard implements Serializable {
 
     public PacketUpdateBoard(Map<String, Point> workersPositions, Map<Point, List<BuildingType>> newBuildings, String playerLostID, String playerWonID) {
 
-
-        this.workersPositions = new HashMap<>();
-        for(String s : workersPositions.keySet()){
-            this.workersPositions.put(s,workersPositions.get(s));
+        if(workersPositions != null) {
+            this.workersPositions = new HashMap<>();
+            for (String s : workersPositions.keySet()) {
+                this.workersPositions.put(s, workersPositions.get(s));
+            }
+        }else{
+            this.workersPositions = null;
         }
 
 
