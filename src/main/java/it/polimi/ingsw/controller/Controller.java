@@ -1,16 +1,11 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.Model;
-import it.polimi.ingsw.observe.Observer;
-import it.polimi.ingsw.packets.ConnectionMessages;
 import it.polimi.ingsw.packets.InvalidPacketException;
-import it.polimi.ingsw.packets.PacketBuild;
-import it.polimi.ingsw.packets.PacketMove;
 import it.polimi.ingsw.view.VirtualView;
 
-import java.awt.*;
 import java.util.List;
-import java.util.Map;
+
 
 public class Controller {
 

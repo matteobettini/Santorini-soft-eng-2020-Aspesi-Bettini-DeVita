@@ -4,7 +4,6 @@ import it.polimi.ingsw.model.ObservableModel;
 import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

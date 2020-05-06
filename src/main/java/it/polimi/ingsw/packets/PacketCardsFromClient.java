@@ -1,6 +1,5 @@
 package it.polimi.ingsw.packets;
 
-import com.sun.source.doctree.SerialDataTree;
 
 import java.io.Serializable;
 import java.util.ArrayList;

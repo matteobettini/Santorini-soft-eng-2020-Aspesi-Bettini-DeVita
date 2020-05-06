@@ -1,13 +1,14 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.server.ServerConnectionUtils;
+import it.polimi.ingsw.observe.Observer;
+import it.polimi.ingsw.packets.PacketNickname;
+import it.polimi.ingsw.packets.PacketNumOfPlayersAndGamemode;
 import it.polimi.ingsw.observe.Observable;
 import it.polimi.ingsw.packets.ConnectionMessages;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.InputMismatchException;
 import java.util.regex.Pattern;
 
 public class ConnectionToClient extends Observable<Object> implements Runnable{
@@ -15,16 +16,21 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private static final String NICKNAME_REGEXP = "[a-zA-Z0-9._\\-]{1,20}";
     private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEXP);
 
-
-    private final ServerConnectionUtils server;
+    private Observer<ConnectionToClient> nickNameChosenHandler;
+    private Observer<ConnectionToClient> gameDesiresHandler;
+    private Observer<ConnectionToClient> closureHandler;
 
     private final Socket socket;
-    private String clientNickname;
     private ObjectOutputStream os;
     private ObjectInputStream is;
 
     private boolean active;
+    private boolean inMatch;
 
+    private boolean nickAsked;
+    private boolean desiresAsked;
+
+    private String clientNickname;
     private int desiredNumOfPlayers;
     private boolean desiredHardcore;
 
@@ -35,15 +41,17 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      * saves the client socket in a local variable
      * saves also a reference to the server connection utils
      * @param socket the client socket it manages
-     * @param server a pointer to the server interface
      */
-    public ConnectionToClient(Socket socket, ServerConnectionUtils server)  {
-        this.server = server;
+    public ConnectionToClient(Socket socket)  {
         this.socket = socket;
         this.active = true;
+        this.inMatch = false;
         this.desiredNumOfPlayers = -1;
         this.desiredHardcore = false;
         this.clientNickname = null;
+        this.nickAsked = false;
+        this.desiresAsked = false;
+
     }
 
     private void startTimer(int milliseconds){
@@ -60,9 +68,9 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         timer.start();
     }
 
-    private void startTimerShorter(){ startTimer(20000); }
+    private void startTimerShorter(){ startTimer(30000); }
     private void startTimerLonger(){
-        startTimer(30000);
+        startTimer(40000);
     }
 
     private void stopTimer(){
@@ -100,15 +108,6 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
     /**
-     * Returns the client nickname
-     * @return the client nickname, null if it hasn't been chosen yet
-     */
-    public String getClientNickname() {
-        return clientNickname;
-    }
-
-
-    /**
      * Method use by the server to ask the client the desired number of players in a match
      * and if it wants to play in hardcore mode or not
      * Upon failure retrieving the information, closes the connection
@@ -116,28 +115,13 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     public void askForDesiredPlayersAndGamemode(){
 
         try {
-            int i = 0;
-            do {
-                if(i == 0)
-                    internalSend(ConnectionMessages.INSERT_NUMBER_OF_PLAYERS);
-                else
-                    internalSend(ConnectionMessages.INVALID_PACKET);
-                startTimerShorter();
-                System.out.println("Connection [" + getClientNickname() + "]: asking num of players");
-                desiredNumOfPlayers = is.readInt();
-                System.out.println("Connection [" + getClientNickname() + "]: got num of players, is: " + desiredNumOfPlayers);
-                stopTimer();
-                i++;
-            } while (desiredNumOfPlayers != 2 && desiredNumOfPlayers != 3);
+            System.out.println("Connection [" + getClientNickname() + "]: asking num of players and gamemode");
 
-            System.out.println("Connection [" + getClientNickname() + "]: asking gamemode");
-            internalSend(ConnectionMessages.IS_IT_HARDCORE);
+            desiresAsked = true;
+            internalSend(ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE);
             startTimerShorter();
-            desiredHardcore = is.readBoolean();
-            System.out.println("Connection [" + getClientNickname() + "]: got gamemode, is: " + desiredHardcore);
-            stopTimer();
 
-        } catch (IOException | InputMismatchException e){
+        } catch (IOException e){
             System.err.println("Connection [" + getClientNickname() + "]: error in ask desires");
             closeRoutineFull();
         }
@@ -150,20 +134,12 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      */
     private void askNickname() throws IOException{
         try {
-            int i = 0;
-            do {
-                System.out.println("Connection: asking nickname");
-                if( i == 0)
-                    internalSend(ConnectionMessages.INSERT_NICKNAME);
-                else
-                    internalSend(ConnectionMessages.INVALID_NICKNAME);
-                startTimerShorter();
-                clientNickname = is.readUTF();
-                System.out.println("Connection: nickname acquired: " + clientNickname);
-                stopTimer();
-                i++;
-            }while(clientNickname == null || !NICKNAME_PATTERN.matcher(clientNickname).matches());
-        } catch (IOException | InputMismatchException e){
+            System.out.println("Connection: asking nickname");
+
+            nickAsked = true;
+            internalSend(ConnectionMessages.INSERT_NICKNAME);
+            startTimerShorter();
+        } catch (IOException e){
             System.err.println("Connection [" + getClientNickname() + "]: error in ask nick");
             throw e;
         }
@@ -175,21 +151,13 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      * Upon failure retrieving the information, closes the connection
      */
     public void askNicknameAgain(){
-        try {
-            int i = 0;
-            do {
-                System.out.println("Connection [" + getClientNickname() + "]: asking nick again");
-                if(i == 0)
-                    internalSend(ConnectionMessages.TAKEN_NICKNAME);
-                else
-                    internalSend(ConnectionMessages.INVALID_NICKNAME);
-                startTimerShorter();
-                clientNickname = is.readUTF();
-                System.out.println("Connection [" + getClientNickname() + "]: got nick again : " + clientNickname);
-                stopTimer();
-                i++;
-            }while(clientNickname == null || !NICKNAME_PATTERN.matcher(clientNickname).matches());
-        } catch (IOException | InputMismatchException e){
+        try{
+            System.out.println("Connection: asking nickname again");
+
+            nickAsked = true;
+            internalSend(ConnectionMessages.TAKEN_NICKNAME);
+            startTimerShorter();
+        } catch (IOException e){
             System.err.println("Connection [" + getClientNickname() + "]: error in ask nick again");
             closeRoutineFull();
         }
@@ -212,13 +180,16 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
             askNickname();
 
-            server.lobby(this);
-
             while(active){
                 System.out.println("Connection [" + getClientNickname() + "]: I'M WAITING FOR AN OBJECT");
                 Object packetFromClient = is.readObject();
                 stopTimer();
-                notify(packetFromClient);
+
+                if(inMatch)
+                    handlePacketInMatch(packetFromClient);
+                else
+                    handlePacketInSetup(packetFromClient);
+
             }
             System.err.println("Connection [" + getClientNickname() + "]: error i'm inactive");
 
@@ -226,6 +197,37 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             //System.out.println("Connection [" + getClientNickname() + "]: exception in run {" + e.getMessage() + "}");
             closeRoutineFull();
         }
+    }
+    private void handlePacketInSetup(Object packetFromClient) throws IOException {
+
+        if (packetFromClient instanceof PacketNickname && nickAsked) {
+            System.out.println("Connection [" + getClientNickname() + "]: received nick");
+            PacketNickname packetNickname = (PacketNickname) packetFromClient;
+            if (!isNickValid(packetNickname.getNickname())){
+                internalSend(ConnectionMessages.INVALID_NICKNAME);
+                startTimerShorter();
+            } else {
+                nickAsked = false;
+                clientNickname = packetNickname.getNickname();
+                nickNameChosenHandler.update(this);
+            }
+        } else if (packetFromClient instanceof PacketNumOfPlayersAndGamemode && desiresAsked) {
+            System.out.println("Connection [" + getClientNickname() + "]: received desires");
+            PacketNumOfPlayersAndGamemode packetNumOfPlayersAndGamemode = (PacketNumOfPlayersAndGamemode) packetFromClient;
+            if(packetNumOfPlayersAndGamemode.getDesiredNumOfPlayers() != 2 && packetNumOfPlayersAndGamemode.getDesiredNumOfPlayers() != 3) {
+                internalSend(ConnectionMessages.INVALID_PACKET);
+                startTimerShorter();
+            } else{
+                desiredHardcore = packetNumOfPlayersAndGamemode.isDesiredHardcore();
+                desiredNumOfPlayers = packetNumOfPlayersAndGamemode.getDesiredNumOfPlayers();
+                desiresAsked = false;
+                gameDesiresHandler.update(this);
+            }
+        }
+    }
+
+    private void handlePacketInMatch(Object packetFromClient){
+        notify(packetFromClient);
     }
 
 
@@ -239,7 +241,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         System.err.println("Connection [" + getClientNickname() + "]: closing socket");
         stopTimer();
         active = false;
-        server.deregister(this);
+        closureHandler.update(this);
 
         closeRoutine();
 
@@ -260,6 +262,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
         active = false;
         stopTimer();
+
         try {
             if(timerEnded){
                 os.writeObject(ConnectionMessages.TIMER_ENDED);
@@ -308,4 +311,34 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         return desiredHardcore;
     }
 
+    private boolean isNickValid(String clientNickname){
+        return clientNickname != null && NICKNAME_PATTERN.matcher(clientNickname).matches();
+    }
+
+    /**
+     * Returns the client nickname
+     * @return the client nickname, null if it hasn't been chosen yet
+     */
+    public String getClientNickname() {
+        return clientNickname;
+    }
+
+    public void setNickNameChosenHandler(Observer<ConnectionToClient> nickNameChosenHandler) {
+        this.nickNameChosenHandler = nickNameChosenHandler;
+    }
+
+    public void setGameDesiresHandler(Observer<ConnectionToClient> gameDesiresHandler) {
+        this.gameDesiresHandler = gameDesiresHandler;
+    }
+
+    public void setClosureHandler(Observer<ConnectionToClient> closureHandler) {
+        this.closureHandler = closureHandler;
+    }
+
+    public void setInMatch(boolean inMatch) {
+        this.inMatch = inMatch;
+    }
+
 }
+
+

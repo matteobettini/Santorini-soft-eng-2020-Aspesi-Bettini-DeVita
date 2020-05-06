@@ -6,9 +6,13 @@ import it.polimi.ingsw.packets.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -17,17 +21,16 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ClientImpl implements Client {
 
 
-    private final List<Observer<PacketSetup>> packetSetupObservers;
-    private final List<ClientObserver<PacketCardsFromServer>> packetCardsFromServerObservers;
-    private final List<ClientObserver<PacketDoAction>> packetDoActionObservers;
-    private final List<Observer<PacketUpdateBoard>> packetUpdateBoardObservers;
-    private final List<Observer<PacketPossibleMoves>> packetPossibleMovesObservers;
-    private final List<Observer<PacketPossibleBuilds>> packetPossibleBuildsObservers;
-    private final List<Observer<PacketMatchStarted>> packetMatchStartedObservers;
-    private final List<ClientObserver<String>> insertNickRequestObservers;
-    private final List<ClientObserver<String>> insertNumOfPlayersRequestObservers;
-    private final List<Observer<String>> insertGamemodeRequestObservers;
-    private final List<Observer<ConnectionStatus>> connectionStatusObservers;
+    private final Queue<Observer<PacketSetup>> packetSetupObservers;
+    private final Queue<ClientObserver<PacketCardsFromServer>> packetCardsFromServerObservers;
+    private final Queue<ClientObserver<PacketDoAction>> packetDoActionObservers;
+    private final Queue<Observer<PacketUpdateBoard>> packetUpdateBoardObservers;
+    private final Queue<Observer<PacketPossibleMoves>> packetPossibleMovesObservers;
+    private final Queue<Observer<PacketPossibleBuilds>> packetPossibleBuildsObservers;
+    private final Queue<Observer<PacketMatchStarted>> packetMatchStartedObservers;
+    private final Queue<ClientObserver<String>> insertNickRequestObservers;
+    private final Queue<ClientObserver<String>> insertNumOfPlayersAndGamemodeRequestObservers;
+    private final Queue<Observer<ConnectionStatus>> connectionStatusObservers;
 
 
     private Socket socket;
@@ -42,17 +45,16 @@ public class ClientImpl implements Client {
     private final AtomicBoolean started = new AtomicBoolean(false);
 
     public ClientImpl(){
-        this.packetCardsFromServerObservers = new ArrayList<>();
-        this.packetDoActionObservers = new ArrayList<>();
-        this.packetPossibleBuildsObservers = new ArrayList<>();
-        this.packetPossibleMovesObservers = new ArrayList<>();
-        this.packetSetupObservers = new ArrayList<>();
-        this.packetUpdateBoardObservers = new ArrayList<>();
-        this.packetMatchStartedObservers = new ArrayList<>();
-        this.insertNickRequestObservers = new ArrayList<>();
-        this.insertNumOfPlayersRequestObservers = new ArrayList<>();
-        this.insertGamemodeRequestObservers = new ArrayList<>();
-        this.connectionStatusObservers = new ArrayList<>();
+        this.packetCardsFromServerObservers = new ConcurrentLinkedQueue<>();
+        this.packetDoActionObservers = new ConcurrentLinkedQueue<>();
+        this.packetPossibleBuildsObservers = new ConcurrentLinkedQueue<>();
+        this.packetPossibleMovesObservers = new ConcurrentLinkedQueue<>();
+        this.packetSetupObservers = new ConcurrentLinkedQueue<>();
+        this.packetUpdateBoardObservers = new ConcurrentLinkedQueue<>();
+        this.packetMatchStartedObservers = new ConcurrentLinkedQueue<>();
+        this.insertNickRequestObservers = new ConcurrentLinkedQueue<>();
+        this.insertNumOfPlayersAndGamemodeRequestObservers = new ConcurrentLinkedQueue<>();
+        this.connectionStatusObservers = new ConcurrentLinkedQueue<>();
 
         this.executor = Executors.newCachedThreadPool();
 
@@ -68,7 +70,9 @@ public class ClientImpl implements Client {
         if(started.compareAndSet(false, true)) {
 
             try {
-                this.socket = new Socket(address, port);
+
+                this.socket = new Socket();
+                this.socket.connect(new InetSocketAddress(address, port), 3000);
 
                 os = new ObjectOutputStream(socket.getOutputStream());
                 is = new ObjectInputStream(socket.getInputStream());
@@ -116,10 +120,8 @@ public class ClientImpl implements Client {
                     notifyInsertNickRequestObserver(messageFromServer.getMessage(), false);
                 }else if(messageFromServer == ConnectionMessages.INVALID_NICKNAME || messageFromServer == ConnectionMessages.TAKEN_NICKNAME){
                     notifyInsertNickRequestObserver(messageFromServer.getMessage(), true);
-                } else if (messageFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS) {
-                    notifyInsertNumOfPlayersRequestObservers(messageFromServer.getMessage(), isRetry);
-                } else if (messageFromServer == ConnectionMessages.IS_IT_HARDCORE) {
-                    notifyInsertGamemodeRequestObservers(messageFromServer.getMessage());
+                } else if (messageFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE) {
+                    notifyinsertNumOfPlayersAndGamemodeRequestObservers(messageFromServer.getMessage(), isRetry);
                 } else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
                     System.out.println("[FROM SERVER]: INVALID PACKET");
                     assert (lastPacketReceived != null);
@@ -148,7 +150,7 @@ public class ClientImpl implements Client {
                 notifyPacketPossibleMovesObservers(packetPossibleMoves);
             }
 
-            if(packetFromServer instanceof PacketDoAction || packetFromServer instanceof PacketCardsFromServer || packetFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS )
+            if(packetFromServer instanceof PacketDoAction || packetFromServer instanceof PacketCardsFromServer || packetFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE )
                 lastPacketReceived = packetFromServer;
 
         }finally {
@@ -156,34 +158,6 @@ public class ClientImpl implements Client {
         }
     }
 
-    @Override
-    public void sendString(String s) {
-        try {
-            os.writeUTF(s);
-            os.flush();
-        }catch (IOException e){
-            manageClosure();
-        }
-    }
-
-    @Override
-    public void sendInt(int n){
-        try {
-            os.writeInt(n);
-            os.flush();
-        }catch (IOException e){
-            manageClosure();
-        }
-    }
-    @Override
-    public void sendBoolean(boolean b){
-        try {
-            os.writeBoolean(b);
-            os.flush();
-        }catch (IOException e){
-            manageClosure();
-        }
-    }
     @Override
     public void send(Object packet){
         try {
@@ -221,21 +195,6 @@ public class ClientImpl implements Client {
 
     }
 
-    @Override
-    public void destroy(){
-        this.connectionStatusObservers.clear();
-        this.insertGamemodeRequestObservers.clear();
-        this.insertNickRequestObservers.clear();
-        this.insertNumOfPlayersRequestObservers.clear();
-        this.packetCardsFromServerObservers.clear();
-        this.packetDoActionObservers.clear();
-        this.packetMatchStartedObservers.clear();
-        this.packetSetupObservers.clear();
-        this.packetUpdateBoardObservers.clear();
-        this.packetPossibleMovesObservers.clear();
-        this.packetPossibleBuildsObservers.clear();
-    }
-
 
     @Override
     public void addConnectionStatusObserver(Observer<ConnectionStatus> o) {
@@ -246,12 +205,8 @@ public class ClientImpl implements Client {
         this.insertNickRequestObservers.add(o);
     }
     @Override
-    public void addInsertNumOfPlayersRequestObserver(ClientObserver<String> o) {
-        this.insertNumOfPlayersRequestObservers.add(o);
-    }
-    @Override
-    public void addInsertGamemodeRequestObserver(Observer<String> o) {
-        this.insertGamemodeRequestObservers.add(o);
+    public void addInsertNumOfPlayersAndGamemodeRequestObserver(ClientObserver<String> o) {
+        this.insertNumOfPlayersAndGamemodeRequestObservers.add(o);
     }
     @Override
     public void addPacketMatchStartedObserver(Observer<PacketMatchStarted> o) {
@@ -292,14 +247,9 @@ public class ClientImpl implements Client {
             o.update(p,isRetry);
         }
     }
-    public void notifyInsertNumOfPlayersRequestObservers(String p, boolean isRetry){
-        for(ClientObserver<String> o : insertNumOfPlayersRequestObservers){
+    public void notifyinsertNumOfPlayersAndGamemodeRequestObservers(String p, boolean isRetry){
+        for(ClientObserver<String> o : insertNumOfPlayersAndGamemodeRequestObservers){
             o.update(p,isRetry);
-        }
-    }
-    public void notifyInsertGamemodeRequestObservers(String p){
-        for(Observer<String> o : insertGamemodeRequestObservers){
-            o.update(p);
         }
     }
 

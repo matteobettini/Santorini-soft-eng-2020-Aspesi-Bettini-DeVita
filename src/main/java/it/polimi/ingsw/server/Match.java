@@ -40,6 +40,7 @@ public class Match {
         this.model = new ConcreteModel(players, isHardcore);
 
         for(ConnectionToClient c : clientConnections){
+            c.setInMatch(true);
             c.send(new PacketMatchStarted(players, isHardcore), false);
             System.out.println("Match: sending started to: " + c.getClientNickname());
             VirtualView virtualView = new VirtualView(c, model);

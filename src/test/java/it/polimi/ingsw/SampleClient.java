@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.packets.*;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -14,6 +15,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SampleClient {
 
     private Socket socket;
+
+    private String clientNickname;
 
     private ObjectOutputStream os;
     private ObjectInputStream is;
@@ -47,7 +50,8 @@ public class SampleClient {
         if(started.compareAndSet(false, true)) {
 
             try {
-                this.socket = new Socket(address, port);
+                this.socket = new Socket();
+                this.socket.connect(new InetSocketAddress(address, port), 3000);
                 System.out.println("Connection established to server at: " + address + " port: " + port);
 
                 os = new ObjectOutputStream(socket.getOutputStream());
@@ -96,20 +100,20 @@ public class SampleClient {
                     String name = getLine();
                     if(name == null)
                         return;
-                    sendString(name);
-                } else if (messageFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS) {
+                    clientNickname = name;
+                    PacketNickname packetNickname = new PacketNickname(name);
+                    send(packetNickname);
+                } else if (messageFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE) {
                     System.out.println("\n" + messageFromServer.getMessage());
                     Integer numOfPlayers = getInt();
-                    if(numOfPlayers == null)
+                    if (numOfPlayers == null)
                         return;
-                    sendInt(numOfPlayers);
-                } else if (messageFromServer == ConnectionMessages.IS_IT_HARDCORE) {
-                    System.out.println("\n" + "Do you want to play in hardcore mode? (true, false): ");
                     Boolean hardcore = getBoolean();
-                    if(hardcore == null)
+                    if (hardcore == null)
                         return;
-                    sendBoolean(hardcore);
-                } else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
+                    PacketNumOfPlayersAndGamemode packetNumOfPlayersAndGamemode = new PacketNumOfPlayersAndGamemode(numOfPlayers, hardcore);
+                    send(packetNumOfPlayersAndGamemode);
+                }else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
                     System.out.println("[FROM SERVER]: INVALID PACKET");
                     assert (lastPacketReceived != null);
                     manageIncomingPacket(lastPacketReceived);
@@ -119,6 +123,8 @@ public class SampleClient {
                 System.out.println("\nMatch started!!!\nPlayers: " + packetMatchStarted.getPlayers() + "\nHardcore: " + packetMatchStarted.isHardcore());
             } else if (packetFromServer instanceof PacketCardsFromServer) {
                 PacketCardsFromServer packetCardsFromServer = (PacketCardsFromServer) packetFromServer;
+                if(!packetCardsFromServer.getTo().equals(clientNickname))
+                    return;
                 System.out.println("\nChoose your cards!\nHere are all the cards: " + packetCardsFromServer.getAvailableCards() + "\nChoose: " + packetCardsFromServer.getNumberToChoose());
                 String chosenCards = getLine();
                 if(chosenCards == null)
@@ -131,6 +137,8 @@ public class SampleClient {
                 System.out.println("\nHere is the setup!\nHere are all the cards: " + packetSetup.getCards() + "\n" + packetSetup.getIds() + "\n" + packetSetup.getColors());
             } else if (packetFromServer instanceof PacketDoAction) {
                 PacketDoAction packetDoAction = (PacketDoAction) packetFromServer;
+                if(!packetDoAction.getTo().equals(clientNickname))
+                    return;
                 System.out.println("\nDo this action: " + packetDoAction.getActionType());
                 if (packetDoAction.getActionType() == ActionType.CHOOSE_START_PLAYER) {
                     System.out.println("\n" + "Choose a start player by writing his name");
@@ -144,7 +152,7 @@ public class SampleClient {
                     System.out.println("\n" + "DEMO ENDS HERE");
                 }
             }
-            if(packetFromServer instanceof PacketDoAction || packetFromServer instanceof PacketCardsFromServer)
+            if(packetFromServer instanceof PacketDoAction || packetFromServer instanceof PacketCardsFromServer || packetFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE)
                 lastPacketReceived = packetFromServer;
 
         }finally {
@@ -152,33 +160,7 @@ public class SampleClient {
         }
     }
 
-    public void sendString(String s) {
-        try {
-            os.writeUTF(s);
-            os.flush();
-        }catch (IOException e){
-            manageClosure();
-        }
-    }
 
-
-    public void sendInt(int n){
-        try {
-            os.writeInt(n);
-            os.flush();
-        }catch (IOException e){
-            manageClosure();
-        }
-    }
-
-    public void sendBoolean(boolean b){
-        try {
-            os.writeBoolean(b);
-            os.flush();
-        }catch (IOException e){
-            manageClosure();
-        }
-    }
 
     public void send(Object packet){
         try {
