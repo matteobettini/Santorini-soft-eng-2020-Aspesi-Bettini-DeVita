@@ -1,6 +1,7 @@
 package it.polimi.ingsw.packets;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PacketMatchStarted implements Serializable {
@@ -10,7 +11,7 @@ public class PacketMatchStarted implements Serializable {
     private final boolean hardcore;
 
     public PacketMatchStarted(List<String> players, boolean hardcore) {
-        this.players = players;
+        this.players = new ArrayList<>(players);
         this.hardcore = hardcore;
     }
 

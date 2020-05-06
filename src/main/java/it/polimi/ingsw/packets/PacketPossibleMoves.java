@@ -2,6 +2,8 @@ package it.polimi.ingsw.packets;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,7 +15,11 @@ public class PacketPossibleMoves implements Serializable {
 
     public PacketPossibleMoves(String to, Map<String, Set<Point>> possibleMoves) {
         this.to = to;
-        this.possibleMoves = possibleMoves;
+        this.possibleMoves = new HashMap<>();
+        for(String s : possibleMoves.keySet()){
+            Set<Point> internalSet = new HashSet<>(possibleMoves.get(s));
+            this.possibleMoves.put(s,internalSet);
+        }
     }
 
     public String getTo() {

@@ -2,6 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.controller.Controller;
 import it.polimi.ingsw.model.ConcreteModel;
+import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.ConnectionMessages;
 import it.polimi.ingsw.packets.PacketMatchStarted;
 import it.polimi.ingsw.view.ConnectionToClient;
@@ -11,15 +12,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class Match {
+class Match {
 
     private final int id;
+
+    private Observer<Match> closureHandler;
 
     private final Map<ConnectionToClient, VirtualView>  clients;
     private final Controller controller;
     private final ConcreteModel model;
+
+    private final List<String> players;
+    private final boolean isHardcore;
+
+    private AtomicBoolean isClosing = new AtomicBoolean();
 
 
     /**
@@ -32,19 +41,29 @@ public class Match {
      * @param isHardcore the match gamemode
      * @param id the match id
      */
-    public Match(List<ConnectionToClient> clientConnections, boolean isHardcore, int id) {
+    Match(List<ConnectionToClient> clientConnections, boolean isHardcore, int id) {
         assert(clientConnections != null);
+
+        this.isClosing.set(false);
         this.id = id;
         this.clients = new HashMap<>();
         List<String> players = clientConnections.stream().map(ConnectionToClient::getClientNickname).collect(Collectors.toList());
+        this.players = new ArrayList<>(players);
+        this.isHardcore = isHardcore;
         this.model = new ConcreteModel(players, isHardcore);
 
         for(ConnectionToClient c : clientConnections){
-            c.setInMatch(true);
-            c.send(new PacketMatchStarted(players, isHardcore), false);
-            System.out.println("Match: sending started to: " + c.getClientNickname());
+
             VirtualView virtualView = new VirtualView(c, model);
             this.clients.put(c, virtualView);
+
+            c.setInMatch(true);
+            c.setClosureHandler((connection) -> {
+                if(isClosing.compareAndSet(false, true)) {
+                    notifyEnd(connection);
+                    closureHandler.update(this);
+                }
+            });
         }
 
         this.controller = new Controller(new ArrayList<>(clients.values()), model);
@@ -53,17 +72,16 @@ public class Match {
     /**
      * Method used to start the match (start the model)
      */
-    public void start(){
-        model.start();
-    }
+    void start(){
 
-    /**
-     * Returns true if the given connection is playing in the match
-     * @param connectionToClient the connection i want the info about
-     * @return true if it is playing in the match
-     */
-    public boolean contains(ConnectionToClient connectionToClient){
-        return clients.containsKey(connectionToClient);
+        for(ConnectionToClient c : clients.keySet()){
+            if(!isClosing.get()) {
+                c.send(new PacketMatchStarted(players, isHardcore), false);
+                System.out.println("Match: sending started to: " + c.getClientNickname());
+            }
+        }
+
+        model.start();
     }
 
     /**
@@ -72,14 +90,18 @@ public class Match {
      * closes them
      * @param connectionToClient the client causing the match shutdown
      */
-    public void notifyEnd(ConnectionToClient connectionToClient){
+    private void notifyEnd(ConnectionToClient connectionToClient){
         assert(clients.containsKey(connectionToClient));
-        for(ConnectionToClient c : clients.keySet()){
-            if(!c.equals(connectionToClient)) {
-                c.send(ConnectionMessages.MATCH_ENDED, false);
-                c.closeRoutine();
+            for(ConnectionToClient c : clients.keySet()){
+                if(!c.equals(connectionToClient)) {
+                    c.send(ConnectionMessages.MATCH_ENDED, false);
+                    c.closeRoutine();
+                }
             }
-        }
+    }
+
+    void setClosureHandler(Observer<Match> closureHandler) {
+        this.closureHandler = closureHandler;
     }
 
     /**

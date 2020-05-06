@@ -8,9 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -183,13 +180,13 @@ public class ClientImpl implements Client {
 
         try {
             is.close();
-        }catch (IOException ignored){}
+        }catch (Exception ignored){}
         try {
             os.close();
-        }catch (IOException ignored){}
+        }catch (Exception ignored){}
         try{
             socket.close();
-        }catch (IOException ignored){ }
+        }catch (Exception ignored){ }
 
         started.set(false);
 

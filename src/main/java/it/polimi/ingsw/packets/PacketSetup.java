@@ -4,8 +4,8 @@ import javafx.util.Pair;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class PacketSetup implements Serializable {
 
@@ -16,9 +16,23 @@ public class PacketSetup implements Serializable {
     private final boolean isHardcore;
 
     public PacketSetup(Map<String, List<String>> ids, Map<String, Color> colors, Map<String, Pair<String, String>> cards, boolean isHardcore) {
-        this.ids = ids;
-        this.colors = colors;
-        this.cards = cards;
+        this.ids = new HashMap<>();
+        for(String s : ids.keySet()){
+            List<String> internalList = new ArrayList<>(ids.get(s));
+            this.ids.put(s,internalList);
+        }
+        this.colors = new HashMap<>();
+        for(String s : colors.keySet()){
+            this.colors.put(s, colors.get(s));
+        }
+
+        this.cards = new HashMap<>();
+        for(String s : cards.keySet()){
+            Pair<String,String> internalPair = new Pair<>( cards.get(s).getKey(), cards.get(s).getValue());
+            this.cards.put(s,internalPair);
+        }
+
+
         this.isHardcore = isHardcore;
     }
 

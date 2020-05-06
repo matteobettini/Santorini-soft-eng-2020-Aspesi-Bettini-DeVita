@@ -1,6 +1,8 @@
 package it.polimi.ingsw.packets;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +17,8 @@ public class PacketCardsFromServer implements Serializable {
     public PacketCardsFromServer(String to, int numberToChoose, Map<String, String> allCards, List<String> availableCards) {
         this.to = to;
         this.numberToChoose = numberToChoose;
-        this.allCards = allCards;
-        this.availableCards = availableCards;
+        this.allCards = new HashMap<>(allCards);
+        this.availableCards = new ArrayList<>(availableCards);
     }
 
     public String getTo() {

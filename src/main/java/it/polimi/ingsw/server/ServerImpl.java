@@ -156,14 +156,19 @@ public class ServerImpl implements Server {
     private void createMatch() {
         lockLobby.lock();
         try {
+
             Match match = new Match(waitingClients.subList(0, currMatchSize), currMatchHardcore, currMatchID);
+            match.setClosureHandler(this::deregisterMatch);
+
             lockMatches.lock();
             try {
                 activeMatches.add(match);
             } finally {
                 lockMatches.unlock();
             }
+
             currMatchID++;
+
             waitingClients = waitingClients.stream().filter(x -> waitingClients.indexOf(x) >= currMatchSize).collect(Collectors.toList());
 
             currMatchSize = -1;
@@ -172,6 +177,7 @@ public class ServerImpl implements Server {
             setNextLobbyPhase();
 
             match.start();
+
         } finally {
             lockLobby.unlock();
         }
@@ -187,20 +193,6 @@ public class ServerImpl implements Server {
      * @param connectionToClient the client to be de-registered
      */
     private void deregister(ConnectionToClient connectionToClient) {
-
-        lockMatches.lock();
-        try {
-            for (Match match : activeMatches) {
-                if (match.contains(connectionToClient)) {
-                    match.notifyEnd(connectionToClient);
-                    deregisterMatch(match);
-                    return;
-                }
-            }
-        } finally {
-            lockMatches.unlock();
-        }
-
         lockLobby.lock();
         try {
             if (waitingClients.contains(connectionToClient)) {
