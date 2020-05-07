@@ -16,7 +16,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
 
         CharStream stream = viewModel.getStream();
         Board board = viewModel.getBoard();
-        GraphicalMatchMenu graphicalMatchMenu = viewModel.getGraphicalMatchMenu();
+        GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
         GraphicalBoard graphicalBoard = viewModel.getGraphicalBoard();
 
         if(board.getNumberOfWorkers() == 0){
@@ -33,15 +33,21 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
         for(int i = 0; i < workersID.size(); ++i){
             Integer cordX;
             String cordY;
-            System.out.println("Choose your worker" + (i + 1) + "'s position:");
-            System.out.print("X: ");
-            cordX = InputUtilities.getInt();
-            if(cordX == null) return;
-            System.out.print("Y: ");
-            cordY = InputUtilities.getLine();
-            if (cordY == null) return;
-            char y = cordY.charAt(0);
-            Point helper = board.getPoint(cordX, y);
+            Point helper;
+            boolean error = false;
+            do{
+                if(error) System.out.println("Invalid position!");
+                else System.out.println("Choose your worker" + (i + 1) + "'s position:");
+                System.out.print("X: ");
+                cordX = InputUtilities.getInt();
+                if(cordX == null) return;
+                System.out.print("Y: ");
+                cordY = InputUtilities.getLine();
+                if (cordY == null) return;
+                char y = cordY.charAt(0);
+                helper = board.getPoint(cordX, y);
+                if(board.getCell(helper) == null || positions.containsValue(helper) || board.getCell(helper).getWorker() != null) error = true;
+            }while(board.getCell(helper) == null || positions.containsValue(helper) || board.getCell(helper).getWorker() != null);
             positions.put(workersID.get(i), helper);
         }
 

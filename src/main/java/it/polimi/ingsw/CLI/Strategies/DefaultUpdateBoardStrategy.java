@@ -13,16 +13,16 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
         ViewModel viewModel = ViewModel.getInstance();
         Board board = viewModel.getBoard();
         GraphicalBoard graphicalBoard = viewModel.getGraphicalBoard();
-        GraphicalMatchMenu graphicalMatchMenu = viewModel.getGraphicalMatchMenu();
         CharStream stream = viewModel.getStream();
+        GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
 
-        //FIRST WE UPDATE THE BOTH THE BOARD AND THE GRAPHICAL ONE
+        //FIRST WE UPDATE BOTH THE BOARD AND THE GRAPHICAL ONE
         if(packetUpdateBoard.getNewBuildings() != null){
             for(Point pos : packetUpdateBoard.getNewBuildings().keySet()){
                 for(BuildingType building : packetUpdateBoard.getNewBuildings().get(pos)){
                     board.getCell(pos).addBuilding(building);
                     graphicalBoard.getCell(pos).addBuilding(building);
-                    graphicalMatchMenu.decrementCounter(building, 1);
+                    viewModel.decrementCounter(building, 1);
                 }
             }
 
@@ -39,22 +39,7 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
 
             for(String worker : packetUpdateBoard.getWorkersPositions().keySet()){
                 board.getCell(packetUpdateBoard.getWorkersPositions().get(worker)).setWorker(worker);
-
-                //UPDATE FOR THE GRAPHICAL BOARD
-                String workerOwner = "";
-                char workerNumber = '\0';
-                for(String player : viewModel.getIds().keySet()){
-                    for(int i = 1; i <= 2; ++i){
-                        if(viewModel.getIds().get(player).get(i - 1).equals(worker)){
-                            if(i == 1) workerNumber = '1';
-                            else workerNumber = '2';
-                            workerOwner = player;
-                        }
-                    }
-
-                }
-                Color colorOwner = viewModel.getPlayersColor().get(workerOwner);
-                graphicalBoard.getCell(packetUpdateBoard.getWorkersPositions().get(worker)).setWorker(colorOwner, workerNumber, workerOwner);
+                graphicalBoard.getCell(packetUpdateBoard.getWorkersPositions().get(worker)).setWorker(worker);
             }
         }
 
@@ -64,7 +49,7 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
             viewModel.setLoser(loser);
 
             //WE ALSO SET IT IN THE MATCH MENU
-            graphicalMatchMenu.setLoser(loser);
+            viewModel.setLoser(loser);
             if(loser.equals(viewModel.getPlayerName())) graphicalMatchMenu.setGameOver(true);
         }
         if(packetUpdateBoard.getPlayerWonID() != null){
@@ -82,5 +67,8 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
         graphicalMatchMenu.draw();
         stream.print(System.out);
         stream.reset();
+
+        if(viewModel.getWinner() != null) System.out.println(viewModel.getWinner() + "has won!");
+        if(viewModel.getLoser() != null) System.out.println(viewModel.getLoser() + "has lost!");
     }
 }

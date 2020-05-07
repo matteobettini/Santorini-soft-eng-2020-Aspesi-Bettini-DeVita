@@ -84,8 +84,7 @@ public class CLI {
         });
 
         client.addPacketDoActionObserver( (packetDoAction, isRetry) -> {
-            //WE UPDATE THE CURRENT PLAYER IN THE MATCH MENU
-            viewModel.getGraphicalMatchMenu().setActivePlayer(packetDoAction.getTo());
+            viewModel.setCurrentActivePlayer(packetDoAction.getTo());
             if(!packetDoAction.getTo().equals(viewModel.getPlayerName())){
                 System.out.println("\nIt's " + packetDoAction.getTo() + "'s turn...");
                 return;
@@ -98,7 +97,7 @@ public class CLI {
                 setWorkersPositionStrategy.handleSetWorkersPosition(isRetry);
             }
             else{
-                actionStrategy.handleAction(packetDoAction, null, null);
+                actionStrategy.handleAction(packetDoAction);
             }
         });
 
@@ -107,8 +106,7 @@ public class CLI {
         });
 
         client.addPacketPossibleMovesObserver( packetPossibleMoves -> {
-            PacketDoAction packetDoAction = new PacketDoAction(packetPossibleMoves.getTo(), ActionType.MOVE);
-            actionStrategy.handleAction(packetDoAction, packetPossibleMoves, null);
+            actionStrategy.handlePossibleMoves(packetPossibleMoves);
         });
 
         if(askConnectionParameters) setConnectionParameters();

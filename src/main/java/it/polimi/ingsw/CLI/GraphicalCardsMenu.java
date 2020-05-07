@@ -65,9 +65,9 @@ public class GraphicalCardsMenu implements CharFigure {
         if (stream == null) return;
 
         if (!chosenCards.isEmpty()) {
-            stream.setMessage("CARDS", relX + 40, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_RED, null);
-            stream.setMessage("IN", relX + 85, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_RED, null);
-            stream.setMessage("GAME", relX + 102, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_RED, null);
+            stream.setMessage("CARDS", relX + 40, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_RED);
+            stream.setMessage("IN", relX + 85, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_RED);
+            stream.setMessage("GAME", relX + 102, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_RED);
             int marginX = 10;
             if (chosenCards.size() == 2) {
                 int marginY = 0;
@@ -88,9 +88,9 @@ public class GraphicalCardsMenu implements CharFigure {
         }
 
         if(availableCards.size() != godCards.size()){
-            stream.setMessage("CHOOSE", relX + 33, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN, null);
-            stream.setMessage("A", relX + 85, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN, null);
-            stream.setMessage("CARD", relX + 98, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN, null);
+            stream.setMessage("CHOOSE", relX + 33, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN);
+            stream.setMessage("A", relX + 85, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN);
+            stream.setMessage("CARD", relX + 98, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN);
             int marginX = 10;
             if(availableCards.size() == 2){
                 int marginY = 0;
@@ -115,8 +115,8 @@ public class GraphicalCardsMenu implements CharFigure {
 
         int marginForTitle = 7;
         int marginForHeading = (cardsPerRow * 10) - (cardsPerRow <= 2 ? 20 : 0);
-        stream.setMessage("GOD", relX + marginForHeading + 5, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW, null);
-        stream.setMessage("CARDS", relX + marginForHeading + 35, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW, null);
+        stream.setMessage("GOD", relX + marginForHeading + 5, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW);
+        stream.setMessage("CARDS", relX + marginForHeading + 35, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW);
         int countY = 0;
         int countX = 0;
         for (String godCard : godCards.keySet()) {

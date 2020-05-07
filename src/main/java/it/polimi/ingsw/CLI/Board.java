@@ -21,6 +21,14 @@ public class Board {
         }
     }
 
+    public static int getRows() {
+        return rows;
+    }
+
+    public static int getColumns() {
+        return columns;
+    }
+
     public int getNumberOfWorkers(){
         int count = 0;
         for(int i = 0; i < rows; ++i){

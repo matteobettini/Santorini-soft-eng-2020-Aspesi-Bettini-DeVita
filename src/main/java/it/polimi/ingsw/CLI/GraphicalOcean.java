@@ -29,7 +29,7 @@ public class GraphicalOcean implements CharFigure{
 
         for(int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
-                stream.addColor(i ,j , null, BackColor.ANSI_BRIGHT_BG_CYAN);
+                stream.addColor(i ,j , BackColor.ANSI_BRIGHT_BG_CYAN);
             }
         }
 

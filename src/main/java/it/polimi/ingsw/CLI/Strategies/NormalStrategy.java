@@ -14,37 +14,51 @@ import java.util.*;
 import java.util.List;
 
 public class NormalStrategy implements ActionStrategy {
+
+    PacketPossibleMoves lastPossibleMoves; //null if the action has just arrived
+    PacketDoAction lastAction; //null if the action has just arrived
+    Integer lastUsedWorker; //null if the action has just arrived
+
     @Override
-    public void handleAction(PacketDoAction packetDoAction, PacketPossibleMoves packetPossibleMoves, PacketPossibleBuilds packetPossibleBuilds){
+    public void handleAction(PacketDoAction packetDoAction){
         ViewModel viewModel = ViewModel.getInstance();
         Client client = viewModel.getClient();
         String player = viewModel.getPlayerName();
         List<String> workersID = viewModel.getIds().get(player);
         Board board = viewModel.getBoard();
         GraphicalBoard graphicalBoard = viewModel.getGraphicalBoard();
-        GraphicalMatchMenu graphicalMatchMenu = viewModel.getGraphicalMatchMenu();
         CharStream stream = viewModel.getStream();
+        GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
 
         if(packetDoAction.getActionType() == ActionType.MOVE){
-            if(packetPossibleMoves == null){
+            if(lastPossibleMoves == null){
+                lastAction = packetDoAction;
                 List<Point> playerMove = new LinkedList<>();
                 PacketMove packetMove = new PacketMove(viewModel.getPlayerName(), workersID.get(0), playerMove);
                 client.send(packetMove);
                 return;
             }
-            if(!packetPossibleMoves.getPossibleMoves().isEmpty()){
-                Map<String, Set<Point>> possibleMoves = packetPossibleMoves.getPossibleMoves();
-                Integer workerChoice;
+            if(!lastPossibleMoves.getPossibleMoves().isEmpty()){
+                Map<String, Set<Point>> possibleMoves = lastPossibleMoves.getPossibleMoves();
                 Set<Point> possiblePositions;
 
-                //FIX HERE BASED ON THE LAST USED WORKER
-                do{
-                    System.out.print("Which worker do you want to use (1 || 2): ");
-                    workerChoice = InputUtilities.getInt();
-                    if (workerChoice == null) return;
-                    possiblePositions = possibleMoves.get(workersID.get(workerChoice - 1));
-                }while(workerChoice != 1 && workerChoice != 2 && possiblePositions.isEmpty());
+                String selectedWorker;
 
+                if(lastUsedWorker == null){
+                    Integer workerChoice;
+                    do{
+                        System.out.print("Which worker do you want to use (1 || 2): ");
+                        workerChoice = InputUtilities.getInt();
+                        if (workerChoice == null) return;
+                        selectedWorker = workersID.get(workerChoice - 1);
+                        possiblePositions = possibleMoves.get(selectedWorker);
+                    }while(workerChoice != 1 && workerChoice != 2 && possiblePositions.isEmpty());
+                }
+                else{
+                    selectedWorker = workersID.get(lastUsedWorker - 1);
+                }
+
+                possiblePositions = possibleMoves.get(selectedWorker);
                 graphicalBoard.setPossibleActions(possiblePositions);
                 GraphicalOcean graphicalOcean = new GraphicalOcean(stream,159, 50);
                 graphicalOcean.draw();
@@ -52,27 +66,30 @@ public class NormalStrategy implements ActionStrategy {
                 graphicalMatchMenu.draw();
                 stream.print(System.out);
                 stream.reset();
+
                 Integer choice;
 
-                //FIX HERE BASED ON THE LAST USED WORKER
                 do{
-                    System.out.println("Do you want to make a choice (1), select another worker(2) or confirm the current actions(3)? ");
+                    System.out.println("Do you want to make a choice (1), restart the selection(2) or confirm the current actions(3)? ");
                     choice = InputUtilities.getInt();
                     if (choice == null) return;
                 }while(choice != 1 && choice != 2 && choice != 3);
 
                 if(choice == 2){
-                    handleAction(packetDoAction, packetPossibleMoves, null);
+                    //RESET THE GRAPHICAL BOARD
+                    viewModel.makeGraphicalBoardEqualToBoard();
+                    handlePossibleMoves(null);
                     return;
                 }
                 else if(choice == 3){
                     PacketPossibleMoves packetPossibleStop = new PacketPossibleMoves(player, new HashMap<>());
-                    handleAction(packetDoAction, packetPossibleStop, null);
+                    handlePossibleMoves(packetPossibleStop);
+                    return;
                 }
 
                 Point helper;
                 do{
-                    System.out.println("Choose your worker" + (workerChoice) + "'s position:");
+                    System.out.println("Choose your next position with Worker" + lastUsedWorker);
                     System.out.print("X: ");
                     Integer cordX = InputUtilities.getInt();
                     if(cordX == null) return;
@@ -101,5 +118,9 @@ public class NormalStrategy implements ActionStrategy {
         else if(packetDoAction.getActionType() == ActionType.MOVE_BUILD){
 
         }
+    }
+    public void handlePossibleMoves(PacketPossibleMoves packetPossibleMoves){
+        lastPossibleMoves = packetPossibleMoves;
+        handleAction(lastAction);
     }
 }

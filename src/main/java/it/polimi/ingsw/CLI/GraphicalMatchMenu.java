@@ -5,52 +5,25 @@ import it.polimi.ingsw.CLI.buildings.BuildingFactory;
 import it.polimi.ingsw.CLI.enums.BackColor;
 import it.polimi.ingsw.CLI.enums.ForeColor;
 import it.polimi.ingsw.model.enums.BuildingType;
+import javafx.util.Pair;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.Map;
 
 public class GraphicalMatchMenu implements CharFigure{
 
     private final CharStream stream;
-    private Map<String, Color> players;
-    private Map<String, String> playersGodCardAssociation;
-    private String activePlayer;
-    private String loser;
-    private Map<BuildingType, Integer> buildingsCounter;
+    //private Map<String, Color> players;
+    //private Map<String, String> playersGodCardAssociation;
+    //private String loser;
+    //private Map<BuildingType, Integer> buildingsCounter;
     private boolean gameOver;
     private boolean youWin;
 
     public GraphicalMatchMenu(CharStream stream){
         this.stream = stream;
-        this.players = new HashMap<>();
-        this.activePlayer = "DEFAULT";
-        this.loser = "DEFAULT";
-        this.playersGodCardAssociation = new HashMap<>();
-        this.buildingsCounter = new HashMap<>();
-        buildingsCounter.put(BuildingType.FIRST_FLOOR, 22);
-        buildingsCounter.put(BuildingType.SECOND_FLOOR, 18);
-        buildingsCounter.put(BuildingType.THIRD_FLOOR, 14);
-        buildingsCounter.put(BuildingType.DOME, 18);
         this.gameOver = false;
         this.youWin = false;
-    }
-
-    public void decrementCounter(BuildingType building,int howMany){
-        int count = buildingsCounter.get(building);
-        buildingsCounter.put(building, count - howMany);
-    }
-
-    public void setPlayers(Map<String, Color> players) {
-        this.players = players;
-    }
-
-    public void setPlayersGodCardAssociation(Map<String, String> playersGodCardAssociation) {
-        this.playersGodCardAssociation = playersGodCardAssociation;
-    }
-
-    public void setActivePlayer(String activePlayer) {
-        this.activePlayer = activePlayer;
     }
 
     public void setGameOver(boolean set){
@@ -61,10 +34,6 @@ public class GraphicalMatchMenu implements CharFigure{
         this.youWin = set;
     }
 
-    public void setLoser(String loser) {
-        this.loser = loser;
-    }
-
     @Override
     public void draw() {
         draw(0, 0);
@@ -72,13 +41,21 @@ public class GraphicalMatchMenu implements CharFigure{
 
     @Override
     public void draw(int relX, int relY) {
+        ViewModel viewModel = ViewModel.getInstance();
+        Map<String, Color> players = viewModel.getPlayersColor();
+        Map<String, Pair<String, String>> playersGodCardAssociation = viewModel.getPlayersCards();
+        Map<BuildingType, Integer>  buildingsCounter = viewModel.getBuildingsCounter();
+        String loser = viewModel.getLoser();
+        String activePlayer = viewModel.getCurrentActivePlayer();
+
         if(players.isEmpty() || playersGodCardAssociation.isEmpty()) return;
+
         BackColor col;
         int nextLine = 5;
-        GraphicalPane playersBox = new GraphicalPane(stream, 35, 8, null, BackColor.ANSI_BG_BLUE);
+        GraphicalPane playersBox = new GraphicalPane(stream, 35, 8, BackColor.ANSI_BG_BLUE);
         playersBox.draw(relX + 5 , relY + nextLine);
-        stream.addString(relX + 10, relY + nextLine + 1, "PLAYERS", null, BackColor.ANSI_BG_BLUE);
-        stream.addString(relX + 25, relY + + nextLine + 1, "GODCARD", null, BackColor.ANSI_BG_BLUE);
+        stream.addString(relX + 10, relY + nextLine + 1, "PLAYERS", BackColor.ANSI_BG_BLUE);
+        stream.addString(relX + 25, relY + + nextLine + 1, "GODCARD", BackColor.ANSI_BG_BLUE);
         nextLine += 3;
         for(String player : players.keySet()){
             if(players.get(player).equals(Color.CYAN)){
@@ -91,54 +68,54 @@ public class GraphicalMatchMenu implements CharFigure{
                 col = BackColor.ANSI_BG_YELLOW;
             }
             else col = BackColor.ANSI_BG_WHITE;
-            if(!activePlayer.equals(player)){
-                if(loser.equals(player)){
-                    stream.addColor(relX + 7, relY + nextLine, null, BackColor.ANSI_BRIGHT_BG_RED);
-                    stream.addColor(relX + 8, relY + + nextLine, null, BackColor.ANSI_BRIGHT_BG_RED);
+            if(activePlayer != null && !activePlayer.equals(player)){
+                if(loser != null && loser.equals(player)){
+                    stream.addColor(relX + 7, relY + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
+                    stream.addColor(relX + 8, relY + + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
                 }
                 else{
-                    stream.addColor(relX + 7, relY + nextLine, null, BackColor.ANSI_BRIGHT_BG_YELLOW);
-                    stream.addColor(relX + 8, relY + nextLine, null, BackColor.ANSI_BRIGHT_BG_YELLOW);
+                    stream.addColor(relX + 7, relY + nextLine, BackColor.ANSI_BRIGHT_BG_YELLOW);
+                    stream.addColor(relX + 8, relY + nextLine, BackColor.ANSI_BRIGHT_BG_YELLOW);
                 }
             }
             else {
-                stream.addColor(relX + 7, relY + nextLine, null, BackColor.ANSI_BRIGHT_BG_GREEN);
-                stream.addColor(relX + 8, relY + nextLine, null, BackColor.ANSI_BRIGHT_BG_GREEN);
+                stream.addColor(relX + 7, relY + nextLine, BackColor.ANSI_BRIGHT_BG_GREEN);
+                stream.addColor(relX + 8, relY + nextLine, BackColor.ANSI_BRIGHT_BG_GREEN);
             }
-            String godCard = playersGodCardAssociation.get(player);
+            String godCard = playersGodCardAssociation.get(player).getKey();
             if(godCard.length() >= 15){
                 godCard = godCard.substring(0, 12);
                 godCard = godCard.concat("...");
             }
-            stream.addString(relX + 25, relY + nextLine, godCard, null, BackColor.ANSI_BG_BLUE);
+            stream.addString(relX + 25, relY + nextLine, godCard, BackColor.ANSI_BG_BLUE);
             if(player.length() >= 15){
                 player = player.substring(0, 12);
                 player = player.concat("...");
             }
-            stream.addString(relX + 10, relY + nextLine, player, null, col);
+            stream.addString(relX + 10, relY + nextLine, player, col);
             nextLine += 2;
         }
 
-        GraphicalPane buildingsBox = new GraphicalPane(stream, 35, 25, null, BackColor.ANSI_BG_RED);
+        GraphicalPane buildingsBox = new GraphicalPane(stream, 35, 25, BackColor.ANSI_BG_RED);
         buildingsBox.draw(relX + 5, relY + 18);
-        stream.addString(relX + 14, relY + 19, "AVAILABLE BUILDINGS", null, BackColor.ANSI_BG_RED);
+        stream.addString(relX + 14, relY + 19, "AVAILABLE BUILDINGS", BackColor.ANSI_BG_RED);
         CharFigure dome = BuildingFactory.getBuilding(stream, BuildingType.DOME, 20, 8);
         if(dome != null) dome.draw(relX + 12,relY + 18);
-        stream.addString(relX + 22, relY + 22, buildingsCounter.get(BuildingType.DOME).toString(), null, BackColor.ANSI_BG_BLUE);
+        stream.addString(relX + 22, relY + 22, buildingsCounter.get(BuildingType.DOME).toString(), BackColor.ANSI_BG_BLUE);
         CharFigure third = BuildingFactory.getBuilding(stream, BuildingType.THIRD_FLOOR, 20, 8);
-        stream.addString(relX + 22, relY + 26, buildingsCounter.get(BuildingType.THIRD_FLOOR).toString(), null, null);
+        stream.addString(relX + 22, relY + 26, buildingsCounter.get(BuildingType.THIRD_FLOOR).toString());
         if(third != null) third.draw(relX + 12,relY + 22);
         CharFigure second = BuildingFactory.getBuilding(stream, BuildingType.SECOND_FLOOR, 20, 8);
-        stream.addString(relX + 22, relY + 31, buildingsCounter.get(BuildingType.SECOND_FLOOR).toString(), null, null);
+        stream.addString(relX + 22, relY + 31, buildingsCounter.get(BuildingType.SECOND_FLOOR).toString());
         if(second != null) second.draw(relX + 13,relY + 27);
         GraphicalPane first = new GraphicalPane(stream, 18, 7, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_WHITE);
         first.draw(relX + 14,relY + 35);
-        stream.addString(relX + 22, relY + 38, buildingsCounter.get(BuildingType.FIRST_FLOOR).toString(), null, BackColor.ANSI_BG_WHITE);
+        stream.addString(relX + 22, relY + 38, buildingsCounter.get(BuildingType.FIRST_FLOOR).toString(), BackColor.ANSI_BG_WHITE);
 
         if(gameOver){
             int marginY = 18;
             int marginX = 68;
-            GraphicalPane gameOverBox = new GraphicalPane(stream, 69, 16, null, BackColor.ANSI_BG_BLACK);
+            GraphicalPane gameOverBox = new GraphicalPane(stream, 69, 16, BackColor.ANSI_BG_BLACK);
             gameOverBox.draw(relX + 50, relY + 15);
             String title = "GAME";
             stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_RED, BackColor.ANSI_BG_BLACK);
@@ -150,7 +127,7 @@ public class GraphicalMatchMenu implements CharFigure{
         if(youWin){
             int marginY = 18;
             int marginX = 70;
-            GraphicalPane gameOverBox = new GraphicalPane(stream, 64, 16, null, BackColor.ANSI_BRIGHT_BG_BLUE);
+            GraphicalPane gameOverBox = new GraphicalPane(stream, 64, 16, BackColor.ANSI_BRIGHT_BG_BLUE);
             gameOverBox.draw(relX + 50, relY + 15);
             String title = "YOU";
             stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_YELLOW, BackColor.ANSI_BRIGHT_BG_BLUE);

@@ -4,5 +4,5 @@ import it.polimi.ingsw.CLI.CLI;
 import it.polimi.ingsw.packets.PacketSetup;
 
 public interface SetupStrategy {
-    public void handleSetup(PacketSetup packetSetup, CLI cli);
+    void handleSetup(PacketSetup packetSetup, CLI cli);
 }

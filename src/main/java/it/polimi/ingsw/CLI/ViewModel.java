@@ -2,9 +2,11 @@ package it.polimi.ingsw.CLI;
 
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.ClientImpl;
+import it.polimi.ingsw.model.enums.BuildingType;
 import javafx.util.Pair;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,18 +23,50 @@ public class ViewModel {
     private String winner;
     private String loser;
     private Board board;
+    private Map<BuildingType, Integer> buildingsCounter;
 
     private GraphicalBoard graphicalBoard;
-    private GraphicalMatchMenu graphicalMatchMenu;
     private CharStream stream;
 
     private Client client;
+
+    private String currentActivePlayer;
 
     private ViewModel(){
         this.board = new Board();
         this.stream = new CharStream(159, 50);
         this.graphicalBoard = new GraphicalBoard(stream);
-        this.graphicalMatchMenu = new GraphicalMatchMenu(stream);
+        this.buildingsCounter = new HashMap<>();
+        buildingsCounter.put(BuildingType.FIRST_FLOOR, 22);
+        buildingsCounter.put(BuildingType.SECOND_FLOOR, 18);
+        buildingsCounter.put(BuildingType.THIRD_FLOOR, 14);
+        buildingsCounter.put(BuildingType.DOME, 18);
+        this.loser = null;
+        this.winner = null;
+    }
+
+    public void makeGraphicalBoardEqualToBoard(){
+        graphicalBoard = new GraphicalBoard(stream);
+
+        for(int i = 0; i < Board.getRows(); ++i){
+            for(int j = 0; i < Board.getColumns(); ++j){
+                Point position = new Point(i, j);
+                Cell cell = board.getCell(position);
+
+                if(cell.getWorker() != null) graphicalBoard.getCell(position).setWorker(cell.getWorker());
+
+                for(BuildingType buildingType : cell.getBuildings()) graphicalBoard.getCell(position).addBuilding(buildingType);
+            }
+        }
+    }
+
+    public void decrementCounter(BuildingType building,int howMany){
+        int count = buildingsCounter.get(building);
+        buildingsCounter.put(building, count - howMany);
+    }
+
+    public Map<BuildingType, Integer> getBuildingsCounter() {
+        return buildingsCounter;
     }
 
     public Client getClient() {
@@ -41,10 +75,6 @@ public class ViewModel {
 
     public GraphicalBoard getGraphicalBoard() {
         return graphicalBoard;
-    }
-
-    public GraphicalMatchMenu getGraphicalMatchMenu() {
-        return graphicalMatchMenu;
     }
 
     public CharStream getStream() {
@@ -82,6 +112,8 @@ public class ViewModel {
     public String getPlayerName() {
         return playerName;
     }
+
+    public String getCurrentActivePlayer() { return currentActivePlayer; }
 
     public String getWinner() {
         return winner;
@@ -130,4 +162,6 @@ public class ViewModel {
     public void setLoser(String loser) {
         this.loser = loser;
     }
+
+    public void setCurrentActivePlayer(String currentActivePlayer) { this.currentActivePlayer = currentActivePlayer; }
 }

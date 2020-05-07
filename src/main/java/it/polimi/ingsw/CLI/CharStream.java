@@ -35,6 +35,19 @@ public class CharStream {
         return content[y][x];
     }
 
+    public void addChar(char content,int x, int y,  BackColor backColor){
+        addChar(content, x , y , null, backColor);
+    }
+
+    public void addChar(char content,int x, int y,  ForeColor foreColor){
+        addChar(content, x , y , foreColor, null);
+    }
+
+    public void addChar(char content,int x, int y){
+        addChar(content, x , y , null, null);
+    }
+
+
     public void addChar(char content,int x, int y, ForeColor foreColor, BackColor backColor){
         if(x < 0 || x >= width || y < 0 || y >= height) return;
         this.content[y][x] = content;
@@ -49,6 +62,15 @@ public class CharStream {
         }
         return true;
     }
+
+    public boolean addString(int x, int y, String str, ForeColor foreColor){
+        return addString(x, y, str, foreColor, null);
+    }
+
+    public boolean addString(int x, int y, String str, BackColor backColor){
+        return addString(x, y, str, null, backColor);
+    }
+
     public boolean addString(int x, int y, String str){
         return addString(x,y,str,null,null);
     }
@@ -58,6 +80,14 @@ public class CharStream {
         if (x<0 || x >= width || y<0 || y>=height) return;
         if (foreColor == null && backColor == null) colors[y][x] = null;
         else colors[y][x] = (foreColor != null ? foreColor.getCode() : "") + (backColor!= null ? backColor.getCode() : "");
+    }
+
+    public void addColor(int x, int y, BackColor backColor){
+        addColor(x, y, null, backColor);
+    }
+
+    public void addColor(int x, int y, ForeColor foreColor){
+        addColor(x, y, foreColor, null);
     }
 
     public void setMessage(String message, int x, int y, ForeColor foreColor, BackColor backColorWord, BackColor backColor){
@@ -82,6 +112,11 @@ public class CharStream {
             space += maxLenghtRow + 1;
         }
     }
+
+    public void setMessage(String message, int x, int y, ForeColor foreColor, BackColor backColorWord){
+        setMessage(message,x, y, foreColor,  backColorWord, null);
+    }
+
 
 
     public void reset(){

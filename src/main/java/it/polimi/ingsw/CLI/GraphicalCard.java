@@ -37,11 +37,11 @@ public class GraphicalCard implements CharFigure {
     public void draw(int relX, int relY) {
         for(int i = 0; i <= width; ++i){
             for(int j = 0; j <= height; ++j){
-                if(i == 0 && j == 0) stream.addChar('╭',i + relX, j + relY, null, null);
-                else if(i == 0 && j == height) stream.addChar('╰',i + relX, j + relY, null, null);
-                else if(i == width && j == 0) stream.addChar('╮',i + relX, j + relY, null, null);
-                else if(i == width && j == height) stream.addChar('╯',i + relX, j + relY, null, null);
-                else stream.addColor(i + relX, j + relY, null, BackColor.ANSI_BRIGHT_BG_WHITE);
+                if(i == 0 && j == 0) stream.addChar('╭',i + relX, j + relY);
+                else if(i == 0 && j == height) stream.addChar('╰',i + relX, j + relY);
+                else if(i == width && j == 0) stream.addChar('╮',i + relX, j + relY);
+                else if(i == width && j == height) stream.addChar('╯',i + relX, j + relY);
+                else stream.addColor(i + relX, j + relY,  BackColor.ANSI_BRIGHT_BG_WHITE);
             }
         }
         int midPointCard = relX + 18;

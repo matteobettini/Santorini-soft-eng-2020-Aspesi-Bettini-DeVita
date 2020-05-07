@@ -7,7 +7,10 @@ import it.polimi.ingsw.packets.PacketPossibleMoves;
 
 public class HardcoreStrategy implements ActionStrategy {
     @Override
-    public void handleAction(PacketDoAction packetDoAction, PacketPossibleMoves packetPossibleMoves, PacketPossibleBuilds packetPossibleBuilds){
+    public void handleAction(PacketDoAction packetDoAction){
+
+    }
+    public void handlePossibleMoves(PacketPossibleMoves packetPossibleMoves){
 
     }
 }

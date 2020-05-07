@@ -44,10 +44,10 @@ public class GraphicalWorker implements CharFigure{
             for(int j = 0; j <= RATEOY; ++j){
                 //stream.addColor(i + relX, j + relY, null, color);
                 //if(i == 1 && j == 2) stream.addChar( '♙',i + relX, j + relY, null, color);
-                if(i == 1 && j == 1) stream.addChar('*', i + relX, j + relY, null, color);
-                if(i == 2 && j == 1) stream.addChar(playerInitial, i + relX, j + relY, null, color);
-                if(i == 3 && j == 1) stream.addChar(number, i + relX, j + relY, null, color);
-                if(i == 4 && j == 1) stream.addChar('*', i + relX, j + relY, null, color);
+                if(i == 1 && j == 1) stream.addChar('*', i + relX, j + relY, color);
+                if(i == 2 && j == 1) stream.addChar(playerInitial, i + relX, j + relY, color);
+                if(i == 3 && j == 1) stream.addChar(number, i + relX, j + relY, color);
+                if(i == 4 && j == 1) stream.addChar('*', i + relX, j + relY, color);
             }
         }
     }

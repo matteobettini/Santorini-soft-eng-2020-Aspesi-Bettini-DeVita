@@ -23,11 +23,11 @@ public class FirstFloorBuilding implements CharFigure {
 
     @Override
     public void draw(int relX, int relY) {
-        BackColor parentBack = BackColor.ANSI_BG_WHITE;
-        ForeColor parentFore = ForeColor.ANSI_BLACK;
+        BackColor backColor = BackColor.ANSI_BG_WHITE;
+        ForeColor foreColor = ForeColor.ANSI_BLACK;
         for(int i = 1; i < RATEOX; ++i) {
             for (int j = 1; j < RATEOY; ++j) {
-                stream.addColor(i + relX, j + relY, parentFore, parentBack);
+                stream.addColor(i + relX, j + relY, foreColor, backColor);
             }
         }
     }
