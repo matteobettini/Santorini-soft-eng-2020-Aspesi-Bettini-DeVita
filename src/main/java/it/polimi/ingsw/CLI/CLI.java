@@ -4,6 +4,7 @@ import it.polimi.ingsw.CLI.Strategies.*;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.ClientImpl;
 import it.polimi.ingsw.model.enums.ActionType;
+import it.polimi.ingsw.packets.PacketDoAction;
 
 import java.util.regex.Pattern;
 
@@ -14,11 +15,9 @@ public class CLI {
 
     private static final Pattern IP_PATTERN = Pattern.compile(IP_REGEXP);
 
-    private Client client;
     private String address;
     private int port;
     private boolean askConnectionParameters;
-    private boolean isToRestart;
 
     private ConnectionStrategy connectionStrategy;
     private ActionStrategy actionStrategy;
@@ -31,16 +30,14 @@ public class CLI {
     private SetWorkersPositionStrategy setWorkersPositionStrategy;
     private UpdateBoardStrategy updateBoardStrategy;
 
-    private Board board;
-    private GraphicalBoard graphicalBoard;
-    private GraphicalMatchMenu graphicalMatchMenu;
-    private CharStream stream;
+    private ViewModel viewModel;
+
 
     public CLI(){
+        this.viewModel = ViewModel.getInstance();
         this.askConnectionParameters = true;
-        this.board = new Board();
 
-        this.stream = new CharStream(159, 30);
+        CharStream stream = new CharStream(159, 30);
         GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream,159, 30);
 
         graphicalStartMenu.draw();
@@ -56,24 +53,22 @@ public class CLI {
 
     public void run(){
 
-        stream = new CharStream(159, 50);
-        graphicalBoard = new GraphicalBoard(stream);
-        graphicalMatchMenu = new GraphicalMatchMenu(stream);
-
         setInitialStrategies();
 
-        client = new ClientImpl();
+        viewModel.setClient();
+
+        Client client = viewModel.getClient();
 
         client.addConnectionStatusObserver( connectionStatus -> {
             connectionStrategy.handleConnection(connectionStatus, this);
         });
 
         client.addInsertNickRequestObserver( (message, isRetry) -> {
-            nicknameStrategy.handleNickname(message, this);
+            nicknameStrategy.handleNickname(message);
         });
 
         client.addInsertNumOfPlayersAndGamemodeRequestObserver( ((message, isRetry) -> {
-            requestNumberOfPlayersGameModeStrategy.handleRequestNumberOfPlayerGameMode(message, this);
+            requestNumberOfPlayersGameModeStrategy.handleRequestNumberOfPlayerGameMode(message);
         }));
 
         client.addPacketMatchStartedObserver( packetMatchStarted -> {
@@ -81,7 +76,7 @@ public class CLI {
         });
 
         client.addPacketCardsFromServerObserver( (packetCardsFromServer, isRetry) -> {
-            selectCardStrategy.handleCardStrategy(packetCardsFromServer, this);
+            selectCardStrategy.handleCardStrategy(packetCardsFromServer, isRetry);
         });
 
         client.addPacketSetupObserver( packetSetup -> {
@@ -90,22 +85,30 @@ public class CLI {
 
         client.addPacketDoActionObserver( (packetDoAction, isRetry) -> {
             //WE UPDATE THE CURRENT PLAYER IN THE MATCH MENU
-            graphicalMatchMenu.setActivePlayer(packetDoAction.getTo());
-            if(!packetDoAction.getTo().equals(board.getPlayerName())){
+            viewModel.getGraphicalMatchMenu().setActivePlayer(packetDoAction.getTo());
+            if(!packetDoAction.getTo().equals(viewModel.getPlayerName())){
                 System.out.println("\nIt's " + packetDoAction.getTo() + "'s turn...");
                 return;
             }
 
             if(packetDoAction.getActionType() == ActionType.CHOOSE_START_PLAYER){
-                chooseStarterStrategy.handleChooseStartPlayer(this);
+                chooseStarterStrategy.handleChooseStartPlayer();
             }
             else if (packetDoAction.getActionType() == ActionType.SET_WORKERS_POSITION){
-                setWorkersPositionStrategy.handleSetWorkersPosition(this, isRetry);
+                setWorkersPositionStrategy.handleSetWorkersPosition(isRetry);
+            }
+            else{
+                actionStrategy.handleAction(packetDoAction, null, null);
             }
         });
 
         client.addPacketUpdateBoardObserver( packetUpdateBoard -> {
-            updateBoardStrategy.handleUpdateBoard(packetUpdateBoard, this);
+            updateBoardStrategy.handleUpdateBoard(packetUpdateBoard);
+        });
+
+        client.addPacketPossibleMovesObserver( packetPossibleMoves -> {
+            PacketDoAction packetDoAction = new PacketDoAction(packetPossibleMoves.getTo(), ActionType.MOVE);
+            actionStrategy.handleAction(packetDoAction, packetPossibleMoves, null);
         });
 
         if(askConnectionParameters) setConnectionParameters();
@@ -119,7 +122,7 @@ public class CLI {
     private void setInitialStrategies(){
         connectionStrategy = new ConnectionSetupStrategy();
         nicknameStrategy = new DefaultNicknameStrategy();
-        requestNumberOfPlayersGameModeStrategy = new DefaultRequestNumberOfplayersGameModeStrategy();
+        requestNumberOfPlayersGameModeStrategy = new DefaultRequestNumberOfPlayersGameModeStrategy();
         matchStartedStrategy = new DefaultMatchStartedStrategy();
         selectCardStrategy = new DefaultSelectCardStrategy();
         setupStrategy = new DefaultSetupStrategy();
@@ -156,26 +159,6 @@ public class CLI {
     public static boolean addressIsValid(String address, int port) {
         if(address == null || port == -1) return false;
         return IP_PATTERN.matcher(address).matches() && port >= 1 && port <= 65535;
-    }
-
-    public GraphicalBoard getGraphicalBoard() {
-        return graphicalBoard;
-    }
-
-    public GraphicalMatchMenu getGraphicalMatchMenu() {
-        return graphicalMatchMenu;
-    }
-
-    public CharStream getStream() {
-        return stream;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-
-    public Client getClient() {
-        return client;
     }
 
 }

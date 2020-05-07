@@ -6,6 +6,7 @@ import it.polimi.ingsw.CLI.enums.ForeColor;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class GraphicalBoard implements CharFigure{
     private final int rows = 5;
@@ -14,8 +15,7 @@ public class GraphicalBoard implements CharFigure{
     private final GraphicalCell[][] graphicalCells;
     private final int RATEOX = 20;
     private final int RATEOY = 8;
-    private List<Point> possiblePositions;
-    private List<Point> notPossiblePositions;
+    private Set<Point> possiblePositions;
 
     public GraphicalBoard(CharStream stream){
         this.stream = stream;
@@ -98,11 +98,11 @@ public class GraphicalBoard implements CharFigure{
 
     }
 
-    public void setPossibleActions(List<Point> possiblePositions){
+    public void setPossibleActions(Set<Point> possiblePositions){
         this.possiblePositions = possiblePositions;
     }
 
-    private void possibleActions(List<Point> possiblePositions, int relX, int relY){
+    private void possibleActions(Set<Point> possiblePositions, int relX, int relY){
         ForeColor parentFore = ForeColor.ANSI_BLACK;
         BackColor parentBack = BackColor.ANSI_BRIGHT_BG_GREEN;
         for(Point pos : possiblePositions){

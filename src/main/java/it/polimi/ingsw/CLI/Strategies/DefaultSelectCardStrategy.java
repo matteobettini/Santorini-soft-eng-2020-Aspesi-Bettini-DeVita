@@ -8,9 +8,11 @@ import java.util.*;
 
 public class DefaultSelectCardStrategy implements SelectCardStrategy {
     @Override
-    public void handleCardStrategy(PacketCardsFromServer packetCardsFromServer, CLI cli) {
+    public void handleCardStrategy(PacketCardsFromServer packetCardsFromServer,boolean isRetry) {
 
-        if (!packetCardsFromServer.getTo().equals(cli.getBoard().getPlayerName())) {
+        ViewModel viewModel = ViewModel.getInstance();
+
+        if (!packetCardsFromServer.getTo().equals(viewModel.getPlayerName())) {
             String name = packetCardsFromServer.getTo();
             int num = packetCardsFromServer.getNumberToChoose();
             if (num > 1) System.out.println("\n" + name + " is the challenger and he is choosing " + num + " cards...");
@@ -24,14 +26,16 @@ public class DefaultSelectCardStrategy implements SelectCardStrategy {
             //graphicalCardsMenu.setGodCards(board.getAllCards());
             //board.setAllCards(packetCardsFromServer.getAllCards());
         }
-
-        if (packetCardsFromServer.getAvailableCards().size() <= 3)
-            graphicalCardsMenu.setAvailableCards(packetCardsFromServer.getAvailableCards());
-        CharStream stream = new CharStream(graphicalCardsMenu.getRequiredWidth(), graphicalCardsMenu.getRequiredHeight());
-        graphicalCardsMenu.setStream(stream);
-        graphicalCardsMenu.draw();
-        stream.print(System.out);
-        stream.reset();
+        graphicalCardsMenu.setAvailableCards(packetCardsFromServer.getAvailableCards());
+        for(String card: packetCardsFromServer.getAvailableCards()) System.out.print(card + " ");
+        System.out.println();
+        if(!isRetry){
+            CharStream stream = new CharStream(graphicalCardsMenu.getRequiredWidth(), graphicalCardsMenu.getRequiredHeight());
+            graphicalCardsMenu.setStream(stream);
+            graphicalCardsMenu.draw();
+            stream.print(System.out);
+            stream.reset();
+        }
 
 
         int number = packetCardsFromServer.getNumberToChoose();
@@ -44,6 +48,6 @@ public class DefaultSelectCardStrategy implements SelectCardStrategy {
         chosenCardsList = Arrays.asList(chosenCards.split("\\s*,\\s*"));
 
         PacketCardsFromClient packetCardsFromClient = new PacketCardsFromClient(chosenCardsList);
-        cli.getClient().send(packetCardsFromClient);
+        viewModel.getClient().send(packetCardsFromClient);
     }
 }

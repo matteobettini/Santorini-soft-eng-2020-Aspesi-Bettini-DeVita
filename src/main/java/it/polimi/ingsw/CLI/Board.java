@@ -7,17 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Board {
-    private Map<String, String> allCards;
-    private Map<String, List<String >> ids;
-    private Map<String, Color> playersColor;
-    private Map<String, Pair<String, String>> playersCards;
+
     private final Cell[][] cells;
     private static final int rows = 5;
     private static final int columns = 5;
-    private boolean hardcore;
-    private String playerName;
-    private String winner;
-    private String loser;
 
     public Board(){
         this.cells = new Cell[rows][columns];
@@ -28,24 +21,23 @@ public class Board {
         }
     }
 
-    public String getPlayerName() {
-        return playerName;
+    public int getNumberOfWorkers(){
+        int count = 0;
+        for(int i = 0; i < rows; ++i){
+            for(int j = 0; j < columns; ++j){
+                String worker = getCell(new Point(i, j)).getWorker();
+                if(worker != null) count++;
+            }
+        }
+        return count;
     }
 
-    public Map<String, List<String>> getIds() {
-        return ids;
-    }
-
-    public Map<String, Color> getPlayersColor() {
-        return playersColor;
-    }
-
-    public Map<String, Pair<String, String>> getPlayersCards() {
-        return playersCards;
-    }
-
-    public Map<String, String> getAllCards() {
-        return allCards;
+    public Point getPoint(int x, char y){
+        x--;
+        y = Character.toUpperCase(y);
+        int helper = Character.getNumericValue(y) - Character.getNumericValue('A');
+        if( x >= 0 && x <= rows && helper >= 0 && helper <= columns)  return new Point(x, helper);
+        else return null;
     }
 
     public void resetWorkers(){
@@ -62,35 +54,4 @@ public class Board {
         return null;
     }
 
-    public boolean isHardcore() {
-        return hardcore;
-    }
-
-    public void setWinner(String winner) { this.winner = winner; }
-
-    public void setLoser(String loser) { this.loser = loser; }
-
-    public void setAllCards(Map<String, String> allCards) {
-        this.allCards = allCards;
-    }
-
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
-    }
-
-    public void setIds(Map<String, List<String >>  ids) {
-        this.ids = ids;
-    }
-
-    public void setPlayersColor(Map<String, Color> playersColor) {
-        this.playersColor = playersColor;
-    }
-
-    public void setPlayersCards(Map<String, Pair<String, String>> playersCards) {
-        this.playersCards = playersCards;
-    }
-
-    public void setHardcore(boolean hardcore) {
-        this.hardcore = hardcore;
-    }
 }

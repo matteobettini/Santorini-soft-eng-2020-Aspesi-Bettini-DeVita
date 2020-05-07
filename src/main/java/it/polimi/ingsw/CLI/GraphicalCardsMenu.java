@@ -28,12 +28,12 @@ public class GraphicalCardsMenu implements CharFigure {
     }
 
     public int getRequiredWidth(){
-        if(!chosenCards.isEmpty() || !availableCards.isEmpty()) return 159;
+        if(!chosenCards.isEmpty() || availableCards.size() != godCards.size()) return 159;
         return GraphicalCard.getWidth() * cardsPerRow + 20 - 1;
     }
 
     public int getRequiredHeight(){
-        if(!chosenCards.isEmpty() || !availableCards.isEmpty()) return GraphicalCard.getHeight() + 20;
+        if(!chosenCards.isEmpty() || availableCards.size() != godCards.size()) return GraphicalCard.getHeight() + 20;
         int count = godCards.size();
         while(count % cardsPerRow != 0){
             count ++;
@@ -87,7 +87,7 @@ public class GraphicalCardsMenu implements CharFigure {
             return;
         }
 
-        if(!availableCards.isEmpty()){
+        if(availableCards.size() != godCards.size()){
             stream.setMessage("CHOOSE", relX + 33, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN, null);
             stream.setMessage("A", relX + 85, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN, null);
             stream.setMessage("CARD", relX + 98, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN, null);

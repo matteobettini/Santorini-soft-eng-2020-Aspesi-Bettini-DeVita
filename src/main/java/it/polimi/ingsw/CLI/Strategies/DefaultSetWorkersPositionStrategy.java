@@ -11,13 +11,15 @@ import java.util.Map;
 
 public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStrategy {
     @Override
-    public void handleSetWorkersPosition(CLI cli, boolean isRetry) {
-        CharStream stream = cli.getStream();
-        Board board = cli.getBoard();
-        GraphicalMatchMenu graphicalMatchMenu = cli.getGraphicalMatchMenu();
-        GraphicalBoard graphicalBoard = cli.getGraphicalBoard();
+    public void handleSetWorkersPosition(boolean isRetry) {
+        ViewModel viewModel = ViewModel.getInstance();
 
-        if(!isRetry){
+        CharStream stream = viewModel.getStream();
+        Board board = viewModel.getBoard();
+        GraphicalMatchMenu graphicalMatchMenu = viewModel.getGraphicalMatchMenu();
+        GraphicalBoard graphicalBoard = viewModel.getGraphicalBoard();
+
+        if(board.getNumberOfWorkers() == 0){
             GraphicalOcean graphicalOcean = new GraphicalOcean(stream,159, 50);
             graphicalOcean.draw();
             graphicalBoard.draw();
@@ -27,24 +29,24 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
         }
 
         Map<String, Point> positions = new HashMap<>();
-        List<String> workersID = board.getIds().get(board.getPlayerName());
-        for(int i = 1; i <= 2; ++i){
-            String pos;
-            List<String> coordinates;
-            System.out.print("Choose your worker" + i + "'s position" + (i == 1 ? " (ex. 1, 2)" : "") + ": ");
-            pos = InputUtilities.getLine();
-            if(pos == null) return;
-            coordinates = Arrays.asList(pos.split("\\s*,\\s*"));
-            if(coordinates.size() == 2){
-                int x = Integer.parseInt(coordinates.get(0));
-                int y = Integer.parseInt(coordinates.get(1));
-                Point helper = new Point(x, y);
-                positions.put(workersID.get(i - 1), helper);
-            }
+        List<String> workersID = viewModel.getIds().get(viewModel.getPlayerName());
+        for(int i = 0; i < workersID.size(); ++i){
+            Integer cordX;
+            String cordY;
+            System.out.println("Choose your worker" + (i + 1) + "'s position:");
+            System.out.print("X: ");
+            cordX = InputUtilities.getInt();
+            if(cordX == null) return;
+            System.out.print("Y: ");
+            cordY = InputUtilities.getLine();
+            if (cordY == null) return;
+            char y = cordY.charAt(0);
+            Point helper = board.getPoint(cordX, y);
+            positions.put(workersID.get(i), helper);
         }
 
         PacketWorkersPositions packetWorkersPositions = new PacketWorkersPositions(positions);
-        cli.getClient().send(packetWorkersPositions);
+        viewModel.getClient().send(packetWorkersPositions);
 
     }
 }

@@ -3,17 +3,19 @@ package it.polimi.ingsw.CLI.Strategies;
 import it.polimi.ingsw.CLI.Board;
 import it.polimi.ingsw.CLI.CLI;
 import it.polimi.ingsw.CLI.InputUtilities;
+import it.polimi.ingsw.CLI.ViewModel;
 import it.polimi.ingsw.packets.PacketStartPlayer;
 
 import java.util.Set;
 
 public class DefaultChooseStarterStrategy implements ChooseStarterStrategy {
     @Override
-    public void handleChooseStartPlayer(CLI cli) {
-        Board board = cli.getBoard();
+    public void handleChooseStartPlayer() {
+        ViewModel viewModel = ViewModel.getInstance();
+        Board board = viewModel.getBoard();
         String startPlayer;
         System.out.print("\n" + "Choose the starting player by writing his name ( ");
-        Set<String> players = board.getIds().keySet();
+        Set<String> players = viewModel.getIds().keySet();
         int size = players.size();
         int count = 1;
         for(String player : players){
@@ -26,6 +28,6 @@ public class DefaultChooseStarterStrategy implements ChooseStarterStrategy {
         if(startPlayer == null) return;
 
         PacketStartPlayer packetStartPlayer = new PacketStartPlayer(startPlayer);
-        cli.getClient().send(packetStartPlayer);
+        viewModel.getClient().send(packetStartPlayer);
     }
 }
