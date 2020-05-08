@@ -1,12 +1,12 @@
 package it.polimi.ingsw.CLI.strategies;
 
-import it.polimi.ingsw.CLI.ViewModel;
+import it.polimi.ingsw.CLI.MatchData;
 import it.polimi.ingsw.packets.PacketMatchStarted;
 
 public class DefaultMatchStartedStrategy implements MatchStartedStrategy {
     @Override
     public void handleMatchStarted(PacketMatchStarted packetMatchStarted) {
-        ViewModel viewModel = ViewModel.getInstance();
+        MatchData matchData = MatchData.getInstance();
         System.out.println("\n" + "The match has started!");
         System.out.println("Players in game: ");
         for(String player : packetMatchStarted.getPlayers()){

@@ -24,16 +24,17 @@ public class GraphicalCell implements CharFigure{
     }
 
     public void setWorker(String workerID) {
-        ViewModel viewModel = ViewModel.getInstance();
+
+        MatchData matchData = MatchData.getInstance();
 
         String playerName;
         int workerNumber;
 
-        for(String player : viewModel.getIds().keySet()){
-            if(viewModel.getIds().get(player).contains(workerID)){
+        for(String player : matchData.getIds().keySet()){
+            if(matchData.getIds().get(player).contains(workerID)){
                 playerName = player;
-                workerNumber = viewModel.getIds().get(player).indexOf(workerID);
-                Color color = viewModel.getPlayersColor().get(playerName);
+                workerNumber = matchData.getIds().get(player).indexOf(workerID);
+                Color color = matchData.getPlayersColor().get(playerName);
                 if(playerName != null) this.worker = new GraphicalWorker(stream, color,RATEOX / 4, RATEOY / 4, workerNumber + 1, playerName);
             }
         }

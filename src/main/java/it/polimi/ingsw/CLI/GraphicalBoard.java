@@ -19,7 +19,7 @@ public class GraphicalBoard implements CharFigure{
 
     public GraphicalBoard(CharStream stream){
         this.stream = stream;
-        this.graphicalCells = new GraphicalCell[5][5];
+        this.graphicalCells = new GraphicalCell[rows][columns];
         for(int i = 0; i < rows; ++i) {
             for (int j = 0; j < columns; ++j) {
                 graphicalCells[i][j] = new GraphicalCell(new Point(i, j), stream, RATEOX, RATEOY);

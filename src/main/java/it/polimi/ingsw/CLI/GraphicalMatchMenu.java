@@ -41,12 +41,12 @@ public class GraphicalMatchMenu implements CharFigure{
 
     @Override
     public void draw(int relX, int relY) {
-        ViewModel viewModel = ViewModel.getInstance();
-        Map<String, Color> players = viewModel.getPlayersColor();
-        Map<String, Pair<String, String>> playersGodCardAssociation = viewModel.getPlayersCards();
-        Map<BuildingType, Integer>  buildingsCounter = viewModel.getBuildingsCounter();
-        String loser = viewModel.getLoser();
-        String activePlayer = viewModel.getCurrentActivePlayer();
+        MatchData matchData = MatchData.getInstance();
+        Map<String, Color> players = matchData.getPlayersColor();
+        Map<String, Pair<String, String>> playersGodCardAssociation = matchData.getPlayersCards();
+        Map<BuildingType, Integer>  buildingsCounter = matchData.getBuildingsCounter();
+        String loser = matchData.getLoser();
+        String activePlayer = matchData.getCurrentActivePlayer();
 
         if(players.isEmpty() || playersGodCardAssociation.isEmpty()) return;
 

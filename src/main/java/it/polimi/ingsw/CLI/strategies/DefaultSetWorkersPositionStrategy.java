@@ -7,16 +7,20 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStrategy {
+    private static final String POSITIONS_REGEXP = "([A-E][1-5])";
+    private static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
+
     @Override
     public void handleSetWorkersPosition(boolean isRetry) {
-        ViewModel viewModel = ViewModel.getInstance();
+        MatchData matchData = MatchData.getInstance();
 
-        CharStream stream = viewModel.getStream();
-        Board board = viewModel.getBoard();
+        CharStream stream = matchData.getStream();
+        Board board = matchData.getBoard();
         GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
-        GraphicalBoard graphicalBoard = viewModel.getGraphicalBoard();
+        GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
 
         if(board.getNumberOfWorkers() == 0){
             GraphicalOcean graphicalOcean = new GraphicalOcean(stream,stream.getWidth(), stream.getHeight());
@@ -28,31 +32,30 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
         }
 
         Map<String, Point> positions = new HashMap<>();
-        List<String> workersID = viewModel.getIds().get(viewModel.getPlayerName());
+        List<String> workersID = matchData.getIds().get(matchData.getPlayerName());
         for(int i = 0; i < workersID.size(); ++i){
-            Integer cordX;
-            String cordY;
+            String point;
             Point helper;
             boolean error = false;
+
             do{
                 if(error) System.out.println("Invalid position for worker " + (i + 1) + ", retry");
-                else System.out.println("Choose your worker" + (i + 1) + "'s position:");
-                error = false;
-                System.out.print("X: ");
-                cordX = InputUtilities.getInt("Not a number, retry\nX: ");
-                if(cordX == null) return;
-                System.out.print("Y: ");
-                cordY = InputUtilities.getLine();
-                if (cordY == null) return;
-                char y = cordY.charAt(0);
-                helper = board.getPoint(cordX, y);
+                int count = 0;
+                do{
+                    count++;
+                    if(count > 1) System.out.print("Choose your worker" + (i + 1) + "'s position: ");
+                    else System.out.print("Choose your worker" + (i + 1) + "'s position (ex A1, B2, ...): ");
+                    point = InputUtilities.getLine();
+                    if(point == null) return;
+                }while(!POSITION_PATTERN.matcher(point).matches());
+                helper = board.getPoint(Character.getNumericValue(point.charAt(1)), point.charAt(0));
                 if(board.getCell(helper) == null || positions.containsValue(helper)) error = true;
-            }while(error);
+            }while(board.getCell(helper) == null || positions.containsValue(helper));
             positions.put(workersID.get(i), helper);
         }
 
         PacketWorkersPositions packetWorkersPositions = new PacketWorkersPositions(positions);
-        viewModel.getClient().send(packetWorkersPositions);
+        matchData.getClient().send(packetWorkersPositions);
 
     }
 }

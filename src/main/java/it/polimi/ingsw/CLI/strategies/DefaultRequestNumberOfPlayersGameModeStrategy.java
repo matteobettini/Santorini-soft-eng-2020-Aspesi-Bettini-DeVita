@@ -1,13 +1,13 @@
 package it.polimi.ingsw.CLI.strategies;
 
 import it.polimi.ingsw.CLI.InputUtilities;
-import it.polimi.ingsw.CLI.ViewModel;
+import it.polimi.ingsw.CLI.MatchData;
 import it.polimi.ingsw.packets.PacketNumOfPlayersAndGamemode;
 
 public class DefaultRequestNumberOfPlayersGameModeStrategy implements RequestNumberOfPlayersGameModeStrategy{
         @Override
         public void handleRequestNumberOfPlayerGameMode(String message) {
-            ViewModel viewModel = ViewModel.getInstance();
+            MatchData matchData = MatchData.getInstance();
             Integer number;
             System.out.println("\n" +message);
             System.out.print("Number of Players: ");
@@ -22,6 +22,6 @@ public class DefaultRequestNumberOfPlayersGameModeStrategy implements RequestNum
             }while(!(choice.toLowerCase().equals("y") || choice.toLowerCase().equals("n")));
 
             System.out.println("\nMatchmaking...");
-            viewModel.getClient().send(new PacketNumOfPlayersAndGamemode(number, choice.toLowerCase().equals("y")));
+            matchData.getClient().send(new PacketNumOfPlayersAndGamemode(number, choice.toLowerCase().equals("y")));
         }
 }

@@ -3,7 +3,6 @@ package it.polimi.ingsw.CLI;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.ClientImpl;
 import it.polimi.ingsw.model.enums.BuildingType;
-import it.polimi.ingsw.packets.PacketMove;
 import javafx.util.Pair;
 
 import java.awt.*;
@@ -11,9 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ViewModel {
+public class MatchData {
 
-    private static ViewModel viewModelSingleton = null;
+    private static MatchData matchDataSingleton = null;
 
     private Map<String, String> allCards;
     private Map<String, List<String >> ids;
@@ -33,15 +32,15 @@ public class ViewModel {
 
     private String currentActivePlayer;
 
-    public static ViewModel getInstance(){
-        if(viewModelSingleton == null){
-            viewModelSingleton = new ViewModel();
+    public static MatchData getInstance(){
+        if(matchDataSingleton == null){
+            matchDataSingleton = new MatchData();
         }
 
-        return viewModelSingleton;
+        return matchDataSingleton;
     }
 
-    private ViewModel(){
+    private MatchData(){
         this.board = new Board();
         this.stream = new CharStream(159, 50);
         this.graphicalBoard = new GraphicalBoard(stream);
@@ -58,13 +57,16 @@ public class ViewModel {
         graphicalBoard = new GraphicalBoard(stream);
 
         for(int i = 0; i < Board.getRows(); ++i){
-            for(int j = 0; i < Board.getColumns(); ++j){
+            for(int j = 0; j < Board.getColumns(); ++j){
                 Point position = new Point(i, j);
                 Cell cell = board.getCell(position);
 
-                if(cell.getWorker() != null) graphicalBoard.getCell(position).setWorker(cell.getWorker());
+                if(cell != null){
+                    if(cell.getWorker() != null) graphicalBoard.getCell(position).setWorker(cell.getWorker());
 
-                for(BuildingType buildingType : cell.getBuildings()) graphicalBoard.getCell(position).addBuilding(buildingType);
+                    for(BuildingType buildingType : cell.getBuildings()) graphicalBoard.getCell(position).addBuilding(buildingType);
+                }
+
             }
         }
     }

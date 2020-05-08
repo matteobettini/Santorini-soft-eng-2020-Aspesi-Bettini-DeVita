@@ -31,11 +31,11 @@ public class CLI {
     private SetWorkersPositionStrategy setWorkersPositionStrategy;
     private UpdateBoardStrategy updateBoardStrategy;
 
-    private ViewModel viewModel;
+    private MatchData matchData;
 
 
     public CLI(){
-        this.viewModel = ViewModel.getInstance();
+        this.matchData = MatchData.getInstance();
         this.askConnectionParameters = true;
 
         CharStream stream = new CharStream(159, 30);
@@ -56,9 +56,9 @@ public class CLI {
 
         setInitialStrategies();
 
-        viewModel.setClient();
+        matchData.setClient();
 
-        Client client = viewModel.getClient();
+        Client client = matchData.getClient();
 
         client.addConnectionStatusObserver( connectionStatus -> connectionStrategy.handleConnection(connectionStatus, this));
 
@@ -73,33 +73,47 @@ public class CLI {
         client.addPacketSetupObserver( packetSetup -> setupStrategy.handleSetup(packetSetup, this));
 
         client.addPacketDoActionObserver( (packetDoAction, isRetry) -> {
-            viewModel.setCurrentActivePlayer(packetDoAction.getTo());
-            if(!packetDoAction.getTo().equals(viewModel.getPlayerName())){
-                System.out.println("\nIt's " + packetDoAction.getTo() + "'s turn...");
-                return;
-            }
+            String activePlayer = packetDoAction.getTo();
+            matchData.setCurrentActivePlayer(activePlayer);
+            ActionType actionType = packetDoAction.getActionType();
 
-            if(packetDoAction.getActionType() == ActionType.CHOOSE_START_PLAYER){
+            if(actionType == ActionType.CHOOSE_START_PLAYER){
+                if(!activePlayer.equals(matchData.getPlayerName())){
+                    System.out.println("\n" + packetDoAction.getTo() + " is choosing the starting player...");
+                    return;
+                }
                 chooseStarterStrategy.handleChooseStartPlayer();
             }
-            else if (packetDoAction.getActionType() == ActionType.SET_WORKERS_POSITION){
+            else if (actionType == ActionType.SET_WORKERS_POSITION){
+                if(!activePlayer.equals(matchData.getPlayerName())){
+                    System.out.println("\n" + packetDoAction.getTo() + " is setting his workers positions...");
+                    return;
+                }
                 setWorkersPositionStrategy.handleSetWorkersPosition(isRetry);
             }
             else{
+
+                if(!activePlayer.equals(matchData.getPlayerName())){
+                    String action;
+                    if(actionType == ActionType.MOVE) action = "move";
+                    else if(actionType == ActionType.BUILD) action = "build";
+                    else if (actionType == ActionType.MOVE_BUILD) action = "mover or build";
+                    else action = "action";
+                    System.out.println("\n" + packetDoAction.getTo() + " is performing his " + action + "...");
+                    return;
+                }
                 gameModeStrategy.handleAction(packetDoAction, isRetry);
             }
         });
 
-        client.addPacketUpdateBoardObserver( packetUpdateBoard -> updateBoardStrategy.handleUpdateBoard(packetUpdateBoard, this));
+        client.addPacketUpdateBoardObserver( packetUpdateBoard -> updateBoardStrategy.handleUpdateBoard(packetUpdateBoard));
 
         client.addPacketPossibleMovesObserver( packetPossibleMoves -> gameModeStrategy.handlePossibleMoves(packetPossibleMoves));
 
+        client.addPacketPossibleBuildsObserver( packetPossibleBuilds -> gameModeStrategy.handlePossibleBuilds(packetPossibleBuilds));
+
         if(askConnectionParameters) setConnectionParameters();
         client.start(address, port);
-    }
-
-    public ConnectionStrategy getConnectionStrategy() {
-        return connectionStrategy;
     }
 
     public void setAskConnectionParameters(boolean askConnectionParameters) {

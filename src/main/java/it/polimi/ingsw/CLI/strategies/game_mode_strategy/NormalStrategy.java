@@ -4,14 +4,7 @@ import it.polimi.ingsw.CLI.*;
 import it.polimi.ingsw.CLI.strategies.game_mode_strategy.action_strategy.ActionStrategy;
 import it.polimi.ingsw.CLI.strategies.game_mode_strategy.action_strategy.BuildActionStrategy;
 import it.polimi.ingsw.CLI.strategies.game_mode_strategy.action_strategy.MoveActionStrategy;
-import it.polimi.ingsw.Client;
-import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.packets.*;
-
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class NormalStrategy implements GameModeStrategy{
 
@@ -20,14 +13,14 @@ public class NormalStrategy implements GameModeStrategy{
 
     @Override
     public void handleAction(PacketDoAction packetDoAction, boolean isRetry) {
-        ViewModel viewModel = ViewModel.getInstance();
+        MatchData matchData = MatchData.getInstance();
         lastAction = packetDoAction;
         switch (packetDoAction.getActionType()){
             case MOVE:
                 if(isRetry) System.out.println("Retry your move!");
                 actionStrategy = new MoveActionStrategy();
-                PacketMove packetMove = new PacketMove(viewModel.getPlayerName());
-                viewModel.getClient().send(packetMove);
+                PacketMove packetMove = new PacketMove(matchData.getPlayerName());
+                matchData.getClient().send(packetMove);
                 break;
             case BUILD:
                 if(isRetry) System.out.println("Retry your build!");

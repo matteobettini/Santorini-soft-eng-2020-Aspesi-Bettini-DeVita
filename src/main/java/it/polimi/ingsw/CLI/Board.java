@@ -49,9 +49,9 @@ public class Board {
     }
 
     public String getCoordinates(Point position){
-        if(position.x <= 0 || position.x > rows || position.y < 'A' || position.y > 'E') return null;
-        String coordinates = Integer.toString(position.x + 1);
-        coordinates = coordinates.concat(", " + (char) ('A' + position.y));
+        if(position.x < 0 || position.x >= rows || position.y < 0 || position.y >= columns) return null;
+        String coordinates = Character.toString((char) ('A' + position.y));
+        coordinates = coordinates.concat(Integer.toString(position.x + 1));
         return coordinates;
     }
 

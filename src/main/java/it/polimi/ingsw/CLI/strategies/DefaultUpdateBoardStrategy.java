@@ -8,12 +8,12 @@ import java.awt.*;
 
 public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
     @Override
-    public void handleUpdateBoard(PacketUpdateBoard packetUpdateBoard, CLI cli) {
+    public void handleUpdateBoard(PacketUpdateBoard packetUpdateBoard) {
 
-        ViewModel viewModel = ViewModel.getInstance();
-        Board board = viewModel.getBoard();
-        GraphicalBoard graphicalBoard = viewModel.getGraphicalBoard();
-        CharStream stream = viewModel.getStream();
+        MatchData matchData = MatchData.getInstance();
+        Board board = matchData.getBoard();
+        GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
+        CharStream stream = matchData.getStream();
         GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
 
         //FIRST WE UPDATE BOTH THE BOARD AND THE GRAPHICAL ONE
@@ -22,7 +22,7 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
                 for(BuildingType building : packetUpdateBoard.getNewBuildings().get(pos)){
                     board.getCell(pos).addBuilding(building);
                     graphicalBoard.getCell(pos).addBuilding(building);
-                    viewModel.decrementCounter(building, 1);
+                    matchData.decrementCounter(building, 1);
                 }
             }
 
@@ -46,18 +46,18 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
         //IF THERE IS A LOSER OR A WINNER WE SET IT
         if(packetUpdateBoard.getPlayerLostID() != null){
             String loser = packetUpdateBoard.getPlayerLostID();
-            viewModel.setLoser(loser);
+            matchData.setLoser(loser);
 
             //WE ALSO SET IT IN THE MATCH MENU
-            viewModel.setLoser(loser);
-            if(loser.equals(viewModel.getPlayerName())) graphicalMatchMenu.setGameOver(true);
+            matchData.setLoser(loser);
+            if(loser.equals(matchData.getPlayerName())) graphicalMatchMenu.setGameOver(true);
         }
         if(packetUpdateBoard.getPlayerWonID() != null){
             String winner = packetUpdateBoard.getPlayerWonID();
-            viewModel.setWinner(winner);
+            matchData.setWinner(winner);
 
             //IF THE ACTIVE PLAYER WON WE SET YOU WIN
-            if(winner.equals(viewModel.getPlayerName())) graphicalMatchMenu.setYouWin(true);
+            if(winner.equals(matchData.getPlayerName())) graphicalMatchMenu.setYouWin(true);
         }
 
 
@@ -68,13 +68,13 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
         stream.print(System.out);
         stream.reset();
 
-        if(viewModel.getWinner() != null){
-            if(viewModel.getWinner().equals(viewModel.getPlayerName())) System.out.println("You have won!");
-            else System.out.println(viewModel.getWinner() + " has won!");
+        if(matchData.getWinner() != null){
+            if(matchData.getWinner().equals(matchData.getPlayerName())) System.out.println("You have won!");
+            else System.out.println(matchData.getWinner() + " has won!");
         }
-        if(viewModel.getLoser() != null){
-            if(viewModel.getLoser().equals(viewModel.getPlayerName())) System.out.println("You have lost!");
-            else System.out.println(viewModel.getLoser() + " has lost!");
+        if(matchData.getLoser() != null){
+            if(matchData.getLoser().equals(matchData.getPlayerName())) System.out.println("You have lost!");
+            else System.out.println(matchData.getLoser() + " has lost!");
 
         }
     }

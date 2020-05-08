@@ -10,9 +10,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class MoveActionStrategy implements ActionStrategy{
+    private static final String POSITIONS_REGEXP = "([A-E][1-5])";
+    private static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
+
     private List<Point> currentPositions;
     private Integer lastUsedWorker; //null if the action has just arrived
 
@@ -23,23 +27,31 @@ public class MoveActionStrategy implements ActionStrategy{
 
     @Override
     public boolean handleMoveAction(PacketPossibleMoves packetPossibleMoves) {
-        ViewModel viewModel = ViewModel.getInstance();
-        Client client = viewModel.getClient();
-        String player = viewModel.getPlayerName();
-        List<String> workersID = viewModel.getIds().get(player);
-        Board board = viewModel.getBoard();
-        GraphicalBoard graphicalBoard = viewModel.getGraphicalBoard();
-        CharStream stream = viewModel.getStream();
+        MatchData matchData = MatchData.getInstance();
+        Client client = matchData.getClient();
+        String player = matchData.getPlayerName();
+        List<String> workersID = matchData.getIds().get(player);
+        Board board = matchData.getBoard();
+        GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
+        CharStream stream = matchData.getStream();
         GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
+
+        boolean restartForbidden = false; //CHOICE 1
+        boolean makeChoiceForbidden = false; //CHOICE 2
+        boolean confirmActionForbidden = false; //CHOICE 3
 
         if(lastUsedWorker == null){
 
+            confirmActionForbidden = true;
+
             List<String> possibleWorkers = new ArrayList<>(packetPossibleMoves.getPossibleMoves().keySet());
+
+            possibleWorkers = possibleWorkers.stream().sorted().collect(Collectors.toList());
 
             Integer workerChoice = 0;
 
             if(possibleWorkers.size() > 1){
-                List<Integer> availableWorkers = possibleWorkers.stream().map(workersID::indexOf).collect(Collectors.toList());
+                List<Integer> availableWorkers = possibleWorkers.stream().map(workersID::indexOf).sorted().collect(Collectors.toList());
                 do{
                     System.out.print("Choose one Worker between ");
                     int end = availableWorkers.size();
@@ -48,13 +60,13 @@ public class MoveActionStrategy implements ActionStrategy{
                         count++;
                         if(count < end) System.out.print((index + 1) + ", ");
                         else System.out.print((index + 1)  + ": ");
-                        workerChoice = InputUtilities.getInt();
-                        if (workerChoice == null) return false;
                     }
+                    workerChoice = InputUtilities.getInt("Not a valid worker number, retry\nWorker number: ");
+                    if (workerChoice == null) return false;
                 }while(!availableWorkers.contains(workerChoice - 1));
             }
 
-            lastUsedWorker = workersID.indexOf(possibleWorkers.get(workerChoice));
+            lastUsedWorker = workersID.indexOf(possibleWorkers.get(workerChoice - 1));
         }
 
         List<Point> possiblePositions = new ArrayList<>(packetPossibleMoves.getPossibleMoves().get(workersID.get(lastUsedWorker)));
@@ -67,18 +79,10 @@ public class MoveActionStrategy implements ActionStrategy{
         stream.reset();
 
         Integer choice;
-        boolean choice1Forbidden = false;
-        if(possiblePositions.isEmpty()) choice1Forbidden = true;
-        do{
-            if(!choice1Forbidden) System.out.println("Do you want to make a choice (1), restart the selection(2) or confirm the current actions(3)? ");
-            else System.out.println("Do you want to restart the selection(1) confirm the current actions(2)? ");
-            choice = InputUtilities.getInt();
-            if (choice == null) return false;
-            if(choice1Forbidden){
-                if(choice == 1 || choice == 2) choice++;
-                else choice = 0;
-            }
-        }while(choice != 1 && choice != 2 && choice != 3);
+        if(possiblePositions.isEmpty()) makeChoiceForbidden = true;
+
+        choice = getActionChoice(makeChoiceForbidden,restartForbidden, confirmActionForbidden);
+        if(choice == -1) return false;
 
         switch(choice){
             case 1:
@@ -91,50 +95,85 @@ public class MoveActionStrategy implements ActionStrategy{
                 System.out.println("Available positions: ");
                 System.out.println(positionsBuilder.toString());
 
-                Integer cordX;
-                String cordY;
+                String point;
                 Point chosenPosition;
                 boolean error = false;
                 do{
-                    if(error) System.out.println("Invalid position!");
-                    else System.out.println("Choose your next worker" + (lastUsedWorker + 1) + "'s position:");
-                    System.out.print("X: ");
-                    cordX = InputUtilities.getInt();
-                    if(cordX == null) return false;
-                    System.out.print("Y: ");
-                    cordY = InputUtilities.getLine();
-                    if (cordY == null) return false;
-                    char y = cordY.charAt(0);
-                    chosenPosition = board.getPoint(cordX, y);
+                    if(error) System.out.println("Invalid position for worker " + (lastUsedWorker + 1) + ", retry");
+                    int count = 0;
+                    do{
+                        count++;
+                        if(count > 1) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position: ");
+                        else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position (ex A1, B2...): ");
+                        point = InputUtilities.getLine();
+                        if(point == null) return false;
+                    }while(!POSITION_PATTERN.matcher(point).matches());
+                    chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), point.charAt(0));
                     if(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition)) error = true;
                 }while(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition));
 
                 currentPositions.add(chosenPosition);
                 graphicalBoard.resetPossibleActions();
-                Point previousPosition = graphicalBoard.removeWorker(viewModel.getPlayerName(), lastUsedWorker);
+                Point previousPosition = graphicalBoard.removeWorker(matchData.getPlayerName(), lastUsedWorker + 1);
                 //IF THERE IS A WORKER OF ANOTHER PLAYER IN THE NEXT POSITION WE SWAP IT
                 if(previousPosition != null && graphicalBoard.getCell(chosenPosition).getWorker() != null){
                     String playerNameToSwap = graphicalBoard.getCell(chosenPosition).getWorker().getPlayerName();
                     Integer numberWorkerToSwap = graphicalBoard.getCell(chosenPosition).getWorker().getNumber();
-                    String workerIdToSwap = viewModel.getIds().get(playerNameToSwap).get(numberWorkerToSwap);
+                    String workerIdToSwap = matchData.getIds().get(playerNameToSwap).get(numberWorkerToSwap);
                     graphicalBoard.getCell(previousPosition).setWorker(workerIdToSwap);
                 }
 
                 graphicalBoard.getCell(chosenPosition).setWorker(workersID.get(lastUsedWorker));
 
-                PacketMove packetMove = new PacketMove(viewModel.getPlayerName(), workersID.get(lastUsedWorker), true, currentPositions);
+                PacketMove packetMove = new PacketMove(matchData.getPlayerName(), workersID.get(lastUsedWorker), true, currentPositions);
                 client.send(packetMove);
                 break;
             case 2:
-                viewModel.makeGraphicalBoardEqualToBoard();
+                matchData.makeGraphicalBoardEqualToBoard();
                 return true;
             case 3:
-                PacketMove packetConfirmation = new PacketMove(viewModel.getPlayerName(), workersID.get(lastUsedWorker), currentPositions);
+                PacketMove packetConfirmation = new PacketMove(matchData.getPlayerName(), workersID.get(lastUsedWorker), false, currentPositions);
                 client.send(packetConfirmation);
                 break;
         }
 
         return false;
+    }
+
+    private Integer getActionChoice(boolean makeChoiceForbidden, boolean restartForbidden, boolean confirmActionForbidden){
+        Integer choice;
+        if(makeChoiceForbidden && restartForbidden && confirmActionForbidden) return -1; //IMPOSSIBLE CONFIGURATION
+        else if(makeChoiceForbidden && restartForbidden) return 3;
+        else if(makeChoiceForbidden && confirmActionForbidden) return 2;
+        else if(restartForbidden && confirmActionForbidden) return 1;
+        else if(makeChoiceForbidden){
+            do{
+                System.out.println("Do you want to restart the selection(1) or confirm the current actions(2)? ");
+                choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
+                if (choice == null) return -1;
+            }while(choice != 1 && choice != 2);
+            if(choice == 1) return 2;
+            else return 3;
+        }
+        else if(restartForbidden){
+            do{
+                System.out.println("Do you want to make a choice(1) or confirm the current actions(2)? ");
+                choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
+                if (choice == null) return -1;
+            }while(choice != 1 && choice != 2);
+            if(choice == 1) return 1;
+            else return 3;
+        }
+        else if(confirmActionForbidden){
+            do{
+                System.out.println("Do you want to make a choice (1), restart the selection(2)? ");
+                choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
+                if (choice == null) return -1;
+            }while(choice != 1 && choice != 2);
+            if(choice == 1) return 1;
+            else return 2;
+        }
+        else return -1;
     }
 
     @Override
