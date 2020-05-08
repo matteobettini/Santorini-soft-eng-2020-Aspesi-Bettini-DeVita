@@ -66,11 +66,11 @@ public class CLI {
 
         client.addInsertNumOfPlayersAndGamemodeRequestObserver( ((message, isRetry) -> requestNumberOfPlayersGameModeStrategy.handleRequestNumberOfPlayerGameMode(message)));
 
-        client.addPacketMatchStartedObserver( packetMatchStarted -> matchStartedStrategy.handleMatchStarted(packetMatchStarted));
+        client.addPacketMatchStartedObserver( packetMatchStarted -> matchStartedStrategy.handleMatchStarted(packetMatchStarted, this));
 
         client.addPacketCardsFromServerObserver( (packetCardsFromServer, isRetry) -> selectCardStrategy.handleCardStrategy(packetCardsFromServer, isRetry));
 
-        client.addPacketSetupObserver( packetSetup -> setupStrategy.handleSetup(packetSetup, this));
+        client.addPacketSetupObserver( packetSetup -> setupStrategy.handleSetup(packetSetup));
 
         client.addPacketDoActionObserver( (packetDoAction, isRetry) -> {
             String activePlayer = packetDoAction.getTo();

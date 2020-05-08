@@ -7,13 +7,11 @@ import it.polimi.ingsw.packets.PacketSetup;
 
 public class DefaultSetupStrategy implements SetupStrategy {
     @Override
-    public void handleSetup(PacketSetup packetSetup, CLI cli) {
+    public void handleSetup(PacketSetup packetSetup) {
         MatchData matchData = MatchData.getInstance();
         Board board = matchData.getBoard();
         matchData.setIds(packetSetup.getIds());
         matchData.setPlayersColor(packetSetup.getColors());
         matchData.setPlayersCards(packetSetup.getCards());
-        matchData.setHardcore(packetSetup.isHardcore());
-        cli.setGameModeStrategy(packetSetup.isHardcore());
     }
 }
