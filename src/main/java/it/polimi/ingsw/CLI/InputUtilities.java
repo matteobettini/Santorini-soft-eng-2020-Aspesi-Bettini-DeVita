@@ -21,7 +21,8 @@ public class InputUtilities {
         return name;
     }
 
-    public static Integer getInt(){
+
+    public static Integer getInt(String errorMessage){
         String numString;
         Integer num = null;
         boolean fin = false;
@@ -36,7 +37,7 @@ public class InputUtilities {
                     num = Integer.parseInt(numString);
                     fin = true;
                 } catch (NumberFormatException e) {
-                    System.out.println("Retry");
+                    System.out.print(errorMessage);
                 }
             }while(!fin);
 

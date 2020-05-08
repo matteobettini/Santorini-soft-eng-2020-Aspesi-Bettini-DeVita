@@ -135,7 +135,7 @@ public class CLI {
             System.out.print("Enter the server's IP address: ");
             address = InputUtilities.getLine();
             System.out.print("Enter the server's port: ");
-            port = InputUtilities.getInt();
+            port = InputUtilities.getInt("Not a number, retry\nEnter the server's port: ");
             if(port == null) port = - 1;
         }while (!addressIsValid(address, port));
 

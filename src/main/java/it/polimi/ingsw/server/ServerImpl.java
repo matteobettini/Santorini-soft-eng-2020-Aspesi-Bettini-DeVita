@@ -86,7 +86,6 @@ public class ServerImpl implements Server {
                 setNextLobbyPhase();
             }
         } else {
-
             lockLobby.lock();
             try {
                 if(!waitingClients.contains(connection)) {

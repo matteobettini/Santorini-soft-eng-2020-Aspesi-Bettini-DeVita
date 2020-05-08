@@ -55,7 +55,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
     private void startTimer(int milliseconds){
-        System.out.println("TIMERS HAS STARTED");
+        System.out.println("Connection [" + getClientNickname() + "]: timer is started");
         timer = new Thread(() -> {
             try {
                 Thread.sleep(milliseconds);

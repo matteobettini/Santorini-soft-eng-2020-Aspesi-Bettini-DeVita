@@ -238,18 +238,19 @@ class TurnLogic {
         if (currWorker != null) {
             if (!packetMove.getWorkerID().equals(currWorker.getID()))
                 return;
-        } else {
+        } else
             forBothWorkers = true;
-            //It's not a worker owned by the active player
-            if (currPlayer.getWorkers().stream().noneMatch(w->w.getID().equals(packetMove.getWorkerID())))
-                return;
-        }
 
         if (!currPossibleActions.contains(TriggerType.MOVE))
             return;
 
-        Worker myWorker = model.getWorkerByID(packetMove.getWorkerID());
-        Worker myOtherWorker = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(packetMove.getWorkerID())).findAny().orElse(null);
+
+        Worker myWorker;
+        if(forBothWorkers)
+            myWorker = currPlayer.getWorkers().get(0);
+        else
+            myWorker = model.getWorkerByID(packetMove.getWorkerID());
+        Worker myOtherWorker = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(myWorker.getID())).findAny().orElse(null);
         assert myOtherWorker != null;
         Map<String, Set<Point>> possibleMoves = new HashMap<>();
         Set<Point> possiblePointsW1 = new HashSet<>();
@@ -287,17 +288,19 @@ class TurnLogic {
         if (currWorker != null) {
             if (!packetBuild.getWorkerID().equals(currWorker.getID()))
                 return;
-        } else {
+        } else
             forBothWorkers = true;
-            if (currPlayer.getWorkers().stream().noneMatch(w->w.getID().equals(packetBuild.getWorkerID())))
-                return;
-        }
+
 
         if (!currPossibleActions.contains(TriggerType.BUILD))
             return;
 
-        Worker myWorker = model.getWorkerByID(packetBuild.getWorkerID());
-        Worker myOtherWorker = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(packetBuild.getWorkerID())).findAny().orElse(null);
+        Worker myWorker;
+        if(forBothWorkers)
+            myWorker = currPlayer.getWorkers().get(0);
+        else
+            myWorker = model.getWorkerByID(packetBuild.getWorkerID());
+        Worker myOtherWorker = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(myWorker.getID())).findAny().orElse(null);
         assert myOtherWorker != null;
 
         Map<String, Map<Point, List<BuildingType>>> possibleBuilds = new HashMap<>();

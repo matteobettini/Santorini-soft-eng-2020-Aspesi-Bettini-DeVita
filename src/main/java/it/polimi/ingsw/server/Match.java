@@ -28,7 +28,7 @@ class Match {
     private final List<String> players;
     private final boolean isHardcore;
 
-    private AtomicBoolean isClosing = new AtomicBoolean();
+    private final AtomicBoolean isClosing = new AtomicBoolean();
 
 
     /**

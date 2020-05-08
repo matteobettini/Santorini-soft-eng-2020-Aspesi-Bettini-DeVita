@@ -35,10 +35,11 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
             Point helper;
             boolean error = false;
             do{
-                if(error) System.out.println("Invalid position!");
+                if(error) System.out.println("Invalid position for worker " + (i + 1) + ", retry");
                 else System.out.println("Choose your worker" + (i + 1) + "'s position:");
+                error = false;
                 System.out.print("X: ");
-                cordX = InputUtilities.getInt();
+                cordX = InputUtilities.getInt("Not a number, retry\nX: ");
                 if(cordX == null) return;
                 System.out.print("Y: ");
                 cordY = InputUtilities.getLine();
@@ -46,7 +47,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
                 char y = cordY.charAt(0);
                 helper = board.getPoint(cordX, y);
                 if(board.getCell(helper) == null || positions.containsValue(helper)) error = true;
-            }while(board.getCell(helper) == null || positions.containsValue(helper));
+            }while(error);
             positions.put(workersID.get(i), helper);
         }
 
