@@ -7,6 +7,7 @@ import it.polimi.ingsw.observe.Observable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.regex.Pattern;
 
@@ -79,7 +80,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         }
     }
 
-    private void internalSend(Object packet) throws IOException{
+    private void internalSend(Serializable packet) throws IOException{
         try {
             os.writeObject(packet);
             os.flush();
@@ -96,7 +97,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      * @param withTimer a flag to activate a timer that closes the connection if it doesn't receive an answer
      *                  within the prescribed time limit
      */
-    public void send(Object packet, boolean withTimer){
+    public void send(Serializable packet, boolean withTimer){
         try {
             if(withTimer)
                 startTimerLonger();

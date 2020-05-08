@@ -3,12 +3,14 @@ package it.polimi.ingsw;
 import it.polimi.ingsw.observe.Observer;
 import it.polimi.ingsw.packets.*;
 
+import java.io.Serializable;
+
 public interface Client {
 
     void asyncStart(String address, int port);
     void start(String address, int port);
 
-    void send(Object packet);
+    void send(Serializable packet);
 
     void addPacketCardsFromServerObserver(ClientObserver<PacketCardsFromServer> observer);
     void addPacketDoActionObserver(ClientObserver<PacketDoAction> observer);

@@ -13,7 +13,7 @@ public class ConnectionInGameStrategy implements ConnectionStrategy {
             String choice;
             do{
                 choice = InputUtilities.getLine();
-                if(choice == null) choice = "";
+                if(choice == null) return;
             }while(!(choice.toLowerCase().equals("y") || choice.toLowerCase().equals("n")));
 
             if(choice.toLowerCase().equals("y")){
