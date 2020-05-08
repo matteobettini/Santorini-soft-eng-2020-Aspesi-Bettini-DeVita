@@ -3,6 +3,7 @@ package it.polimi.ingsw.CLI;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.ClientImpl;
 import it.polimi.ingsw.model.enums.BuildingType;
+import it.polimi.ingsw.packets.PacketMove;
 import javafx.util.Pair;
 
 import java.awt.*;
@@ -31,6 +32,14 @@ public class ViewModel {
     private Client client;
 
     private String currentActivePlayer;
+
+    public static ViewModel getInstance(){
+        if(viewModelSingleton == null){
+            viewModelSingleton = new ViewModel();
+        }
+
+        return viewModelSingleton;
+    }
 
     private ViewModel(){
         this.board = new Board();
@@ -79,14 +88,6 @@ public class ViewModel {
 
     public CharStream getStream() {
         return stream;
-    }
-
-    public static ViewModel getInstance(){
-        if(viewModelSingleton == null){
-            viewModelSingleton = new ViewModel();
-        }
-
-        return viewModelSingleton;
     }
 
     public Map<String, String> getAllCards() {

@@ -5,7 +5,7 @@ import it.polimi.ingsw.CLI.CharStream;
 import it.polimi.ingsw.CLI.enums.BackColor;
 import it.polimi.ingsw.CLI.enums.ForeColor;
 
-public class ThirdFloorBuilding implements CharFigure {
+class ThirdFloorBuilding implements CharFigure {
     private final CharStream stream;
     private final int RATEOX;
     private final int RATEOY;

@@ -1,6 +1,4 @@
-package it.polimi.ingsw.CLI.Strategies;
-
-import it.polimi.ingsw.CLI.CLI;
+package it.polimi.ingsw.CLI.strategies;
 
 public interface SetWorkersPositionStrategy {
     void handleSetWorkersPosition(boolean isRetry);

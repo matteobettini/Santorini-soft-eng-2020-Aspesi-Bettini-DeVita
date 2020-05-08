@@ -15,7 +15,7 @@ public class GraphicalBoard implements CharFigure{
     private final GraphicalCell[][] graphicalCells;
     private final int RATEOX = 20;
     private final int RATEOY = 8;
-    private Set<Point> possiblePositions;
+    private List<Point> possiblePositions;
 
     public GraphicalBoard(CharStream stream){
         this.stream = stream;
@@ -98,11 +98,15 @@ public class GraphicalBoard implements CharFigure{
 
     }
 
-    public void setPossibleActions(Set<Point> possiblePositions){
+    public void resetPossibleActions(){
+        setPossibleActions(null);
+    }
+
+    public void setPossibleActions(List<Point> possiblePositions){
         this.possiblePositions = possiblePositions;
     }
 
-    private void possibleActions(Set<Point> possiblePositions, int relX, int relY){
+    private void possibleActions(List<Point> possiblePositions, int relX, int relY){
         ForeColor parentFore = ForeColor.ANSI_BLACK;
         BackColor parentBack = BackColor.ANSI_BRIGHT_BG_GREEN;
         for(Point pos : possiblePositions){
@@ -126,6 +130,21 @@ public class GraphicalBoard implements CharFigure{
     public GraphicalCell getCell(Point pos){
         if (pos.x < 0 || pos.x >= rows || pos.y < 0 || pos.y >= columns) return null;
         return graphicalCells[pos.x][pos.y];
+    }
+
+    public Point removeWorker(String playerID, Integer workerNumber){
+        for(int i = 0; i < rows; ++i) {
+            for (int j = 0; j < columns; ++j) {
+                GraphicalWorker graphicalWorker = graphicalCells[i][j].getWorker();
+                if(graphicalWorker != null && graphicalWorker.getPlayerName() != null && graphicalWorker.getNumber() != null){
+                    if(playerID.equals(graphicalWorker.getPlayerName()) && workerNumber.equals(graphicalWorker.getNumber())){
+                        graphicalCells[i][j].removeWorker();
+                        return new Point(i, j);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void resetWorkers(){

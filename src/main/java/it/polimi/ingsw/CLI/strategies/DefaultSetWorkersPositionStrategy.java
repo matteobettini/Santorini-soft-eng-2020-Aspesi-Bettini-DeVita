@@ -1,10 +1,9 @@
-package it.polimi.ingsw.CLI.Strategies;
+package it.polimi.ingsw.CLI.strategies;
 
 import it.polimi.ingsw.CLI.*;
 import it.polimi.ingsw.packets.PacketWorkersPositions;
 
 import java.awt.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
         GraphicalBoard graphicalBoard = viewModel.getGraphicalBoard();
 
         if(board.getNumberOfWorkers() == 0){
-            GraphicalOcean graphicalOcean = new GraphicalOcean(stream,159, 50);
+            GraphicalOcean graphicalOcean = new GraphicalOcean(stream,stream.getWidth(), stream.getHeight());
             graphicalOcean.draw();
             graphicalBoard.draw();
             graphicalMatchMenu.draw();
@@ -46,8 +45,8 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
                 if (cordY == null) return;
                 char y = cordY.charAt(0);
                 helper = board.getPoint(cordX, y);
-                if(board.getCell(helper) == null || positions.containsValue(helper) || board.getCell(helper).getWorker() != null) error = true;
-            }while(board.getCell(helper) == null || positions.containsValue(helper) || board.getCell(helper).getWorker() != null);
+                if(board.getCell(helper) == null || positions.containsValue(helper)) error = true;
+            }while(board.getCell(helper) == null || positions.containsValue(helper));
             positions.put(workersID.get(i), helper);
         }
 

@@ -41,11 +41,18 @@ public class Board {
     }
 
     public Point getPoint(int x, char y){
-        x--;
         y = Character.toUpperCase(y);
+        if(x <= 0 || x > rows || y < 'A' || y > 'E') return null;
+        x--;
         int helper = Character.getNumericValue(y) - Character.getNumericValue('A');
-        if( x >= 0 && x <= rows && helper >= 0 && helper <= columns)  return new Point(x, helper);
-        else return null;
+        return new Point(x, helper);
+    }
+
+    public String getCoordinates(Point position){
+        if(position.x <= 0 || position.x > rows || position.y < 'A' || position.y > 'E') return null;
+        String coordinates = Integer.toString(position.x + 1);
+        coordinates = coordinates.concat(", " + (char) ('A' + position.y));
+        return coordinates;
     }
 
     public void resetWorkers(){

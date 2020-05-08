@@ -1,4 +1,4 @@
-package it.polimi.ingsw.CLI.Strategies;
+package it.polimi.ingsw.CLI.strategies;
 
 import it.polimi.ingsw.CLI.*;
 import it.polimi.ingsw.packets.PacketCardsFromClient;
@@ -23,8 +23,6 @@ public class DefaultSelectCardStrategy implements SelectCardStrategy {
         GraphicalCardsMenu graphicalCardsMenu = new GraphicalCardsMenu();
         if (packetCardsFromServer.getAllCards() != null) {
             graphicalCardsMenu.setGodCards(packetCardsFromServer.getAllCards());
-            //graphicalCardsMenu.setGodCards(board.getAllCards());
-            //board.setAllCards(packetCardsFromServer.getAllCards());
         }
         graphicalCardsMenu.setAvailableCards(packetCardsFromServer.getAvailableCards());
         for(String card: packetCardsFromServer.getAvailableCards()) System.out.print(card + " ");

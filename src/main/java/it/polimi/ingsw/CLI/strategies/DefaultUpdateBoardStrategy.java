@@ -1,4 +1,4 @@
-package it.polimi.ingsw.CLI.Strategies;
+package it.polimi.ingsw.CLI.strategies;
 
 import it.polimi.ingsw.CLI.*;
 import it.polimi.ingsw.model.enums.BuildingType;
@@ -8,7 +8,7 @@ import java.awt.*;
 
 public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
     @Override
-    public void handleUpdateBoard(PacketUpdateBoard packetUpdateBoard) {
+    public void handleUpdateBoard(PacketUpdateBoard packetUpdateBoard, CLI cli) {
 
         ViewModel viewModel = ViewModel.getInstance();
         Board board = viewModel.getBoard();
@@ -61,14 +61,21 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
         }
 
 
-        GraphicalOcean graphicalOcean = new GraphicalOcean(stream,159, 50);
+        GraphicalOcean graphicalOcean = new GraphicalOcean(stream,stream.getWidth(),stream.getHeight());
         graphicalOcean.draw();
         graphicalBoard.draw();
         graphicalMatchMenu.draw();
         stream.print(System.out);
         stream.reset();
 
-        if(viewModel.getWinner() != null) System.out.println(viewModel.getWinner() + "has won!");
-        if(viewModel.getLoser() != null) System.out.println(viewModel.getLoser() + "has lost!");
+        if(viewModel.getWinner() != null){
+            if(viewModel.getWinner().equals(viewModel.getPlayerName())) System.out.println("You have won!");
+            else System.out.println(viewModel.getWinner() + " has won!");
+        }
+        if(viewModel.getLoser() != null){
+            if(viewModel.getLoser().equals(viewModel.getPlayerName())) System.out.println("You have lost!");
+            else System.out.println(viewModel.getLoser() + " has lost!");
+
+        }
     }
 }

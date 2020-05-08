@@ -32,7 +32,7 @@ public class PacketBuild implements Serializable {
     private final List<Point> dataOrder;
 
     public PacketBuild(String playerNickname, String workerID, boolean simulate, Map<Point, List<BuildingType>> builds, List<Point> dataOrder){
-        assert(playerNickname != null && workerID != null && builds != null && dataOrder != null);
+        assert(playerNickname != null && builds != null && dataOrder != null);
         this.simulate = simulate;
         this.playerNickname = playerNickname;
         this.workerID = workerID;
@@ -49,6 +49,11 @@ public class PacketBuild implements Serializable {
         }
 
     }
+
+    public PacketBuild(String playerNickname){
+        this(playerNickname,null, true, new HashMap<>(), new ArrayList<>());
+    }
+
     public PacketBuild(String playerNickname, String workerID, Map<Point, List<BuildingType>> builds, List<Point> dataOrder){
         this(playerNickname,workerID,true,builds,dataOrder);
     }

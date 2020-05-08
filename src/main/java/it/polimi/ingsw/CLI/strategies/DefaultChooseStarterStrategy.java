@@ -1,7 +1,6 @@
-package it.polimi.ingsw.CLI.Strategies;
+package it.polimi.ingsw.CLI.strategies;
 
 import it.polimi.ingsw.CLI.Board;
-import it.polimi.ingsw.CLI.CLI;
 import it.polimi.ingsw.CLI.InputUtilities;
 import it.polimi.ingsw.CLI.ViewModel;
 import it.polimi.ingsw.packets.PacketStartPlayer;

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.CLI.Strategies;
+package it.polimi.ingsw.CLI.strategies;
 
 public interface ChooseStarterStrategy {
     void handleChooseStartPlayer();

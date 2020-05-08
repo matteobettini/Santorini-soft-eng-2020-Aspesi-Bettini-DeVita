@@ -5,7 +5,7 @@ import it.polimi.ingsw.CLI.CharStream;
 import it.polimi.ingsw.CLI.enums.BackColor;
 import it.polimi.ingsw.CLI.enums.ForeColor;
 
-public class BoatType0 implements CharFigure {
+class BoatType0 implements CharFigure {
     private final CharStream stream;
 
     public BoatType0(CharStream stream){

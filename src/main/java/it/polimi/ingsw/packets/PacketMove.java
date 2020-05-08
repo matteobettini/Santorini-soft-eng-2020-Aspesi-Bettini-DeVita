@@ -27,7 +27,7 @@ public class PacketMove implements Serializable {
 
 
     public PacketMove(String playerNickname, String workerID, boolean simulate, List<Point> move){
-        assert (playerNickname != null && workerID != null && move != null);
+        assert (playerNickname != null && move != null);
         this.simulate = simulate;
         this.playerNickname = playerNickname;
         this.workerID = workerID;
@@ -36,6 +36,10 @@ public class PacketMove implements Serializable {
             assert(p != null);
             this.move.add(new Point(p));
         }
+    }
+
+    public PacketMove(String playerNickname){
+        this(playerNickname, null, true, new ArrayList<>());
     }
 
     public PacketMove(String playerNickname, String workerID, List<Point> move){
