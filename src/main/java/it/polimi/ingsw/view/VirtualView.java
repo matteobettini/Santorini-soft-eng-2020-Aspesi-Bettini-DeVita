@@ -18,6 +18,8 @@ public class VirtualView implements Observer<Object> {
     private final List<Observer<PacketStartPlayer>> packetStartPlayerObservers;
     private final List<Observer<PacketWorkersPositions>> packetWorkersPositionsObservers;
 
+    private Observer<String> gameFinishedHandler;
+
     /**
      * This is the constructor for the Virtual View
      * The virtual view subscribes to all the events notified
@@ -66,7 +68,7 @@ public class VirtualView implements Observer<Object> {
         model.addPacketUpdateBoardObserver((packetUpdateBoard) -> {
             connectionToClient.send(packetUpdateBoard, false);
             if(packetUpdateBoard.getPlayerWonID() != null)
-                connectionToClient.closeRoutineFull();
+                gameFinishedHandler.update(packetUpdateBoard.getPlayerWonID());
         });
 
     }
@@ -78,16 +80,26 @@ public class VirtualView implements Observer<Object> {
     @Override
     public void update(Object packetFromClient) {
         if(packetFromClient instanceof PacketMove){
-            notifyPacketMoveObservers((PacketMove) packetFromClient);
+            PacketMove packetMove = (PacketMove) packetFromClient;
+            if(!packetMove.isSimulate())
+                connectionToClient.stopTimer();
+            notifyPacketMoveObservers(packetMove);
         }else if(packetFromClient instanceof PacketBuild) {
-            notifyPacketBuildObservers((PacketBuild) packetFromClient);
+            PacketBuild packetBuild = (PacketBuild) packetFromClient;
+            if(!packetBuild.isSimulate())
+                connectionToClient.stopTimer();
+            notifyPacketBuildObservers(packetBuild);
         }else if(packetFromClient instanceof PacketStartPlayer) {
+            connectionToClient.stopTimer();
             notifyPacketStartPlayerObservers((PacketStartPlayer) packetFromClient);
         }else if(packetFromClient instanceof PacketCardsFromClient) {
+            connectionToClient.stopTimer();
             notifyPacketCardsFromClientObservers((PacketCardsFromClient) packetFromClient);
         }else if(packetFromClient instanceof PacketWorkersPositions){
+            connectionToClient.stopTimer();
             notifyPacketWorkersPositionsObservers((PacketWorkersPositions) packetFromClient);
         }else{
+            assert false;
             sendInvalidPacketMessage();
         }
     }
@@ -147,5 +159,9 @@ public class VirtualView implements Observer<Object> {
         for(Observer<PacketWorkersPositions> o : packetWorkersPositionsObservers){
             o.update(p);
         }
+    }
+
+    public void setGameFinishedHandler(Observer<String> gameFinishedHandler) {
+        this.gameFinishedHandler = gameFinishedHandler;
     }
 }

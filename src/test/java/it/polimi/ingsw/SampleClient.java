@@ -69,7 +69,7 @@ public class SampleClient {
                     Object packetFromServer = is.readObject();
                     if(packetFromServer instanceof ConnectionMessages) {
                         ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
-                        if (messageFromServer == ConnectionMessages.MATCH_ENDED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
+                        if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
                             executor.shutdownNow();
                             notifyConnectionStatusObservers(new ConnectionStatus(true, messageFromServer.getMessage()));
                             break;

@@ -11,8 +11,9 @@ public enum ConnectionMessages implements Serializable {
     INSERT_NUMBER_OF_PLAYERS("Insert the desired number of players (2 or 3)"),
     IS_IT_HARDCORE("Do you want to play in hardcore mode?"),
     INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE("Insert the desired number of players (2 or 3) and the desired gamemode (normal or hardcore)"),
-    CONNECTION_CLOSED("Connection closed because of errors in your connection"),
-    MATCH_ENDED("Match ended due to disconnected or not responding clients"),
+    CONNECTION_CLOSED("Connection closed"),
+    MATCH_FINISHED("A player has won the match and thus the game is finished"),
+    MATCH_INTERRUPTED("Match ended due to disconnected or not responding clients"),
     TIMER_ENDED("You took too long to make your decision");
 
     private final String message;

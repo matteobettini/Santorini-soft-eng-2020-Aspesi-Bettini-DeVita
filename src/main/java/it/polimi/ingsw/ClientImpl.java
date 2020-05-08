@@ -81,18 +81,24 @@ public class ClientImpl implements Client {
 
             notifyConnectionStatusObservers(new ConnectionStatus(false, null));
 
+            boolean end = false;
+
             try{
                 while (true) {
                     Object packetFromServer = is.readObject();
                     if(packetFromServer instanceof ConnectionMessages) {
                         ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
-                        if (messageFromServer == ConnectionMessages.MATCH_ENDED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
+                        if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
                             executor.shutdownNow();
                             notifyConnectionStatusObservers(new ConnectionStatus(true, messageFromServer.getMessage()));
                             break;
+                        }else if(messageFromServer == ConnectionMessages.MATCH_FINISHED){
+                            end = true;
                         }
                     }
                     executor.submit(new Thread(() -> manageIncomingPacket(packetFromServer)));
+                    if(end)
+                        break;
                 }
 
 
@@ -104,6 +110,7 @@ public class ClientImpl implements Client {
             }
         }
     }
+
     private void manageIncomingPacket(Object packetFromServer){
         manageIncomingPacket(packetFromServer, false);
     }
@@ -123,6 +130,8 @@ public class ClientImpl implements Client {
                     System.out.println("[FROM SERVER]: INVALID PACKET");
                     assert (lastPacketReceived != null);
                     manageIncomingPacket(lastPacketReceived, true);
+                } else if (messageFromServer == ConnectionMessages.MATCH_FINISHED) {
+                    notifyConnectionStatusObservers(new ConnectionStatus(true, messageFromServer.getMessage()));
                 }
             } else if (packetFromServer instanceof PacketMatchStarted) {
                 PacketMatchStarted packetMatchStarted = (PacketMatchStarted) packetFromServer;

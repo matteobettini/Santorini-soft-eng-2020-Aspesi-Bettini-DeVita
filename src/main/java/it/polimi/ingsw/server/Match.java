@@ -55,12 +55,19 @@ class Match {
         for(ConnectionToClient c : clientConnections){
 
             VirtualView virtualView = new VirtualView(c, model);
+
+            virtualView.setGameFinishedHandler(winningPlayer -> {
+                if(isClosing.compareAndSet(false, true)) {
+                    notifyEnd();
+                    closureHandler.update(this);
+                }
+            });
             this.clients.put(c, virtualView);
 
             c.setInMatch(true);
             c.setClosureHandler((connection) -> {
                 if(isClosing.compareAndSet(false, true)) {
-                    notifyEnd(connection);
+                    notifyBrutalEnd(connection);
                     closureHandler.update(this);
                 }
             });
@@ -90,14 +97,22 @@ class Match {
      * closes them
      * @param connectionToClient the client causing the match shutdown
      */
-    private void notifyEnd(ConnectionToClient connectionToClient){
+    private void notifyBrutalEnd(ConnectionToClient connectionToClient){
         assert(clients.containsKey(connectionToClient));
             for(ConnectionToClient c : clients.keySet()){
                 if(!c.equals(connectionToClient)) {
-                    c.send(ConnectionMessages.MATCH_ENDED, false);
+                    c.send(ConnectionMessages.MATCH_INTERRUPTED, false);
                     c.closeRoutine();
                 }
             }
+    }
+
+
+    private void notifyEnd(){
+        for(ConnectionToClient c : clients.keySet()){
+            c.send(ConnectionMessages.MATCH_FINISHED, false);
+            c.closeRoutine();
+        }
     }
 
     void setClosureHandler(Observer<Match> closureHandler) {

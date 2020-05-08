@@ -1,10 +1,9 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.observe.Observer;
-import it.polimi.ingsw.packets.PacketNickname;
-import it.polimi.ingsw.packets.PacketNumOfPlayersAndGamemode;
+import it.polimi.ingsw.packets.*;
 import it.polimi.ingsw.observe.Observable;
-import it.polimi.ingsw.packets.ConnectionMessages;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -70,10 +69,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     private void startTimerShorter(){ startTimer(30000); }
     private void startTimerLonger(){
-        startTimer(40000);
+        startTimer(180000);
     }
 
-    private void stopTimer(){
+    void stopTimer(){
         if(timer != null && timer.isAlive()) {
             timer.interrupt();
             timer = null;
@@ -183,7 +182,6 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             while(active){
                 System.out.println("Connection [" + getClientNickname() + "]: I'M WAITING FOR AN OBJECT");
                 Object packetFromClient = is.readObject();
-                stopTimer();
 
                 if(inMatch)
                     handlePacketInMatch(packetFromClient);
@@ -201,6 +199,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private void handlePacketInSetup(Object packetFromClient) throws IOException {
 
         if (packetFromClient instanceof PacketNickname && nickAsked) {
+            stopTimer();
             System.out.println("Connection [" + getClientNickname() + "]: received nick");
             PacketNickname packetNickname = (PacketNickname) packetFromClient;
             if (!isNickValid(packetNickname.getNickname())){
@@ -212,6 +211,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
                 nickNameChosenHandler.update(this);
             }
         } else if (packetFromClient instanceof PacketNumOfPlayersAndGamemode && desiresAsked) {
+            stopTimer();
             System.out.println("Connection [" + getClientNickname() + "]: received desires");
             PacketNumOfPlayersAndGamemode packetNumOfPlayersAndGamemode = (PacketNumOfPlayersAndGamemode) packetFromClient;
             if(packetNumOfPlayersAndGamemode.getDesiredNumOfPlayers() != 2 && packetNumOfPlayersAndGamemode.getDesiredNumOfPlayers() != 3) {
