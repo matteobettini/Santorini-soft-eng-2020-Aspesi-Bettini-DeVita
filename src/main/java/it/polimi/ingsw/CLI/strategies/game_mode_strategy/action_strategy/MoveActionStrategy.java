@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class MoveActionStrategy implements ActionStrategy{
-    private static final String POSITIONS_REGEXP = "([A-E][1-5])";
+    private static final String POSITIONS_REGEXP = "(([A-E]|[a-e])[1-5])";
     private static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
 
     private List<Point> currentPositions;
@@ -108,7 +108,7 @@ public class MoveActionStrategy implements ActionStrategy{
                         point = InputUtilities.getLine();
                         if(point == null) return false;
                     }while(!POSITION_PATTERN.matcher(point).matches());
-                    chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), point.charAt(0));
+                    chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
                     if(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition)) error = true;
                 }while(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition));
 
@@ -173,7 +173,14 @@ public class MoveActionStrategy implements ActionStrategy{
             if(choice == 1) return 1;
             else return 2;
         }
-        else return -1;
+        else{
+            do{
+                System.out.println("Do you want to make a choice(1), restart the selection(2) or confirm the current actions(3)? ");
+                choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
+                if (choice == null) return -1;
+            }while(choice != 1 && choice != 2 && choice != 3);
+           return choice;
+        }
     }
 
     @Override

@@ -5,6 +5,7 @@ import it.polimi.ingsw.packets.PacketCardsFromClient;
 import it.polimi.ingsw.packets.PacketCardsFromServer;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DefaultSelectCardStrategy implements SelectCardStrategy {
     @Override
@@ -46,7 +47,7 @@ public class DefaultSelectCardStrategy implements SelectCardStrategy {
         String chosenCards;
         chosenCards = InputUtilities.getLine();
         if (chosenCards == null) return;
-        chosenCardsList = Arrays.asList(chosenCards.split("\\s*,\\s*"));
+        chosenCardsList = Arrays.stream(chosenCards.split("\\s*,\\s*")).map(s -> Character.toString(s.charAt(0)).toUpperCase().concat(s.substring(1).toLowerCase())).collect(Collectors.toList());
 
         PacketCardsFromClient packetCardsFromClient = new PacketCardsFromClient(chosenCardsList);
         matchData.getClient().send(packetCardsFromClient);

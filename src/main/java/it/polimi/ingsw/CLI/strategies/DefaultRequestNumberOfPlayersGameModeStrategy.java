@@ -9,7 +9,7 @@ public class DefaultRequestNumberOfPlayersGameModeStrategy implements RequestNum
         public void handleRequestNumberOfPlayerGameMode(String message) {
             MatchData matchData = MatchData.getInstance();
             Integer number;
-            System.out.println("\n" +message);
+            System.out.println("\n" + message);
             System.out.print("Number of Players: ");
             number = InputUtilities.getInt("Not a number, retry\nNumber of Players: ");
             if(number == null) return;

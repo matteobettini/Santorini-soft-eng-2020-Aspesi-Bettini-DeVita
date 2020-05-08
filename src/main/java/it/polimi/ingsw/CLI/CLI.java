@@ -82,7 +82,7 @@ public class CLI {
                     System.out.println("\n" + packetDoAction.getTo() + " is choosing the starting player...");
                     return;
                 }
-                chooseStarterStrategy.handleChooseStartPlayer();
+                chooseStarterStrategy.handleChooseStartPlayer(isRetry);
             }
             else if (actionType == ActionType.SET_WORKERS_POSITION){
                 if(!activePlayer.equals(matchData.getPlayerName())){
