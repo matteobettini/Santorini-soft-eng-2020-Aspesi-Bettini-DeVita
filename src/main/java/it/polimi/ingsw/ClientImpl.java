@@ -6,12 +6,12 @@ import it.polimi.ingsw.packets.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientImpl implements Client {
 
@@ -35,11 +35,12 @@ public class ClientImpl implements Client {
     private ObjectOutputStream os;
     private ObjectInputStream is;
 
-    private Object lastPacketReceived;
+
+    private Object lastActionRequest;
 
     private final AtomicBoolean started = new AtomicBoolean(false);
     private final AtomicBoolean isRetry = new AtomicBoolean(false);
-    private final AtomicBoolean end = new AtomicBoolean(false);
+    private final AtomicBoolean ended = new AtomicBoolean(false);
 
 
 
@@ -84,18 +85,19 @@ public class ClientImpl implements Client {
 
             notifyConnectionStatusObservers(new ConnectionStatus(false, null));
 
-            packetReceiver = new Thread(this::manageIncomingPacket);
+            packetReceiver = new Thread(this::manageIncomingPackets);
             packetReceiver.start();
 
             boolean end = false;
 
             try{
-                while (true) {
+                while (!end) {
                     Object packetFromServer = is.readObject();
                     if(packetFromServer instanceof ConnectionMessages) {
                         ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
                         if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
                             packetReceiver.interrupt();
+                            System.out.println(packetReceiver.isAlive());
                             notifyConnectionStatusObservers(new ConnectionStatus(true, messageFromServer.getMessage()));
                             break;
                         }else if(messageFromServer == ConnectionMessages.MATCH_FINISHED){
@@ -103,8 +105,6 @@ public class ClientImpl implements Client {
                         }
                     }
                     incomingPackets.add(packetFromServer);
-                    if(end)
-                        break;
                 }
 
 
@@ -118,15 +118,15 @@ public class ClientImpl implements Client {
     }
 
 
-    private void manageIncomingPacket(){
+    private void manageIncomingPackets(){
 
-        while(!end.get()) {
+        while(!ended.get()) {
 
             Object packetFromServer = null;
             try {
                 packetFromServer = incomingPackets.take();
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                ended.set(true);
             }
 
             if (packetFromServer instanceof ConnectionMessages) {
@@ -140,11 +140,11 @@ public class ClientImpl implements Client {
                     isRetry.set(false);
                 } else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
                     System.out.println("[FROM SERVER]: INVALID PACKET");
-                    assert (lastPacketReceived != null);
+                    assert (lastActionRequest != null);
                     isRetry.set(true);
-                    incomingPackets.addFirst(lastPacketReceived);
+                    incomingPackets.addFirst(lastActionRequest);
                 } else if (messageFromServer == ConnectionMessages.MATCH_FINISHED) {
-                    end.set(true);
+                    ended.set(true);
                     notifyConnectionStatusObservers(new ConnectionStatus(true, messageFromServer.getMessage()));
                 }
             } else if (packetFromServer instanceof PacketMatchStarted) {
@@ -173,13 +173,13 @@ public class ClientImpl implements Client {
             }
 
             if (packetFromServer instanceof PacketDoAction || packetFromServer instanceof PacketCardsFromServer || packetFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE)
-                lastPacketReceived = packetFromServer;
+                lastActionRequest = packetFromServer;
 
         }
     }
 
     @Override
-    public void send(Object packet){
+    public void send(Serializable packet){
         try {
             os.writeObject(packet);
             os.flush();
