@@ -155,7 +155,7 @@ class SetupManager{
                 i++;
             }
 
-            PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards, model.isHardCore());
+            PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards);
             notifyPacketSetupObservers(packetSetup);
 
             PacketDoAction packetDoAction = new PacketDoAction(challenger.getNickname(), ActionType.CHOOSE_START_PLAYER);

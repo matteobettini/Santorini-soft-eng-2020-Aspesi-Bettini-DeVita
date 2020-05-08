@@ -13,9 +13,8 @@ public class PacketSetup implements Serializable {
     private final Map<String, List<String>> ids;
     private final Map<String, Color> colors;
     private final Map<String, Pair<String, String >> cards;
-    private final boolean isHardcore;
 
-    public PacketSetup(Map<String, List<String>> ids, Map<String, Color> colors, Map<String, Pair<String, String>> cards, boolean isHardcore) {
+    public PacketSetup(Map<String, List<String>> ids, Map<String, Color> colors, Map<String, Pair<String, String>> cards) {
         this.ids = new HashMap<>();
         for(String s : ids.keySet()){
             List<String> internalList = new ArrayList<>(ids.get(s));
@@ -32,8 +31,6 @@ public class PacketSetup implements Serializable {
             this.cards.put(s,internalPair);
         }
 
-
-        this.isHardcore = isHardcore;
     }
 
     public Map<String, List<String>> getIds() {
@@ -48,7 +45,4 @@ public class PacketSetup implements Serializable {
         return cards;
     }
 
-    public boolean isHardcore() {
-        return isHardcore;
-    }
 }
