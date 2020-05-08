@@ -132,19 +132,17 @@ public class GraphicalBoard implements CharFigure{
         return graphicalCells[pos.x][pos.y];
     }
 
-    public Point removeWorker(String playerID, Integer workerNumber){
+    public void removeWorker(String playerID, Integer workerNumber){
         for(int i = 0; i < rows; ++i) {
             for (int j = 0; j < columns; ++j) {
                 GraphicalWorker graphicalWorker = graphicalCells[i][j].getWorker();
                 if(graphicalWorker != null && graphicalWorker.getPlayerName() != null && graphicalWorker.getNumber() != null){
                     if(playerID.equals(graphicalWorker.getPlayerName()) && workerNumber.equals(graphicalWorker.getNumber())){
                         graphicalCells[i][j].removeWorker();
-                        return new Point(i, j);
                     }
                 }
             }
         }
-        return null;
     }
 
     public void resetWorkers(){

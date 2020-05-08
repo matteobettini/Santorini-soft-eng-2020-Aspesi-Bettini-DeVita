@@ -31,107 +31,63 @@ public class MoveActionStrategy implements ActionStrategy{
         Client client = matchData.getClient();
         String player = matchData.getPlayerName();
         List<String> workersID = matchData.getIds().get(player);
+
+        //ELEMENT USED TO DISPLAY CHANGES
         Board board = matchData.getBoard();
         GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
-        CharStream stream = matchData.getStream();
-        GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
 
-        boolean restartForbidden = false; //CHOICE 1
-        boolean makeChoiceForbidden = false; //CHOICE 2
-        boolean confirmActionForbidden = false; //CHOICE 3
+        boolean restartForbidden = false; //FALSE IF THE PLAYER CAN CHOSE THE WORKER AGAIN
+        boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE MOVES
+        boolean confirmActionForbidden = false; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
+        //THIS IF IS ACCESSED WHEN THE PLAYER HAS NOT ALREADY CHOOSE THE WORKER
         if(lastUsedWorker == null){
 
+            //IF THE PLAYER HAS NOT CHOSEN A WORKER HE CAN'T CONFIRM AN EMPTY MOVE
             confirmActionForbidden = true;
 
             List<String> possibleWorkers = new ArrayList<>(packetPossibleMoves.getPossibleMoves().keySet());
 
-            possibleWorkers = possibleWorkers.stream().sorted().collect(Collectors.toList());
-
-            Integer workerChoice = 0;
-
-            if(possibleWorkers.size() > 1){
-                List<Integer> availableWorkers = possibleWorkers.stream().map(workersID::indexOf).sorted().collect(Collectors.toList());
-                do{
-                    System.out.print("Choose one Worker between ");
-                    int end = availableWorkers.size();
-                    int count = 0;
-                    for(Integer index : availableWorkers){
-                        count++;
-                        if(count < end) System.out.print((index + 1) + ", ");
-                        else System.out.print((index + 1)  + ": ");
-                    }
-                    workerChoice = InputUtilities.getInt("Not a valid worker number, retry\nWorker number: ");
-                    if (workerChoice == null) return false;
-                }while(!availableWorkers.contains(workerChoice - 1));
-            }
-
-            lastUsedWorker = workersID.indexOf(possibleWorkers.get(workerChoice - 1));
+            lastUsedWorker = getWorkerChoice(possibleWorkers, workersID);
+            if(lastUsedWorker == null) return false;
         }
 
+        //POSSIBLE POSITIONS CONTAINS THE POSITIONS THAT THE PLAYER CAN CHOOSE AT THIS TIME DURING THE MOVE
         List<Point> possiblePositions = new ArrayList<>(packetPossibleMoves.getPossibleMoves().get(workersID.get(lastUsedWorker)));
         graphicalBoard.setPossibleActions(possiblePositions);
-        GraphicalOcean graphicalOcean = new GraphicalOcean(stream,stream.getWidth(), stream.getHeight());
-        graphicalOcean.draw();
-        graphicalBoard.draw();
-        graphicalMatchMenu.draw();
-        stream.print(System.out);
-        stream.reset();
 
-        Integer choice;
+        matchData.printMatch();
+
+        graphicalBoard.resetPossibleActions();
+
+        //IF THERE ARE NO POSSIBLE POSITIONS THE PLAYER CAN'T MAKE A CHOICE
         if(possiblePositions.isEmpty()) makeChoiceForbidden = true;
 
-        choice = getActionChoice(makeChoiceForbidden,restartForbidden, confirmActionForbidden);
+        Integer choice = getActionChoice(makeChoiceForbidden,restartForbidden, confirmActionForbidden);
         if(choice == -1) return false;
 
         switch(choice){
             case 1:
-                StringBuilder positionsBuilder = new StringBuilder();
-
-                for(Point position : possiblePositions){
-                    positionsBuilder.append("- ").append(board.getCoordinates(position)).append("\n");
-                }
-
-                System.out.println("Available positions: ");
-                System.out.println(positionsBuilder.toString());
-
-                String point;
-                Point chosenPosition;
-                boolean error = false;
-                do{
-                    if(error) System.out.println("Invalid position for worker " + (lastUsedWorker + 1) + ", retry");
-                    int count = 0;
-                    do{
-                        count++;
-                        if(count > 1) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position: ");
-                        else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position (ex A1, B2...): ");
-                        point = InputUtilities.getLine();
-                        if(point == null) return false;
-                    }while(!POSITION_PATTERN.matcher(point).matches());
-                    chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
-                    if(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition)) error = true;
-                }while(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition));
-
+                //FIRST WE GET THE PLAYER CHOICE
+                Point chosenPosition = getChosenPosition(possiblePositions, board);
+                if(chosenPosition ==  null) return false;
+                //THE CHOSEN POSITION IS ADDED TO CURRENT POSITIONS THAT WILL FORM THE PACKET CONFIRMATION
                 currentPositions.add(chosenPosition);
-                graphicalBoard.resetPossibleActions();
-                Point previousPosition = graphicalBoard.removeWorker(matchData.getPlayerName(), lastUsedWorker + 1);
-                //IF THERE IS A WORKER OF ANOTHER PLAYER IN THE NEXT POSITION WE SWAP IT
-                if(previousPosition != null && graphicalBoard.getCell(chosenPosition).getWorker() != null){
-                    String playerNameToSwap = graphicalBoard.getCell(chosenPosition).getWorker().getPlayerName();
-                    Integer numberWorkerToSwap = graphicalBoard.getCell(chosenPosition).getWorker().getNumber();
-                    String workerIdToSwap = matchData.getIds().get(playerNameToSwap).get(numberWorkerToSwap);
-                    graphicalBoard.getCell(previousPosition).setWorker(workerIdToSwap);
-                }
 
+                //WE DISPLAY CHANGES TO THE PLAYER WITHOUT MAKING ASSUMPTIONS ABOUT HIS GOD'S POWERS
+                graphicalBoard.removeWorker(matchData.getPlayerName(), lastUsedWorker + 1);
                 graphicalBoard.getCell(chosenPosition).setWorker(workersID.get(lastUsedWorker));
 
+                //WE THEN ASK FOR ANOTHER GET POSSIBLE MOVES
                 PacketMove packetMove = new PacketMove(matchData.getPlayerName(), workersID.get(lastUsedWorker), true, currentPositions);
                 client.send(packetMove);
                 break;
             case 2:
+                //WE RESET CHANGES TO THE GRAPHICAL BOARD, THE CHECKPOINT IS THE BOARD OBJECT IN THE MATCHDATA
                 matchData.makeGraphicalBoardEqualToBoard();
                 return true;
             case 3:
+                //IN CASE OF PLAYER'S CONFIRMATION WE SEND A PACKET THAT WON'T SIMULATE AND WE ARE SURE THAT IS CORRECT BECAUSE WE CHECKED POSSIBLE MOVES EVERY TIME
                 PacketMove packetConfirmation = new PacketMove(matchData.getPlayerName(), workersID.get(lastUsedWorker), false, currentPositions);
                 client.send(packetConfirmation);
                 break;
@@ -141,46 +97,112 @@ public class MoveActionStrategy implements ActionStrategy{
     }
 
     private Integer getActionChoice(boolean makeChoiceForbidden, boolean restartForbidden, boolean confirmActionForbidden){
-        Integer choice;
+        String choiceMessage;
+        List<Integer> mapChoices = new ArrayList<>();
+
         if(makeChoiceForbidden && restartForbidden && confirmActionForbidden) return -1; //IMPOSSIBLE CONFIGURATION
         else if(makeChoiceForbidden && restartForbidden) return 3;
         else if(makeChoiceForbidden && confirmActionForbidden) return 2;
         else if(restartForbidden && confirmActionForbidden) return 1;
         else if(makeChoiceForbidden){
-            do{
-                System.out.println("Do you want to restart the selection(1) or confirm the current actions(2)? ");
-                choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
-                if (choice == null) return -1;
-            }while(choice != 1 && choice != 2);
-            if(choice == 1) return 2;
-            else return 3;
+            choiceMessage = "Do you want to restart the selection(1) or confirm the current actions(2)? ";
+            mapChoices.add(2);
+            mapChoices.add(3);
+
         }
         else if(restartForbidden){
-            do{
-                System.out.println("Do you want to make a choice(1) or confirm the current actions(2)? ");
-                choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
-                if (choice == null) return -1;
-            }while(choice != 1 && choice != 2);
-            if(choice == 1) return 1;
-            else return 3;
+            choiceMessage = "Do you want to make a choice(1) or confirm the current actions(2)? ";
+            mapChoices.add(1);
+            mapChoices.add(3);
+
         }
         else if(confirmActionForbidden){
-            do{
-                System.out.println("Do you want to make a choice (1), restart the selection(2)? ");
-                choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
-                if (choice == null) return -1;
-            }while(choice != 1 && choice != 2);
-            if(choice == 1) return 1;
-            else return 2;
+            choiceMessage = "Do you want to make a choice (1), restart the selection(2)? ";
+            mapChoices.add(1);
+            mapChoices.add(2);
+
         }
         else{
-            do{
-                System.out.println("Do you want to make a choice(1), restart the selection(2) or confirm the current actions(3)? ");
-                choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
-                if (choice == null) return -1;
-            }while(choice != 1 && choice != 2 && choice != 3);
-           return choice;
+            choiceMessage = "Do you want to make a choice(1), restart the selection(2) or confirm the current actions(3)? ";
+            mapChoices.add(1);
+            mapChoices.add(2);
+            mapChoices.add(3);
         }
+
+        Integer choice;
+        do{
+            System.out.print(choiceMessage);
+            choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
+            if (choice == null) return -1;
+        }while(choice <= 0 || choice > mapChoices.size());
+
+        return mapChoices.get(choice - 1);
+    }
+
+    private Integer getWorkerChoice(List<String> possibleWorkers, List<String> workersID){
+        //FIRST WE ORDER THE LIST OF POSSIBLE WORKERS BASED ON THE ASSUMPTION THAT WORKERS' IDS ARE IN LEXICOGRAPHICAL ORDER
+        possibleWorkers = possibleWorkers.stream().sorted().collect(Collectors.toList());
+
+        Integer workerChoice = 1; //THIS IS THE DEFAULT CHOICE
+
+        //IN CASE THERE ARE MULTIPLE CHOICES THE PLAYER CAN CHOOSE THE DESIRED WORKER
+        if(possibleWorkers.size() > 1){
+            List<Integer> availableWorkers = possibleWorkers.stream().map(workersID::indexOf).sorted().collect(Collectors.toList());
+            do{
+                System.out.print("Choose one Worker between ");
+                int end = availableWorkers.size();
+                int count = 0;
+
+                //DISPLAY THE POSSIBLE CHOICES
+                for(Integer index : availableWorkers){
+                    count++;
+                    if(count < end) System.out.print((index + 1) + ", ");
+                    else System.out.print((index + 1)  + ": ");
+                }
+
+                //ASK THE CHOICE
+                workerChoice = InputUtilities.getInt("Not a valid worker number, retry\nWorker number: ");
+                if (workerChoice == null) return null;
+            }while(!availableWorkers.contains(workerChoice - 1));
+        }
+
+        return workersID.indexOf(possibleWorkers.get(workerChoice - 1));
+    }
+
+    private Point getChosenPosition(List<Point> possiblePositions, Board board){
+
+        StringBuilder positionsBuilder = new StringBuilder();
+
+        //WE FIRST DISPLAY THE POSSIBLE POSITIONS EVEN IF THEY ARE ALREADY DISPLAYED GRAPHICALLY
+        for(Point position : possiblePositions){
+            positionsBuilder.append("- ").append(board.getCoordinates(position)).append("\n");
+        }
+
+        System.out.println("Available positions: ");
+        System.out.println(positionsBuilder.toString());
+
+        //THE PLAYER CAN NOW CHOOSE HIS WORKER'S NEXT POSITION
+        String point;
+        Point chosenPosition;
+        boolean error = false;
+        int count = 0;
+        do{
+            if(error) System.out.println("Invalid position for worker " + (lastUsedWorker + 1) + ", retry");
+
+            do{
+                count++;
+                if(count > 1) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position: ");
+                else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position (ex A1, B2...): ");
+                point = InputUtilities.getLine();
+                if(point == null) return null;
+            }while(!POSITION_PATTERN.matcher(point).matches());
+
+            chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
+            if(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition)) error = true;
+
+        }while(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition));
+
+        return chosenPosition;
     }
 
     @Override

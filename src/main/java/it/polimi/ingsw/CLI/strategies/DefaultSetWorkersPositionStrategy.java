@@ -17,19 +17,9 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
     public void handleSetWorkersPosition(boolean isRetry) {
         MatchData matchData = MatchData.getInstance();
 
-        CharStream stream = matchData.getStream();
         Board board = matchData.getBoard();
-        GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
-        GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
 
-        if(board.getNumberOfWorkers() == 0){
-            GraphicalOcean graphicalOcean = new GraphicalOcean(stream,stream.getWidth(), stream.getHeight());
-            graphicalOcean.draw();
-            graphicalBoard.draw();
-            graphicalMatchMenu.draw();
-            stream.print(System.out);
-            stream.reset();
-        }
+        if(board.getNumberOfWorkers() == 0) matchData.printMatch();
 
         Map<String, Point> positions = new HashMap<>();
         List<String> workersID = matchData.getIds().get(matchData.getPlayerName());
@@ -37,13 +27,10 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
             String point;
             Point helper;
             boolean error = false;
-
             do{
                 if(error) System.out.println("Invalid position for worker " + (i + 1) + ", retry");
-                int count = 0;
                 do{
-                    count++;
-                    if(count > 1) System.out.print("Choose your worker" + (i + 1) + "'s position: ");
+                    if(i > 0) System.out.print("Choose your worker" + (i + 1) + "'s position: ");
                     else System.out.print("Choose your worker" + (i + 1) + "'s position (ex A1, B2, ...): ");
                     point = InputUtilities.getLine();
                     if(point == null) return;

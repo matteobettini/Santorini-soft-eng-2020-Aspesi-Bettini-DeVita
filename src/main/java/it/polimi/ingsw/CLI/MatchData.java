@@ -41,16 +41,7 @@ public class MatchData {
     }
 
     private MatchData(){
-        this.board = new Board();
-        this.stream = new CharStream(159, 50);
-        this.graphicalBoard = new GraphicalBoard(stream);
-        this.buildingsCounter = new HashMap<>();
-        buildingsCounter.put(BuildingType.FIRST_FLOOR, 22);
-        buildingsCounter.put(BuildingType.SECOND_FLOOR, 18);
-        buildingsCounter.put(BuildingType.THIRD_FLOOR, 14);
-        buildingsCounter.put(BuildingType.DOME, 18);
-        this.loser = null;
-        this.winner = null;
+        reset();
     }
 
     public void makeGraphicalBoardEqualToBoard(){
@@ -69,6 +60,35 @@ public class MatchData {
 
             }
         }
+    }
+
+    public void reset(){
+        this.board = new Board();
+        this.stream = new CharStream(159, 50);
+        this.graphicalBoard = new GraphicalBoard(stream);
+        this.buildingsCounter = new HashMap<>();
+        buildingsCounter.put(BuildingType.FIRST_FLOOR, 22);
+        buildingsCounter.put(BuildingType.SECOND_FLOOR, 18);
+        buildingsCounter.put(BuildingType.THIRD_FLOOR, 14);
+        buildingsCounter.put(BuildingType.DOME, 18);
+        this.loser = null;
+        this.winner = null;
+    }
+
+    public void printMatch(){
+        printMatch(false, false);
+    }
+
+    public void printMatch(boolean youWin, boolean gameOver){
+        GraphicalOcean graphicalOcean = new GraphicalOcean(stream,stream.getWidth(), stream.getHeight());
+        GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
+        graphicalOcean.draw();
+        graphicalBoard.draw();
+        graphicalMatchMenu.draw();
+        graphicalMatchMenu.setYouWin(youWin);
+        graphicalMatchMenu.setYouWin(gameOver);
+        stream.print(System.out);
+        stream.reset();
     }
 
     public void decrementCounter(BuildingType building,int howMany){

@@ -56,6 +56,8 @@ public class CLI {
 
         setInitialStrategies();
 
+        matchData.reset();
+
         matchData.setClient();
 
         Client client = matchData.getClient();
