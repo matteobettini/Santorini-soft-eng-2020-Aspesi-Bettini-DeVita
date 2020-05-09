@@ -82,38 +82,35 @@ public class InputUtilities {
         return bool;
     }
 
-    public static Integer getWorkerChoice(List<String> workersID){
-        return getWorkerChoice(workersID, workersID);
-    }
-
-    public static Integer getWorkerChoice(List<String> possibleWorkers, List<String> workersID){
+    public static String getWorkerChoice(List<String> possibleWorkers){
         //FIRST WE ORDER THE LIST OF POSSIBLE WORKERS BASED ON THE ASSUMPTION THAT WORKERS' IDS ARE IN LEXICOGRAPHICAL ORDER
         possibleWorkers = possibleWorkers.stream().sorted().collect(Collectors.toList());
 
-        Integer workerChoice = 1; //THIS IS THE DEFAULT CHOICE
 
+        List<Integer> availableWorkers = possibleWorkers.stream().map( w -> Character.getNumericValue(w.charAt(w.length() - 1))).collect(Collectors.toList());
+
+        Integer workerChoice = availableWorkers.get(0);
         //IN CASE THERE ARE MULTIPLE CHOICES THE PLAYER CAN CHOOSE THE DESIRED WORKER
         if(possibleWorkers.size() > 1){
-            List<Integer> availableWorkers = possibleWorkers.stream().map(workersID::indexOf).sorted().collect(Collectors.toList());
             do{
                 System.out.print("Choose one Worker between ");
                 int end = availableWorkers.size();
                 int count = 0;
 
                 //DISPLAY THE POSSIBLE CHOICES
-                for(Integer index : availableWorkers){
+                for(Integer wNumber: availableWorkers){
                     count++;
-                    if(count < end) System.out.print((index + 1) + ", ");
-                    else System.out.print((index + 1)  + ": ");
+                    if(count < end) System.out.print((wNumber) + ", ");
+                    else System.out.print((wNumber)  + ": ");
                 }
 
                 //ASK THE CHOICE
                 workerChoice = InputUtilities.getInt("Not a valid worker number, worker number: ");
                 if (workerChoice == null) return null;
-            }while(!availableWorkers.contains(workerChoice - 1));
+            }while(!availableWorkers.contains(workerChoice));
         }
 
-        return workersID.indexOf(possibleWorkers.get(workerChoice - 1));
+        return possibleWorkers.get(availableWorkers.indexOf(workerChoice));
     }
 
     public static Integer getActionChoice(boolean makeChoiceForbidden, boolean restartForbidden, boolean confirmActionForbidden){

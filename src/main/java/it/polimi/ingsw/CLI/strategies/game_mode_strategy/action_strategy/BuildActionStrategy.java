@@ -23,7 +23,7 @@ public class BuildActionStrategy implements ActionStrategy{
     private static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4])$";
     private static final Pattern BUILDINGS_PATTERN = Pattern.compile(BUILDINGS_REGEXP);
 
-    private Integer lastUsedWorker;
+    private String lastUsedWorker;
     private Map<Point, List<BuildingType>> currentBuilds;
     private List<Point> currentDataOrder;
 
@@ -69,13 +69,13 @@ public class BuildActionStrategy implements ActionStrategy{
 
             if(possibleWorkers.size() == 1) restartForbidden = true;
 
-            lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers, workersID);
+            lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers);
             if(lastUsedWorker == null) return false;
 
         }
 
         //POSSIBLE POSITIONS CONTAINS THE POSITIONS THAT THE PLAYER CAN CHOOSE AT THIS TIME DURING THE BUILD
-        Map<Point, List<BuildingType>> possibleBuildingsInPositions = packetPossibleBuilds.getPossibleBuilds().get(workersID.get(lastUsedWorker));
+        Map<Point, List<BuildingType>> possibleBuildingsInPositions = packetPossibleBuilds.getPossibleBuilds().get(lastUsedWorker);
         graphicalBoard.setPossibleActions(new ArrayList<>(possibleBuildingsInPositions.keySet()));
 
         matchData.printMatch();
@@ -100,7 +100,7 @@ public class BuildActionStrategy implements ActionStrategy{
 
                 //WE THEN ASK FOR A NEW PACKETBUILD
 
-                PacketBuild packetBuild = new PacketBuild(player, workersID.get(lastUsedWorker), true, currentBuilds, currentDataOrder);
+                PacketBuild packetBuild = new PacketBuild(player, lastUsedWorker, true, currentBuilds, currentDataOrder);
                 client.send(packetBuild);
                 break;
             case 2:
@@ -108,7 +108,7 @@ public class BuildActionStrategy implements ActionStrategy{
                 matchData.makeGraphicalBoardEqualToBoard();
                 return true;
             case 3:
-                PacketBuild packetBuildConfirmation = new PacketBuild(player, workersID.get(lastUsedWorker), false, currentBuilds, currentDataOrder);
+                PacketBuild packetBuildConfirmation = new PacketBuild(player,lastUsedWorker, false, currentBuilds, currentDataOrder);
                 client.send(packetBuildConfirmation);
                 break;
         }
@@ -119,6 +119,7 @@ public class BuildActionStrategy implements ActionStrategy{
 
     private boolean getChosenBuildingsInPoint(Map<Point, List<BuildingType>> possibleBuildingsInPositions, Board board){
         StringBuilder possibleBuildsBuilder = new StringBuilder();
+        int workerNumber = Character.getNumericValue(lastUsedWorker.charAt(lastUsedWorker.length() - 1));
 
         for(Point position : possibleBuildingsInPositions.keySet()){
             possibleBuildsBuilder.append("- ").append(board.getCoordinates(position));
@@ -138,11 +139,11 @@ public class BuildActionStrategy implements ActionStrategy{
         boolean error = false;
         boolean suggestion = true;
         do{
-            if(error) System.out.println("Invalid buildings for worker " + (lastUsedWorker + 1) + ", retry");
+            if(error) System.out.println("Invalid buildings for worker" + (workerNumber) + ", retry");
 
             do{
-                if(suggestion) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s buildings: ");
-                else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s buildings (ex A1 1, B2 4...): ");
+                if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s buildings: ");
+                else System.out.print("Choose your next worker" + (workerNumber) + "'s buildings (ex A1 1, B2 4...): ");
                 suggestion = false;
                 command = InputUtilities.getLine();
                 if(command == null) return false;

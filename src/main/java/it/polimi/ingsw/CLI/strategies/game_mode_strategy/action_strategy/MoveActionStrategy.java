@@ -20,7 +20,7 @@ public class MoveActionStrategy implements ActionStrategy{
     private static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
 
     private List<Point> currentPositions;
-    private Integer lastUsedWorker; //null if the action has just arrived
+    private String lastUsedWorker; //null if the action has just arrived
 
     public MoveActionStrategy(){
         this.currentPositions = new LinkedList<>();
@@ -56,12 +56,12 @@ public class MoveActionStrategy implements ActionStrategy{
                 if(!packetPossibleMoves.getPossibleMoves().get(worker).isEmpty()) possibleWorkers.add(worker);
             }
 
-            lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers, workersID);
+            lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers);
             if(lastUsedWorker == null) return false;
         }
 
         //POSSIBLE POSITIONS CONTAINS THE POSITIONS THAT THE PLAYER CAN CHOOSE AT THIS TIME DURING THE MOVE
-        List<Point> possiblePositions = new ArrayList<>(packetPossibleMoves.getPossibleMoves().get(workersID.get(lastUsedWorker)));
+        List<Point> possiblePositions = new ArrayList<>(packetPossibleMoves.getPossibleMoves().get(lastUsedWorker));
         graphicalBoard.setPossibleActions(possiblePositions);
 
         matchData.printMatch();
@@ -82,12 +82,14 @@ public class MoveActionStrategy implements ActionStrategy{
                 //THE CHOSEN POSITION IS ADDED TO CURRENT POSITIONS THAT WILL FORM THE PACKET CONFIRMATION
                 currentPositions.add(chosenPosition);
 
+                Integer workerNumber = Character.getNumericValue(lastUsedWorker.charAt(lastUsedWorker.length() - 1));
+
                 //WE DISPLAY CHANGES TO THE PLAYER WITHOUT MAKING ASSUMPTIONS ABOUT HIS GOD'S POWERS
-                graphicalBoard.removeWorker(matchData.getPlayerName(), lastUsedWorker + 1);
-                graphicalBoard.getCell(chosenPosition).setWorker(workersID.get(lastUsedWorker));
+                graphicalBoard.removeWorker(matchData.getPlayerName(), workerNumber);
+                graphicalBoard.getCell(chosenPosition).setWorker(lastUsedWorker);
 
                 //WE THEN ASK FOR ANOTHER GET POSSIBLE MOVES
-                PacketMove packetMove = new PacketMove(matchData.getPlayerName(), workersID.get(lastUsedWorker), true, currentPositions);
+                PacketMove packetMove = new PacketMove(matchData.getPlayerName(), lastUsedWorker, true, currentPositions);
                 client.send(packetMove);
                 break;
             case 2:
@@ -96,7 +98,7 @@ public class MoveActionStrategy implements ActionStrategy{
                 return true;
             case 3:
                 //IN CASE OF PLAYER'S CONFIRMATION WE SEND A PACKET THAT WON'T SIMULATE AND WE ARE SURE THAT IS CORRECT BECAUSE WE CHECKED POSSIBLE MOVES EVERY TIME
-                PacketMove packetConfirmation = new PacketMove(matchData.getPlayerName(), workersID.get(lastUsedWorker), false, currentPositions);
+                PacketMove packetConfirmation = new PacketMove(matchData.getPlayerName(),lastUsedWorker, false, currentPositions);
                 client.send(packetConfirmation);
                 break;
         }
@@ -107,6 +109,7 @@ public class MoveActionStrategy implements ActionStrategy{
     private Point getChosenPosition(List<Point> possiblePositions, Board board){
 
         StringBuilder positionsBuilder = new StringBuilder();
+        int workerNumber = Character.getNumericValue(lastUsedWorker.charAt(lastUsedWorker.length() - 1));
 
         //WE FIRST DISPLAY THE POSSIBLE POSITIONS EVEN IF THEY ARE ALREADY DISPLAYED GRAPHICALLY
         for(Point position : possiblePositions){
@@ -122,11 +125,11 @@ public class MoveActionStrategy implements ActionStrategy{
         boolean error = false;
         boolean suggestion = true;
         do{
-            if(error) System.out.println("Invalid position for worker " + (lastUsedWorker + 1) + ", retry");
+            if(error) System.out.println("Invalid position for worker" + (workerNumber) + ", retry");
 
             do{
-                if(suggestion) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position: ");
-                else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position (ex A1, B2...): ");
+                if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s position: ");
+                else System.out.print("Choose your next worker" + (workerNumber) + "'s position (ex A1, B2...): ");
                 suggestion = false;
                 point = InputUtilities.getLine();
                 if(point == null) return null;
