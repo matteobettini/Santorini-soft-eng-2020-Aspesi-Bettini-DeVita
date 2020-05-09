@@ -17,7 +17,9 @@ public class PacketPossibleMoves implements Serializable {
         this.to = to;
         this.possibleMoves = new HashMap<>();
         for(String s : possibleMoves.keySet()){
-            Set<Point> internalSet = new HashSet<>(possibleMoves.get(s));
+            Set<Point> internalSet = new HashSet<>();
+            for(Point p : possibleMoves.get(s))
+                internalSet.add(new Point(p));
             this.possibleMoves.put(s,internalSet);
         }
     }
