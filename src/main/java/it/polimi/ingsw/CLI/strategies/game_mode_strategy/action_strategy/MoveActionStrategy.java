@@ -45,6 +45,8 @@ public class MoveActionStrategy implements ActionStrategy{
         //THIS IF IS ACCESSED WHEN THE PLAYER HAS NOT ALREADY CHOOSE THE WORKER
         if(lastUsedWorker == null){
 
+            System.out.println("Make your move!");
+
             //IF THE PLAYER HAS NOT CHOSEN A WORKER HE CAN'T CONFIRM AN EMPTY MOVE
             confirmActionForbidden = true;
 

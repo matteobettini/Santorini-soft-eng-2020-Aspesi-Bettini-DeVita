@@ -57,13 +57,17 @@ public class BuildActionStrategy implements ActionStrategy{
 
         if(lastUsedWorker == null){
 
+            System.out.println("Make your build!");
+
             confirmActionForbidden = true;
 
-            List<String> possibleWorkers = new ArrayList<>(packetPossibleBuilds.getPossibleBuilds().keySet());
+            List<String> possibleWorkers = new ArrayList<>();
 
             for(String worker : packetPossibleBuilds.getPossibleBuilds().keySet()){
                 if(!packetPossibleBuilds.getPossibleBuilds().get(worker).isEmpty()) possibleWorkers.add(worker);
             }
+
+            if(possibleWorkers.size() == 1) restartForbidden = true;
 
             lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers, workersID);
             if(lastUsedWorker == null) return false;
