@@ -56,6 +56,10 @@ public class GraphicalCell implements CharFigure{
         buildings.add(BuildingFactory.getBuilding(stream, buildingType, RATEOX, RATEOY));
     }
 
+    public void addBuildings(List<BuildingType> buildings){
+        for(BuildingType buildingType : buildings) addBuilding(buildingType);
+    }
+
     @Override
     public void draw() {
         draw(0,0);

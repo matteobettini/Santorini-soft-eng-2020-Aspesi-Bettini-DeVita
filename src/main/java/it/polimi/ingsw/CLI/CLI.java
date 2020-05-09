@@ -150,18 +150,25 @@ public class CLI {
         do{
             System.out.print("Enter the server's IP address: ");
             address = InputUtilities.getLine();
+        }while (!addressIsValid(address));
+
+        do{
             System.out.print("Enter the server's port: ");
             port = InputUtilities.getInt("Not a number, retry\nEnter the server's port: ");
             if(port == null) port = - 1;
-        }while (!addressIsValid(address, port));
+        }while (!portIsValid(port));
 
         this.address = address;
         this.port = port;
     }
 
-    private boolean addressIsValid(String address, int port) {
+    private boolean addressIsValid(String address) {
         if(address == null || port == -1) return false;
-        return IP_PATTERN.matcher(address).matches() && port >= 1 && port <= 65535;
+        return IP_PATTERN.matcher(address).matches();
     }
 
+    private boolean portIsValid(int port){
+        if(port == - 1) return false;
+        return port >= 1 && port <= 65535;
+    }
 }

@@ -39,4 +39,8 @@ public class Cell {
     public void addBuilding(BuildingType building) {
         buildings.add(building);
     }
+
+    public void addBuildings(List<BuildingType> buildings) {
+        for(BuildingType building : buildings) addBuilding(building);
+    }
 }

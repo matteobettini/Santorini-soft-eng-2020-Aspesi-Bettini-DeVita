@@ -1,6 +1,9 @@
 package it.polimi.ingsw.CLI.strategies.game_mode_strategy.action_strategy;
 
-import it.polimi.ingsw.CLI.*;
+import it.polimi.ingsw.CLI.Board;
+import it.polimi.ingsw.CLI.GraphicalBoard;
+import it.polimi.ingsw.CLI.InputUtilities;
+import it.polimi.ingsw.CLI.MatchData;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.packets.PacketMove;
 import it.polimi.ingsw.packets.PacketPossibleBuilds;
@@ -11,7 +14,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class MoveActionStrategy implements ActionStrategy{
     private static final String POSITIONS_REGEXP = "(([A-E]|[a-e])[1-5])";
@@ -48,7 +50,7 @@ public class MoveActionStrategy implements ActionStrategy{
 
             List<String> possibleWorkers = new ArrayList<>(packetPossibleMoves.getPossibleMoves().keySet());
 
-            lastUsedWorker = getWorkerChoice(possibleWorkers, workersID);
+            lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers, workersID);
             if(lastUsedWorker == null) return false;
         }
 
@@ -63,7 +65,7 @@ public class MoveActionStrategy implements ActionStrategy{
         //IF THERE ARE NO POSSIBLE POSITIONS THE PLAYER CAN'T MAKE A CHOICE
         if(possiblePositions.isEmpty()) makeChoiceForbidden = true;
 
-        Integer choice = getActionChoice(makeChoiceForbidden,restartForbidden, confirmActionForbidden);
+        Integer choice = InputUtilities.getActionChoice(makeChoiceForbidden,restartForbidden, confirmActionForbidden);
         if(choice == -1) return false;
 
         switch(choice){
@@ -96,79 +98,6 @@ public class MoveActionStrategy implements ActionStrategy{
         return false;
     }
 
-    private Integer getActionChoice(boolean makeChoiceForbidden, boolean restartForbidden, boolean confirmActionForbidden){
-        String choiceMessage;
-        List<Integer> mapChoices = new ArrayList<>();
-
-        if(makeChoiceForbidden && restartForbidden && confirmActionForbidden) return -1; //IMPOSSIBLE CONFIGURATION
-        else if(makeChoiceForbidden && restartForbidden) return 3;
-        else if(makeChoiceForbidden && confirmActionForbidden) return 2;
-        else if(restartForbidden && confirmActionForbidden) return 1;
-        else if(makeChoiceForbidden){
-            choiceMessage = "Do you want to restart the selection(1) or confirm the current actions(2)? ";
-            mapChoices.add(2);
-            mapChoices.add(3);
-
-        }
-        else if(restartForbidden){
-            choiceMessage = "Do you want to make a choice(1) or confirm the current actions(2)? ";
-            mapChoices.add(1);
-            mapChoices.add(3);
-
-        }
-        else if(confirmActionForbidden){
-            choiceMessage = "Do you want to make a choice (1), restart the selection(2)? ";
-            mapChoices.add(1);
-            mapChoices.add(2);
-
-        }
-        else{
-            choiceMessage = "Do you want to make a choice(1), restart the selection(2) or confirm the current actions(3)? ";
-            mapChoices.add(1);
-            mapChoices.add(2);
-            mapChoices.add(3);
-        }
-
-        Integer choice;
-        do{
-            System.out.print(choiceMessage);
-            choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
-            if (choice == null) return -1;
-        }while(choice <= 0 || choice > mapChoices.size());
-
-        return mapChoices.get(choice - 1);
-    }
-
-    private Integer getWorkerChoice(List<String> possibleWorkers, List<String> workersID){
-        //FIRST WE ORDER THE LIST OF POSSIBLE WORKERS BASED ON THE ASSUMPTION THAT WORKERS' IDS ARE IN LEXICOGRAPHICAL ORDER
-        possibleWorkers = possibleWorkers.stream().sorted().collect(Collectors.toList());
-
-        Integer workerChoice = 1; //THIS IS THE DEFAULT CHOICE
-
-        //IN CASE THERE ARE MULTIPLE CHOICES THE PLAYER CAN CHOOSE THE DESIRED WORKER
-        if(possibleWorkers.size() > 1){
-            List<Integer> availableWorkers = possibleWorkers.stream().map(workersID::indexOf).sorted().collect(Collectors.toList());
-            do{
-                System.out.print("Choose one Worker between ");
-                int end = availableWorkers.size();
-                int count = 0;
-
-                //DISPLAY THE POSSIBLE CHOICES
-                for(Integer index : availableWorkers){
-                    count++;
-                    if(count < end) System.out.print((index + 1) + ", ");
-                    else System.out.print((index + 1)  + ": ");
-                }
-
-                //ASK THE CHOICE
-                workerChoice = InputUtilities.getInt("Not a valid worker number, retry\nWorker number: ");
-                if (workerChoice == null) return null;
-            }while(!availableWorkers.contains(workerChoice - 1));
-        }
-
-        return workersID.indexOf(possibleWorkers.get(workerChoice - 1));
-    }
-
     private Point getChosenPosition(List<Point> possiblePositions, Board board){
 
         StringBuilder positionsBuilder = new StringBuilder();
@@ -198,9 +127,8 @@ public class MoveActionStrategy implements ActionStrategy{
             }while(!POSITION_PATTERN.matcher(point).matches());
 
             chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
-            if(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition)) error = true;
-
-        }while(board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition));
+            error = board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition);
+        }while(error);
 
         return chosenPosition;
     }

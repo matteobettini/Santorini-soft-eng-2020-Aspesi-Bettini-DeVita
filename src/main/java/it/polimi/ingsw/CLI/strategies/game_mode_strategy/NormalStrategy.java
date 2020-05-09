@@ -25,6 +25,8 @@ public class NormalStrategy implements GameModeStrategy{
             case BUILD:
                 if(isRetry) System.out.println("Retry your build!");
                 actionStrategy = new BuildActionStrategy();
+                PacketBuild packetBuild = new PacketBuild(matchData.getPlayerName());
+                matchData.getClient().send(packetBuild);
                 break;
             case MOVE_BUILD:
                 if(isRetry) System.out.println("Retry your move or your build!");
