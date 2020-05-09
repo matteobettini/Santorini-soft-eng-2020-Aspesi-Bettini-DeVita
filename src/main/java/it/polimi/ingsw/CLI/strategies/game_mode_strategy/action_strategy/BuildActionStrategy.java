@@ -161,7 +161,7 @@ public class BuildActionStrategy implements ActionStrategy{
         if(currentBuilds.containsKey(chosenPosition)) helper = currentBuilds.get(chosenPosition);
         helper.add(chosenBuilding);
         currentBuilds.put(chosenPosition, helper);
-        currentDataOrder.add(chosenPosition);
+        if(!currentDataOrder.contains(chosenPosition)) currentDataOrder.add(chosenPosition);
 
         return true;
     }
