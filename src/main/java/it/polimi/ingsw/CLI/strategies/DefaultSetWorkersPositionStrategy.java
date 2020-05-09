@@ -29,6 +29,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
             boolean error = false;
             do{
                 if(error) System.out.println("Invalid position for worker " + (i + 1) + ", retry");
+                error = false;
                 do{
                     if(i > 0) System.out.print("Choose your worker" + (i + 1) + "'s position: ");
                     else System.out.print("Choose your worker" + (i + 1) + "'s position (ex A1, B2, ...): ");
@@ -37,7 +38,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
                 }while(!POSITION_PATTERN.matcher(point).matches());
                 helper = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
                 if(board.getCell(helper) == null || positions.containsValue(helper)) error = true;
-            }while(board.getCell(helper) == null || positions.containsValue(helper));
+            }while(error);
             positions.put(workersID.get(i), helper);
         }
 

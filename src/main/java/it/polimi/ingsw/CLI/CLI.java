@@ -147,14 +147,18 @@ public class CLI {
         String address;
         Integer port;
 
+        boolean firstLoop = true;
         do{
-            System.out.print("Enter the server's IP address: ");
+            if(firstLoop) System.out.print("Enter the server's IP address: ");
+            else  System.out.print("IP address not valid, enter the server's IP address: ");
             address = InputUtilities.getLine();
+            if(address == null) return;
+            firstLoop = false;
         }while (!addressIsValid(address));
 
         do{
             System.out.print("Enter the server's port: ");
-            port = InputUtilities.getInt("Not a number, retry\nEnter the server's port: ");
+            port = InputUtilities.getInt("Not valid, enter the server's port: ");
             if(port == null) port = - 1;
         }while (!portIsValid(port));
 

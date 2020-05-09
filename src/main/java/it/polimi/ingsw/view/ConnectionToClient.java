@@ -61,9 +61,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
                 Thread.sleep(milliseconds);
                 System.out.println("Connection [" + getClientNickname() + "]: timer is ended");
                 closeRoutine(true);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            } catch (InterruptedException ignored) { }
         });
         timer.start();
     }

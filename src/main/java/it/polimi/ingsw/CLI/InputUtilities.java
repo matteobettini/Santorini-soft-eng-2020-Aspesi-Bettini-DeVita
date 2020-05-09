@@ -13,14 +13,17 @@ public class InputUtilities {
 
     public static String getLine(){
         String name;
-        try {
-            while (!input.ready()){
-                Thread.sleep(200);
+        do {
+            try {
+                while (!input.ready()) {
+                    Thread.sleep(200);
+                }
+                name = input.readLine();
+            } catch (InterruptedException | IOException e) {
+                Thread.currentThread().interrupt();
+                return null;
             }
-            name = input.readLine();
-        }catch (InterruptedException | IOException e){
-            return null;
-        }
+        } while ("".equals(name));
         return name;
     }
 
@@ -45,6 +48,7 @@ public class InputUtilities {
             }while(!fin);
 
         }catch (InterruptedException | IOException e){
+            Thread.currentThread().interrupt();
             return null;
         }
         return num;
@@ -71,6 +75,7 @@ public class InputUtilities {
             }while(!fin);
 
         }catch (InterruptedException | IOException e){
+            Thread.currentThread().interrupt();
             return null;
         }
 
@@ -103,7 +108,7 @@ public class InputUtilities {
                 }
 
                 //ASK THE CHOICE
-                workerChoice = InputUtilities.getInt("Not a valid worker number, retry\nWorker number: ");
+                workerChoice = InputUtilities.getInt("Not a valid worker number, worker number: ");
                 if (workerChoice == null) return null;
             }while(!availableWorkers.contains(workerChoice - 1));
         }
@@ -147,7 +152,7 @@ public class InputUtilities {
         Integer choice;
         do{
             System.out.print(choiceMessage);
-            choice = InputUtilities.getInt("Not a valid action number, retry\nChoose an action: ");
+            choice = InputUtilities.getInt("Not a valid action number, choose an action: ");
             if (choice == null) return -1;
         }while(choice <= 0 || choice > mapChoices.size());
 

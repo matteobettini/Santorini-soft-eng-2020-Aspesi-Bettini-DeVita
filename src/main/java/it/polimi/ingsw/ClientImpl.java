@@ -28,7 +28,7 @@ public class ClientImpl implements Client {
     private final Queue<Observer<ConnectionStatus>> connectionStatusObservers;
 
     private final BlockingDeque<Object> incomingPackets;
-    private Thread packetReceiver;
+    private final Thread packetReceiver;
 
     private Socket socket;
 
@@ -58,6 +58,7 @@ public class ClientImpl implements Client {
         this.insertNumOfPlayersAndGamemodeRequestObservers = new ConcurrentLinkedQueue<>();
         this.connectionStatusObservers = new ConcurrentLinkedQueue<>();
 
+        this.packetReceiver = new Thread(this::manageIncomingPackets);
 
     }
     @Override
@@ -85,7 +86,6 @@ public class ClientImpl implements Client {
 
             notifyConnectionStatusObservers(new ConnectionStatus(false, null));
 
-            packetReceiver = new Thread(this::manageIncomingPackets);
             packetReceiver.start();
 
             boolean end = false;
@@ -97,7 +97,6 @@ public class ClientImpl implements Client {
                         ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
                         if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
                             packetReceiver.interrupt();
-                            System.out.println(packetReceiver.isAlive());
                             notifyConnectionStatusObservers(new ConnectionStatus(true, messageFromServer.getMessage()));
                             break;
                         }else if(messageFromServer == ConnectionMessages.MATCH_FINISHED){
@@ -122,11 +121,12 @@ public class ClientImpl implements Client {
 
         while(!ended.get()) {
 
-            Object packetFromServer = null;
+            Object packetFromServer;
             try {
                 packetFromServer = incomingPackets.take();
             } catch (InterruptedException e) {
                 ended.set(true);
+                break;
             }
 
             if (packetFromServer instanceof ConnectionMessages) {
@@ -193,7 +193,8 @@ public class ClientImpl implements Client {
     }
 
     private void manageClosure(String reasonOfClosure){
-        packetReceiver.interrupt();
+        if(packetReceiver.isAlive())
+            packetReceiver.interrupt();
         notifyConnectionStatusObservers(new ConnectionStatus(true, reasonOfClosure));
         closeRoutine();
     }
