@@ -206,7 +206,7 @@ class TurnLogicMatteoTest {
 
        //ANDREA ASKS FOR THE POSSIBLE MOVES
        moves.clear();
-       packetMove = new PacketMove("Andrea", "Andrea.1", moves);
+       packetMove = new PacketMove("Andrea", null, moves);
        turnLogic.getPossibleMoves("Andrea", packetMove);
 
        PacketPossibleMoves packetPossibleMoves = client.getPacketPossibleMoves();
@@ -409,7 +409,7 @@ class TurnLogicMatteoTest {
 
        //MATTEO ASKS FOR THE POSSIBLE MOVES
        moves.clear();
-       packetMove = new PacketMove("Matteo", "Matteo.1", moves);
+       packetMove = new PacketMove("Matteo", null, moves);
        turnLogic.getPossibleMoves("Matteo", packetMove);
 
        packetPossibleMoves = client.getPacketPossibleMoves();
@@ -548,7 +548,7 @@ class TurnLogicMatteoTest {
 
        //ANDREA ASKS FOR THE POSSIBLE MOVES
        moves.clear();
-       packetMove = new PacketMove("Andrea", "Andrea.1", moves);
+       packetMove = new PacketMove("Andrea", null, moves);
        turnLogic.getPossibleMoves("Andrea", packetMove);
 
        packetPossibleMoves = client.getPacketPossibleMoves();
@@ -715,7 +715,7 @@ class TurnLogicMatteoTest {
 
         //ANDREA ASKS FOR THE POSSIBLE MOVES
         moves.clear();
-        packetMove = new PacketMove("Andrea", "Andrea.1", moves);
+        packetMove = new PacketMove("Andrea", null, moves);
         turnLogic.getPossibleMoves("Andrea", packetMove);
 
         PacketPossibleMoves packetPossibleMoves = client.getPacketPossibleMoves();
@@ -862,7 +862,7 @@ class TurnLogicMatteoTest {
 
         //ANDREA ASKS FOR THE POSSIBLE MOVES
         moves.clear();
-        packetMove = new PacketMove("Andrea", "Andrea.1", moves);
+        packetMove = new PacketMove("Andrea", null, moves);
         turnLogic.getPossibleMoves("Andrea", packetMove);
 
         PacketPossibleMoves packetPossibleMoves = client.getPacketPossibleMoves();

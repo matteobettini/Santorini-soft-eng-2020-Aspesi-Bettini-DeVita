@@ -12,6 +12,7 @@ import it.polimi.ingsw.packets.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class TurnLogic {
 
@@ -229,36 +230,52 @@ class TurnLogic {
     }
 
     public void getPossibleMoves(String senderID, PacketMove packetMove) {
+        assert (packetMove.isSimulate());
 
         if (!senderID.equals(currPlayer.getNickname()) || !packetMove.getPlayerNickname().equals(currPlayer.getNickname()))
             return;
 
-        boolean forBothWorkers = false;
-
-        if (currWorker != null) {
-            if (!packetMove.getWorkerID().equals(currWorker.getID()))
-                return;
-        } else
-            forBothWorkers = true;
-
         if (!currPossibleActions.contains(TriggerType.MOVE))
             return;
 
+        boolean wantsInfoForAllWorkers = false;
+
+        if(packetMove.getWorkerID() == null)
+            wantsInfoForAllWorkers = true;
+        else{
+            if(currPlayer.getWorkers().stream().noneMatch(x -> x.getID().equals(packetMove.getWorkerID())))
+                return;
+        }
+
+        if (currWorker != null) {
+            if(wantsInfoForAllWorkers)
+                return;
+            else{
+                if (!packetMove.getWorkerID().equals(currWorker.getID()))
+                    return;
+            }
+        }
 
         Worker myWorker;
-        if(forBothWorkers)
+        if(wantsInfoForAllWorkers)
             myWorker = currPlayer.getWorkers().get(0);
         else
             myWorker = model.getWorkerByID(packetMove.getWorkerID());
-        Worker myOtherWorker = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(myWorker.getID())).findAny().orElse(null);
-        assert myOtherWorker != null;
-        Map<String, Set<Point>> possibleMoves = new HashMap<>();
-        Set<Point> possiblePointsW1 = new HashSet<>();
-        Set<Point> possiblePointsW2 = new HashSet<>();
-        possibleMoves.put(myWorker.getID(), possiblePointsW1);
-        possibleMoves.put(myOtherWorker.getID(), possiblePointsW2);
 
-        if (!packetMove.getMove().isEmpty()) {
+        List<Worker> myOtherWorkers = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(myWorker.getID())).collect(Collectors.toList());
+        assert myOtherWorkers.size() > 0;
+
+        Map<String, Set<Point>> possibleMoves = new HashMap<>();
+
+        Set<Point> possiblePointsMyWorker = new HashSet<>();
+        possibleMoves.put(myWorker.getID(), possiblePointsMyWorker);
+
+        for(Worker myOtherWorker : myOtherWorkers){
+            Set<Point> possiblePointsOtherWorker = new HashSet<>();
+            possibleMoves.put(myOtherWorker.getID(), possiblePointsOtherWorker);
+        }
+
+        if (!wantsInfoForAllWorkers && packetMove.getMove() != null && packetMove.getMove().size() > 0) {
             MoveData moveData;
             try {
                 moveData = model.packetMoveToMoveData(packetMove);
@@ -267,14 +284,18 @@ class TurnLogic {
                 return;
             }
 
-            possiblePointsW1.addAll(model.getPossibleMoves(moveData));
+            possiblePointsMyWorker.addAll(model.getPossibleMoves(moveData));
 
         } else {
-            possiblePointsW1.addAll(model.getPossibleMoves(currPlayer, myWorker));
-            if (forBothWorkers) {
-                possiblePointsW2.addAll(model.getPossibleMoves(currPlayer, myOtherWorker));
+            possiblePointsMyWorker.addAll(model.getPossibleMoves(currPlayer, myWorker));
+            if (wantsInfoForAllWorkers) {
+                for(Worker myOtherWorker : myOtherWorkers){
+                    Set<Point> possiblePointsOtherWorker = possibleMoves.get(myOtherWorker.getID());
+                    possiblePointsOtherWorker.addAll(model.getPossibleMoves(currPlayer, myOtherWorker));
+                }
             }
         }
+
         sendPossibleMoves(currPlayer.getNickname(), possibleMoves);
     }
 

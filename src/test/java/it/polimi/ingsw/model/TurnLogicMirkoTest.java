@@ -225,7 +225,7 @@ class TurnLogicMirkoTest {
         assertEquals(packetDoAction.getTo(), Andrea.getNickname());
         assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
 
-        packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(),moves);
+        packetMove = new PacketMove(Andrea.getNickname(),null,moves);
         turnLogic.getPossibleMoves(Andrea.getNickname(), packetMove);
         PacketPossibleMoves packetPossibleMoves = mockView.getPacketPossibleMoves();
         assertEquals(packetPossibleMoves.getTo(), Andrea.getNickname());
@@ -416,7 +416,7 @@ class TurnLogicMirkoTest {
         possibleMovesW2.add(point43);
         possibleMovesW2.add(point44);
 
-        packetMove = new PacketMove(Matteo.getNickname(),MatteoW1.getID(),moves);
+        packetMove = new PacketMove(Matteo.getNickname(),null,moves);
         turnLogic.getPossibleMoves(Matteo.getNickname(), packetMove);
         packetPossibleMoves = mockView.getPacketPossibleMoves();
         assertEquals(packetPossibleMoves.getTo(), Matteo.getNickname());
@@ -863,7 +863,7 @@ class TurnLogicMirkoTest {
         assertEquals(packetDoAction.getTo(), Andrea.getNickname());
         assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
 
-        packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(),moves);
+        packetMove = new PacketMove(Andrea.getNickname(),null,moves);
         turnLogic.getPossibleMoves(Andrea.getNickname(), packetMove);
         PacketPossibleMoves packetPossibleMoves = mockView.getPacketPossibleMoves();
         assertEquals(packetPossibleMoves.getTo(), Andrea.getNickname());
@@ -1098,7 +1098,7 @@ class TurnLogicMirkoTest {
         assertEquals(packetDoAction.getTo(), Andrea.getNickname());
         assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
 
-        packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(),moves);
+        packetMove = new PacketMove(Andrea.getNickname(),null,moves);
         turnLogic.getPossibleMoves(Andrea.getNickname(), packetMove);
         PacketPossibleMoves packetPossibleMoves = mockView.getPacketPossibleMoves();
         assertEquals(packetPossibleMoves.getTo(), Andrea.getNickname());
@@ -1351,7 +1351,7 @@ class TurnLogicMirkoTest {
         assertEquals(packetDoAction.getTo(), Andrea.getNickname());
         assertEquals(packetDoAction.getActionType(), ActionType.MOVE);
 
-        packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(),moves);
+        packetMove = new PacketMove(Andrea.getNickname(),null,moves);
         turnLogic.getPossibleMoves(Andrea.getNickname(), packetMove);
         PacketPossibleMoves packetPossibleMoves = mockView.getPacketPossibleMoves();
         assertEquals(packetPossibleMoves.getTo(), Andrea.getNickname());
@@ -1694,7 +1694,7 @@ class TurnLogicMirkoTest {
         possibleMovesW2.add(point43);
 
 
-        packetMove = new PacketMove(Matteo.getNickname(),MatteoW2.getID(),moves);
+        packetMove = new PacketMove(Matteo.getNickname(),null,moves);
         turnLogic.getPossibleMoves(Matteo.getNickname(), packetMove);
         PacketPossibleMoves packetPossibleMoves = mockView.getPacketPossibleMoves();
         assertEquals(packetPossibleMoves.getTo(), Matteo.getNickname());
@@ -1951,7 +1951,7 @@ class TurnLogicMirkoTest {
         possibleMovesW2.add(point23);
 
 
-        packetMove = new PacketMove(Matteo.getNickname(),MatteoW2.getID(),moves);
+        packetMove = new PacketMove(Matteo.getNickname(),null,moves);
         turnLogic.getPossibleMoves(Matteo.getNickname(), packetMove);
         PacketPossibleMoves packetPossibleMoves = mockView.getPacketPossibleMoves();
         assertEquals(packetPossibleMoves.getTo(), Matteo.getNickname());
