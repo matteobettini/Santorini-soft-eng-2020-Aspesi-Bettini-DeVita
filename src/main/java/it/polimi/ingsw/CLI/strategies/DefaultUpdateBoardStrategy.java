@@ -57,6 +57,7 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
 
             //IF THE ACTIVE PLAYER WON WE SET YOU WIN
             if(winner.equals(matchData.getPlayerName())) youWin = true;
+            else gameOver = true;
         }
 
         matchData.printMatch(youWin, gameOver);
