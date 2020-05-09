@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class MoveActionStrategy implements ActionStrategy{
-    private static final String POSITIONS_REGEXP = "(([A-E]|[a-e])[1-5])";
+    private static final String POSITIONS_REGEXP = "^(([A-E]|[a-e])[1-5])$";
     private static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
 
     private List<Point> currentPositions;

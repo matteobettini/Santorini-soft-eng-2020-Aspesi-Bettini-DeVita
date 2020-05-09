@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class BuildActionStrategy implements ActionStrategy{
 
-    private static final String BUILDINGS_REGEXP = "(([A-E]|[a-e])[1-5])" + "([ ])" + "(?:([123D])(?!.*\\1)){4}";
+    private static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4][1-4]?[1-4]?[1-4]?)$";
     private static final Pattern BUILDINGS_PATTERN = Pattern.compile(BUILDINGS_REGEXP);
 
     private Integer lastUsedWorker;
@@ -142,7 +142,7 @@ public class BuildActionStrategy implements ActionStrategy{
             do{
                 count++;
                 if(count > 1) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s buildings: ");
-                else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s buildings (ex A1 12, B2 D, A3 3D ...): ");
+                else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s buildings (ex A1 12, B2 4, A3 34 ...): ");
                 command = InputUtilities.getLine();
                 if(command == null) return null;
             }while(!BUILDINGS_PATTERN.matcher(command).matches());
@@ -151,6 +151,7 @@ public class BuildActionStrategy implements ActionStrategy{
             chosenBuildings = command.substring(3).chars().mapToObj(i -> (char) i).map(this::charToBuildingType).collect(Collectors.toList());
             performedBuild.put(chosenPosition, chosenBuildings);
             possibleBuildings = possibleBuildingsInPositions.get(chosenPosition);
+            //TODO: FIX LAST CONDITION, CHOSEN BUILDINGS HAVE TO BE CONTAINED FROM THE BEGINNING OF POSSIBLE BUILDINGS
             error = board.getCell(chosenPosition) == null || chosenBuildings.isEmpty() || possibleBuildings == null || !possibleBuildings.equals(chosenBuildings);
         }while(error);
 
