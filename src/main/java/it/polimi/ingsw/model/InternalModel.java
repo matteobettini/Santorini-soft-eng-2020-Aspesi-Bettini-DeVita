@@ -497,7 +497,6 @@ class InternalModel {
         Set<Point> result = new HashSet<>();
         List<Point> currTry = new ArrayList<>(moveData.getData());
         Point startPoint = currTry.get(currTry.size()-1); //Take last point in the packet, granted not empty
-        currTry.add(new Point(0,0)); //Init point, will be removed
 
         Player player = moveData.getPlayer();
         Worker worker = moveData.getWorker();
@@ -510,9 +509,10 @@ class InternalModel {
                     if (destCell != null){ //Inside board
                         if (destCell.getTopBuilding() != LevelType.DOME){ //No dome
                             if (!currTry.contains(destPoint)) { //Exclude already visited points
-                                currTry.set(currTry.size()-1, destPoint); //Add the new point instead of last
+                                currTry.add(destPoint); //Add the test point
                                 MoveData moveTry = new MoveData(player,worker,currTry);
                                 if (getAllowMoveRule(moveTry) != null) result.add(destPoint);
+                                currTry.remove(currTry.size()-1); //Remove the test point
                             }
                         }
                     }
