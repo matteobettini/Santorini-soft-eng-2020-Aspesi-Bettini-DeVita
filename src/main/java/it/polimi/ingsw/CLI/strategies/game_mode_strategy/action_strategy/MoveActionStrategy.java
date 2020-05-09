@@ -128,8 +128,8 @@ public class MoveActionStrategy implements ActionStrategy{
             if(error) System.out.println("Invalid position for worker" + (workerNumber) + ", retry");
 
             do{
-                if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s position: ");
-                else System.out.print("Choose your next worker" + (workerNumber) + "'s position (ex A1, B2...): ");
+                if(suggestion)  System.out.print("Choose your next worker" + (workerNumber) + "'s position (ex A1, B2...): ");
+                else System.out.print("Choose your next worker" + (workerNumber) + "'s position: ");
                 suggestion = false;
                 point = InputUtilities.getLine();
                 if(point == null) return null;

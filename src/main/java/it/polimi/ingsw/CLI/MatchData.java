@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.enums.BuildingType;
 import javafx.util.Pair;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,22 @@ public class MatchData {
         graphicalMatchMenu.setYouWin(youWin);
         graphicalMatchMenu.setYouWin(gameOver);
         graphicalMatchMenu.draw();
+        stream.print(System.out);
+        stream.reset();
+    }
+
+    public void printCards(){
+        List<String> godCards = new ArrayList<>();
+
+        for(String player : playersCards.keySet()){
+            godCards.add(playersCards.get(player).getKey());
+        }
+        GraphicalCardsMenu graphicalCardsMenu = new GraphicalCardsMenu();
+        graphicalCardsMenu.setGodCards(allCards);
+        graphicalCardsMenu.setChosenCards(godCards);
+        CharStream stream = new CharStream(graphicalCardsMenu.getRequiredWidth(), graphicalCardsMenu.getRequiredHeight());
+        graphicalCardsMenu.setStream(stream);
+        graphicalCardsMenu.draw();
         stream.print(System.out);
         stream.reset();
     }

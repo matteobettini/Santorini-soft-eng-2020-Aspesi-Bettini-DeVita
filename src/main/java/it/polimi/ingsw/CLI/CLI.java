@@ -99,7 +99,7 @@ public class CLI {
                     String action;
                     if(actionType == ActionType.MOVE) action = "move";
                     else if(actionType == ActionType.BUILD) action = "build";
-                    else if (actionType == ActionType.MOVE_BUILD) action = "mover or build";
+                    else if (actionType == ActionType.MOVE_BUILD) action = "move or build";
                     else action = "action";
                     System.out.println("\n" + packetDoAction.getTo() + " is performing his " + action + "...");
                     return;

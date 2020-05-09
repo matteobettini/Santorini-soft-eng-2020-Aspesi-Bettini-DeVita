@@ -90,6 +90,7 @@ public class InputUtilities {
         List<Integer> availableWorkers = possibleWorkers.stream().map( w -> Character.getNumericValue(w.charAt(w.length() - 1))).collect(Collectors.toList());
 
         Integer workerChoice = availableWorkers.get(0);
+        boolean showCardsInGame = true;
         //IN CASE THERE ARE MULTIPLE CHOICES THE PLAYER CAN CHOOSE THE DESIRED WORKER
         if(possibleWorkers.size() > 1){
             do{
@@ -101,12 +102,21 @@ public class InputUtilities {
                 for(Integer wNumber: availableWorkers){
                     count++;
                     if(count < end) System.out.print((wNumber) + ", ");
-                    else System.out.print((wNumber)  + ": ");
+                    else{
+                        if(showCardsInGame) System.out.print((wNumber)  + " or enter " + (possibleWorkers.size() + 1) + " to see the cards in game: ");
+                        else System.out.print((wNumber)  + ": ");
+                    }
+
                 }
 
                 //ASK THE CHOICE
                 workerChoice = InputUtilities.getInt("Not a valid worker number, worker number: ");
                 if (workerChoice == null) return null;
+                else if(workerChoice == possibleWorkers.size() + 1){
+                    MatchData matchData = MatchData.getInstance();
+                    matchData.printCards();
+                    showCardsInGame = false;
+                }
             }while(!availableWorkers.contains(workerChoice));
         }
 

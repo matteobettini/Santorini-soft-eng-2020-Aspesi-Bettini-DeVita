@@ -22,9 +22,8 @@ public class DefaultSelectCardStrategy implements SelectCardStrategy {
         }
 
         GraphicalCardsMenu graphicalCardsMenu = new GraphicalCardsMenu();
-        if (packetCardsFromServer.getAllCards() != null) {
-            graphicalCardsMenu.setGodCards(packetCardsFromServer.getAllCards());
-        }
+        graphicalCardsMenu.setGodCards(packetCardsFromServer.getAllCards());
+        matchData.setAllCards(packetCardsFromServer.getAllCards());
         graphicalCardsMenu.setAvailableCards(packetCardsFromServer.getAvailableCards());
 
         int number = packetCardsFromServer.getNumberToChoose();

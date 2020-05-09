@@ -142,8 +142,8 @@ public class BuildActionStrategy implements ActionStrategy{
             if(error) System.out.println("Invalid buildings for worker" + (workerNumber) + ", retry");
 
             do{
-                if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s buildings: ");
-                else System.out.print("Choose your next worker" + (workerNumber) + "'s buildings (ex A1 1, B2 4...): ");
+                if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s buildings (ex A1 1, B2 4...): ");
+                else System.out.print("Choose your next worker" + (workerNumber) + "'s buildings: ");
                 suggestion = false;
                 command = InputUtilities.getLine();
                 if(command == null) return false;

@@ -48,8 +48,6 @@ public class GraphicalMatchMenu implements CharFigure{
         String loser = matchData.getLoser();
         String activePlayer = matchData.getCurrentActivePlayer();
 
-        if(players.isEmpty() || playersGodCardAssociation.isEmpty()) return;
-
         BackColor col;
         int nextLine = 5;
         GraphicalPane playersBox = new GraphicalPane(stream, 35, 8, BackColor.ANSI_BG_BLUE);
