@@ -253,7 +253,9 @@ class TurnLogic {
         }
 
         Worker myWorker;
-        if(wantsInfoForAllWorkers)
+        if(currWorker != null)
+            myWorker = currWorker;
+        else if(wantsInfoForAllWorkers)
             myWorker = currPlayer.getWorkers().get(0);
         else
             myWorker = model.getWorkerByID(packetMove.getWorkerID());
@@ -319,7 +321,9 @@ class TurnLogic {
         }
 
         Worker myWorker;
-        if(wantsInfoForAllWorkers)
+        if(currWorker != null)
+            myWorker = currWorker;
+        else if(wantsInfoForAllWorkers)
             myWorker = currPlayer.getWorkers().get(0);
         else
             myWorker = model.getWorkerByID(packetBuild.getWorkerID());
