@@ -60,7 +60,8 @@ class TurnLogic {
             notifyPacketUpdateBoardObservers(packetUpdateBoard);
             model.setWinner(stillInGamePlayers.get(0));
             stillInGamePlayers.clear();
-            gameFinishedHandler.update(winner);
+            if (gameFinishedHandler != null)
+                gameFinishedHandler.update(winner);
             return;
         }
 
@@ -177,7 +178,7 @@ class TurnLogic {
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPosition, null, null, winner);
         notifyPacketUpdateBoardObservers(packetUpdateBoard);
 
-        if(winner != null)
+        if(winner != null && gameFinishedHandler != null)
             gameFinishedHandler.update(winner);
 
         assert stillInGamePlayers.size() != 1;
@@ -230,7 +231,7 @@ class TurnLogic {
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null, newBuildings, null, winner);
         notifyPacketUpdateBoardObservers(packetUpdateBoard);
 
-        if(winner != null)
+        if(winner != null && gameFinishedHandler != null)
             gameFinishedHandler.update(winner);
 
         assert stillInGamePlayers.size() != 1;
