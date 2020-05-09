@@ -248,12 +248,8 @@ class TurnLogic {
         }
 
         if (currWorker != null) {
-            if(wantsInfoForAllWorkers)
+            if (packetMove.getWorkerID() != null && !packetMove.getWorkerID().equals(currWorker.getID()))
                 return;
-            else{
-                if (!packetMove.getWorkerID().equals(currWorker.getID()))
-                    return;
-            }
         }
 
         Worker myWorker;
@@ -288,7 +284,7 @@ class TurnLogic {
 
         } else {
             possiblePointsMyWorker.addAll(model.getPossibleMoves(currPlayer, myWorker));
-            if (wantsInfoForAllWorkers) {
+            if (wantsInfoForAllWorkers && currWorker == null) {
                 for(Worker myOtherWorker : myOtherWorkers){
                     Set<Point> possiblePointsOtherWorker = possibleMoves.get(myOtherWorker.getID());
                     possiblePointsOtherWorker.addAll(model.getPossibleMoves(currPlayer, myOtherWorker));
@@ -318,12 +314,8 @@ class TurnLogic {
         }
 
         if (currWorker != null) {
-            if(wantsInfoForAllWorkers)
+            if (packetBuild.getWorkerID() != null && !packetBuild.getWorkerID().equals(currWorker.getID()))
                 return;
-            else{
-                if (!packetBuild.getWorkerID().equals(currWorker.getID()))
-                    return;
-            }
         }
 
         Worker myWorker;
@@ -357,7 +349,7 @@ class TurnLogic {
 
         } else {
             possibleBuildsMyWorker.putAll(model.getPossibleBuildsAdvanced(currPlayer, myWorker));
-            if (wantsInfoForAllWorkers) {
+            if (wantsInfoForAllWorkers && currWorker == null) {
                 for(Worker myOtherWorker : myOtherWorkers){
                     Map<Point, List<BuildingType>> possibleBuildsMyOtherWorker = possibleBuilds.get(myOtherWorker.getID());
                     possibleBuildsMyOtherWorker.putAll(model.getPossibleBuildsAdvanced(currPlayer, myOtherWorker));
