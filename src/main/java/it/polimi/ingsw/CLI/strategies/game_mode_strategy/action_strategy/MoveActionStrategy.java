@@ -48,7 +48,11 @@ public class MoveActionStrategy implements ActionStrategy{
             //IF THE PLAYER HAS NOT CHOSEN A WORKER HE CAN'T CONFIRM AN EMPTY MOVE
             confirmActionForbidden = true;
 
-            List<String> possibleWorkers = new ArrayList<>(packetPossibleMoves.getPossibleMoves().keySet());
+            List<String> possibleWorkers = new ArrayList<>();
+
+            for(String worker : packetPossibleMoves.getPossibleMoves().keySet()){
+                if(!packetPossibleMoves.getPossibleMoves().get(worker).isEmpty()) possibleWorkers.add(worker);
+            }
 
             lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers, workersID);
             if(lastUsedWorker == null) return false;
@@ -114,20 +118,21 @@ public class MoveActionStrategy implements ActionStrategy{
         String point;
         Point chosenPosition;
         boolean error = false;
-        int count = 0;
+        boolean suggestion = true;
         do{
             if(error) System.out.println("Invalid position for worker " + (lastUsedWorker + 1) + ", retry");
 
             do{
-                count++;
-                if(count > 1) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position: ");
+                if(suggestion) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position: ");
                 else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s position (ex A1, B2...): ");
+                suggestion = false;
                 point = InputUtilities.getLine();
                 if(point == null) return null;
             }while(!POSITION_PATTERN.matcher(point).matches());
 
             chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
-            error = board.getCell(chosenPosition) == null || !possiblePositions.contains(chosenPosition);
+            assert board.getCell(chosenPosition) == null;
+            error = !possiblePositions.contains(chosenPosition);
         }while(error);
 
         return chosenPosition;

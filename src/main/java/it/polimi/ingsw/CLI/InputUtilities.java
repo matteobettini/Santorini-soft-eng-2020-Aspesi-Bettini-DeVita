@@ -120,7 +120,10 @@ public class InputUtilities {
         String choiceMessage;
         List<Integer> mapChoices = new ArrayList<>();
 
-        if(makeChoiceForbidden && restartForbidden && confirmActionForbidden) return -1; //IMPOSSIBLE CONFIGURATION
+        if(makeChoiceForbidden && restartForbidden && confirmActionForbidden){
+            assert false;
+            return -1; //IMPOSSIBLE CONFIGURATION
+        }
         else if(makeChoiceForbidden && restartForbidden) return 3;
         else if(makeChoiceForbidden && confirmActionForbidden) return 2;
         else if(restartForbidden && confirmActionForbidden) return 1;

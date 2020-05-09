@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 
 public class BuildActionStrategy implements ActionStrategy{
 
-    private static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4][1-4]?[1-4]?[1-4]?)$";
+    private static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4])$";
     private static final Pattern BUILDINGS_PATTERN = Pattern.compile(BUILDINGS_REGEXP);
 
     private Integer lastUsedWorker;
-    Map<Point, List<BuildingType>> currentBuilds;
-    List<Point> currentDataOrder;
+    private Map<Point, List<BuildingType>> currentBuilds;
+    private List<Point> currentDataOrder;
 
     public BuildActionStrategy(){
         this.lastUsedWorker = null;
@@ -61,13 +61,17 @@ public class BuildActionStrategy implements ActionStrategy{
 
             List<String> possibleWorkers = new ArrayList<>(packetPossibleBuilds.getPossibleBuilds().keySet());
 
+            for(String worker : packetPossibleBuilds.getPossibleBuilds().keySet()){
+                if(!packetPossibleBuilds.getPossibleBuilds().get(worker).isEmpty()) possibleWorkers.add(worker);
+            }
+
             lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers, workersID);
             if(lastUsedWorker == null) return false;
 
         }
 
         //POSSIBLE POSITIONS CONTAINS THE POSITIONS THAT THE PLAYER CAN CHOOSE AT THIS TIME DURING THE BUILD
-        Map<Point, List<BuildingType>> possibleBuildingsInPositions = new HashMap<>(packetPossibleBuilds.getPossibleBuilds().get(workersID.get(lastUsedWorker)));
+        Map<Point, List<BuildingType>> possibleBuildingsInPositions = packetPossibleBuilds.getPossibleBuilds().get(workersID.get(lastUsedWorker));
         graphicalBoard.setPossibleActions(new ArrayList<>(possibleBuildingsInPositions.keySet()));
 
         matchData.printMatch();
@@ -83,18 +87,12 @@ public class BuildActionStrategy implements ActionStrategy{
 
         switch(choice){
             case 1:
-                Map<Point, List<BuildingType>> chosenBuildingsInPoint = getChosenBuildingsInPoint(possibleBuildingsInPositions, board);
+                boolean getChoice = getChosenBuildingsInPoint(possibleBuildingsInPositions, board);
 
-                if(chosenBuildingsInPoint == null) return false;
+                if(!getChoice) return false;
 
-                //ADD CHOSEN BUILDINGS TO CURRENT BUILDINGS
-                for(Point position : chosenBuildingsInPoint.keySet()){
-                    if(currentBuilds.containsKey(position)) currentBuilds.get(position).addAll(chosenBuildingsInPoint.get(position));
-                    else currentBuilds.put(position, chosenBuildingsInPoint.get(position));
-
-                    //UPDATE THE GRAPHICAL BOARD WITH NEW BUILDINGS
-                    graphicalBoard.getCell(position).addBuildings(chosenBuildingsInPoint.get(position));
-                }
+                //UPDATE TO THE GRAPHICAL BOARD
+                for(Point position : currentBuilds.keySet()) graphicalBoard.getCell(position).addBuildings(currentBuilds.get(position));
 
                 //WE THEN ASK FOR A NEW PACKETBUILD
 
@@ -115,13 +113,13 @@ public class BuildActionStrategy implements ActionStrategy{
         return false;
     }
 
-    private Map<Point, List<BuildingType>> getChosenBuildingsInPoint(Map<Point, List<BuildingType>> possibleBuildingsInPositions, Board board){
+    private boolean getChosenBuildingsInPoint(Map<Point, List<BuildingType>> possibleBuildingsInPositions, Board board){
         StringBuilder possibleBuildsBuilder = new StringBuilder();
 
         for(Point position : possibleBuildingsInPositions.keySet()){
             possibleBuildsBuilder.append("- ").append(board.getCoordinates(position));
             for(BuildingType building : possibleBuildingsInPositions.get(position)){
-                possibleBuildsBuilder.append(" ").append(building.toString());
+                possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(buildingTypeToChar(building)).append(")");
             }
             possibleBuildsBuilder.append("\n");
         }
@@ -131,36 +129,39 @@ public class BuildActionStrategy implements ActionStrategy{
 
         String command;
         Point chosenPosition;
-        List<BuildingType> chosenBuildings;
+        BuildingType chosenBuilding;
         List<BuildingType> possibleBuildings;
-        Map<Point, List<BuildingType>> performedBuild = new HashMap<>();
         boolean error = false;
-        int count = 0;
+        boolean suggestion = true;
         do{
             if(error) System.out.println("Invalid buildings for worker " + (lastUsedWorker + 1) + ", retry");
 
             do{
-                count++;
-                if(count > 1) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s buildings: ");
-                else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s buildings (ex A1 12, B2 4, A3 34 ...): ");
+                if(suggestion) System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s buildings: ");
+                else System.out.print("Choose your next worker" + (lastUsedWorker + 1) + "'s buildings (ex A1 1, B2 4...): ");
+                suggestion = false;
                 command = InputUtilities.getLine();
-                if(command == null) return null;
+                if(command == null) return false;
             }while(!BUILDINGS_PATTERN.matcher(command).matches());
 
             chosenPosition = board.getPoint(Character.getNumericValue(command.charAt(1)), Character.toUpperCase(command.charAt(0)));
-            chosenBuildings = command.substring(3).chars().mapToObj(i -> (char) i).map(this::charToBuildingType).collect(Collectors.toList());
-            performedBuild.put(chosenPosition, chosenBuildings);
+            chosenBuilding = charToBuildingType(command.charAt(3));
             possibleBuildings = possibleBuildingsInPositions.get(chosenPosition);
-            //TODO: FIX LAST CONDITION, CHOSEN BUILDINGS HAVE TO BE CONTAINED FROM THE BEGINNING OF POSSIBLE BUILDINGS
-            error = board.getCell(chosenPosition) == null || chosenBuildings.isEmpty() || possibleBuildings == null || !possibleBuildings.equals(chosenBuildings);
+
+            error = board.getCell(chosenPosition) == null || possibleBuildings == null || !possibleBuildings.contains(chosenBuilding);
         }while(error);
 
+        List<BuildingType> helper = new ArrayList<>();
+
+        if(currentBuilds.containsKey(chosenPosition)) helper = currentBuilds.get(chosenPosition);
+        helper.add(chosenBuilding);
+        currentBuilds.put(chosenPosition, helper);
         currentDataOrder.add(chosenPosition);
 
-        return performedBuild;
+        return true;
     }
 
-    private BuildingType charToBuildingType(char building){
+    private BuildingType charToBuildingType(Character building){
         switch (building){
             case '1':
                 return BuildingType.FIRST_FLOOR;
@@ -168,8 +169,26 @@ public class BuildActionStrategy implements ActionStrategy{
                 return  BuildingType.SECOND_FLOOR;
             case '3':
                 return BuildingType.THIRD_FLOOR;
+            case '4':
+                return BuildingType.DOME;
         }
+        assert false;
         return BuildingType.DOME;
+    }
+
+    private Character buildingTypeToChar(BuildingType building){
+        switch (building){
+            case FIRST_FLOOR:
+                return '1';
+            case SECOND_FLOOR:
+                return  '2';
+            case THIRD_FLOOR:
+                return '3';
+            case DOME:
+                return '4';
+        }
+        assert false;
+        return '0';
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class ConnectionToClient extends Observable<Object> implements Runnable{
 
-    private static final String NICKNAME_REGEXP = "[a-zA-Z0-9._\\-]{1,20}";
+    private static final String NICKNAME_REGEXP = "^([a-zA-Z0-9._\\-]{1,20})$";
     private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEXP);
 
     private Observer<ConnectionToClient> nickNameChosenHandler;
