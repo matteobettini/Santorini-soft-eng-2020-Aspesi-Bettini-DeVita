@@ -231,7 +231,7 @@ class TurnLogicMatteoTest {
        builds.clear();
        dataOrder.clear();
 
-       packetBuild = new PacketBuild("Andrea", "Andrea.1",builds, dataOrder);
+       packetBuild = new PacketBuild("Andrea", null,builds, dataOrder);
        turnLogic.getPossibleBuilds("Andrea", packetBuild);
 
        PacketPossibleBuilds packetPossibleBuilds = client.getPacketPossibleBuilds();
@@ -350,7 +350,7 @@ class TurnLogicMatteoTest {
        builds.clear();
        dataOrder.clear();
 
-       packetBuild = new PacketBuild("Andrea", "Andrea.1",builds, dataOrder);
+       packetBuild = new PacketBuild("Andrea", "Andrea.1", builds, dataOrder);
        turnLogic.getPossibleBuilds("Andrea", packetBuild);
 
        packetPossibleBuilds = client.getPacketPossibleBuilds();

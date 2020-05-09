@@ -275,7 +275,7 @@ class TurnLogic {
             possibleMoves.put(myOtherWorker.getID(), possiblePointsOtherWorker);
         }
 
-        if (!wantsInfoForAllWorkers && packetMove.getMove() != null && packetMove.getMove().size() > 0) {
+        if (!wantsInfoForAllWorkers && packetMove.getMove() != null && !packetMove.getMove().isEmpty()) {
             MoveData moveData;
             try {
                 moveData = model.packetMoveToMoveData(packetMove);
@@ -300,55 +300,68 @@ class TurnLogic {
     }
 
     public void getPossibleBuilds(String senderID, PacketBuild packetBuild) {
+        assert (packetBuild.isSimulate());
 
         if (!senderID.equals(currPlayer.getNickname()) || !packetBuild.getPlayerNickname().equals(currPlayer.getNickname()))
             return;
 
-        boolean forBothWorkers = false;
-
-        if (currWorker != null) {
-            if (!packetBuild.getWorkerID().equals(currWorker.getID()))
-                return;
-        } else
-            forBothWorkers = true;
-
-
         if (!currPossibleActions.contains(TriggerType.BUILD))
             return;
 
+        boolean wantsInfoForAllWorkers = false;
+
+        if(packetBuild.getWorkerID() == null)
+            wantsInfoForAllWorkers = true;
+        else{
+            if(currPlayer.getWorkers().stream().noneMatch(x -> x.getID().equals(packetBuild.getWorkerID())))
+                return;
+        }
+
+        if (currWorker != null) {
+            if(wantsInfoForAllWorkers)
+                return;
+            else{
+                if (!packetBuild.getWorkerID().equals(currWorker.getID()))
+                    return;
+            }
+        }
+
         Worker myWorker;
-        if(forBothWorkers)
+        if(wantsInfoForAllWorkers)
             myWorker = currPlayer.getWorkers().get(0);
         else
             myWorker = model.getWorkerByID(packetBuild.getWorkerID());
-        Worker myOtherWorker = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(myWorker.getID())).findAny().orElse(null);
-        assert myOtherWorker != null;
+
+        List<Worker> myOtherWorkers = currPlayer.getWorkers().stream().filter(x -> !x.getID().equals(myWorker.getID())).collect(Collectors.toList());
+        assert myOtherWorkers.size() > 0;
 
         Map<String, Map<Point, List<BuildingType>>> possibleBuilds = new HashMap<>();
 
-        Map<Point, List<BuildingType>> possibleBuildsW1 = new HashMap<>();
-        Map<Point, List<BuildingType>> possibleBuildsW2 = new HashMap<>();
+        Map<Point, List<BuildingType>> possibleBuildsMyWorker = new HashMap<>();
+        possibleBuilds.put(myWorker.getID(), possibleBuildsMyWorker);
 
-        if (!packetBuild.getBuilds().isEmpty()) {
+        for(Worker myOtherWorker : myOtherWorkers){
+            Map<Point, List<BuildingType>> possibleBuildsMyOtherWorker = new HashMap<>();
+            possibleBuilds.put(myOtherWorker.getID(),possibleBuildsMyOtherWorker);
+        }
+
+        if (!wantsInfoForAllWorkers && packetBuild.getBuilds() != null && !packetBuild.getBuilds().isEmpty()) {
             BuildData buildData;
             try {
                 buildData = model.packetBuildToBuildData(packetBuild);
             } catch (InvalidPacketException e) {
-                possibleBuilds.put(myWorker.getID(), possibleBuildsW1);
-                possibleBuilds.put(myOtherWorker.getID(), possibleBuildsW2);
                 sendPossibleBuilds(currPlayer.getNickname(), possibleBuilds);
                 return;
             }
-
-            possibleBuilds.put(myWorker.getID(), model.getPossibleBuildsAdvanced(buildData));
-            possibleBuilds.put(myOtherWorker.getID(), possibleBuildsW2);
+            possibleBuildsMyWorker.putAll(model.getPossibleBuildsAdvanced(buildData));
 
         } else {
-            possibleBuilds.put(myWorker.getID(), model.getPossibleBuildsAdvanced(currPlayer, myWorker));
-            if (forBothWorkers) {
-                possibleBuilds.put(myOtherWorker.getID(), model.getPossibleBuildsAdvanced(currPlayer, myOtherWorker));
-            } else {
-                possibleBuilds.put(myOtherWorker.getID(), possibleBuildsW2);
+            possibleBuildsMyWorker.putAll(model.getPossibleBuildsAdvanced(currPlayer, myWorker));
+            if (wantsInfoForAllWorkers) {
+                for(Worker myOtherWorker : myOtherWorkers){
+                    Map<Point, List<BuildingType>> possibleBuildsMyOtherWorker = possibleBuilds.get(myOtherWorker.getID());
+                    possibleBuildsMyOtherWorker.putAll(model.getPossibleBuildsAdvanced(currPlayer, myOtherWorker));
+                }
             }
         }
         sendPossibleBuilds(currPlayer.getNickname(), possibleBuilds);
