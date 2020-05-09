@@ -111,4 +111,8 @@ public class ConcreteModel implements ObservableModel, Model {
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED) turnLogic.start();
     }
 
+    @Override
+    public void setGameFinishedHandler(Observer<String> gameFinishedHandler) {
+        turnLogic.setGameFinishedHandler(gameFinishedHandler);
+    }
 }

@@ -52,16 +52,17 @@ class Match {
         this.isHardcore = isHardcore;
         this.model = new ConcreteModel(players, isHardcore);
 
+        this.model.setGameFinishedHandler(winnerName -> {
+            if(isClosing.compareAndSet(false, true)) {
+                notifyEnd();
+                closureHandler.update(this);
+            }
+        });
+
         for(ConnectionToClient c : clientConnections){
 
             VirtualView virtualView = new VirtualView(c, model);
 
-            virtualView.setGameFinishedHandler(winningPlayer -> {
-                if(isClosing.compareAndSet(false, true)) {
-                    notifyEnd();
-                    closureHandler.update(this);
-                }
-            });
             this.clients.put(c, virtualView);
 
             c.setInMatch(true);

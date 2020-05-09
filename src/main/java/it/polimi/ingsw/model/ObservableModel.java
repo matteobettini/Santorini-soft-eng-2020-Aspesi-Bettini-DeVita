@@ -11,5 +11,6 @@ public interface ObservableModel {
     void addPacketPossibleMovesObserver(Observer<PacketPossibleMoves> observer);
     void addPacketSetupObserver(Observer<PacketSetup> observer);
     void addPacketUpdateBoardObserver(Observer<PacketUpdateBoard> observer);
+    void setGameFinishedHandler(Observer<String> gameFinishedHandler);
 
 }

@@ -28,6 +28,7 @@ class TurnLogic {
     private final List<Observer<PacketPossibleMoves>> packetPossibleMovesObservers;
     private final List<Observer<PacketPossibleBuilds>> packetPossibleBuildsObservers;
 
+    private Observer<String> gameFinishedHandler;
 
     TurnLogic(InternalModel model) {
         super();
@@ -54,10 +55,12 @@ class TurnLogic {
             return;
 
         if (stillInGamePlayers.size() == 1) {
-            PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null, null, null, stillInGamePlayers.get(0).getNickname());
+            String winner = stillInGamePlayers.get(0).getNickname();
+            PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null, null, null, winner);
             notifyPacketUpdateBoardObservers(packetUpdateBoard);
             model.setWinner(stillInGamePlayers.get(0));
             stillInGamePlayers.clear();
+            gameFinishedHandler.update(winner);
             return;
         }
 
@@ -174,6 +177,9 @@ class TurnLogic {
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPosition, null, null, winner);
         notifyPacketUpdateBoardObservers(packetUpdateBoard);
 
+        if(winner != null)
+            gameFinishedHandler.update(winner);
+
         assert stillInGamePlayers.size() != 1;
         if (stillInGamePlayers.size() > 0)
             askNextPacket();
@@ -223,6 +229,9 @@ class TurnLogic {
 
         PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null, newBuildings, null, winner);
         notifyPacketUpdateBoardObservers(packetUpdateBoard);
+
+        if(winner != null)
+            gameFinishedHandler.update(winner);
 
         assert stillInGamePlayers.size() != 1;
         if (stillInGamePlayers.size() > 0)
@@ -429,4 +438,7 @@ class TurnLogic {
         }
     }
 
+    public void setGameFinishedHandler(Observer<String> gameFinishedHandler) {
+        this.gameFinishedHandler = gameFinishedHandler;
+    }
 }

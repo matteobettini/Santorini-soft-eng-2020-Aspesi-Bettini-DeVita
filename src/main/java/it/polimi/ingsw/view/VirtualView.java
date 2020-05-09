@@ -18,7 +18,6 @@ public class VirtualView implements Observer<Object> {
     private final List<Observer<PacketStartPlayer>> packetStartPlayerObservers;
     private final List<Observer<PacketWorkersPositions>> packetWorkersPositionsObservers;
 
-    private Observer<String> gameFinishedHandler;
 
     /**
      * This is the constructor for the Virtual View
@@ -62,14 +61,8 @@ public class VirtualView implements Observer<Object> {
             if (packetPossibleMoves.getTo().equals(connectionToClient.getClientNickname()))
                 connectionToClient.send(packetPossibleMoves, false);
         });
-        model.addPacketSetupObserver((packetSetup) -> {
-                connectionToClient.send(packetSetup, false);
-        });
-        model.addPacketUpdateBoardObserver((packetUpdateBoard) -> {
-            connectionToClient.send(packetUpdateBoard, false);
-            if(packetUpdateBoard.getPlayerWonID() != null)
-                gameFinishedHandler.update(packetUpdateBoard.getPlayerWonID());
-        });
+        model.addPacketSetupObserver(packetSetup -> connectionToClient.send(packetSetup, false));
+        model.addPacketUpdateBoardObserver(packetUpdateBoard -> connectionToClient.send(packetUpdateBoard, false));
 
     }
 
@@ -159,9 +152,5 @@ public class VirtualView implements Observer<Object> {
         for(Observer<PacketWorkersPositions> o : packetWorkersPositionsObservers){
             o.update(p);
         }
-    }
-
-    public void setGameFinishedHandler(Observer<String> gameFinishedHandler) {
-        this.gameFinishedHandler = gameFinishedHandler;
     }
 }
