@@ -46,8 +46,6 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
         if(packetUpdateBoard.getPlayerLostID() != null){
             String loser = packetUpdateBoard.getPlayerLostID();
 
-            matchData.setLoser(loser);
-
             //WE ALSO SET IT IN THE MATCH MENU
             matchData.setLoser(loser);
             if(loser.equals(matchData.getPlayerName())) gameOver = true;

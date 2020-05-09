@@ -84,9 +84,9 @@ public class MatchData {
         GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
         graphicalOcean.draw();
         graphicalBoard.draw();
-        graphicalMatchMenu.draw();
         graphicalMatchMenu.setYouWin(youWin);
         graphicalMatchMenu.setYouWin(gameOver);
+        graphicalMatchMenu.draw();
         stream.print(System.out);
         stream.reset();
     }
