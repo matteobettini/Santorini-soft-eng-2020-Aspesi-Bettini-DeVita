@@ -21,6 +21,8 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
 
         if(board.getNumberOfWorkers() == 0) matchData.printMatch();
 
+        if(isRetry) System.out.println("One or more positions have been already occupied, try again.");
+
         Map<String, Point> positions = new HashMap<>();
         List<String> workersID = matchData.getIds().get(matchData.getPlayerName());
         for(int i = 0; i < workersID.size(); ++i){

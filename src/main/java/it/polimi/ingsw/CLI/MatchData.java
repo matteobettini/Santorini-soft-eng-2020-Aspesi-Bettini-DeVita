@@ -68,10 +68,6 @@ public class MatchData {
         this.stream = new CharStream(159, 50);
         this.graphicalBoard = new GraphicalBoard(stream);
         this.buildingsCounter = new HashMap<>();
-        buildingsCounter.put(BuildingType.FIRST_FLOOR, 22);
-        buildingsCounter.put(BuildingType.SECOND_FLOOR, 18);
-        buildingsCounter.put(BuildingType.THIRD_FLOOR, 14);
-        buildingsCounter.put(BuildingType.DOME, 18);
         this.loser = null;
         this.winner = null;
     }
@@ -111,6 +107,10 @@ public class MatchData {
     public void decrementCounter(BuildingType building,int howMany){
         int count = buildingsCounter.get(building);
         buildingsCounter.put(building, count - howMany);
+    }
+
+    public void setCounter(BuildingType building,int howMany){
+        buildingsCounter.put(building, howMany);
     }
 
     public Map<BuildingType, Integer> getBuildingsCounter() {

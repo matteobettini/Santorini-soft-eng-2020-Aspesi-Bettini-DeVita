@@ -1,5 +1,7 @@
 package it.polimi.ingsw.CLI;
 
+import it.polimi.ingsw.model.enums.BuildingType;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -147,7 +149,7 @@ public class InputUtilities {
 
         }
         else if(confirmActionForbidden){
-            choiceMessage = "Do you want to make a choice (1), restart the selection(2)? ";
+            choiceMessage = "Do you want to make a choice (1) or restart the selection(2)? ";
             mapChoices.add(1);
             mapChoices.add(2);
 
@@ -167,5 +169,35 @@ public class InputUtilities {
         }while(choice <= 0 || choice > mapChoices.size());
 
         return mapChoices.get(choice - 1);
+    }
+
+    public static BuildingType charToBuildingType(Character building){
+        switch (building){
+            case '1':
+                return BuildingType.FIRST_FLOOR;
+            case '2':
+                return  BuildingType.SECOND_FLOOR;
+            case '3':
+                return BuildingType.THIRD_FLOOR;
+            case '4':
+                return BuildingType.DOME;
+        }
+        assert false;
+        return BuildingType.DOME;
+    }
+
+    public static Character buildingTypeToChar(BuildingType building){
+        switch (building){
+            case FIRST_FLOOR:
+                return '1';
+            case SECOND_FLOOR:
+                return  '2';
+            case THIRD_FLOOR:
+                return '3';
+            case DOME:
+                return '4';
+        }
+        assert false;
+        return '0';
     }
 }

@@ -121,7 +121,7 @@ public class BuildActionStrategy implements ActionStrategy{
         for(Point position : possibleBuildingsInPositions.keySet()){
             possibleBuildsBuilder.append("- ").append(board.getCoordinates(position));
             for(BuildingType building : possibleBuildingsInPositions.get(position)){
-                possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(buildingTypeToChar(building)).append(")");
+                possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(InputUtilities.buildingTypeToChar(building)).append(")");
             }
             possibleBuildsBuilder.append("\n");
         }
@@ -149,7 +149,7 @@ public class BuildActionStrategy implements ActionStrategy{
             }while(!BUILDINGS_PATTERN.matcher(command).matches());
 
             chosenPosition = board.getPoint(Character.getNumericValue(command.charAt(1)), Character.toUpperCase(command.charAt(0)));
-            chosenBuilding = charToBuildingType(command.charAt(3));
+            chosenBuilding = InputUtilities.charToBuildingType(command.charAt(3));
             possibleBuildings = possibleBuildingsInPositions.get(chosenPosition);
 
             error = board.getCell(chosenPosition) == null || possibleBuildings == null || !possibleBuildings.contains(chosenBuilding);
@@ -163,36 +163,6 @@ public class BuildActionStrategy implements ActionStrategy{
         if(!currentDataOrder.contains(chosenPosition)) currentDataOrder.add(chosenPosition);
 
         return true;
-    }
-
-    private BuildingType charToBuildingType(Character building){
-        switch (building){
-            case '1':
-                return BuildingType.FIRST_FLOOR;
-            case '2':
-                return  BuildingType.SECOND_FLOOR;
-            case '3':
-                return BuildingType.THIRD_FLOOR;
-            case '4':
-                return BuildingType.DOME;
-        }
-        assert false;
-        return BuildingType.DOME;
-    }
-
-    private Character buildingTypeToChar(BuildingType building){
-        switch (building){
-            case FIRST_FLOOR:
-                return '1';
-            case SECOND_FLOOR:
-                return  '2';
-            case THIRD_FLOOR:
-                return '3';
-            case DOME:
-                return '4';
-        }
-        assert false;
-        return '0';
     }
 
 }

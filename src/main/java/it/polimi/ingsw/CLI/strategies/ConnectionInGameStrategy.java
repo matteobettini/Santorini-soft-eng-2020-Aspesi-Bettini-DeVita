@@ -9,9 +9,9 @@ public class ConnectionInGameStrategy implements ConnectionStrategy {
     public void handleConnection(ConnectionStatus connectionStatus, CLI cli) {
         if(connectionStatus.isClosed()){
             System.out.println("\n" + connectionStatus.getReasonOfClosure());
-            System.out.print("Do you want to reconnect? (y | n) ");
             String choice;
             do{
+                System.out.print("Do you want to reconnect? (y | n) ");
                 choice = InputUtilities.getLine();
                 if(choice == null) return;
             }while(!(choice.toLowerCase().equals("y") || choice.toLowerCase().equals("n")));
