@@ -76,7 +76,7 @@ public class CardFactory {
         //MOVE WIN
         statements = new LinkedList<>();
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.EXISTS_DELTA_MORE, "0"));
-        statements.add(new RuleStatementImpl(StatementType.IF,"FINAL_POSITION", StatementVerbType.LEVEL_TYPE, "THIRD_FLOOR"));
+        statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.EXISTS_LEVEL_TYPE, "THIRD_FLOOR"));
         effect = new RuleEffectImpl(EffectType.WIN,null);
         rules.add(new CardRuleImpl(TriggerType.MOVE,statements,effect));
         //Generate card

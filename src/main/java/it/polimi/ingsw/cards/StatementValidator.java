@@ -30,8 +30,8 @@ class StatementValidator {
             case MOVE_LENGTH:
                 moveLengthValidate(stm);
                 break;
-            case LEVEL_TYPE:
-                levelTypeValidate(stm);
+            case EXISTS_LEVEL_TYPE:
+                existsLevelTypeValidate(stm);
                 break;
             case BUILD_IN_SAME_SPOT:
                 buildInSameSpotValidate(stm);
@@ -176,21 +176,20 @@ class StatementValidator {
     }
 
     /**
-     * Check LEVEL_TYPE
-     * @param stm LEVEL_TYPE statement
+     * Check EXISTS_LEVEL_TYPE
+     * @param stm EXISTS_LEVEL_TYPE statement
      */
-    private static void levelTypeValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+    private static void existsLevelTypeValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
         switch (stm.getSubject()){
-            case "START_POSITION":
-            case "FINAL_POSITION":
+            case "YOU":
                 break;
             default:
-                throw new InvalidStatementSubjectException("[LEVEL_TYPE] Subject '" + stm.getSubject() + "' not supported" );
+                throw new InvalidStatementSubjectException("[EXISTS_LEVEL_TYPE] Subject '" + stm.getSubject() + "' not supported" );
         }
         try{
             LevelType level = LevelType.valueOf(stm.getObject());
         }catch (IllegalArgumentException ex){
-            throw new InvalidStatementObjectException("[LEVEL_TYPE] Object '" + stm.getObject() + "' is not a valid LevelType");
+            throw new InvalidStatementObjectException("[EXISTS_LEVEL_TYPE] Object '" + stm.getObject() + "' is not a valid LevelType");
         }
     }
 

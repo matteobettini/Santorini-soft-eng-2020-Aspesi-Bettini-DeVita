@@ -66,7 +66,7 @@ class CardValidator {
                     case EXISTS_DELTA_MORE:
                     case EXISTS_DELTA_LESS:
                     case INTERACTION_NUM:
-                    case LEVEL_TYPE:
+                    case EXISTS_LEVEL_TYPE:
                     case POSITION_EQUALS:
                         return true;
                 }

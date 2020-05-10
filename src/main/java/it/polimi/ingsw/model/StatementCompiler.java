@@ -49,8 +49,8 @@ class StatementCompiler {
            case EXISTS_DELTA_LESS:
                result = compileExistsDeltaLess(model, statement);
                break;
-           case LEVEL_TYPE:
-               result = compileLevelType(model, statement);
+           case EXISTS_LEVEL_TYPE:
+               result = compileExistsLevelType(model, statement);
                break;
            case INTERACTION_NUM:
                result = compileInteractionNum(model, statement);
@@ -234,45 +234,28 @@ class StatementCompiler {
         return  lambdaStatement;
     }
 
-    private static LambdaStatement compileLevelType(InternalModel model, RuleStatement statement) {
+    private static LambdaStatement compileExistsLevelType(InternalModel model, RuleStatement statement) {
 
         LevelType object = LevelType.valueOf(statement.getObject());
         boolean isNif = statement.getType() == StatementType.NIF;
-        LambdaStatement lambdaStatement = null;
 
-        if(statement.getSubject().equals("START_POSITION")) {
-            lambdaStatement = ((moveData, buildData) -> {
-                boolean result = false;
-                assert(buildData == null);
-                Point startPosition = moveData.getWorker().getPosition();
-                if(model.getBoard().getCell(startPosition).getTopBuilding() == object)
+        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+            boolean result = false;
+            assert (buildData == null);
+            List<Point> moves = moveData.getData();
+
+            for(Point p : moves)
+                if(model.getBoard().getCell(p).getTopBuilding() == object) {
                     result = true;
+                    break;
+                }
 
-                if(isNif)
-                    result = !result;
+            if(isNif)
+                result = !result;
 
-                return result;
+            return result;
+        });
 
-            });
-        }
-        else if(statement.getSubject().equals("FINAL_POSITION")){
-            lambdaStatement = ((moveData, buildData) -> {
-                boolean result = false;
-                assert(buildData == null);
-                List<Point> moves = moveData.getData();
-                assert (!moves.isEmpty());
-
-                Point finalPosition = moves.get(moves.size()-1);
-                if(model.getBoard().getCell(finalPosition).getTopBuilding() == object)
-                    result = true;
-
-                if(isNif)
-                    result = !result;
-
-                return result;
-
-            });
-        }
         return lambdaStatement;
     }
 

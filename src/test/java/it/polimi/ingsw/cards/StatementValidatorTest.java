@@ -324,13 +324,13 @@ class StatementValidatorTest {
     }
 
     /**
-     * Test LEVEL_TYPE
+     * Test EXISTS_LEVEL_TYPE
      * - Normal
      */
     @Test
     void testLevelType() {
         //Check correct subject and object
-        RuleStatement stmOkay = RuleStatementImplTest.getStatement("START_POSITION", StatementVerbType.LEVEL_TYPE, "GROUND");
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_LEVEL_TYPE, "GROUND");
         try {
             StatementValidator.checkRuleStatement(stmOkay);
             assert true;
@@ -338,7 +338,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check wrong subject and correct object
-        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.LEVEL_TYPE, "GROUND");
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_LEVEL_TYPE, "GROUND");
         try {
             StatementValidator.checkRuleStatement(stmWrongSubject);
             assert false;
@@ -348,7 +348,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("FINAL_POSITION", StatementVerbType.LEVEL_TYPE, "WRONG_LEVEL");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.EXISTS_LEVEL_TYPE, "WRONG_LEVEL");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -358,7 +358,7 @@ class StatementValidatorTest {
             assert true;
         }
         //Check wrong subject and wrong object
-        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.LEVEL_TYPE, "WRONG_LEVEL");
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.EXISTS_LEVEL_TYPE, "WRONG_LEVEL");
         try {
             StatementValidator.checkRuleStatement(stmWrong);
             assert false;

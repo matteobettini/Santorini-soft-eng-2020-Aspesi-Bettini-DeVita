@@ -1233,91 +1233,142 @@ class StatementCompilerTest {
         lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
         assertTrue(lambdaStatement.evaluate(moveData, null));
     }
+
     /**
-     * Testing the start position in two cases:
-     * - The Worker is on a Ground Level and the evaluation should be true
-     * - The Worker is on a First Floor Level and the evaluation should be false
-     *
-     * Testing also NIF with false in the first case and true in the other
+     * Testing exists level type when moving from two points [GROUND] -> [FIRST_FLOOR]
+     * Should return true with IF and false with NIF
      */
     @Test
-    void levelType_Test1(){
-        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"START_POSITION", StatementVerbType.LEVEL_TYPE,"GROUND");
-        LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+    void existsLevelType_Test1(){
+        RuleStatement ruleStmFirstIF = RuleStatementImplTest.getStatement(StatementType.IF,"YOU", StatementVerbType.EXISTS_LEVEL_TYPE,"FIRST_FLOOR");
+        RuleStatement ruleStmFirstNIF = RuleStatementImplTest.getStatement(StatementType.NIF,"YOU", StatementVerbType.EXISTS_LEVEL_TYPE,"FIRST_FLOOR");
+        LambdaStatement compiledStmFirstIF = StatementCompiler.compileStatement(model, ruleStmFirstIF, Andrea);
+        LambdaStatement compiledStmFirstNIF = StatementCompiler.compileStatement(model, ruleStmFirstNIF, Andrea);
 
-        Player p = Andrea;
-        List<Point> emptyList = new LinkedList<>();
-        MoveData moveData = new MoveData(p, AndreaW1, emptyList);
+        /*
+                  0    1     2    3    4
+                +----+----+----+----+----+ X
+            0   | A1 | FF |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+        Board board = model.getBoard();
 
-        assert (!compiledStatement.evaluate(moveData, null));
+        Point p00 = new Point(0,0);
+        board.getCell(p00).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(p00);
 
+        Point p01 = new Point(1,0);
+        board.getCell(p01).addBuilding(BuildingType.FIRST_FLOOR);
 
-        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"START_POSITION", StatementVerbType.LEVEL_TYPE,"GROUND");
-        compiledStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        //Generate move info
+        List<Point> movePoints = new LinkedList<>();
+        movePoints.add(p01);
+        MoveData moveData = new MoveData(Andrea, AndreaW1, movePoints);
 
-
-        assert (compiledStatement.evaluate(moveData, null));
-
-        Point pos = AndreaW1.getPosition();
-        model.getBoard().getCell(pos).removeWorker();
-        model.getBoard().getCell(pos).addBuilding(BuildingType.FIRST_FLOOR);
-        model.getBoard().getCell(pos).setWorker(AndreaW1.getID());
-
-        assert (!compiledStatement.evaluate(moveData, null));
-
-        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"START_POSITION", StatementVerbType.LEVEL_TYPE,"FIRST_FLOOR");
-        compiledStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
-
-        assert (compiledStatement.evaluate(moveData, null));
-
-        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"START_POSITION", StatementVerbType.LEVEL_TYPE,"GROUND");
-        compiledStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
-
-        assert (compiledStatement.evaluate(moveData, null));
+        assertTrue(compiledStmFirstIF.evaluate(moveData,null));
+        assertFalse(compiledStmFirstNIF.evaluate(moveData,null));
     }
     /**
-     * Testing the final position after a move:
-     * The Worker moves from 0,0 (GROUND) to 1,1 (FIRST_FLOOR)
-     * The evaluation should be true with FIRST:FLOOR as FINAL_POSITION
+     * Testing exists level type when moving from two points [GROUND] -> [FIRST_FLOOR] -> [GROUND]
+     * Should return true with IF and false with NIF
      */
     @Test
-    void testLevelType2(){
+    void existsLevelType_Test2(){
+        RuleStatement ruleStmFirstIF = RuleStatementImplTest.getStatement(StatementType.IF,"YOU", StatementVerbType.EXISTS_LEVEL_TYPE,"FIRST_FLOOR");
+        RuleStatement ruleStmFirstNIF = RuleStatementImplTest.getStatement(StatementType.NIF,"YOU", StatementVerbType.EXISTS_LEVEL_TYPE,"FIRST_FLOOR");
+        LambdaStatement compiledStmFirstIF = StatementCompiler.compileStatement(model, ruleStmFirstIF, Andrea);
+        LambdaStatement compiledStmFirstNIF = StatementCompiler.compileStatement(model, ruleStmFirstNIF, Andrea);
 
-        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"FINAL_POSITION", StatementVerbType.LEVEL_TYPE,"FIRST_FLOOR");
-        LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        /*
+                  0    1     2    3    4
+                +----+----+----+----+----+ X
+            0   | A1 | FF |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+        Board board = model.getBoard();
 
-        Player p = Andrea;
-        List<Point> moves = new ArrayList<>();
+        Point p00 = new Point(0,0);
+        board.getCell(p00).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(p00);
 
-        Point pos = new Point(1,1);
-        moves.add(pos);
+        Point p01 = new Point(1,0);
+        board.getCell(p01).addBuilding(BuildingType.FIRST_FLOOR);
 
-        model.getBoard().getCell(pos).addBuilding(BuildingType.FIRST_FLOOR);
+        Point p11 = new Point(1,1);
 
-        MoveData moveData = new MoveData(p, AndreaW1, moves);
+        //Generate move info
+        List<Point> movePoints = new LinkedList<>();
+        movePoints.add(p01);
+        movePoints.add(p11);
+        MoveData moveData = new MoveData(Andrea, AndreaW1, movePoints);
 
-        assert (compiledStatement.evaluate(moveData, null));
-
-        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"FINAL_POSITION", StatementVerbType.LEVEL_TYPE,"FIRST_FLOOR");
-        compiledStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-
-        model.getBoard().getCell(pos).addBuilding(BuildingType.SECOND_FLOOR);
-
-        assert (compiledStatement.evaluate(moveData, null));
-
-        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"FINAL_POSITION", StatementVerbType.LEVEL_TYPE,"SECOND_FLOOR");
-        compiledStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
-
-        assert (compiledStatement.evaluate(moveData, null));
-
-        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"FINAL_POSITION", StatementVerbType.LEVEL_TYPE,"SECOND_FLOOR");
-        compiledStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
-
-        assert (!compiledStatement.evaluate(moveData, null));
-
+        assertTrue(compiledStmFirstIF.evaluate(moveData,null));
+        assertFalse(compiledStmFirstNIF.evaluate(moveData,null));
     }
+
+    /**
+     *  Testing exists level type when moving from two points [FIRST_FLOOR] -> [GROUND]
+     *  Should return false with IF and true with NIF
+     */
+    @Test
+    void existsLevelType_Test3(){
+        RuleStatement ruleStmFirstIF = RuleStatementImplTest.getStatement(StatementType.IF,"YOU", StatementVerbType.EXISTS_LEVEL_TYPE,"FIRST_FLOOR");
+        RuleStatement ruleStmFirstNIF = RuleStatementImplTest.getStatement(StatementType.NIF,"YOU", StatementVerbType.EXISTS_LEVEL_TYPE,"FIRST_FLOOR");
+        LambdaStatement compiledStmFirstIF = StatementCompiler.compileStatement(model, ruleStmFirstIF, Andrea);
+        LambdaStatement compiledStmFirstNIF = StatementCompiler.compileStatement(model, ruleStmFirstNIF, Andrea);
+
+        /*
+                  0    1     2    3    4
+                +----+----+----+----+----+ X
+            0   | A1 | FF |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+        Board board = model.getBoard();
+
+        Point p00 = new Point(0,0);
+        board.getCell(p00).addBuilding(BuildingType.FIRST_FLOOR);
+
+        Point p01 = new Point(1,0);
+        board.getCell(p01).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(p01);
+
+        //Generate move info
+        List<Point> movePoints = new LinkedList<>();
+        movePoints.add(p00);
+        MoveData moveData = new MoveData(Andrea, AndreaW1, movePoints);
+
+        assertFalse(compiledStmFirstIF.evaluate(moveData,null));
+        assertTrue(compiledStmFirstNIF.evaluate(moveData,null));
+    }
+
+
     /*
        Tests a move with 3 interactions on a wide range of different levels
     */
