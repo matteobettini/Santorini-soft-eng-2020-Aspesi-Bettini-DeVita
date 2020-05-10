@@ -15,8 +15,8 @@ import java.util.Map;
  */
 class Board {
 
-    private Cell[][] boardRep;
-    private Map<BuildingType, Integer> buildingsCounter;
+    private final Cell[][] boardRep;
+    private final Map<BuildingType, Integer> buildingsCounter;
 
     public static final int NUM_OF_FIRST_FLOOR = 22;
     public static final int NUM_OF_SECOND_FLOOR = 18;
