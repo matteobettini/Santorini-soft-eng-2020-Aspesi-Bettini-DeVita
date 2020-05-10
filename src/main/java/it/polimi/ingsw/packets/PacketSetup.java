@@ -1,5 +1,6 @@
 package it.polimi.ingsw.packets;
 
+import it.polimi.ingsw.model.enums.BuildingType;
 import javafx.util.Pair;
 
 import java.awt.*;
@@ -13,12 +14,9 @@ public class PacketSetup implements Serializable {
     private final Map<String, List<String>> ids;
     private final Map<String, Color> colors;
     private final Map<String, Pair<String, String >> cards;
-    private final int NUM_OF_FIRST_FLOOR;
-    private final int NUM_OF_SECOND_FLOOR;
-    private final int NUM_OF_THIRD_FLOOR;
-    private final int NUM_OF_DOME;
+    Map<BuildingType, Integer> buildingsCounter;
 
-    public PacketSetup(Map<String, List<String>> ids, Map<String, Color> colors, Map<String, Pair<String, String>> cards, int numFF, int numSF, int numTF, int numDM) {
+    public PacketSetup(Map<String, List<String>> ids, Map<String, Color> colors, Map<String, Pair<String, String>> cards, Map<BuildingType, Integer> buildingsCounter) {
         this.ids = new HashMap<>();
         for(String s : ids.keySet()){
             List<String> internalList = new ArrayList<>(ids.get(s));
@@ -35,10 +33,11 @@ public class PacketSetup implements Serializable {
             this.cards.put(s,internalPair);
         }
 
-        NUM_OF_FIRST_FLOOR = numFF;
-        NUM_OF_SECOND_FLOOR = numSF;
-        NUM_OF_THIRD_FLOOR = numTF;
-        NUM_OF_DOME = numDM;
+        this.buildingsCounter = new HashMap<>();
+        for(BuildingType buildingType : buildingsCounter.keySet()){
+            this.buildingsCounter.put(buildingType, buildingsCounter.get(buildingType));
+        }
+
 
     }
 
@@ -54,19 +53,5 @@ public class PacketSetup implements Serializable {
         return cards;
     }
 
-    public int getNUM_OF_FIRST_FLOOR() {
-        return NUM_OF_FIRST_FLOOR;
-    }
-
-    public int getNUM_OF_SECOND_FLOOR() {
-        return NUM_OF_SECOND_FLOOR;
-    }
-
-    public int getNUM_OF_THIRD_FLOOR() {
-        return NUM_OF_THIRD_FLOOR;
-    }
-
-    public int getNUM_OF_DOME() {
-        return NUM_OF_DOME;
-    }
+    public Map<BuildingType, Integer> getBuildingsCounter() { return buildingsCounter; }
 }

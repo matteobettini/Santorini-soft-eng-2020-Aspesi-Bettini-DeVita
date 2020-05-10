@@ -109,8 +109,8 @@ public class MatchData {
         buildingsCounter.put(building, count - howMany);
     }
 
-    public void setCounter(BuildingType building,int howMany){
-        buildingsCounter.put(building, howMany);
+    public void setCounter(Map<BuildingType, Integer> buildingsCounter){
+        this.buildingsCounter = buildingsCounter;
     }
 
     public Map<BuildingType, Integer> getBuildingsCounter() {

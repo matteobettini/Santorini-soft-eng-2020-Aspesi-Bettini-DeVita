@@ -154,6 +154,14 @@ class Board {
     }
 
     /**
+     * Getter for the available buildings.
+     * @return a Map containing the number of available buildings for each type of building.
+     */
+    public Map<BuildingType, Integer> getBuildingsCounter() {
+        return buildingsCounter;
+    }
+
+    /**
      * This method checks if the passed object equals the Board.
      * @param obj is the object to check.
      * @return true if obj has all the Cells equal to the ones of this and the buildingsCounters have the same keys and values,

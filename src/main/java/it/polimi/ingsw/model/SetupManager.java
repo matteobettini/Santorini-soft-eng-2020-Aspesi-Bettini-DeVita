@@ -155,7 +155,7 @@ class SetupManager{
                 i++;
             }
 
-            PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards, Board.NUM_OF_FIRST_FLOOR, Board.NUM_OF_SECOND_FLOOR, Board.NUM_OF_THIRD_FLOOR, Board.NUM_OF_DOME);
+            PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards, model.getBoard().getBuildingsCounter());
             notifyPacketSetupObservers(packetSetup);
 
             PacketDoAction packetDoAction = new PacketDoAction(challenger.getNickname(), ActionType.CHOOSE_START_PLAYER);
