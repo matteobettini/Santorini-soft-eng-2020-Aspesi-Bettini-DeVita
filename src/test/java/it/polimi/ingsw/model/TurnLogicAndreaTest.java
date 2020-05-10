@@ -872,7 +872,6 @@ class TurnLogicAndreaTest {
         assertEquals(moves.getTo(), player.getNickname());
         helpDataMove = moves.getPossibleMoves();
         assert helpDataMove.get(worker.getID()).size() == 0;
-        assert helpDataMove.get(worker.getID()).size() == 0;
 
         try{
             turnLogic.consumePacketMove(player.getNickname(), packetMove);
@@ -911,7 +910,6 @@ class TurnLogicAndreaTest {
         assertNotNull(builds);
         assertEquals(builds.getTo(), player.getNickname());
         helpDataBuild = builds.getPossibleBuilds();
-        assert helpDataBuild.get(worker.getID()).size() == 0;
         assert helpDataBuild.get(worker.getID()).size() == 0;
 
         try{

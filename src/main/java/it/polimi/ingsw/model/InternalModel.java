@@ -495,6 +495,10 @@ class InternalModel {
     public Set<Point> getPossibleMoves(MoveData moveData){
         assert (moveData != null && !moveData.getData().isEmpty());
         Set<Point> result = new HashSet<>();
+
+        if(hasWonWithMove(moveData)) //If already won, no sense to check further
+            return result;
+
         List<Point> currTry = new ArrayList<>(moveData.getData());
         Point startPoint = currTry.get(currTry.size()-1); //Take last point in the packet, granted not empty
 
@@ -565,6 +569,10 @@ class InternalModel {
     public Set<Point> getPossibleBuilds(BuildData buildData){
         assert (buildData != null && !buildData.getData().isEmpty() && !buildData.getDataOrder().isEmpty());
         Set<Point> result = new HashSet<>();
+
+        if (hasWonWithBuild(buildData)) //If already won, no sense to check further
+            return result;
+
         List<Point> currTry = new ArrayList<>(buildData.getDataOrder());
         Map<Point, List<BuildingType>> builds = new HashMap<>();
         for(Point point : buildData.getData().keySet()){
@@ -668,6 +676,10 @@ class InternalModel {
     public Map<Point, List<BuildingType>> getPossibleBuildsAdvanced(BuildData buildData){
         assert (buildData != null && !buildData.getData().isEmpty() && !buildData.getDataOrder().isEmpty());
         Map<Point, List<BuildingType>> result = new HashMap<>();
+
+        if (hasWonWithBuild(buildData)) //If already won, no sense to check further
+            return result;
+
         List<Point> currTry = new ArrayList<>(buildData.getDataOrder());
         Map<Point, List<BuildingType>> builds = new HashMap<>();
         for(Point point : buildData.getData().keySet()){
@@ -793,5 +805,31 @@ class InternalModel {
             assert false;
         }
         return fired;
+    }
+
+    private boolean hasWonWithMove(MoveData moveData){
+        if (getAllowMoveRule(moveData) == null) return false; //Search the allow for the move
+        try{
+            //Check if a win rule fires
+            for(CompiledCardRule rule : winMoveRules){
+                rule.execute(moveData,null,false);
+            }
+        } catch (PlayerWonSignal playerWonSignal) {
+            return true;
+        } catch (PlayerLostSignal ignored) { }
+        return false;
+    }
+
+    private boolean hasWonWithBuild(BuildData buildData){
+        if (getAllowBuildRule(buildData) == null) return false; //Search the allow for the build
+        try{
+            //Check if a win rule fires
+            for(CompiledCardRule rule : winBuildRules){
+                rule.execute(null,buildData,false);
+            }
+        } catch (PlayerWonSignal playerWonSignal) {
+            return true;
+        } catch (PlayerLostSignal ignored) { }
+        return false;
     }
 }

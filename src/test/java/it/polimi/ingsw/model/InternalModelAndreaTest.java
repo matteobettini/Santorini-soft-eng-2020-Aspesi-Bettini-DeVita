@@ -252,6 +252,7 @@ class InternalModelAndreaTest {
     void testCompileCardStrategyApollo1()  {
         //Prepare rules
         CardFile apollo = cardFactory.getCards().stream().filter(c->c.getName().equals("Apollo")).findAny().orElse(null);
+        assertNotNull(apollo);
         Andrea.setCard(apollo);
         model.compileCardStrategy();
 
@@ -293,6 +294,7 @@ class InternalModelAndreaTest {
     void testCompileCardStrategyApollo2(){
         //Prepare rules
         CardFile apollo = cardFactory.getCards().stream().filter(c->c.getName().equals("Apollo")).findAny().orElse(null);
+        assertNotNull(apollo);
         Andrea.setCard(apollo);
         model.compileCardStrategy();
 
@@ -370,6 +372,7 @@ class InternalModelAndreaTest {
     void testCompileCardStrategyArtemis1()  {
         //Prepare rules
         CardFile artemis = cardFactory.getCards().stream().filter(c->c.getName().equals("Artemis")).findAny().orElse(null);
+        assertNotNull(artemis);
         Andrea.setCard(artemis);
         model.compileCardStrategy();
 
@@ -426,6 +429,7 @@ class InternalModelAndreaTest {
     void testCompileCardStrategyMinotaur1()  {
         //Prepare rules
         CardFile minotaur = cardFactory.getCards().stream().filter(c->c.getName().equals("Minotaur")).findAny().orElse(null);
+        assertNotNull(minotaur);
         Andrea.setCard(minotaur);
         model.compileCardStrategy();
 
@@ -475,6 +479,7 @@ class InternalModelAndreaTest {
     void testCompileCardStrategyHephaestus1()  {
         //Prepare rules
         CardFile hephaestus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hephaestus")).findAny().orElse(null);
+        assertNotNull(hephaestus);
         Andrea.setCard(hephaestus);
         model.compileCardStrategy();
 
@@ -559,6 +564,7 @@ class InternalModelAndreaTest {
     void testCompileCardStrategyPan1()  {
         //Prepare rules
         CardFile pan = cardFactory.getCards().stream().filter(c->c.getName().equals("Pan")).findAny().orElse(null);
+        assertNotNull(pan);
         Andrea.setCard(pan);
         model.compileCardStrategy();
 
@@ -614,6 +620,7 @@ class InternalModelAndreaTest {
     void testCompileCardStrategyAthena1()  {
         //Prepare rules
         CardFile athena = cardFactory.getCards().stream().filter(c->c.getName().equals("Athena")).findAny().orElse(null);
+        assertNotNull(athena);
         Mirko.setCard(athena);
         model.compileCardStrategy();
 
@@ -698,6 +705,7 @@ class InternalModelAndreaTest {
     void testCompileCardStrategyDemeter1()  {
         //Prepare rules
         CardFile demeter = cardFactory.getCards().stream().filter(c->c.getName().equals("Demeter")).findAny().orElse(null);
+        assertNotNull(demeter);
         Andrea.setCard(demeter);
         model.compileCardStrategy();
 
@@ -763,6 +771,7 @@ class InternalModelAndreaTest {
     void testCompileCardStrategyDemeter2()  {
         //Prepare rules
         CardFile demeter = cardFactory.getCards().stream().filter(c->c.getName().equals("Demeter")).findAny().orElse(null);
+        assertNotNull(demeter);
         Andrea.setCard(demeter);
         model.compileCardStrategy();
 
@@ -1089,6 +1098,7 @@ class InternalModelAndreaTest {
 
         //Test 2 -> Artemis
         CardFile artemis = cardFactory.getCards().stream().filter(c->c.getName().equals("Artemis")).findAny().orElse(null);
+        assertNotNull(artemis);
         Andrea.setCard(artemis);
         model.compileCardStrategy();
 
@@ -1182,6 +1192,7 @@ class InternalModelAndreaTest {
 
         //Test 2 -> Demeter
         CardFile demeter = cardFactory.getCards().stream().filter(c->c.getName().equals("Demeter")).findAny().orElse(null);
+        assertNotNull(demeter);
         Andrea.setCard(demeter);
         model.compileCardStrategy();
 
@@ -1195,6 +1206,7 @@ class InternalModelAndreaTest {
 
         //Test 2 -> Hephaestus
         CardFile hephaestus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hephaestus")).findAny().orElse(null);
+        assertNotNull(hephaestus);
         Andrea.setCard(hephaestus);
         model.compileCardStrategy();
 
@@ -1300,6 +1312,7 @@ class InternalModelAndreaTest {
     @Test
     void testAllowedBuildsAdvanced2() {
         CardFile atlas = cardFactory.getCards().stream().filter(c->c.getName().equals("Atlas")).findAny().orElse(null);
+        assertNotNull(atlas);
         Andrea.setCard(atlas);
         model.compileCardStrategy();
 
@@ -1471,6 +1484,7 @@ class InternalModelAndreaTest {
 
         //Test 2 -> Demeter
         CardFile demeter = cardFactory.getCards().stream().filter(c->c.getName().equals("Demeter")).findAny().orElse(null);
+        assertNotNull(demeter);
         Andrea.setCard(demeter);
         model.compileCardStrategy();
 
@@ -1498,6 +1512,7 @@ class InternalModelAndreaTest {
 
         //Test 2 -> Hephaestus
         CardFile hephaestus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hephaestus")).findAny().orElse(null);
+        assertNotNull(hephaestus);
         Andrea.setCard(hephaestus);
         model.compileCardStrategy();
 
@@ -1550,5 +1565,59 @@ class InternalModelAndreaTest {
         assertEquals(playerList.get(0), Mirko);
         assertEquals(playerList.get(1), Andrea);
         assertEquals(playerList.get(2), Matteo);
+    }
+
+    /*
+        Test that when simulating a winning move, no more possible moves
+        are returned, even if the player has such ability
+     */
+    @Test
+    void testAllowedMovesAfterWin(){
+        //Prepare rules
+        CardFile artemis = cardFactory.getCards().stream().filter(c->c.getName().equals("Artemis")).findAny().orElse(null);
+        assertNotNull(artemis);
+        Andrea.setCard(artemis);
+        model.compileCardStrategy();
+
+        //Init player
+        Andrea.setPlayerState(PlayerState.TURN_STARTED);
+
+        //Populate board
+        Board board = model.getBoard();
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   | SF | TF |    |    |    |
+                | A1 |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+        Point p00 = new Point(0,0);
+        board.getCell(p00).addBuilding(BuildingType.FIRST_FLOOR);
+        board.getCell(p00).addBuilding(BuildingType.SECOND_FLOOR);
+        AndreaW1.setPosition(p00);
+        board.getCell(p00).setWorker(AndreaW1.getID());
+
+        Point p10 = new Point(1,0);
+        board.getCell(p10).addBuilding(BuildingType.FIRST_FLOOR);
+        board.getCell(p10).addBuilding(BuildingType.SECOND_FLOOR);
+        board.getCell(p10).addBuilding(BuildingType.THIRD_FLOOR);
+
+        Set<Point> allowed = model.getPossibleMoves(Andrea, AndreaW1);
+        assert (allowed.contains(p10));
+
+        List<Point> move = new LinkedList<>();
+        move.add(p10);
+        MoveData data = new MoveData(Andrea, AndreaW1, move);
+        allowed = model.getPossibleMoves(data);
+        assert (allowed.size() == 0);
     }
 }
