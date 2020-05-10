@@ -268,6 +268,8 @@ class StatementValidator {
         }
         try{
             LevelType level = LevelType.valueOf(stm.getObject());
+            if (level == LevelType.DOME)
+                throw new InvalidStatementObjectException("[BUILD_DOME_EXCEPT] Object 'DOME' not supported");
         }catch (IllegalArgumentException ex){
             throw new InvalidStatementObjectException("[BUILD_DOME_EXCEPT] Object '" + stm.getObject() + "' is not a valid LevelType");
         }
@@ -286,6 +288,8 @@ class StatementValidator {
         }
         try{
             LevelType level = LevelType.valueOf(stm.getObject());
+            if (level == LevelType.DOME)
+                throw new InvalidStatementObjectException("[BUILD_DOME] Object 'DOME' not supported");
         }catch (IllegalArgumentException ex){
             throw new InvalidStatementObjectException("[BUILD_DOME] Object '" + stm.getObject() + "' is not a valid LevelType");
         }

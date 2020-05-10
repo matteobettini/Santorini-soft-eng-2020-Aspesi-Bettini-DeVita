@@ -559,7 +559,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_DOME, "WRONG_OBJECT");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_DOME, "DOME");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
@@ -603,7 +603,7 @@ class StatementValidatorTest {
             assert false;
         }
         //Check correct subject and wrong object
-        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_DOME_EXCEPT, "WRONG_OBJECT");
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.BUILD_DOME_EXCEPT, "DOME");
         try {
             StatementValidator.checkRuleStatement(stmWrongObject);
             assert false;
