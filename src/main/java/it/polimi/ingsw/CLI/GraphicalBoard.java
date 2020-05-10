@@ -4,9 +4,7 @@ import it.polimi.ingsw.CLI.enums.BackColor;
 import it.polimi.ingsw.CLI.enums.ForeColor;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class GraphicalBoard implements CharFigure{
     private final int rows = 5;
@@ -88,7 +86,6 @@ public class GraphicalBoard implements CharFigure{
             }
         }
 
-        if(possiblePositions != null) possibleActions(possiblePositions, relX, relY);
 
         for(int i = 0; i < rows; ++i){
             for(int j = 0; j < columns; ++j){
@@ -96,33 +93,50 @@ public class GraphicalBoard implements CharFigure{
             }
         }
 
+        if(possiblePositions != null){
+            highlightActions(possiblePositions, relX, relY);
+            //highlightActions(notPossiblePositions, relX, relY, BackColor.ANSI_BG_YELLOW);
+        }
+
     }
 
     public void resetPossibleActions(){
-        setPossibleActions(null);
+        this.possiblePositions = null;
     }
+
+    /*public void setPossibleActions(List<Point> possiblePositions, String playerID , Integer workerNumber){
+        MatchData matchData = MatchData.getInstance();
+        Board board = matchData.getBoard();
+
+        List<Point> adjacentPoints = board.getAdjacents(getWorkerPosition(playerID, workerNumber));
+
+        this.notPossiblePositions = adjacentPoints.stream().filter( p -> !possiblePositions.contains(p)).collect(Collectors.toList());
+
+        this.possiblePositions = possiblePositions;
+    }*/
 
     public void setPossibleActions(List<Point> possiblePositions){
         this.possiblePositions = possiblePositions;
     }
 
-    private void possibleActions(List<Point> possiblePositions, int relX, int relY){
-        ForeColor parentFore = ForeColor.ANSI_BLACK;
-        BackColor parentBack = BackColor.ANSI_BRIGHT_BG_GREEN;
-        for(Point pos : possiblePositions){
+    private void highlightActions(List<Point> positions, int relX, int relY){
+        ForeColor foreColor = ForeColor.ANSI_BLACK;
+        BackColor backColor = BackColor.ANSI_BRIGHT_BG_GREEN;
+        if(positions == null) return;
+        for(Point pos : positions){
             int X = pos.x * RATEOX;
             int Y = pos.y * RATEOY;
-            for(int i = 0; i <= RATEOX; ++ i){
-                stream.addColor(i + relX + X, relY + Y, parentFore, parentBack);
+            for(int i = 1; i < RATEOX; ++ i){
+                stream.addColor(i + relX + X, relY + Y + 1, foreColor, backColor);
             }
-            for(int i = 0; i <= RATEOY; ++ i){
-                stream.addColor(relX + X, i + relY + Y, parentFore, parentBack);
+            for(int i = 1; i < RATEOY; ++ i){
+                stream.addColor(relX + X + 1, i + relY + Y, foreColor, backColor);
             }
-            for(int i = 0; i <= RATEOX; ++ i){
-                stream.addColor(i + relX + X, relY + Y + RATEOY, parentFore, parentBack);
+            for(int i = 1; i < RATEOX; ++ i){
+                stream.addColor(i + relX + X, relY + Y + RATEOY - 1, foreColor, backColor);
             }
-            for(int i = 0; i <= RATEOY; ++ i){
-                stream.addColor(relX + X + RATEOX, i + relY + Y, parentFore, parentBack);
+            for(int i = 1; i < RATEOY; ++ i){
+                stream.addColor(relX + X + RATEOX - 1, i + relY + Y, foreColor, backColor);
             }
         }
     }
@@ -133,16 +147,21 @@ public class GraphicalBoard implements CharFigure{
     }
 
     public void removeWorker(String playerID, Integer workerNumber){
+        Point position = getWorkerPosition(playerID, workerNumber);
+        if(position == null) return;
+        graphicalCells[position.x][position.y].removeWorker();
+    }
+
+    public Point getWorkerPosition(String playerID, Integer workerNumber){
         for(int i = 0; i < rows; ++i) {
             for (int j = 0; j < columns; ++j) {
                 GraphicalWorker graphicalWorker = graphicalCells[i][j].getWorker();
                 if(graphicalWorker != null && graphicalWorker.getPlayerName() != null && graphicalWorker.getNumber() != null){
-                    if(playerID.equals(graphicalWorker.getPlayerName()) && workerNumber.equals(graphicalWorker.getNumber())){
-                        graphicalCells[i][j].removeWorker();
-                    }
+                    if(playerID.equals(graphicalWorker.getPlayerName()) && workerNumber.equals(graphicalWorker.getNumber())) return new Point(i, j);
                 }
             }
         }
+        return null;
     }
 
     public void resetWorkers(){

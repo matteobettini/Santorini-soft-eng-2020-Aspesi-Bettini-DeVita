@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class BuildActionStrategy implements ActionStrategy{
 
@@ -44,7 +43,6 @@ public class BuildActionStrategy implements ActionStrategy{
         MatchData matchData = MatchData.getInstance();
         Client client = matchData.getClient();
         String player = matchData.getPlayerName();
-        List<String> workersID = matchData.getIds().get(player);
 
 
         //ELEMENT USED TO DISPLAY CHANGES
@@ -56,8 +54,6 @@ public class BuildActionStrategy implements ActionStrategy{
         boolean confirmActionForbidden = false; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
         if(lastUsedWorker == null){
-
-            System.out.println("Make your build!");
 
             confirmActionForbidden = true;
 
@@ -106,6 +102,7 @@ public class BuildActionStrategy implements ActionStrategy{
             case 2:
                 //WE RESET CHANGES TO THE GRAPHICAL BOARD, THE CHECKPOINT IS THE BOARD OBJECT IN THE MATCHDATA
                 matchData.makeGraphicalBoardEqualToBoard();
+                matchData.printMatch();
                 return true;
             case 3:
                 PacketBuild packetBuildConfirmation = new PacketBuild(player,lastUsedWorker, false, currentBuilds, currentDataOrder);
@@ -128,6 +125,8 @@ public class BuildActionStrategy implements ActionStrategy{
             }
             possibleBuildsBuilder.append("\n");
         }
+
+        if(currentDataOrder.isEmpty())  System.out.println("Make your build!");
 
         System.out.println("Available buildings: ");
         System.out.println(possibleBuildsBuilder.toString());

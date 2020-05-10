@@ -32,7 +32,6 @@ public class MoveActionStrategy implements ActionStrategy{
         MatchData matchData = MatchData.getInstance();
         Client client = matchData.getClient();
         String player = matchData.getPlayerName();
-        List<String> workersID = matchData.getIds().get(player);
 
         //ELEMENT USED TO DISPLAY CHANGES
         Board board = matchData.getBoard();
@@ -60,8 +59,10 @@ public class MoveActionStrategy implements ActionStrategy{
             if(lastUsedWorker == null) return false;
         }
 
+
         //POSSIBLE POSITIONS CONTAINS THE POSITIONS THAT THE PLAYER CAN CHOOSE AT THIS TIME DURING THE MOVE
         List<Point> possiblePositions = new ArrayList<>(packetPossibleMoves.getPossibleMoves().get(lastUsedWorker));
+
         graphicalBoard.setPossibleActions(possiblePositions);
 
         matchData.printMatch();
@@ -95,6 +96,7 @@ public class MoveActionStrategy implements ActionStrategy{
             case 2:
                 //WE RESET CHANGES TO THE GRAPHICAL BOARD, THE CHECKPOINT IS THE BOARD OBJECT IN THE MATCHDATA
                 matchData.makeGraphicalBoardEqualToBoard();
+                matchData.printMatch();
                 return true;
             case 3:
                 //IN CASE OF PLAYER'S CONFIRMATION WE SEND A PACKET THAT WON'T SIMULATE AND WE ARE SURE THAT IS CORRECT BECAUSE WE CHECKED POSSIBLE MOVES EVERY TIME
