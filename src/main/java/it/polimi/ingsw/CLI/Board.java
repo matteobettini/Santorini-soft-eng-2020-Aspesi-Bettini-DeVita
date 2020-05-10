@@ -1,5 +1,6 @@
 package it.polimi.ingsw.CLI;
 
+import it.polimi.ingsw.model.enums.BuildingType;
 import javafx.util.Pair;
 
 import java.awt.*;
@@ -75,6 +76,28 @@ public class Board {
                 cells[i][j].removeWorker();
             }
         }
+    }
+
+    public boolean thereIsDomeOrOwnWorkerOrDeltaIsMoreThan1(Point p1, String worker, Point lastPosition){
+        MatchData matchData = MatchData.getInstance();
+
+        List<String> workersID = new ArrayList<>();
+        for(String player : matchData.getIds().keySet()){
+            if(matchData.getIds().get(player).contains(worker)) workersID = matchData.getIds().get(player);
+        }
+
+        return getCell(p1).getBuildings().contains(BuildingType.DOME) || workersID.contains(getCell(p1).getWorker()) || (getCell(p1).getLevel() - getCell(lastPosition).getLevel()) > 1;
+    }
+
+    public boolean canMove(String worker, Point lastPosition){
+        if(lastPosition == null) lastPosition = getWorkerPosition(worker);
+        List<Point> adjacentPoints = getAdjacents(lastPosition);
+        Point finalLastPosition = lastPosition;
+        return adjacentPoints.stream().anyMatch(p -> !thereIsDomeOrOwnWorkerOrDeltaIsMoreThan1(p, worker, finalLastPosition));
+    }
+
+    public boolean canMove(String worker){
+        return canMove(worker, null);
     }
 
     public Cell getCell(Point pos) {

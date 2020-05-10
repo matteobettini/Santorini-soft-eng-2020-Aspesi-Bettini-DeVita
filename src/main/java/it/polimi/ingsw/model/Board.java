@@ -158,7 +158,11 @@ class Board {
      * @return a Map containing the number of available buildings for each type of building.
      */
     public Map<BuildingType, Integer> getBuildingsCounter() {
-        return buildingsCounter;
+        Map<BuildingType, Integer> helper = new HashMap<>();
+        for(BuildingType buildingType : buildingsCounter.keySet()){
+            helper.put(buildingType, buildingsCounter.get(buildingType));
+        }
+        return helper;
     }
 
     /**

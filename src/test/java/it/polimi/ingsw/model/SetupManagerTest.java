@@ -5,6 +5,7 @@ import it.polimi.ingsw.cards.CardFile;
 import it.polimi.ingsw.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.ActionType;
+import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.SetupPhase;
 import it.polimi.ingsw.packets.*;
 import javafx.util.Pair;
@@ -32,18 +33,10 @@ class SetupManagerTest {
         
        
         public Client(SetupManager setupManager){
-            setupManager.addPacketCardsFromServerObserver((packetCardsFromServer)->{
-                this.packetCardsFromServer = packetCardsFromServer;
-            });
-            setupManager.addPacketDoActionObserver((packetDoAction)->{
-                this.packetDoAction = packetDoAction;
-            });
-            setupManager.addPacketSetupObserver((packetSetup)->{
-                this.packetSetup = packetSetup;
-            });
-            setupManager.addPacketUpdateBoardObserver((packetUpdateBoard)->{
-                this.packetUpdateBoard = packetUpdateBoard;
-            });
+            setupManager.addPacketCardsFromServerObserver( packetCardsFromServer -> this.packetCardsFromServer = packetCardsFromServer);
+            setupManager.addPacketDoActionObserver( packetDoAction -> this.packetDoAction = packetDoAction);
+            setupManager.addPacketSetupObserver( packetSetup -> this.packetSetup = packetSetup);
+            setupManager.addPacketUpdateBoardObserver( packetUpdateBoard -> this.packetUpdateBoard = packetUpdateBoard);
         }
 
         public PacketCardsFromServer cards() {
@@ -358,6 +351,25 @@ class SetupManagerTest {
             assertEquals(ids.get(player).size(),2);
             assert ids.get(player).get(0).equals(player + ".1") && ids.get(player).get(1).equals(player + ".2");
         }
+
+        Map<BuildingType, Integer> buildingsCounter = setup.getBuildingsCounter();
+        for(BuildingType buildingType : buildingsCounter.keySet()){
+            switch (buildingType){
+                case FIRST_FLOOR:
+                    assertEquals(Board.NUM_OF_FIRST_FLOOR, buildingsCounter.get(buildingType));
+                    break;
+                case SECOND_FLOOR:
+                    assertEquals(Board.NUM_OF_SECOND_FLOOR, buildingsCounter.get(buildingType));
+                    break;
+                case THIRD_FLOOR:
+                    assertEquals(Board.NUM_OF_THIRD_FLOOR, buildingsCounter.get(buildingType));
+                    break;
+                case DOME:
+                    assertEquals(Board.NUM_OF_DOME, buildingsCounter.get(buildingType));
+                    break;
+            }
+        }
+
         assertEquals(action.getActionType(), ActionType.CHOOSE_START_PLAYER);
         assertEquals(action.getTo(),challenger);
     }

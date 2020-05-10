@@ -20,6 +20,14 @@ public class Cell {
         return buildings;
     }
 
+    public BuildingType getTopBuilding(){
+        return buildings.isEmpty() ? null : buildings.get(buildings.size() - 1);
+    }
+
+    public int getLevel(){
+        return getTopBuilding() == null ? 0 : InputUtilities.buildingTypeToChar(getTopBuilding());
+    }
+
     public Point getPosition() {
         return position;
     }
