@@ -14,7 +14,9 @@ import it.polimi.ingsw.packets.PacketPossibleMoves;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -35,10 +37,10 @@ public class HardcoreStrategy implements GameModeStrategy {
 
     @Override
     public void handleAction(PacketDoAction packetDoAction, boolean isRetry){
+        //TODO : SOLVE THE PROBLEM WHERE THERE IS AN INVALID MOVE/BUILD AND WE DON'T KNOW IF THE PLAYER CAN CHOOSE HIS WORKER OR NOT
         lastAction = packetDoAction;
         switch (packetDoAction.getActionType()){
             case MOVE:
-                if(isRetry) System.out.println("Not a valid move! Try again...");
                 handleMove();
                 break;
             case BUILD:
@@ -90,6 +92,8 @@ public class HardcoreStrategy implements GameModeStrategy {
 
         Integer choice;
 
+        Map<String, Point> workersToRestore = new HashMap<>();
+
         do{
             if(currentChosenPositions.isEmpty()){
                 confirmActionForbidden = true;
@@ -100,6 +104,8 @@ public class HardcoreStrategy implements GameModeStrategy {
             choice = InputUtilities.getActionChoice(makeChoiceForbidden,restartForbidden, confirmActionForbidden);
 
             if(choice == -1) return;
+
+            for(String worker : workersToRestore.keySet()) graphicalBoard.getCell(workersToRestore.get(worker)).setWorker(worker);
 
             switch(choice){
                 case 1:
@@ -112,6 +118,8 @@ public class HardcoreStrategy implements GameModeStrategy {
                     }
                     //THE CHOSEN POSITION IS ADDED TO CURRENT POSITIONS THAT WILL FORM THE PACKET CONFIRMATION
                     currentChosenPositions.add(chosenPosition);
+
+                    if(board.getCell(chosenPosition).getWorker() != null) workersToRestore.put(board.getCell(chosenPosition).getWorker(), chosenPosition);
 
                     Integer workerNumber = Character.getNumericValue(lastUsedWorker.charAt(lastUsedWorker.length() - 1));
 
@@ -132,6 +140,7 @@ public class HardcoreStrategy implements GameModeStrategy {
         }while(choice != 3);
 
         PacketMove packetConfirmation = new PacketMove(matchData.getPlayerName(),lastUsedWorker, false, currentChosenPositions);
+        matchData.makeGraphicalBoardEqualToBoard();
         client.send(packetConfirmation);
 
     }
