@@ -19,9 +19,6 @@ import java.util.regex.Pattern;
 
 public class BuildActionStrategy implements ActionStrategy{
 
-    private static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4])$";
-    private static final Pattern BUILDINGS_PATTERN = Pattern.compile(BUILDINGS_REGEXP);
-
     private String lastUsedWorker;
     private Map<Point, List<BuildingType>> currentBuilds;
     private List<Point> currentDataOrder;
@@ -146,7 +143,7 @@ public class BuildActionStrategy implements ActionStrategy{
                 suggestion = false;
                 command = InputUtilities.getLine();
                 if(command == null) return false;
-            }while(!BUILDINGS_PATTERN.matcher(command).matches());
+            }while(!InputUtilities.BUILDINGS_PATTERN.matcher(command).matches());
 
             chosenPosition = board.getPoint(Character.getNumericValue(command.charAt(1)), Character.toUpperCase(command.charAt(0)));
             chosenBuilding = InputUtilities.charToBuildingType(command.charAt(3));

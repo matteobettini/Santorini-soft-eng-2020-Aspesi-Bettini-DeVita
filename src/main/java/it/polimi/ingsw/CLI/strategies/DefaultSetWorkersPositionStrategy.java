@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStrategy {
-    private static final String POSITIONS_REGEXP = "^(([A-E]|[a-e])[1-5])$";
-    private static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
 
     @Override
     public void handleSetWorkersPosition(boolean isRetry) {
@@ -36,7 +34,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
                     else System.out.print("Choose your worker" + (i + 1) + "'s position (ex A1, B2, ...): ");
                     point = InputUtilities.getLine();
                     if(point == null) return;
-                }while(!POSITION_PATTERN.matcher(point).matches());
+                }while(!InputUtilities.POSITION_PATTERN.matcher(point).matches());
                 helper = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
                 error = board.getCell(helper) == null || positions.containsValue(helper);
             }while(error);

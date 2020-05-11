@@ -74,12 +74,13 @@ public class GraphicalCardsMenu implements CharFigure {
             return;
         }
 
-        if(godCards.isEmpty()) return;
+        if(!godCards.isEmpty()) printAllCards(relX, relY);
+    }
 
+    private void printAllCards(int relX, int relY){
         int marginForTitle = 7;
         int marginForHeading = (cardsPerRow * 10) - (cardsPerRow <= 2 ? 20 : 0);
-        stream.setMessage("GOD", relX + marginForHeading + 5, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW);
-        stream.setMessage("CARDS", relX + marginForHeading + 35, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW);
+        stream.setMessage("GOD CARDS", relX + marginForHeading + 5, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW);
         int countY = 0;
         int countX = 0;
         for (String godCard : godCards.keySet()) {

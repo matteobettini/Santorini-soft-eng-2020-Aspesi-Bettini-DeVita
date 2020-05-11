@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class MoveActionStrategy implements ActionStrategy{
-    private static final String POSITIONS_REGEXP = "^(([A-E]|[a-e])[1-5])$";
-    private static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
 
     private List<Point> currentPositions;
     private String lastUsedWorker; //null if the action has just arrived
@@ -109,40 +107,7 @@ public class MoveActionStrategy implements ActionStrategy{
     }
 
     private Point getChosenPosition(List<Point> possiblePositions, Board board){
-
-        StringBuilder positionsBuilder = new StringBuilder();
-        int workerNumber = Character.getNumericValue(lastUsedWorker.charAt(lastUsedWorker.length() - 1));
-
-        //WE FIRST DISPLAY THE POSSIBLE POSITIONS EVEN IF THEY ARE ALREADY DISPLAYED GRAPHICALLY
-        for(Point position : possiblePositions){
-            positionsBuilder.append("- ").append(board.getCoordinates(position)).append("\n");
-        }
-
-        System.out.println("Available positions: ");
-        System.out.println(positionsBuilder.toString());
-
-        //THE PLAYER CAN NOW CHOOSE HIS WORKER'S NEXT POSITION
-        String point;
-        Point chosenPosition;
-        boolean error = false;
-        boolean suggestion = true;
-        do{
-            if(error) System.out.println("Invalid position for worker" + (workerNumber) + ", retry");
-
-            do{
-                if(suggestion)  System.out.print("Choose your next worker" + (workerNumber) + "'s position (ex A1, B2...): ");
-                else System.out.print("Choose your next worker" + (workerNumber) + "'s position: ");
-                suggestion = false;
-                point = InputUtilities.getLine();
-                if(point == null) return null;
-            }while(!POSITION_PATTERN.matcher(point).matches());
-
-            chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
-            assert board.getCell(chosenPosition) == null;
-            error = !possiblePositions.contains(chosenPosition);
-        }while(error);
-
-        return chosenPosition;
+        return InputUtilities.getChosenPosition(possiblePositions, board, lastUsedWorker);
     }
 
     @Override

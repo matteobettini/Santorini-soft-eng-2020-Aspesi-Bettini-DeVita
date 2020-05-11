@@ -21,12 +21,6 @@ import java.util.stream.Collectors;
 
 public class HardcoreStrategy implements GameModeStrategy {
 
-    private static final String POSITIONS_REGEXP = "^(([A-E]|[a-e])[1-5])$";
-    private static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
-
-    private static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4])$";
-    private static final Pattern BUILDINGS_PATTERN = Pattern.compile(BUILDINGS_REGEXP);
-
     private PacketDoAction lastAction;
     private String lastUsedWorker;
 
@@ -109,7 +103,8 @@ public class HardcoreStrategy implements GameModeStrategy {
             switch(choice){
                 case 1:
                     //FIRST WE GET THE PLAYER CHOICE
-                    Point chosenPosition = getChosenPosition(board.getWorkerPosition(lastUsedWorker), board, currentChosenPositions);
+                    Point lastWorkerPosition = currentChosenPositions.isEmpty() ? board.getWorkerPosition(lastUsedWorker): currentChosenPositions.get(currentChosenPositions.size() - 1);
+                    Point chosenPosition = getChosenPosition(lastWorkerPosition, board);
                     if(chosenPosition ==  null){
                         System.out.println("You can't move anymore!");
                         makeChoiceForbidden = true;
@@ -154,45 +149,12 @@ public class HardcoreStrategy implements GameModeStrategy {
     @Override
     public void handlePossibleBuilds(PacketPossibleBuilds packetPossibleBuilds) { }
 
-    private Point getChosenPosition(Point workerPosition, Board board, List<Point> currentChosenPositions){
-
-        StringBuilder positionsBuilder = new StringBuilder();
-        int workerNumber = Character.getNumericValue(lastUsedWorker.charAt(lastUsedWorker.length() - 1));
-
-        Point lastWorkerPosition = currentChosenPositions.isEmpty() ? workerPosition : currentChosenPositions.get(currentChosenPositions.size() - 1);
+    private Point getChosenPosition(Point lastWorkerPosition, Board board){
 
         List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition).stream().filter(p -> board.canMove(lastUsedWorker, lastWorkerPosition)).collect(Collectors.toList());
 
         if(availablePositions.isEmpty()) return null;
-        //WE FIRST DISPLAY THE POSSIBLE POSITIONS
-        for(Point position : availablePositions){
-            positionsBuilder.append("- ").append(board.getCoordinates(position)).append("\n");
-        }
 
-        System.out.println("Available positions: ");
-        System.out.println(positionsBuilder.toString());
-
-        //THE PLAYER CAN NOW CHOOSE HIS WORKER'S NEXT POSITION
-        String point;
-        Point chosenPosition;
-        boolean error = false;
-        boolean suggestion = true;
-        do{
-            if(error) System.out.println("Invalid position for worker" + (workerNumber) + ", retry");
-
-            do{
-                if(suggestion)  System.out.print("Choose your next worker" + (workerNumber) + "'s position (ex A1, B2...): ");
-                else System.out.print("Choose your next worker" + (workerNumber) + "'s position: ");
-                suggestion = false;
-                point = InputUtilities.getLine();
-                if(point == null) return null;
-            }while(!POSITION_PATTERN.matcher(point).matches());
-
-            chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
-            assert board.getCell(chosenPosition) == null;
-            error = !availablePositions.contains(chosenPosition);
-        }while(error);
-
-        return chosenPosition;
+        return InputUtilities.getChosenPosition(availablePositions, board, lastUsedWorker);
     }
 }

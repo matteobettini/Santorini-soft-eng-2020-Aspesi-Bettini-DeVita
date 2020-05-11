@@ -2,16 +2,22 @@ package it.polimi.ingsw.CLI;
 
 import it.polimi.ingsw.model.enums.BuildingType;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class InputUtilities {
 
     private static final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    private static final String POSITIONS_REGEXP = "^(([A-E]|[a-e])[1-5])$";
+    public static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
+    private static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4])$";
+    public static final Pattern BUILDINGS_PATTERN = Pattern.compile(BUILDINGS_REGEXP);
 
     public static String getLine(){
         String name;
@@ -169,6 +175,43 @@ public class InputUtilities {
         }while(choice <= 0 || choice > mapChoices.size());
 
         return mapChoices.get(choice - 1);
+    }
+
+    public static Point getChosenPosition(List<Point> availablePositions, Board board, String worker){
+
+        StringBuilder positionsBuilder = new StringBuilder();
+
+        int workerNumber = Character.getNumericValue(worker.charAt(worker.length() - 1));
+
+        for(Point position : availablePositions){
+            positionsBuilder.append("- ").append(board.getCoordinates(position)).append("\n");
+        }
+
+        System.out.println("Available positions: ");
+        System.out.println(positionsBuilder.toString());
+
+        //THE PLAYER CAN NOW CHOOSE HIS WORKER'S NEXT POSITION
+        String point;
+        Point chosenPosition;
+        boolean error = false;
+        boolean suggestion = true;
+        do{
+            if(error) System.out.println("Invalid position for worker" + (workerNumber) + ", retry");
+
+            do{
+                if(suggestion)  System.out.print("Choose your next worker" + (workerNumber) + "'s position (ex A1, B2...): ");
+                else System.out.print("Choose your next worker" + (workerNumber) + "'s position: ");
+                suggestion = false;
+                point = InputUtilities.getLine();
+                if(point == null) return null;
+            }while(!POSITION_PATTERN.matcher(point).matches());
+
+            chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
+            assert board.getCell(chosenPosition) == null;
+            error = !availablePositions.contains(chosenPosition);
+        }while(error);
+
+        return chosenPosition;
     }
 
     public static BuildingType charToBuildingType(Character building){
