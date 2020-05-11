@@ -179,12 +179,14 @@ public class ClientImpl implements Client {
     }
 
     @Override
-    public void send(Serializable packet){
-        try {
-            os.writeObject(packet);
-            os.flush();
-        }catch (IOException e){
-            manageClosure();
+    public void send(Serializable packet) {
+        if (started.get() && !ended.get()){
+            try {
+                os.writeObject(packet);
+                os.flush();
+            } catch (IOException e) {
+                manageClosure();
+            }
         }
     }
 
@@ -202,6 +204,8 @@ public class ClientImpl implements Client {
 
     private void closeRoutine(){
 
+        started.set(false);
+
         try {
             is.close();
         }catch (Exception ignored){}
@@ -211,8 +215,6 @@ public class ClientImpl implements Client {
         try{
             socket.close();
         }catch (Exception ignored){ }
-
-        started.set(false);
 
     }
 

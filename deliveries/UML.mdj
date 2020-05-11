@@ -59758,9 +59758,9 @@
 												"$ref": "AAAAAAFx9C2sjPjQJJ4="
 											},
 											"font": "Arial;13;0",
-											"left": 610.58642578125,
+											"left": 614.97900390625,
 											"top": 5,
-											"width": 107.50732421875,
+											"width": 116.59716796875,
 											"height": 13,
 											"text": "Client picks his card"
 										},
@@ -59773,7 +59773,7 @@
 											"font": "Arial;13;1",
 											"left": 549,
 											"top": 5,
-											"width": 56.58642578125,
+											"width": 60.97900390625,
 											"height": 13,
 											"text": "interaction"
 										}
@@ -60038,9 +60038,9 @@
 												"$ref": "AAAAAAFx9C55UPmtl9U="
 											},
 											"font": "Arial;13;0",
-											"left": 626.11181640625,
+											"left": 627.578125,
 											"top": 101,
-											"width": 220.08935546875,
+											"width": 240.1923828125,
 											"height": 13,
 											"text": "[for all players that are not the challenger]"
 										},
@@ -60053,7 +60053,7 @@
 											"font": "Arial;13;1",
 											"left": 597,
 											"top": 101,
-											"width": 24.11181640625,
+											"width": 25.578125,
 											"height": 13,
 											"text": "loop"
 										},
@@ -60361,11 +60361,11 @@
 												"$ref": "AAAAAAFx9C/ZLvn6W0g="
 											},
 											"font": "Arial;13;0",
-											"left": 626.11181640625,
+											"left": 627.578125,
 											"top": 325,
-											"width": 106.751953125,
+											"width": 107.21533203125,
 											"height": 13,
-											"text": "[for alle the players]"
+											"text": "[for all the players]"
 										},
 										{
 											"_type": "LabelView",
@@ -60376,7 +60376,7 @@
 											"font": "Arial;13;1",
 											"left": 597,
 											"top": 325,
-											"width": 24.11181640625,
+											"width": 25.578125,
 											"height": 13,
 											"text": "loop"
 										},
@@ -60783,7 +60783,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFx9C2si/jO4qo="
 							},
-							"name": "[for alle the players]",
+							"name": "[for all the players]",
 							"interactionOperator": "loop",
 							"operands": [
 								{
@@ -62354,9 +62354,9 @@
 												"$ref": "AAAAAAFx+WEKt8OLMas="
 											},
 											"font": "Arial;13;0",
-											"left": 498.58642578125,
+											"left": 502.97900390625,
 											"top": 29,
-											"width": 77.552734375,
+											"width": 80.47900390625,
 											"height": 13,
 											"text": "Move or Build"
 										},
@@ -62369,7 +62369,7 @@
 											"font": "Arial;13;1",
 											"left": 437,
 											"top": 29,
-											"width": 56.58642578125,
+											"width": 60.97900390625,
 											"height": 13,
 											"text": "interaction"
 										}
@@ -62743,9 +62743,9 @@
 												"$ref": "AAAAAAFx+WJpmsSAgHg="
 											},
 											"font": "Arial;13;0",
-											"left": 475.61181640625,
+											"left": 477.07177734375,
 											"top": 149,
-											"width": 121.20556640625,
+											"width": 130.33349609375,
 											"height": 13,
 											"text": "[if normal game mode]"
 										},
@@ -62758,7 +62758,7 @@
 											"font": "Arial;13;1",
 											"left": 453,
 											"top": 149,
-											"width": 17.61181640625,
+											"width": 19.07177734375,
 											"height": 13,
 											"text": "opt"
 										},
@@ -62844,11 +62844,11 @@
 												"$ref": "AAAAAAFx+WLpSsSdb6A="
 											},
 											"font": "Arial;13;0",
-											"left": 506.11181640625,
+											"left": 507.578125,
 											"top": 181,
-											"width": 146.1455078125,
+											"width": 152.01708984375,
 											"height": 13,
-											"text": "[untill the client is satisfied]"
+											"text": "[until the client is satisfied]"
 										},
 										{
 											"_type": "LabelView",
@@ -62859,7 +62859,7 @@
 											"font": "Arial;13;1",
 											"left": 477,
 											"top": 181,
-											"width": 24.11181640625,
+											"width": 25.578125,
 											"height": 13,
 											"text": "loop"
 										},
@@ -63379,7 +63379,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFx+WEKtsOJ1cw="
 							},
-							"name": "[untill the client is satisfied]",
+							"name": "[until the client is satisfied]",
 							"interactionOperator": "loop",
 							"operands": [
 								{
@@ -64539,9 +64539,9 @@
 												"$ref": "AAAAAAFx+ZAiRMZ1wKc="
 											},
 											"font": "Arial;13;0",
-											"left": 334.97900390625,
+											"left": 330.58642578125,
 											"top": 29,
-											"width": 132.51708984375,
+											"width": 120.8564453125,
 											"height": 13,
 											"text": "Disconnection in game"
 										},
@@ -64554,7 +64554,7 @@
 											"font": "Arial;13;1",
 											"left": 269,
 											"top": 29,
-											"width": 60.97900390625,
+											"width": 56.58642578125,
 											"height": 13,
 											"text": "interaction"
 										}
@@ -64961,9 +64961,9 @@
 												"$ref": "AAAAAAFx+ZGkhMdxQ54="
 											},
 											"font": "Arial;13;0",
-											"left": 323.578125,
+											"left": 322.11181640625,
 											"top": 133,
-											"width": 399.912109375,
+											"width": 360.88671875,
 											"height": 13,
 											"text": "[for all the players in game except the one that caused disconnection]"
 										},
@@ -64976,7 +64976,7 @@
 											"font": "Arial;13;1",
 											"left": 293,
 											"top": 133,
-											"width": 25.578125,
+											"width": 24.11181640625,
 											"height": 13,
 											"text": "loop"
 										},
@@ -65062,9 +65062,9 @@
 												"$ref": "AAAAAAFx+ZLRSMeS1Fc="
 											},
 											"font": "Arial;13;0",
-											"left": 317.07177734375,
+											"left": 315.61181640625,
 											"top": 261,
-											"width": 111.55712890625,
+											"width": 103.15283203125,
 											"height": 13,
 											"text": "[if timer has ended]"
 										},
@@ -65077,7 +65077,7 @@
 											"font": "Arial;13;1",
 											"left": 293,
 											"top": 261,
-											"width": 19.07177734375,
+											"width": 17.61181640625,
 											"height": 13,
 											"text": "opt"
 										},
@@ -65496,9 +65496,9 @@
 												"$ref": "AAAAAAFx+ariOMgcYWY="
 											},
 											"font": "Arial;13;0",
-											"left": 323.578125,
+											"left": 322.11181640625,
 											"top": 389,
-											"width": 107.21533203125,
+											"width": 100.98193359375,
 											"height": 13,
 											"text": "[for all the players]"
 										},
@@ -65511,7 +65511,7 @@
 											"font": "Arial;13;1",
 											"left": 293,
 											"top": 389,
-											"width": 25.578125,
+											"width": 24.11181640625,
 											"height": 13,
 											"text": "loop"
 										},

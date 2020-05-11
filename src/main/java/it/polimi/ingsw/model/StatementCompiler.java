@@ -19,7 +19,7 @@ class StatementCompiler {
 
 
     /** Compiles the given statement
-     * @param model the internal model is needed to incapsulate it in the lambdas
+     * @param model the internal model is needed to encapsulate it in the lambdas
      * @param statement the statement to be compiled
      * @param owner the owner of the rule in which the statement is
      * @return the compiled statement

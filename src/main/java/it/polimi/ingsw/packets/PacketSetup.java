@@ -14,7 +14,7 @@ public class PacketSetup implements Serializable {
     private final Map<String, List<String>> ids;
     private final Map<String, Color> colors;
     private final Map<String, Pair<String, String >> cards;
-    Map<BuildingType, Integer> buildingsCounter;
+    private final Map<BuildingType, Integer> buildingsCounter;
 
     public PacketSetup(Map<String, List<String>> ids, Map<String, Color> colors, Map<String, Pair<String, String>> cards, Map<BuildingType, Integer> buildingsCounter) {
         this.ids = new HashMap<>();
