@@ -73,7 +73,8 @@ public class ServerImpl implements Server {
             }
         } catch (IOException e) {
             System.err.println("Sever: server socket has problems, message: " + e.getMessage());
-            serverSocket.close();
+            if(serverSocket != null && !serverSocket.isClosed())
+                serverSocket.close();
         }
     }
 
