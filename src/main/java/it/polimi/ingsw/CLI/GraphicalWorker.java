@@ -50,8 +50,6 @@ public class GraphicalWorker implements CharFigure{
         relY += 3;
         for(int i = 0; i <= RATEOX; ++i){
             for(int j = 0; j <= RATEOY; ++j){
-                //stream.addColor(i + relX, j + relY, null, color);
-                //if(i == 1 && j == 2) stream.addChar( '♙',i + relX, j + relY, null, color);
                 if(i == 1 && j == 1) stream.addChar('*', i + relX, j + relY, color);
                 if(i == 2 && j == 1) stream.addChar(playerName.charAt(0), i + relX, j + relY, color);
                 if(i == 3 && j == 1) stream.addChar((char)(number + '0'), i + relX, j + relY, color);

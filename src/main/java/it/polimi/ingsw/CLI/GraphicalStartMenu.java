@@ -9,11 +9,17 @@ public class GraphicalStartMenu implements CharFigure{
     private final CharStream stream;
     private final int width;
     private final int height;
+    public static final int DEFAULT_WIDTH = 159;
+    public static final int DEFAULT_HEIGHT = 30;
 
     public GraphicalStartMenu(CharStream stream, int width, int height){
         this.stream = stream;
         this.width = width;
         this.height = height;
+    }
+
+    public GraphicalStartMenu(CharStream stream){
+        this(stream, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     @Override
@@ -34,6 +40,6 @@ public class GraphicalStartMenu implements CharFigure{
         String title = "SANTORINI";
         stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_BLUE,BackColor.ANSI_BG_CYAN);
         stream.addString(relX + marginX + 18, relY + marginY + 7, "Welcome to Santorini Board-Game",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
-        stream.addString(relX + marginX - 10, relY + marginY + 9, "This videogame adaption was created by Andrea Aspesi, Matteo Bettini and Mirko De Vita",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
+        stream.addString(relX + marginX - 10, relY + marginY + 9, "This video-game adaption was created by Andrea Aspesi, Matteo Bettini and Mirko De Vita",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
     }
 }

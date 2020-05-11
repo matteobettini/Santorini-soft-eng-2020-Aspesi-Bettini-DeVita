@@ -6,7 +6,6 @@ import it.polimi.ingsw.CLI.InputUtilities;
 import it.polimi.ingsw.CLI.MatchData;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.model.enums.ActionType;
-import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.packets.PacketDoAction;
 import it.polimi.ingsw.packets.PacketMove;
 import it.polimi.ingsw.packets.PacketPossibleBuilds;
@@ -162,7 +161,7 @@ public class HardcoreStrategy implements GameModeStrategy {
 
         Point lastWorkerPosition = currentChosenPositions.isEmpty() ? workerPosition : currentChosenPositions.get(currentChosenPositions.size() - 1);
 
-        List<Point> availablePositions = board.getAdjacents(lastWorkerPosition).stream().filter(p -> board.canMove(lastUsedWorker, lastWorkerPosition)).collect(Collectors.toList());
+        List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition).stream().filter(p -> board.canMove(lastUsedWorker, lastWorkerPosition)).collect(Collectors.toList());
 
         if(availablePositions.isEmpty()) return null;
         //WE FIRST DISPLAY THE POSSIBLE POSITIONS

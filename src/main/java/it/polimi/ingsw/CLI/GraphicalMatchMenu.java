@@ -13,10 +13,6 @@ import java.util.Map;
 public class GraphicalMatchMenu implements CharFigure{
 
     private final CharStream stream;
-    //private Map<String, Color> players;
-    //private Map<String, String> playersGodCardAssociation;
-    //private String loser;
-    //private Map<BuildingType, Integer> buildingsCounter;
     private boolean gameOver;
     private boolean youWin;
 
@@ -41,10 +37,68 @@ public class GraphicalMatchMenu implements CharFigure{
 
     @Override
     public void draw(int relX, int relY) {
+
+        printPlayersBox(relX, relY);
+
+        printAvailableBuildings(relX, relY);
+
+        if(gameOver) printGameOver(relX, relY);
+
+        if(youWin) printYouWin(relX, relY);
+
+    }
+
+    private void printYouWin(int relX, int relY){
+        int marginY = 18;
+        int marginX = 70;
+        GraphicalPane gameOverBox = new GraphicalPane(stream, 64, 16, BackColor.ANSI_BRIGHT_BG_BLUE);
+        gameOverBox.draw(relX + 50, relY + 15);
+        String title = "YOU";
+        stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_YELLOW, BackColor.ANSI_BRIGHT_BG_BLUE);
+
+        marginX -= 3;
+        marginY += 5;
+        title = "WIN!";
+        stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_YELLOW, BackColor.ANSI_BRIGHT_BG_BLUE);
+    }
+
+    private void printGameOver(int relX, int relY){
+        int marginY = 18;
+        int marginX = 68;
+        GraphicalPane gameOverBox = new GraphicalPane(stream, 69, 16, BackColor.ANSI_BG_BLACK);
+        gameOverBox.draw(relX + 50, relY + 15);
+        String title = "GAME";
+        stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_RED, BackColor.ANSI_BG_BLACK);
+        marginY += 5;
+        title = "OVER";
+        stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_RED, BackColor.ANSI_BG_BLACK);
+    }
+
+    private void printAvailableBuildings(int relX, int relY){
+        MatchData matchData = MatchData.getInstance();
+        Map<BuildingType, Integer>  buildingsCounter = matchData.getBuildingsCounter();
+
+        GraphicalPane buildingsBox = new GraphicalPane(stream, 35, 25, BackColor.ANSI_BG_RED);
+        buildingsBox.draw(relX + 5, relY + 18);
+        stream.addString(relX + 14, relY + 19, "AVAILABLE BUILDINGS", BackColor.ANSI_BG_RED);
+        CharFigure dome = BuildingFactory.getBuilding(stream, BuildingType.DOME, 20, 8);
+        if(dome != null) dome.draw(relX + 12,relY + 18);
+        stream.addString(relX + 22, relY + 22, buildingsCounter.get(BuildingType.DOME).toString(), BackColor.ANSI_BG_BLUE);
+        CharFigure third = BuildingFactory.getBuilding(stream, BuildingType.THIRD_FLOOR, 20, 8);
+        stream.addString(relX + 22, relY + 26, buildingsCounter.get(BuildingType.THIRD_FLOOR).toString());
+        if(third != null) third.draw(relX + 12,relY + 22);
+        CharFigure second = BuildingFactory.getBuilding(stream, BuildingType.SECOND_FLOOR, 20, 8);
+        stream.addString(relX + 22, relY + 31, buildingsCounter.get(BuildingType.SECOND_FLOOR).toString());
+        if(second != null) second.draw(relX + 13,relY + 27);
+        GraphicalPane first = new GraphicalPane(stream, 18, 7, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_WHITE);
+        first.draw(relX + 14,relY + 35);
+        stream.addString(relX + 22, relY + 38, buildingsCounter.get(BuildingType.FIRST_FLOOR).toString(), BackColor.ANSI_BG_WHITE);
+    }
+
+    private void printPlayersBox(int relX, int relY){
         MatchData matchData = MatchData.getInstance();
         Map<String, Color> players = matchData.getPlayersColor();
         Map<String, Pair<String, String>> playersGodCardAssociation = matchData.getPlayersCards();
-        Map<BuildingType, Integer>  buildingsCounter = matchData.getBuildingsCounter();
         String loser = matchData.getLoser();
         String activePlayer = matchData.getCurrentActivePlayer();
 
@@ -93,48 +147,5 @@ public class GraphicalMatchMenu implements CharFigure{
             stream.addString(relX + 10, relY + nextLine, player, col);
             nextLine += 2;
         }
-
-        GraphicalPane buildingsBox = new GraphicalPane(stream, 35, 25, BackColor.ANSI_BG_RED);
-        buildingsBox.draw(relX + 5, relY + 18);
-        stream.addString(relX + 14, relY + 19, "AVAILABLE BUILDINGS", BackColor.ANSI_BG_RED);
-        CharFigure dome = BuildingFactory.getBuilding(stream, BuildingType.DOME, 20, 8);
-        if(dome != null) dome.draw(relX + 12,relY + 18);
-        stream.addString(relX + 22, relY + 22, buildingsCounter.get(BuildingType.DOME).toString(), BackColor.ANSI_BG_BLUE);
-        CharFigure third = BuildingFactory.getBuilding(stream, BuildingType.THIRD_FLOOR, 20, 8);
-        stream.addString(relX + 22, relY + 26, buildingsCounter.get(BuildingType.THIRD_FLOOR).toString());
-        if(third != null) third.draw(relX + 12,relY + 22);
-        CharFigure second = BuildingFactory.getBuilding(stream, BuildingType.SECOND_FLOOR, 20, 8);
-        stream.addString(relX + 22, relY + 31, buildingsCounter.get(BuildingType.SECOND_FLOOR).toString());
-        if(second != null) second.draw(relX + 13,relY + 27);
-        GraphicalPane first = new GraphicalPane(stream, 18, 7, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_WHITE);
-        first.draw(relX + 14,relY + 35);
-        stream.addString(relX + 22, relY + 38, buildingsCounter.get(BuildingType.FIRST_FLOOR).toString(), BackColor.ANSI_BG_WHITE);
-
-        if(gameOver){
-            int marginY = 18;
-            int marginX = 68;
-            GraphicalPane gameOverBox = new GraphicalPane(stream, 69, 16, BackColor.ANSI_BG_BLACK);
-            gameOverBox.draw(relX + 50, relY + 15);
-            String title = "GAME";
-            stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_RED, BackColor.ANSI_BG_BLACK);
-            marginY += 5;
-            title = "OVER";
-            stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_RED, BackColor.ANSI_BG_BLACK);
-        }
-
-        if(youWin){
-            int marginY = 18;
-            int marginX = 70;
-            GraphicalPane gameOverBox = new GraphicalPane(stream, 64, 16, BackColor.ANSI_BRIGHT_BG_BLUE);
-            gameOverBox.draw(relX + 50, relY + 15);
-            String title = "YOU";
-            stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_YELLOW, BackColor.ANSI_BRIGHT_BG_BLUE);
-
-            marginX -= 3;
-            marginY += 5;
-            title = "WIN!";
-            stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_YELLOW, BackColor.ANSI_BRIGHT_BG_BLUE);
-        }
-
     }
 }

@@ -93,23 +93,29 @@ public class CharStream {
     public void setMessage(String message, int x, int y, ForeColor foreColor, BackColor backColorWord, BackColor backColor){
         int space = 0;
         for(int i = 0; i < message.length(); ++i){
-            List<String> charRows = GraphicalLetter.getLetter(message.charAt(i));
-            int count = 0;
-            int maxLenghtRow = 0;
-            for(String row : charRows){
-                addString(x + space, y + count, row, foreColor, backColor);
-                if(row.length() > maxLenghtRow) maxLenghtRow = row.length();
-                count++;
-            }
-            List<String> lettCol = GraphicalLetter.getColorLetter(message.charAt(i));
-            count = 0;
-            for(String lett : lettCol){
-                for(int j = 0; j < lett.length(); ++j){
-                    if(lett.charAt(j) == '1') addColor(x + space + j, y + count, foreColor, backColorWord);
+
+            if(message.charAt(i) != ' '){
+                List<String> charRows = GraphicalLetter.getLetter(message.charAt(i));
+
+                int count = 0;
+                int maxLenghtRow = 0;
+                for(String row : charRows){
+                    addString(x + space, y + count, row, foreColor, backColor);
+                    if(row.length() > maxLenghtRow) maxLenghtRow = row.length();
+                    count++;
                 }
-                ++count;
+                List<String> lettCol = GraphicalLetter.getColorLetter(message.charAt(i));
+                count = 0;
+                for(String lett : lettCol){
+                    for(int j = 0; j < lett.length(); ++j){
+                        if(lett.charAt(j) == '1') addColor(x + space + j, y + count, foreColor, backColorWord);
+                    }
+                    ++count;
+                }
+                space += maxLenghtRow + 1;
             }
-            space += maxLenghtRow + 1;
+            else space += 3;
+
         }
     }
 

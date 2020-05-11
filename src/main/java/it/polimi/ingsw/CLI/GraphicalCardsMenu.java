@@ -65,49 +65,12 @@ public class GraphicalCardsMenu implements CharFigure {
         if (stream == null) return;
 
         if (!chosenCards.isEmpty()) {
-            stream.setMessage("CARDS", relX + 40, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_RED);
-            stream.setMessage("IN", relX + 85, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_RED);
-            stream.setMessage("GAME", relX + 102, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_RED);
-            int marginX = 10;
-            if (chosenCards.size() == 2) {
-                int marginY = 0;
-                for (String card : chosenCards) {
-                    GraphicalCard graphicalCard = new GraphicalCard(stream, card, godCards.get(card));
-                    graphicalCard.draw(relX + 40 + marginY, relY + marginX);
-                    marginY += GraphicalCard.getWidth() + 20;
-                }
-            } else if (chosenCards.size() == 3) {
-                int marginY = 0;
-                for (String card : chosenCards) {
-                    GraphicalCard graphicalCard = new GraphicalCard(stream, card, godCards.get(card));
-                    graphicalCard.draw(relX + 25 + marginY, relY + marginX);
-                    marginY += GraphicalCard.getWidth() + 10;
-                }
-            }
+            printAvailableOrChosen("CARDS IN GAME", relX, relY, chosenCards, BackColor.ANSI_BG_RED, 40);
             return;
         }
 
         if(availableCards.size() != godCards.size()){
-            stream.setMessage("CHOOSE", relX + 33, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN);
-            stream.setMessage("A", relX + 85, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN);
-            stream.setMessage("CARD", relX + 98, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_GREEN);
-            int marginX = 10;
-            if(availableCards.size() == 2){
-                int marginY = 0;
-                for(String card : availableCards) {
-                    GraphicalCard graphicalCard = new GraphicalCard(stream, card, godCards.get(card));
-                    graphicalCard.draw(relX + 40 + marginY, relY + marginX);
-                    marginY += GraphicalCard.getWidth() + 20;
-                }
-            }
-            else if(availableCards.size() == 3){
-                int marginY = 0;
-                for(String card : availableCards){
-                    GraphicalCard graphicalCard = new GraphicalCard(stream, card, godCards.get(card));
-                    graphicalCard.draw(relX + 25 + marginY, relY + marginX);
-                    marginY += GraphicalCard.getWidth() + 10;
-                }
-            }
+            printAvailableOrChosen("CHOOSE A CARD", relX, relY, availableCards, BackColor.ANSI_BRIGHT_BG_GREEN, 33);
             return;
         }
 
@@ -126,6 +89,26 @@ public class GraphicalCardsMenu implements CharFigure {
             if (countY == cardsPerRow) {
                 countY = 0;
                 countX++;
+            }
+        }
+    }
+
+    private void printAvailableOrChosen(String message, int relX, int relY, List<String> cardsToPrint, BackColor titleColor, int startTitle){
+        stream.setMessage(message, relX + startTitle, relY + 2, ForeColor.ANSI_BLACK, titleColor);
+        int marginY = 10;
+        if (cardsToPrint.size() == 2) {
+            int marginX = 0;
+            for (String card : cardsToPrint) {
+                GraphicalCard graphicalCard = new GraphicalCard(stream, card, godCards.get(card));
+                graphicalCard.draw(relX + 40 + marginX, relY + marginY);
+                marginX += GraphicalCard.getWidth() + 20;
+            }
+        } else if (cardsToPrint.size() == 3) {
+            int marginX = 0;
+            for (String card : cardsToPrint) {
+                GraphicalCard graphicalCard = new GraphicalCard(stream, card, godCards.get(card));
+                graphicalCard.draw(relX + 25 + marginX, relY + marginY);
+                marginX += GraphicalCard.getWidth() + 10;
             }
         }
     }

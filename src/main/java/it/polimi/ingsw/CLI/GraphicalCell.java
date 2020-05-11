@@ -67,9 +67,7 @@ public class GraphicalCell implements CharFigure{
 
     @Override
     public void draw(int relX, int relY) {
-        for(CharFigure building : buildings){
-            building.draw(relX, relY);
-        }
+        for(CharFigure building : buildings) building.draw(relX, relY);
         if(worker != null) worker.draw(relX, relY);
     }
 }

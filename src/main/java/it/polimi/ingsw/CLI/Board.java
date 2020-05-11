@@ -1,12 +1,10 @@
 package it.polimi.ingsw.CLI;
 
 import it.polimi.ingsw.model.enums.BuildingType;
-import javafx.util.Pair;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Board {
 
@@ -78,22 +76,14 @@ public class Board {
         }
     }
 
-    public boolean thereIsDomeOrOwnWorkerOrDeltaIsMoreThan1(Point p1, String worker, Point lastPosition){
-        MatchData matchData = MatchData.getInstance();
-
-        List<String> workersID = new ArrayList<>();
-        for(String player : matchData.getIds().keySet()){
-            if(matchData.getIds().get(player).contains(worker)) workersID = matchData.getIds().get(player);
-        }
-
-        return getCell(p1).getBuildings().contains(BuildingType.DOME) || workersID.contains(getCell(p1).getWorker()) || (getCell(p1).getLevel() - getCell(lastPosition).getLevel()) > 1;
+    public boolean thereIsDome(Point p1){
+        return getCell(p1).getBuildings().contains(BuildingType.DOME); //|| (getCell(p1).getLevel() - getCell(lastPosition).getLevel()) > 1;
     }
 
     public boolean canMove(String worker, Point lastPosition){
         if(lastPosition == null) lastPosition = getWorkerPosition(worker);
-        List<Point> adjacentPoints = getAdjacents(lastPosition);
-        Point finalLastPosition = lastPosition;
-        return adjacentPoints.stream().anyMatch(p -> !thereIsDomeOrOwnWorkerOrDeltaIsMoreThan1(p, worker, finalLastPosition));
+        List<Point> adjacentPoints = getAdjacentPoints(lastPosition);
+        return adjacentPoints.stream().anyMatch(p -> !thereIsDome(p));
     }
 
     public boolean canMove(String worker){
@@ -110,7 +100,7 @@ public class Board {
         return (p2.x == p1.x && p2.y == p1.y - 1) || (p2.x == p1.x && p2.y == p1.y + 1) || (p2.x == p1.x - 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y + 1) || (p2.x == p1.x + 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y + 1);
     }
 
-    public List<Point> getAdjacents (Point point){
+    public List<Point> getAdjacentPoints(Point point){
         List<Point> adjacentPoints = new ArrayList<>();
         for (int i = 0; i < rows; ++i){
             for(int j = 0; j < columns; ++j){

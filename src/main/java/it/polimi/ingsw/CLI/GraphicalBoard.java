@@ -13,6 +13,8 @@ public class GraphicalBoard implements CharFigure{
     private final GraphicalCell[][] graphicalCells;
     private final int RATEOX = 20;
     private final int RATEOY = 8;
+    private final int defaultX = 50;
+    private final int defaultY = 5;
     private List<Point> possiblePositions;
 
     public GraphicalBoard(CharStream stream){
@@ -27,60 +29,51 @@ public class GraphicalBoard implements CharFigure{
 
     @Override
     public void draw() {
-        int defaultX = 50;
-        int defaultY = 5;
         draw(defaultX, defaultY);
     }
 
     @Override
     public void draw(int relX, int relY) {
 
-        BackColor parentBack = BackColor.ANSI_BG_YELLOW;
-        ForeColor parentFore = ForeColor.ANSI_BLACK;
+        BackColor backColor = BackColor.ANSI_BG_YELLOW;
+        ForeColor foreColor = ForeColor.ANSI_BLACK;
 
-        char[] coordinatesYaxis = new char[5];
-        coordinatesYaxis[0] = 'A';
-        coordinatesYaxis[1] = 'B';
-        coordinatesYaxis[2] = 'C';
-        coordinatesYaxis[3] = 'D';
-        coordinatesYaxis[4] = 'E';
+        char[] coordinatesYaxis = new char[rows];
+        char startingLetter = 'A';
+        for(int i = 0; i < rows; ++i) coordinatesYaxis[i] = (char)(startingLetter + i);
 
-        int indexY = 0;
-
-        char[] coordinatesXaxis = new char[5];
-        coordinatesXaxis[0] = '1';
-        coordinatesXaxis[1] = '2';
-        coordinatesXaxis[2] = '3';
-        coordinatesXaxis[3] = '4';
-        coordinatesXaxis[4] = '5';
+        char[] coordinatesXaxis = new char[columns];
+        char startingNumber = '1';
+        for(int i = 0; i < columns; ++i) coordinatesXaxis[i] = (char)(startingNumber + i);
 
         int indexX = 0;
+        int indexY = 0;
 
         for(int i = 0; i <= rows * RATEOX; ++i){
             for(int j = 0; j <= columns * RATEOY; ++j){
                 //FIRST THE CONDITIONS FOR THE TOP'╠''╦'
-                if(i == 0 && j == 0) stream.addChar('╔', i + relX, j + relY, parentFore, parentBack);
-                else if(i == 0  && j % RATEOY == 0 && j != columns * RATEOY) stream.addChar('╠', i + relX, j + relY, parentFore, parentBack);
-                else if(i == 0 && j == columns * RATEOY) stream.addChar('╚', i + relX, j + relY, parentFore, parentBack);
+                if(i == 0 && j == 0) stream.addChar('╔', i + relX, j + relY, foreColor, backColor);
+                else if(i == 0  && j % RATEOY == 0 && j != columns * RATEOY) stream.addChar('╠', i + relX, j + relY, foreColor, backColor);
+                else if(i == 0 && j == columns * RATEOY) stream.addChar('╚', i + relX, j + relY, foreColor, backColor);
                     //CONDITIONS FOR THE BOTTOM'╣''╩' '╗' '╚'
-                else if(i == rows * RATEOX && j == 0) stream.addChar('╗', i + relX, j + relY, parentFore, parentBack);
-                else if(i == rows * RATEOX  && j % RATEOY == 0 && j != columns * RATEOY) stream.addChar('╣', i + relX, j + relY, parentFore, parentBack);
-                else if(i == rows * RATEOX && j == columns * RATEOY) stream.addChar('╝', i + relX, j + relY, parentFore, parentBack);
+                else if(i == rows * RATEOX && j == 0) stream.addChar('╗', i + relX, j + relY, foreColor, backColor);
+                else if(i == rows * RATEOX  && j % RATEOY == 0 && j != columns * RATEOY) stream.addChar('╣', i + relX, j + relY, foreColor, backColor);
+                else if(i == rows * RATEOX && j == columns * RATEOY) stream.addChar('╝', i + relX, j + relY, foreColor, backColor);
                     //INTERMEDIATE'╦''╠'
-                else if(i % RATEOX == 0 && i != rows * RATEOX && j == 0) stream.addChar('╦', i + relX, j + relY, parentFore,parentBack);
-                else if(i % RATEOX == 0 && i != rows * RATEOX && j == columns * RATEOY) stream.addChar('╩', i + relX, j + relY, parentFore, parentBack);
-                else if(i % RATEOX == 0 && j % RATEOY == 0) stream.addChar('╬', i + relX, j + relY, parentFore, parentBack);
+                else if(i % RATEOX == 0 && i != rows * RATEOX && j == 0) stream.addChar('╦', i + relX, j + relY, foreColor,backColor);
+                else if(i % RATEOX == 0 && i != rows * RATEOX && j == columns * RATEOY) stream.addChar('╩', i + relX, j + relY, foreColor, backColor);
+                else if(i % RATEOX == 0 && j % RATEOY == 0) stream.addChar('╬', i + relX, j + relY, foreColor, backColor);
                     //STRAIGHT LINES'═''║'
-                else if(i % RATEOX == 0) stream.addChar('║', i + relX, j + relY, parentFore, parentBack);
-                else if(j % RATEOY == 0) stream.addChar('═', i + relX, j + relY, parentFore, parentBack);
-                else stream.addColor(i + relX, j + relY, parentFore, BackColor.ANSI_BG_GREEN);
+                else if(i % RATEOX == 0) stream.addChar('║', i + relX, j + relY, foreColor, backColor);
+                else if(j % RATEOY == 0) stream.addChar('═', i + relX, j + relY, foreColor, backColor);
+                else stream.addColor(i + relX, j + relY, foreColor, BackColor.ANSI_BG_GREEN);
 
                 if(i % 10 == 0 && j == 0 && i % RATEOX != 0){
-                    stream.addChar(coordinatesXaxis[indexX], i + relX, j + relY - 1, parentFore, parentBack);
+                    stream.addChar(coordinatesXaxis[indexX], i + relX, j + relY - 1, foreColor, backColor);
                     ++indexX;
                 }
                 if(j % 4 == 0 && i == 0 && j % RATEOY != 0){
-                    stream.addChar(coordinatesYaxis[indexY], i + relX - 1, j + relY, parentFore, parentBack);
+                    stream.addChar(coordinatesYaxis[indexY], i + relX - 1, j + relY, foreColor, backColor);
                     ++indexY;
                 }
             }
@@ -93,27 +86,14 @@ public class GraphicalBoard implements CharFigure{
             }
         }
 
-        if(possiblePositions != null){
-            highlightActions(possiblePositions, relX, relY);
-            //highlightActions(notPossiblePositions, relX, relY, BackColor.ANSI_BG_YELLOW);
-        }
+        if(possiblePositions != null) highlightActions(possiblePositions, relX, relY);
+
 
     }
 
     public void resetPossibleActions(){
         this.possiblePositions = null;
     }
-
-    /*public void setPossibleActions(List<Point> possiblePositions, String playerID , Integer workerNumber){
-        MatchData matchData = MatchData.getInstance();
-        Board board = matchData.getBoard();
-
-        List<Point> adjacentPoints = board.getAdjacents(getWorkerPosition(playerID, workerNumber));
-
-        this.notPossiblePositions = adjacentPoints.stream().filter( p -> !possiblePositions.contains(p)).collect(Collectors.toList());
-
-        this.possiblePositions = possiblePositions;
-    }*/
 
     public void setPossibleActions(List<Point> possiblePositions){
         this.possiblePositions = possiblePositions;
@@ -162,14 +142,6 @@ public class GraphicalBoard implements CharFigure{
             }
         }
         return null;
-    }
-
-    public void resetWorkers(){
-        for(int i = 0; i < rows; ++i) {
-            for (int j = 0; j < columns; ++j) {
-                graphicalCells[i][j].removeWorker();
-            }
-        }
     }
 
 }

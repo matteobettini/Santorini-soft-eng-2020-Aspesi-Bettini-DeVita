@@ -25,6 +25,8 @@ public class MatchData {
     private String loser;
     private Board board;
     private Map<BuildingType, Integer> buildingsCounter;
+    private final int DEFAULT_WIDTH = 159;
+    private final int DEFAULT_HEIGHT = 50;
 
     private GraphicalBoard graphicalBoard;
     private CharStream stream;
@@ -65,7 +67,7 @@ public class MatchData {
 
     public void reset(){
         this.board = new Board();
-        this.stream = new CharStream(159, 50);
+        this.stream = new CharStream(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         this.graphicalBoard = new GraphicalBoard(stream);
         this.buildingsCounter = new HashMap<>();
         this.loser = null;
@@ -107,10 +109,6 @@ public class MatchData {
     public void decrementCounter(BuildingType building,int howMany){
         int count = buildingsCounter.get(building);
         buildingsCounter.put(building, count - howMany);
-    }
-
-    public void setCounter(Map<BuildingType, Integer> buildingsCounter){
-        this.buildingsCounter = buildingsCounter;
     }
 
     public Map<BuildingType, Integer> getBuildingsCounter() {
@@ -173,6 +171,10 @@ public class MatchData {
 
     public void setAllCards(Map<String, String> allCards) {
         this.allCards = allCards;
+    }
+
+    public void setCounter(Map<BuildingType, Integer> buildingsCounter){
+        this.buildingsCounter = buildingsCounter;
     }
 
     public void setIds(Map<String, List<String>> ids) {

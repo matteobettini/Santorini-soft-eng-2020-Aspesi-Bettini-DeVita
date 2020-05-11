@@ -38,8 +38,8 @@ public class CLI {
         this.matchData = MatchData.getInstance();
         this.askConnectionParameters = true;
 
-        CharStream stream = new CharStream(159, 30);
-        GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream,159, 30);
+        CharStream stream = new CharStream(GraphicalStartMenu.DEFAULT_WIDTH, GraphicalStartMenu.DEFAULT_HEIGHT);
+        GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream);
 
         graphicalStartMenu.draw();
         stream.print(System.out);
@@ -49,7 +49,6 @@ public class CLI {
     public static void main(String[] args){
         CLI cli = new CLI();
         cli.run();
-
     }
 
     public void run(){
@@ -79,32 +78,11 @@ public class CLI {
             matchData.setCurrentActivePlayer(activePlayer);
             ActionType actionType = packetDoAction.getActionType();
 
-            if(actionType == ActionType.CHOOSE_START_PLAYER){
-                if(!activePlayer.equals(matchData.getPlayerName())){
-                    System.out.println("\n" + packetDoAction.getTo() + " is choosing the starting player...");
-                    return;
-                }
-                chooseStarterStrategy.handleChooseStartPlayer(isRetry);
-            }
-            else if (actionType == ActionType.SET_WORKERS_POSITION){
-                if(!activePlayer.equals(matchData.getPlayerName())){
-                    System.out.println("\n" + packetDoAction.getTo() + " is setting his workers positions...");
-                    return;
-                }
-                setWorkersPositionStrategy.handleSetWorkersPosition(isRetry);
-            }
+            if(!activePlayer.equals(matchData.getPlayerName())) displayOthersActions(actionType, activePlayer);
             else{
-
-                if(!activePlayer.equals(matchData.getPlayerName())){
-                    String action;
-                    if(actionType == ActionType.MOVE) action = "move";
-                    else if(actionType == ActionType.BUILD) action = "build";
-                    else if (actionType == ActionType.MOVE_BUILD) action = "move or build";
-                    else action = "action";
-                    System.out.println("\n" + packetDoAction.getTo() + " is performing his " + action + "...");
-                    return;
-                }
-                gameModeStrategy.handleAction(packetDoAction, isRetry);
+                if(actionType == ActionType.CHOOSE_START_PLAYER) chooseStarterStrategy.handleChooseStartPlayer(isRetry);
+                else if (actionType == ActionType.SET_WORKERS_POSITION) setWorkersPositionStrategy.handleSetWorkersPosition(isRetry);
+                else gameModeStrategy.handleAction(packetDoAction, isRetry);
             }
         });
 
@@ -143,6 +121,30 @@ public class CLI {
         else gameModeStrategy = new NormalStrategy();
     }
 
+    private void displayOthersActions(ActionType actionType, String activePlayer){
+        String action;
+        switch(actionType){
+            case MOVE:
+                action = "move";
+                break;
+            case BUILD:
+                action = "build";
+                break;
+            case MOVE_BUILD:
+                action = "move or build";
+                break;
+            case CHOOSE_START_PLAYER:
+                System.out.println("\n" + activePlayer + " is choosing the starting player...");
+                return;
+            case SET_WORKERS_POSITION:
+                System.out.println("\n" + activePlayer + " is setting his workers positions...");
+                return;
+            default:
+                action = "action";
+        }
+        System.out.println("\n" + activePlayer + " is performing his " + action + "...");
+    }
+
     private void setConnectionParameters(){
         String address;
         Integer port;
@@ -156,10 +158,14 @@ public class CLI {
             firstLoop = false;
         }while (!addressIsValid(address));
 
+        firstLoop = true;
+
         do{
-            System.out.print("Enter the server's port: ");
+            if(firstLoop) System.out.print("Enter the server's port: ");
+            else System.out.print("Enter a valid server's port: ");
             port = InputUtilities.getInt("Not valid, enter the server's port: ");
             if(port == null) port = - 1;
+            firstLoop = false;
         }while (!portIsValid(port));
 
         this.address = address;
@@ -167,12 +173,10 @@ public class CLI {
     }
 
     private boolean addressIsValid(String address) {
-        if(address == null || port == -1) return false;
-        return IP_PATTERN.matcher(address).matches();
+        return address != null && IP_PATTERN.matcher(address).matches();
     }
 
     private boolean portIsValid(int port){
-        if(port == - 1) return false;
         return port >= 1 && port <= 65535;
     }
 }
