@@ -1227,9 +1227,11 @@ class TurnLogicMirkoTest {
         buildsOrder = new ArrayList<>();
         buildings = new ArrayList<>();
         buildings.add(BuildingType.FIRST_FLOOR);
-        buildings.add(BuildingType.SECOND_FLOOR);
-        builds.put(point13, buildings);
         buildsOrder.add(point13);
+        buildings.add(BuildingType.SECOND_FLOOR);
+        buildsOrder.add(point13);
+        builds.put(point13, buildings);
+
 
         packetBuild = new PacketBuild(Andrea.getNickname(), AndreaW1.getID(), builds, buildsOrder);
 
@@ -1464,6 +1466,7 @@ class TurnLogicMirkoTest {
         //WE FIRST TRY TO BUILD A DOME -> exception
 
         buildings.add(BuildingType.DOME);
+        buildsOrder.add(point12);
         builds.put(point12, buildings);
         packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW1.getID(),builds, buildsOrder);
 
@@ -1475,7 +1478,9 @@ class TurnLogicMirkoTest {
 
         //WE THEN TRY TO APPLY A SIMPLE BUILD STRATEGY
         buildings.clear();
+        buildsOrder.clear();
         buildings.add(BuildingType.THIRD_FLOOR);
+        buildsOrder.add(point12);
         builds.put(point12, buildings);
         packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW1.getID(),builds, buildsOrder);
 

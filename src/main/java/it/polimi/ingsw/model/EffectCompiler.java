@@ -89,7 +89,10 @@ class EffectCompiler {
 
 
                 // Where i want to go should be without workers and domes (should be already tested)
-                assert(!finalPositionCell.isOccupied());
+                if (finalPositionCell.isOccupied()){
+                    assert false;
+                    return false;
+                }
 
                 // Check i am where i want to start the move
                 assert(startPositionCell.getWorkerID().equals(myWorker.getID()));

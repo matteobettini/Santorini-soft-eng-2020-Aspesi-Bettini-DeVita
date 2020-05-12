@@ -124,11 +124,12 @@ class InternalModelMirkoTest {
 
         Map<Point, List<BuildingType>> builds = new HashMap<>();
         List<BuildingType> buildingTypes = new LinkedList<>();
-        buildingTypes.add(BuildingType.FIRST_FLOOR);
-        buildingTypes.add(BuildingType.SECOND_FLOOR);
-        builds.put(buildPoint,buildingTypes);
         List<Point> dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.FIRST_FLOOR);
         dataOrder.add(buildPoint);
+        buildingTypes.add(BuildingType.SECOND_FLOOR);
+        dataOrder.add(buildPoint);
+        builds.put(buildPoint,buildingTypes);
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
 
@@ -151,15 +152,16 @@ class InternalModelMirkoTest {
         Point buildPoint1 = new Point(0,4);
         Point buildPoint2 = new Point(1,4);
         builds = new HashMap<>();
+        dataOrder = new ArrayList<>();
         buildingTypes = new LinkedList<>();
         buildingTypes.add(BuildingType.FIRST_FLOOR);
+        dataOrder.add(buildPoint1);
         builds.put(buildPoint1,buildingTypes);
         buildingTypes = new LinkedList<>();
         buildingTypes.add(BuildingType.SECOND_FLOOR);
-        builds.put(buildPoint2,buildingTypes);
-        dataOrder = new ArrayList<>();
-        dataOrder.add(buildPoint1);
         dataOrder.add(buildPoint2);
+        builds.put(buildPoint2,buildingTypes);
+
 
         packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
 
@@ -241,11 +243,12 @@ class InternalModelMirkoTest {
 
         Map<Point, List<BuildingType>> builds = new HashMap<>();
         List<BuildingType> buildingTypes = new LinkedList<>();
-        buildingTypes.add(BuildingType.THIRD_FLOOR);
-        buildingTypes.add(BuildingType.DOME);
-        builds.put(buildPoint,buildingTypes);
         List<Point> dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.THIRD_FLOOR);
         dataOrder.add(buildPoint);
+        buildingTypes.add(BuildingType.DOME);
+        dataOrder.add(buildPoint);
+        builds.put(buildPoint,buildingTypes);
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
 
@@ -430,11 +433,12 @@ class InternalModelMirkoTest {
 
         Map<Point, List<BuildingType>> builds = new HashMap<>();
         List<BuildingType> buildingTypes = new LinkedList<>();
-        buildingTypes.add(BuildingType.FIRST_FLOOR);
-        buildingTypes.add(BuildingType.SECOND_FLOOR);
-        builds.put(buildPoint,buildingTypes);
         List<Point> dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.FIRST_FLOOR);
         dataOrder.add(buildPoint);
+        buildingTypes.add(BuildingType.SECOND_FLOOR);
+        dataOrder.add(buildPoint);
+        builds.put(buildPoint,buildingTypes);
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
 
@@ -455,11 +459,12 @@ class InternalModelMirkoTest {
 
         builds = new HashMap<>();
         buildingTypes = new LinkedList<>();
-        buildingTypes.add(BuildingType.FIRST_FLOOR);
-        buildingTypes.add(BuildingType.SECOND_FLOOR);
-        builds.put(buildPoint,buildingTypes);
         dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.FIRST_FLOOR);
         dataOrder.add(buildPoint);
+        buildingTypes.add(BuildingType.SECOND_FLOOR);
+        dataOrder.add(buildPoint);
+        builds.put(buildPoint,buildingTypes);
 
         packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
 
@@ -625,7 +630,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(new Point(2,4));
         possibleBuilds.add(point23);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1).keySet());
 
         buildings.add(BuildingType.FIRST_FLOOR);
         builds.put(point32,buildings);
@@ -734,7 +739,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(new Point(4,3));
         possibleBuilds.add(point23);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1).keySet());
 
         buildings.add(BuildingType.FIRST_FLOOR);
         builds.put(point22,buildings);
@@ -837,7 +842,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(point44);
         possibleBuilds.add(point34);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1).keySet());
 
         buildings.add(BuildingType.DOME);
         builds.put(point42,buildings);
@@ -951,7 +956,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(point44);
         possibleBuilds.add(point34);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1).keySet());
 
         buildings.add(BuildingType.FIRST_FLOOR);
         builds.put(point44,buildings);
@@ -1009,7 +1014,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(new Point(4,1));
         possibleBuilds.add(point23);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1).keySet());
 
         buildings.add(BuildingType.SECOND_FLOOR);
         builds.put(point22,buildings);
@@ -1153,7 +1158,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(point22);
         possibleBuilds.add(point32);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1).keySet());
 
         buildings.add(BuildingType.FIRST_FLOOR);
         builds.put(point21,buildings);
@@ -1262,7 +1267,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(new Point(1,3));
         possibleBuilds.add(new Point(1,2));
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1).keySet());
 
         buildings.add(BuildingType.FIRST_FLOOR);
         builds.put(point33,buildings);
@@ -1373,7 +1378,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(point34);
         possibleBuilds.add(new Point(2,4));
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1).keySet());
 
         buildings.add(BuildingType.THIRD_FLOOR);
         builds.put(point22,buildings);
@@ -1482,7 +1487,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(point32);
         possibleBuilds.add(point31);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1).keySet());
 
         buildings.add(BuildingType.SECOND_FLOOR);
         builds.put(point32,buildings);
@@ -1586,7 +1591,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(point44);
         possibleBuilds.add(point43);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1).keySet());
 
         buildings.add(BuildingType.DOME);
         builds.put(point23,buildings);
@@ -1697,7 +1702,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(point33);
         possibleBuilds.add(point22);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Mirko, MirkoW1).keySet());
 
         buildings.add(BuildingType.SECOND_FLOOR);
         builds.put(point33,buildings);
@@ -1757,7 +1762,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(new Point(1,2));
         possibleBuilds.add(point22);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1).keySet());
 
         buildings.add(BuildingType.FIRST_FLOOR);
         builds.put(point31,buildings);
@@ -1861,7 +1866,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(new Point(4,1));
         possibleBuilds.add(point22);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1).keySet());
 
         buildings.add(BuildingType.SECOND_FLOOR);
         builds.put(point21,buildings);
@@ -1962,7 +1967,7 @@ class InternalModelMirkoTest {
         possibleBuilds.add(point33);
         possibleBuilds.add(point43);
 
-        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1));
+        assertEquals(possibleBuilds, model.getPossibleBuilds(Andrea, AndreaW1).keySet());
 
         buildings.add(BuildingType.THIRD_FLOOR);
         builds.put(point33,buildings);
@@ -2713,17 +2718,17 @@ class InternalModelMirkoTest {
 
         List<BuildingType> buildings = new ArrayList<>();
         buildings.add(BuildingType.FIRST_FLOOR);
+        orderBuilds.add(firstBuild);
         buildings.add(BuildingType.SECOND_FLOOR);
+        orderBuilds.add(firstBuild);
 
         builds.put(firstBuild,buildings);
 
         buildings = new ArrayList<>();
         buildings.add(BuildingType.FIRST_FLOOR);
-
+        orderBuilds.add(secondBuild);
         builds.put(secondBuild,buildings);
 
-        orderBuilds.add(firstBuild);
-        orderBuilds.add(secondBuild);
 
         MirkoW1.setPosition(startPosition);
 

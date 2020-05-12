@@ -216,19 +216,25 @@ class InternalModel {
         Map<Point,List<BuildingType>> builds = packetBuild.getBuilds();
         List<Point> buildsOrder = packetBuild.getDataOrder();
         
-        if(buildsOrder == null || builds == null || buildsOrder.isEmpty() || builds.isEmpty() || buildsOrder.size() != builds.size()  || p == null || w == null || !p.getWorkers().contains(w)) throw new InvalidPacketException();
-        
+        if(buildsOrder == null || builds == null || buildsOrder.isEmpty() || builds.isEmpty()  || p == null || w == null || !p.getWorkers().contains(w)) throw new InvalidPacketException();
+
+        int numBuilds = 0; //Number of buildings in this packet
         for(Point pos : builds.keySet()) {
             if (builds.get(pos) == null || builds.get(pos).isEmpty() || board.getCell(pos) == null)
                 throw new InvalidPacketException();
             if (!Board.areAdjacent(pos, w.getPosition(), true))
                 throw new InvalidPacketException();
+            numBuilds += builds.get(pos).size();
         }
 
+        //Check order points
         for(Point point : buildsOrder)
             if(!builds.containsKey(point))
                 throw new InvalidPacketException();
 
+        //Check order points size -> one point per building
+        if (buildsOrder.size() != numBuilds)
+            throw new InvalidPacketException();
 
         return new BuildData(p, w, builds, buildsOrder);
     }
@@ -465,42 +471,30 @@ class InternalModel {
      */
     public Set<Point> getPossibleMoves(Player player, Worker worker){
         assert (player != null && worker != null);
-        Set<Point> result = new HashSet<>();
-        List<Point> currTry = new LinkedList<>();
-        for(int i=-1;i<=1;i++){
-            for(int j=-1;j<=1;j++){
-                if (i!=0 || j!=0){ //Excluding current worker position i==0 && j==0
-                    Point destPoint = new Point(worker.getPosition().x + i, worker.getPosition().y + j);
-                    Cell destCell = board.getCell(destPoint);
-                    if (destCell != null){ //Inside board
-                        if (destCell.getTopBuilding() != LevelType.DOME){ //No dome
-                            currTry.clear();
-                            currTry.add(destPoint);
-                            MoveData moveTry = new MoveData(player,worker,currTry);
-                            if (getAllowMoveRule(moveTry) != null) result.add(destPoint);
-                        }
-                    }
-                }
-            }
-        }
-        return result;
+        List<Point> moves = new LinkedList<>();
+        return getPossibleMoves(new MoveData(player,worker,moves));
     }
 
     /**
      * Gets all possible points accessible for the worker (based on a started move path), with a single movement.
      * Already visited points will be excluded from results.
-     * @param moveData Data of the path from where starting the check. Must contain at least one point.
+     * @param moveData Data of the path from where starting the check.
      * @return List of visitable points for the player's worker
      */
     public Set<Point> getPossibleMoves(MoveData moveData){
-        assert (moveData != null && !moveData.getData().isEmpty());
+        assert (moveData != null);
         Set<Point> result = new HashSet<>();
 
-        if(hasWonWithMove(moveData)) //If already won, no sense to check further
-            return result;
+        if (!moveData.getData().isEmpty() && hasWonWithMove(moveData))
+            return result; //If already won, no sense to check further
 
-        List<Point> currTry = new ArrayList<>(moveData.getData());
-        Point startPoint = currTry.get(currTry.size()-1); //Take last point in the packet, granted not empty
+        List<Point> moves = new ArrayList<>(moveData.getData());
+
+        Point startPoint;
+        if (moves.isEmpty())
+            startPoint = moveData.getWorker().getPosition(); //Use worker position if empty
+        else
+            startPoint = moves.get(moves.size()-1); //Take last point in the packet, if not empty
 
         Player player = moveData.getPlayer();
         Worker worker = moveData.getWorker();
@@ -509,14 +503,18 @@ class InternalModel {
             for(int j=-1;j<=1;j++){
                 if (i!=0 || j!=0){ //Excluding start position i==0 && j==0
                     Point destPoint = new Point(startPoint.x + i, startPoint.y + j);
+                    //We should grant all condition of packetMove to MoveData converter, to ensure not to create malformed data
+                    // - points inside board
+                    // - not move over domes
                     Cell destCell = board.getCell(destPoint);
                     if (destCell != null){ //Inside board
                         if (destCell.getTopBuilding() != LevelType.DOME){ //No dome
-                            if (!currTry.contains(destPoint)) { //Exclude already visited points
-                                currTry.add(destPoint); //Add the test point
-                                MoveData moveTry = new MoveData(player,worker,currTry);
-                                if (getAllowMoveRule(moveTry) != null) result.add(destPoint);
-                                currTry.remove(currTry.size()-1); //Remove the test point
+                            if (!moves.contains(destPoint)) { //Exclude already visited points
+                                moves.add(destPoint); //Add the test point
+                                MoveData moveTry = new MoveData(player,worker,moves);
+                                if (getAllowMoveRule(moveTry) != null) //If this move is allowed
+                                    result.add(destPoint);
+                                moves.remove(moves.size()-1); //Remove the test point
                             }
                         }
                     }
@@ -527,166 +525,40 @@ class InternalModel {
     }
 
     /**
-     * Gets all possible points where the specified worker can build at the next opportunity it has.
-     * @param player Player instance
-     * @param worker Worker instance (must be owned by the supplied player)
-     * @return Set of points, representing all possible cells where the worker can build.
-     */
-    public Set<Point> getPossibleBuilds(Player player, Worker worker){
-        assert (player != null && worker != null);
-        Set<Point> result = new HashSet<>();
-        List<Point> currTry = new LinkedList<>();
-        Map<Point, List<BuildingType>> builds = new HashMap<>();
-        List<BuildingType> buildData = new LinkedList<>();
-
-        for(int i=-1;i<=1;i++){
-            for(int j=-1;j<=1;j++){
-                Point destPoint = new Point(worker.getPosition().x + i, worker.getPosition().y + j);
-                Cell destCell = board.getCell(destPoint);
-                if (destCell != null){ //Inside board
-                    BuildingType nextBuildable = destCell.getNextBuildable();
-                    if(nextBuildable != null){ //Next building available
-                        currTry.clear();
-                        builds.clear();
-                        buildData.clear();
-                        currTry.add(destPoint);
-                        buildData.add(nextBuildable);
-                        builds.put(destPoint, buildData);
-                        BuildData buildTry = new BuildData(player,worker,builds,currTry);
-                        if (getAllowBuildRule(buildTry) != null) result.add(destPoint);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Gets all possible points where the worker can build at the next opportunity it has, based on a build history.
-     * @param buildData Data of the history from where starting the check. Must contain at least one build.
-     * @return Set of points, representing all possible cells where the worker can build
-     */
-    public Set<Point> getPossibleBuilds(BuildData buildData){
-        assert (buildData != null && !buildData.getData().isEmpty() && !buildData.getDataOrder().isEmpty());
-        Set<Point> result = new HashSet<>();
-
-        if (hasWonWithBuild(buildData)) //If already won, no sense to check further
-            return result;
-
-        List<Point> currTry = new ArrayList<>(buildData.getDataOrder());
-        Map<Point, List<BuildingType>> builds = new HashMap<>();
-        for(Point point : buildData.getData().keySet()){
-            builds.put(point, new ArrayList<>(buildData.getData().get(point)));
-        }
-
-        Player player = buildData.getPlayer();
-        Worker worker = buildData.getWorker();
-        Point startPosition = worker.getPosition();
-
-        for(int i=-1;i<=1;i++){
-            for(int j=-1;j<=1;j++){
-                Point destPoint = new Point(startPosition.x + i, startPosition.y + j);
-                Cell destCell = board.getCell(destPoint);
-                if (destCell != null){ //Inside board
-                    BuildingType nextBuildable;
-                    if (builds.containsKey(destPoint)){ //If i have already a least building for this point
-                        List<BuildingType> destBuildings = builds.get(destPoint); //Get these buildings
-                        nextBuildable = destCell.getNextBuildable(destBuildings); //Get next buildable
-                        if (nextBuildable == null) continue; //If there isn't, just skip this point
-                        destBuildings.add(nextBuildable); //Add building to these
-                        BuildData buildTry = new BuildData(player,worker,builds,currTry);
-                        if (getAllowBuildRule(buildTry) != null) result.add(destPoint);
-                        destBuildings.remove(destBuildings.size()-1); //Remove for next try
-                    } else { //There aren't buildings for this point
-                        nextBuildable = destCell.getNextBuildable();
-                        if (nextBuildable == null) continue;
-                        currTry.add(destPoint);
-                        List<BuildingType> destBuildings = new LinkedList<>();
-                        destBuildings.add(nextBuildable);
-                        builds.put(destPoint, destBuildings);
-                        BuildData buildTry = new BuildData(player,worker,builds,currTry);
-                        if (getAllowBuildRule(buildTry) != null) result.add(destPoint);
-                        currTry.remove(currTry.size()-1);
-                        builds.remove(destPoint);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Function similar to getPossibleBuilds(Player, Worker), but this returns also which building you can build where
+     * Function returns the points where you can build and also which building you can build where
      * @param player Player who wants to build
      * @param worker Worker used by the player
      * @return Map where every point (representing cells where the worker can build) contains a list of building types allowed
      */
-    public Map<Point, List<BuildingType>> getPossibleBuildsAdvanced(Player player, Worker worker){
+    public Map<Point, List<BuildingType>> getPossibleBuilds(Player player, Worker worker){
         assert (player != null && worker != null);
-        Map<Point, List<BuildingType>> result = new HashMap<>();
 
-        List<Point> currTry = new LinkedList<>();
+        List<Point> buildOrder = new LinkedList<>();
         Map<Point, List<BuildingType>> builds = new HashMap<>();
-        List<BuildingType> buildData = new LinkedList<>();
-        List<BuildingType> possibleBuildings = new LinkedList<>();
 
-        for(int i=-1;i<=1;i++){
-            for(int j=-1;j<=1;j++){
-                Point destPoint = new Point(worker.getPosition().x + i, worker.getPosition().y + j);
-                Cell destCell = board.getCell(destPoint);
-                if (destCell != null){ //Inside board
-                    BuildingType nextBuildable = destCell.getNextBuildable();
-                    if(nextBuildable != null){ //Next building available
-                        currTry.clear();
-                        builds.clear();
-                        buildData.clear();
-                        currTry.add(destPoint);
-                        buildData.add(nextBuildable);
-                        builds.put(destPoint, buildData);
-                        possibleBuildings.clear();
-                        //Try normal building
-                        BuildData buildTry = new BuildData(player,worker,builds,currTry);
-                        if (getAllowBuildRule(buildTry) != null){
-                            possibleBuildings.add(nextBuildable);
-                        }
-                        if (nextBuildable != BuildingType.DOME){
-                            buildData.clear();
-                            buildData.add(BuildingType.DOME);
-                            //Try dome building
-                            buildTry = new BuildData(player,worker,builds,currTry);
-                            if (getAllowBuildRule(buildTry) != null){
-                                possibleBuildings.add(BuildingType.DOME);
-                            }
-                        }
-                        //If at least one succeeded, add the point
-                        if (possibleBuildings.size() > 0)
-                            result.put(destPoint, new LinkedList<>(possibleBuildings));
-                    }
-                }
-            }
-        }
-        return result;
+        return getPossibleBuilds(new BuildData(player,worker,builds,buildOrder));
     }
 
     /**
-     * Function similar to getPossibleBuilds(BuildData), but this returns also which building you can build where
-     * @param buildData Data of the history from where starting the check. Must contain at least one build.
+     * Function returns the points where you can build and also which building you can build where
+     * @param buildData Data of the history from where starting the check.
      * @return Map where every point (representing cells where the worker can build) contains a list of building types allowed
      */
-    public Map<Point, List<BuildingType>> getPossibleBuildsAdvanced(BuildData buildData){
-        assert (buildData != null && !buildData.getData().isEmpty() && !buildData.getDataOrder().isEmpty());
+    public Map<Point, List<BuildingType>> getPossibleBuilds(BuildData buildData){
+        assert (buildData != null);
         Map<Point, List<BuildingType>> result = new HashMap<>();
 
-        if (hasWonWithBuild(buildData)) //If already won, no sense to check further
-            return result;
+        if (!buildData.getData().isEmpty() && hasWonWithBuild(buildData))
+            return result; //If already won, no sense to check further
 
-        List<Point> currTry = new ArrayList<>(buildData.getDataOrder());
+        //Clone data from the original data packet
+        List<Point> buildOrder = new ArrayList<>(buildData.getDataOrder());
         Map<Point, List<BuildingType>> builds = new HashMap<>();
         for(Point point : buildData.getData().keySet()){
             builds.put(point, new ArrayList<>(buildData.getData().get(point)));
         }
+        //Init useful vars for optimizing cycle execution
         List<BuildingType> possibleBuildings = new LinkedList<>();
-
         Player player = buildData.getPlayer();
         Worker worker = buildData.getWorker();
         Point startPosition = worker.getPosition();
@@ -695,52 +567,61 @@ class InternalModel {
             for(int j=-1;j<=1;j++){
                 Point destPoint = new Point(startPosition.x + i, startPosition.y + j);
                 Cell destCell = board.getCell(destPoint);
+                //We should grant all condition of packetBuild to BuildData converter, to ensure not to create malformed data
+                // - points inside board
+                // - not build over domes
+                // - one point of order for building
                 if (destCell != null){ //Inside board
                     BuildingType nextBuildable;
-                    if (builds.containsKey(destPoint)){ //If i have already a least building for this point
+                    if (builds.containsKey(destPoint)){ //If I have already at least one building for this point
                         List<BuildingType> destBuildings = builds.get(destPoint); //Get these buildings
                         nextBuildable = destCell.getNextBuildable(destBuildings); //Get next buildable
-                        if (nextBuildable == null) continue; //If there isn't, just skip this point
-                        destBuildings.add(nextBuildable); //Add building to these
-                        possibleBuildings.clear();
-                        //Normal build
-                        BuildData buildTry = new BuildData(player,worker,builds,currTry);
-                        if (getAllowBuildRule(buildTry) != null){
-                            possibleBuildings.add(nextBuildable);
+                        if (nextBuildable == null)
+                            continue; //If there isn't, just skip this point
+
+                        destBuildings.add(nextBuildable); //Add new building to these
+                        buildOrder.add(destPoint); //Also add one point for this new building
+                        possibleBuildings.clear(); //Clear possible buildings for this point
+                        //Try make a normal build
+                        BuildData buildTry = new BuildData(player,worker,builds,buildOrder);
+                        if (getAllowBuildRule(buildTry) != null){ //If permitted
+                            possibleBuildings.add(nextBuildable); //Add to permitted of this point
                         }
-                        destBuildings.remove(destBuildings.size()-1); //Remove for next try
-                        if (nextBuildable != BuildingType.DOME){
+                        destBuildings.remove(destBuildings.size()-1); //Remove test building for next try
+                        if (nextBuildable != BuildingType.DOME){ //Explicitly check for dome, only case permitted everywhere
                             destBuildings.add(BuildingType.DOME);
+                            //Same building point, so not changing currTry
                             //Try dome building
-                            buildTry = new BuildData(player,worker,builds,currTry);
+                            buildTry = new BuildData(player,worker,builds,buildOrder);
                             if (getAllowBuildRule(buildTry) != null){
                                 possibleBuildings.add(BuildingType.DOME);
                             }
                             destBuildings.remove(destBuildings.size()-1); //Remove for next try
                         }
+                        buildOrder.remove(buildOrder.size()-1); //Remove current try point order
                         //If at least one succeeded, add the point
                         if (possibleBuildings.size() > 0)
                             result.put(destPoint, new LinkedList<>(possibleBuildings));
 
                     } else { //There aren't buildings for this point
                         nextBuildable = destCell.getNextBuildable();
-                        if (nextBuildable == null) continue;
-                        currTry.add(destPoint);
+                        if (nextBuildable == null) //Skip if cannot build here
+                            continue;
                         List<BuildingType> destBuildings = new LinkedList<>();
                         destBuildings.add(nextBuildable);
                         builds.put(destPoint, destBuildings);
+                        buildOrder.add(destPoint); //Want to add one building
                         possibleBuildings.clear();
                         //Normal build
-                        BuildData buildTry = new BuildData(player,worker,builds,currTry);
+                        BuildData buildTry = new BuildData(player,worker,builds,buildOrder);
                         if (getAllowBuildRule(buildTry) != null){
                             possibleBuildings.add(nextBuildable);
                         }
-                        currTry.remove(currTry.size()-1);
-                        if (nextBuildable != BuildingType.DOME){
+                        if (nextBuildable != BuildingType.DOME){ //Explicitly check for dome, only case permitted everywhere
                             destBuildings.clear();
                             destBuildings.add(BuildingType.DOME);
                             //Try dome building
-                            buildTry = new BuildData(player,worker,builds,currTry);
+                            buildTry = new BuildData(player,worker,builds,buildOrder);
                             if (getAllowBuildRule(buildTry) != null){
                                 possibleBuildings.add(BuildingType.DOME);
                             }
@@ -750,6 +631,7 @@ class InternalModel {
                             result.put(destPoint, new LinkedList<>(possibleBuildings));
 
                         builds.remove(destPoint); //Remove always added point
+                        buildOrder.remove(buildOrder.size()-1);
                     }
                 }
             }

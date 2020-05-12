@@ -359,14 +359,14 @@ class TurnLogic {
                 sendPossibleBuilds(currPlayer.getNickname(), possibleBuilds);
                 return;
             }
-            possibleBuildsMyWorker.putAll(model.getPossibleBuildsAdvanced(buildData));
+            possibleBuildsMyWorker.putAll(model.getPossibleBuilds(buildData));
 
         } else {
-            possibleBuildsMyWorker.putAll(model.getPossibleBuildsAdvanced(currPlayer, myWorker));
+            possibleBuildsMyWorker.putAll(model.getPossibleBuilds(currPlayer, myWorker));
             if (wantsInfoForAllWorkers && currWorker == null) {
                 for(Worker myOtherWorker : myOtherWorkers){
                     Map<Point, List<BuildingType>> possibleBuildsMyOtherWorker = possibleBuilds.get(myOtherWorker.getID());
-                    possibleBuildsMyOtherWorker.putAll(model.getPossibleBuildsAdvanced(currPlayer, myOtherWorker));
+                    possibleBuildsMyOtherWorker.putAll(model.getPossibleBuilds(currPlayer, myOtherWorker));
                 }
             }
         }

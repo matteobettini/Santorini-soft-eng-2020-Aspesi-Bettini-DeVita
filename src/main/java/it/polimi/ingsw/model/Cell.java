@@ -63,8 +63,19 @@ class Cell{
      * @return true if it is possible to build onto the previous building or the ground, false otherwise.
      */
     public boolean canBuild(BuildingType b){
+        return canBuild(b,false);
+    }
+
+    /**
+     * This method checks if it is possible to build on the Cell, specifying if considering worker check or not
+     * @param b is the BuildingType of the building to check.
+     * @param excludeWorkerControl true, if excluding worker presence check, false otherwise
+     * @return true if it is "possible" to build onto the previous building or the ground, false otherwise.
+     *         The actual possibility is linked to the presence of the worker
+     */
+    public boolean canBuild(BuildingType b, boolean excludeWorkerControl){
         assert b!= null;
-        if(workerID != null) return false;
+        if(workerID != null && !excludeWorkerControl) return false;
         LevelType level = this.getTopBuilding();
         switch (b) {
             case FIRST_FLOOR:
@@ -99,10 +110,21 @@ class Cell{
      * @return true if it is possible to build onto the previous building or the ground, false otherwise.
      */
     public boolean canBuild(List<BuildingType> b){
+        return canBuild(b,false);
+    }
+
+    /**
+     * This method checks if it is possible to build on the Cell, specifying if considering worker check or not
+     * @param b is the List of BuildingType of the buildings to check.
+     * @param excludeWorkerControl true, if excluding worker presence check, false otherwise
+     * @return true if it is "possible" to build onto the previous building or the ground, false otherwise.
+     *         The actual possibility is linked to the presence of the worker
+     */
+    public boolean canBuild(List<BuildingType> b, boolean excludeWorkerControl){
         BuildingType temp;
         assert b != null;
-        if(workerID != null) return false;
-        if (b.isEmpty() || !canBuild(b.get(0))) return false;
+        if(workerID != null && !excludeWorkerControl) return false;
+        if (b.isEmpty() || !canBuild(b.get(0), excludeWorkerControl)) return false;
         temp = b.get(0);
         for(int i = 1; i < b.size(); ++i) {
             if(b.get(i) == BuildingType.FIRST_FLOOR) return false;
@@ -178,8 +200,9 @@ class Cell{
     public boolean isOccupied(){ return getTopBuilding() == LevelType.DOME || hasWorker();}
 
     /**
-     * Returns next building that can be built on this cell
-     * @return Building type that can be built on this cell, or null if none is available
+     * Returns next building that can be built on this cell,
+     * regardless if is occupied by a worker.
+     * @return Building type that "can" be built on this cell, or null if none is available
      */
     public BuildingType getNextBuildable(){
         switch (getTopBuilding()){
@@ -197,14 +220,15 @@ class Cell{
     }
 
     /**
-     * Return next building that can be built on this cell, on top of all the other
+     * Return next building that can be built on this cell, on top of all the other,
+     * regardless if the cell is occupied by a worker.
      * buildings provided with the list.
-     * @param buildings List of buildings
-     * @return Building type that can be built, or null if none is available
+     * @param buildings List of buildings. Cannot be empty.
+     * @return Building type that "can" be built, or null if none is available
      */
     public BuildingType getNextBuildable(List<BuildingType> buildings){
         assert buildings!= null && !buildings.isEmpty();
-        if (!canBuild(buildings)) return null;
+        if (!canBuild(buildings,true)) return null;
         switch (buildings.get(buildings.size()-1)){
             case FIRST_FLOOR:
                 return BuildingType.SECOND_FLOOR;

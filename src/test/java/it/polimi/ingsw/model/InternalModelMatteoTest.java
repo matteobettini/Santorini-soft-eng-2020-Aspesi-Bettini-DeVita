@@ -421,7 +421,7 @@ public class InternalModelMatteoTest {
         realPossibleBuilds.add(point12);
         realPossibleBuilds.add(point02);
 
-        assertEquals(realPossibleBuilds, model.getPossibleBuilds(Matteo,MatteoW1));
+        assertEquals(realPossibleBuilds, model.getPossibleBuilds(Matteo,MatteoW1).keySet());
 
         //NOW LET'S MAKE A VALID BUILD
            /*
@@ -650,7 +650,7 @@ public class InternalModelMatteoTest {
         realPossibleBuilds.add(point03);
         realPossibleBuilds.add(point13);
         realPossibleBuilds.add(point14);
-        assertEquals(realPossibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1));
+        assertEquals(realPossibleBuilds, model.getPossibleBuilds(Matteo, MatteoW1).keySet());
 
         buildsInThisPoint.clear();
         builds.clear();
@@ -1177,9 +1177,10 @@ public class InternalModelMatteoTest {
         builds.clear();
         buildsOrder.clear();
         buildsInThisPoint.add(BuildingType.SECOND_FLOOR);
-        buildsInThisPoint.add(BuildingType.THIRD_FLOOR);
-        builds.put(point13,buildsInThisPoint);
         buildsOrder.add(point13);
+        buildsInThisPoint.add(BuildingType.THIRD_FLOOR);
+        buildsOrder.add(point13);
+        builds.put(point13,buildsInThisPoint);
 
         packetBuild = new PacketBuild("Matteo", "Matteo.1", builds, buildsOrder);
         buildData = null;

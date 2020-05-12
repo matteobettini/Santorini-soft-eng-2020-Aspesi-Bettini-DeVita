@@ -1017,7 +1017,7 @@ class InternalModelAndreaTest {
         expected.add(p22);
 
 
-        Set<Point> returned = model.getPossibleBuilds(Andrea,AndreaW1);
+        Set<Point> returned = model.getPossibleBuilds(Andrea,AndreaW1).keySet();
         assertEquals(returned,expected);
         assertTrue(model.canBuild(Andrea, AndreaW1));
     }
@@ -1187,7 +1187,7 @@ class InternalModelAndreaTest {
         BuildData data = new BuildData(Andrea, AndreaW1, already, dataOrder);
 
         //Test 1 -> Default
-        Set<Point> result = model.getPossibleBuilds(data);
+        Set<Point> result = model.getPossibleBuilds(data).keySet();
         assert(result.size() == 0); //Already built, cannot do it again
 
         //Test 2 -> Demeter
@@ -1201,7 +1201,7 @@ class InternalModelAndreaTest {
         expected.add(p01);
         expected.add(p22);
 
-        result = model.getPossibleBuilds(data);
+        result = model.getPossibleBuilds(data).keySet();
         assertEquals(result,expected);
 
         //Test 2 -> Hephaestus
@@ -1213,7 +1213,7 @@ class InternalModelAndreaTest {
         expected = new HashSet<>();
         expected.add(p00);
 
-        result = model.getPossibleBuilds(data);
+        result = model.getPossibleBuilds(data).keySet();
         assertEquals(result,expected);
     }
 
@@ -1299,7 +1299,7 @@ class InternalModelAndreaTest {
         buildings.add(BuildingType.DOME);
         expected.put(p22, new LinkedList<>(buildings));
 
-        Map<Point, List<BuildingType>> returned = model.getPossibleBuildsAdvanced(Andrea,AndreaW1);
+        Map<Point, List<BuildingType>> returned = model.getPossibleBuilds(Andrea,AndreaW1);
         assert (expected.size() == returned.size());
         for(Point point : expected.keySet()){
             assertEquals(expected.get(point), returned.get(point));
@@ -1394,7 +1394,7 @@ class InternalModelAndreaTest {
         buildings.add(BuildingType.DOME);
         expected.put(p22, new LinkedList<>(buildings));
 
-        Map<Point, List<BuildingType>> returned = model.getPossibleBuildsAdvanced(Andrea,AndreaW1);
+        Map<Point, List<BuildingType>> returned = model.getPossibleBuilds(Andrea,AndreaW1);
         assert (expected.size() == returned.size());
         for(Point point : expected.keySet()){
             assertEquals(expected.get(point), returned.get(point));
@@ -1479,7 +1479,7 @@ class InternalModelAndreaTest {
         BuildData data = new BuildData(Andrea, AndreaW1, already, dataOrder);
 
         //Test 1 -> Default
-        Map<Point, List<BuildingType>> result = model.getPossibleBuildsAdvanced(data);
+        Map<Point, List<BuildingType>> result = model.getPossibleBuilds(data);
         assert(result.size() == 0); //Already built, cannot do it again
 
         //Test 2 -> Demeter
@@ -1503,7 +1503,7 @@ class InternalModelAndreaTest {
         expectedBuildings.add(BuildingType.DOME);
         expected.put(p22,new LinkedList<>(expectedBuildings));
 
-        result = model.getPossibleBuildsAdvanced(data);
+        result = model.getPossibleBuilds(data);
 
         assert result.size() == expected.size();
         for(Point point : expected.keySet()){
@@ -1521,7 +1521,7 @@ class InternalModelAndreaTest {
         expectedBuildings.add(BuildingType.SECOND_FLOOR);
         expected.put(p00, expectedBuildings);
 
-        result = model.getPossibleBuildsAdvanced(data);
+        result = model.getPossibleBuilds(data);
         assert result.size() == expected.size();
         for(Point point : expected.keySet()){
             assertEquals(expected.get(point),result.get(point));
