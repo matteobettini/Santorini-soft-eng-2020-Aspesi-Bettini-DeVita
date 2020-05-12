@@ -2,8 +2,8 @@ package it.polimi.ingsw.CLI;
 
 
 import it.polimi.ingsw.CLI.buildings.BuildingFactory;
-import it.polimi.ingsw.CLI.enums.BackColor;
-import it.polimi.ingsw.CLI.enums.ForeColor;
+import it.polimi.ingsw.CLI.colors.BackColor;
+import it.polimi.ingsw.CLI.colors.ForeColor;
 import it.polimi.ingsw.model.enums.BuildingType;
 import javafx.util.Pair;
 

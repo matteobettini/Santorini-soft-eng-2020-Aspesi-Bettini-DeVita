@@ -13,6 +13,11 @@ public class NormalStrategy implements GameModeStrategy{
 
     @Override
     public void handleAction(PacketDoAction packetDoAction, boolean isRetry) {
+        MatchData matchData = MatchData.getInstance();
+        if(!packetDoAction.getTo().equals(matchData.getPlayerName())){
+            OutputUtilities.displayOthersActions(packetDoAction.getActionType(), packetDoAction.getTo());
+            return;
+        }
         lastAction = packetDoAction;
         switch (packetDoAction.getActionType()){
             case MOVE:

@@ -3,14 +3,21 @@ package it.polimi.ingsw.CLI.strategies;
 import it.polimi.ingsw.CLI.Board;
 import it.polimi.ingsw.CLI.InputUtilities;
 import it.polimi.ingsw.CLI.MatchData;
+import it.polimi.ingsw.packets.PacketDoAction;
 import it.polimi.ingsw.packets.PacketStartPlayer;
 
 import java.util.Set;
 
 public class DefaultChooseStarterStrategy implements ChooseStarterStrategy {
     @Override
-    public void handleChooseStartPlayer(boolean isRetry) {
+    public void handleChooseStartPlayer(String activePlayer, boolean isRetry) {
         MatchData matchData = MatchData.getInstance();
+
+        if(!activePlayer.equals(matchData.getPlayerName())){
+            System.out.println("\n" + activePlayer + " is choosing the starting player...");
+            return;
+        }
+
         Board board = matchData.getBoard();
         String startPlayer;
         if(!isRetry){

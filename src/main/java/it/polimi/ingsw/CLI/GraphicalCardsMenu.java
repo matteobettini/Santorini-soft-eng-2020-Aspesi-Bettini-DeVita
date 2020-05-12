@@ -1,7 +1,7 @@
 package it.polimi.ingsw.CLI;
 
-import it.polimi.ingsw.CLI.enums.BackColor;
-import it.polimi.ingsw.CLI.enums.ForeColor;
+import it.polimi.ingsw.CLI.colors.BackColor;
+import it.polimi.ingsw.CLI.colors.ForeColor;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,9 +1,6 @@
 package it.polimi.ingsw.CLI.strategies.game_mode_strategy.action_strategy;
 
-import it.polimi.ingsw.CLI.Board;
-import it.polimi.ingsw.CLI.GraphicalBoard;
-import it.polimi.ingsw.CLI.InputUtilities;
-import it.polimi.ingsw.CLI.MatchData;
+import it.polimi.ingsw.CLI.*;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.packets.PacketBuild;
@@ -15,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class BuildActionStrategy implements ActionStrategy{
 
@@ -46,8 +42,8 @@ public class BuildActionStrategy implements ActionStrategy{
         Board board = matchData.getBoard();
         GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
 
-        boolean restartForbidden = false; //FALSE IF THE PLAYER CAN CHOSE THE WORKER AGAIN
-        boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE MOVES
+        boolean restartForbidden = false; //FALSE IF THE PLAYER CAN CHOOSE THE WORKER AGAIN
+        boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE BUILDS
         boolean confirmActionForbidden = false; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
         if(lastUsedWorker == null){
@@ -71,7 +67,9 @@ public class BuildActionStrategy implements ActionStrategy{
         Map<Point, List<BuildingType>> possibleBuildingsInPositions = packetPossibleBuilds.getPossibleBuilds().get(lastUsedWorker);
         graphicalBoard.setPossibleActions(new ArrayList<>(possibleBuildingsInPositions.keySet()));
 
-        matchData.printMatch();
+        OutputUtilities.printMatch();
+
+        if(currentDataOrder.isEmpty())  System.out.println("Make your build!");
 
         graphicalBoard.resetPossibleActions();
 
@@ -84,7 +82,7 @@ public class BuildActionStrategy implements ActionStrategy{
 
         switch(choice){
             case 1:
-                boolean getChoice = getChosenBuildingsInPoint(possibleBuildingsInPositions, board);
+                boolean getChoice = InputUtilities.getChosenBuildingsInPoint(possibleBuildingsInPositions, board, lastUsedWorker, currentDataOrder, currentBuilds);
 
                 if(!getChoice) return false;
 
@@ -99,7 +97,7 @@ public class BuildActionStrategy implements ActionStrategy{
             case 2:
                 //WE RESET CHANGES TO THE GRAPHICAL BOARD, THE CHECKPOINT IS THE BOARD OBJECT IN THE MATCHDATA
                 matchData.makeGraphicalBoardEqualToBoard();
-                matchData.printMatch();
+                OutputUtilities.printMatch();
                 return true;
             case 3:
                 PacketBuild packetBuildConfirmation = new PacketBuild(player,lastUsedWorker, false, currentBuilds, currentDataOrder);
@@ -109,57 +107,6 @@ public class BuildActionStrategy implements ActionStrategy{
 
 
         return false;
-    }
-
-    private boolean getChosenBuildingsInPoint(Map<Point, List<BuildingType>> possibleBuildingsInPositions, Board board){
-        StringBuilder possibleBuildsBuilder = new StringBuilder();
-        int workerNumber = Character.getNumericValue(lastUsedWorker.charAt(lastUsedWorker.length() - 1));
-
-        for(Point position : possibleBuildingsInPositions.keySet()){
-            possibleBuildsBuilder.append("- ").append(board.getCoordinates(position));
-            for(BuildingType building : possibleBuildingsInPositions.get(position)){
-                possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(InputUtilities.buildingTypeToChar(building)).append(")");
-            }
-            possibleBuildsBuilder.append("\n");
-        }
-
-        if(currentDataOrder.isEmpty())  System.out.println("Make your build!");
-
-        System.out.println("Available buildings: ");
-        System.out.println(possibleBuildsBuilder.toString());
-
-        String command;
-        Point chosenPosition;
-        BuildingType chosenBuilding;
-        List<BuildingType> possibleBuildings;
-        boolean error = false;
-        boolean suggestion = true;
-        do{
-            if(error) System.out.println("Invalid buildings for worker" + (workerNumber) + ", retry");
-
-            do{
-                if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s buildings (ex A1 1, B2 4...): ");
-                else System.out.print("Choose your next worker" + (workerNumber) + "'s buildings: ");
-                suggestion = false;
-                command = InputUtilities.getLine();
-                if(command == null) return false;
-            }while(!InputUtilities.BUILDINGS_PATTERN.matcher(command).matches());
-
-            chosenPosition = board.getPoint(Character.getNumericValue(command.charAt(1)), Character.toUpperCase(command.charAt(0)));
-            chosenBuilding = InputUtilities.charToBuildingType(command.charAt(3));
-            possibleBuildings = possibleBuildingsInPositions.get(chosenPosition);
-
-            error = board.getCell(chosenPosition) == null || possibleBuildings == null || !possibleBuildings.contains(chosenBuilding);
-        }while(error);
-
-        List<BuildingType> helper = new ArrayList<>();
-
-        if(currentBuilds.containsKey(chosenPosition)) helper = currentBuilds.get(chosenPosition);
-        helper.add(chosenBuilding);
-        currentBuilds.put(chosenPosition, helper);
-        if(!currentDataOrder.contains(chosenPosition)) currentDataOrder.add(chosenPosition);
-
-        return true;
     }
 
 }

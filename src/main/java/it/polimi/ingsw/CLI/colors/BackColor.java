@@ -1,4 +1,4 @@
-package it.polimi.ingsw.CLI.enums;
+package it.polimi.ingsw.CLI.colors;
 
 public enum BackColor {
     ANSI_BG_BLACK( "\u001B[40m"),

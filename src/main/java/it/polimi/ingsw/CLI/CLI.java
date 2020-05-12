@@ -78,12 +78,9 @@ public class CLI {
             matchData.setCurrentActivePlayer(activePlayer);
             ActionType actionType = packetDoAction.getActionType();
 
-            if(!activePlayer.equals(matchData.getPlayerName())) displayOthersActions(actionType, activePlayer);
-            else{
-                if(actionType == ActionType.CHOOSE_START_PLAYER) chooseStarterStrategy.handleChooseStartPlayer(isRetry);
-                else if (actionType == ActionType.SET_WORKERS_POSITION) setWorkersPositionStrategy.handleSetWorkersPosition(isRetry);
-                else gameModeStrategy.handleAction(packetDoAction, isRetry);
-            }
+            if(actionType == ActionType.CHOOSE_START_PLAYER) chooseStarterStrategy.handleChooseStartPlayer(activePlayer,isRetry);
+            else if (actionType == ActionType.SET_WORKERS_POSITION) setWorkersPositionStrategy.handleSetWorkersPosition(activePlayer, isRetry);
+            else gameModeStrategy.handleAction(packetDoAction, isRetry);
         });
 
         client.addPacketUpdateBoardObserver( packetUpdateBoard -> updateBoardStrategy.handleUpdateBoard(packetUpdateBoard));
@@ -109,7 +106,6 @@ public class CLI {
         setupStrategy = new DefaultSetupStrategy();
         chooseStarterStrategy = new DefaultChooseStarterStrategy();
         setWorkersPositionStrategy = new DefaultSetWorkersPositionStrategy();
-        updateBoardStrategy = new DefaultUpdateBoardStrategy();
     }
 
     public void setConnectionInGameStrategy(){
@@ -117,32 +113,15 @@ public class CLI {
     }
 
     public void setGameModeStrategy(boolean hardcore){
-        if(hardcore) gameModeStrategy = new HardcoreStrategy();
-        else gameModeStrategy = new NormalStrategy();
-    }
-
-    private void displayOthersActions(ActionType actionType, String activePlayer){
-        String action;
-        switch(actionType){
-            case MOVE:
-                action = "move";
-                break;
-            case BUILD:
-                action = "build";
-                break;
-            case MOVE_BUILD:
-                action = "move or build";
-                break;
-            case CHOOSE_START_PLAYER:
-                System.out.println("\n" + activePlayer + " is choosing the starting player...");
-                return;
-            case SET_WORKERS_POSITION:
-                System.out.println("\n" + activePlayer + " is setting his workers positions...");
-                return;
-            default:
-                action = "action";
+        if(hardcore){
+            gameModeStrategy = new HardcoreStrategy();
+            updateBoardStrategy = new HardcoreStrategy();
         }
-        System.out.println("\n" + activePlayer + " is performing his " + action + "...");
+        else{
+            gameModeStrategy = new NormalStrategy();
+            updateBoardStrategy = new DefaultUpdateBoardStrategy();
+        }
+
     }
 
     private void setConnectionParameters(){

@@ -33,7 +33,7 @@ public class GraphicalCell implements CharFigure{
         for(String player : matchData.getIds().keySet()){
             if(matchData.getIds().get(player).contains(workerID)){
                 playerName = player;
-                workerNumber = Character.getNumericValue(workerID.charAt(workerID.length() - 1));
+                workerNumber = matchData.getWorkerNumber(workerID);
                 Color color = matchData.getPlayersColor().get(playerName);
                 if(playerName != null) this.worker = new GraphicalWorker(stream, color,RATEOX / 4, RATEOY / 4, workerNumber, playerName);
             }

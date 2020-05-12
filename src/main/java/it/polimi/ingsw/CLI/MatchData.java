@@ -25,8 +25,8 @@ public class MatchData {
     private String loser;
     private Board board;
     private Map<BuildingType, Integer> buildingsCounter;
-    private final int DEFAULT_WIDTH = 159;
-    private final int DEFAULT_HEIGHT = 50;
+    private final int DEFAULT_MATCH_WIDTH = 159;
+    private final int DEFAULT_MATCH_HEIGHT = 50;
 
     private GraphicalBoard graphicalBoard;
     private CharStream stream;
@@ -67,43 +67,11 @@ public class MatchData {
 
     public void reset(){
         this.board = new Board();
-        this.stream = new CharStream(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        this.stream = new CharStream(DEFAULT_MATCH_WIDTH, DEFAULT_MATCH_HEIGHT);
         this.graphicalBoard = new GraphicalBoard(stream);
         this.buildingsCounter = new HashMap<>();
         this.loser = null;
         this.winner = null;
-    }
-
-    public void printMatch(){
-        printMatch(false, false);
-    }
-
-    public void printMatch(boolean youWin, boolean gameOver){
-        GraphicalOcean graphicalOcean = new GraphicalOcean(stream,stream.getWidth(), stream.getHeight());
-        GraphicalMatchMenu graphicalMatchMenu = new GraphicalMatchMenu(stream);
-        graphicalOcean.draw();
-        graphicalBoard.draw();
-        graphicalMatchMenu.setYouWin(youWin);
-        graphicalMatchMenu.setGameOver(gameOver);
-        graphicalMatchMenu.draw();
-        stream.print(System.out);
-        stream.reset();
-    }
-
-    public void printCards(){
-        List<String> godCards = new ArrayList<>();
-
-        for(String player : playersCards.keySet()){
-            godCards.add(playersCards.get(player).getKey());
-        }
-        GraphicalCardsMenu graphicalCardsMenu = new GraphicalCardsMenu();
-        graphicalCardsMenu.setGodCards(allCards);
-        graphicalCardsMenu.setChosenCards(godCards);
-        CharStream stream = new CharStream(graphicalCardsMenu.getRequiredWidth(), graphicalCardsMenu.getRequiredHeight());
-        graphicalCardsMenu.setStream(stream);
-        graphicalCardsMenu.draw();
-        stream.print(System.out);
-        stream.reset();
     }
 
     public void decrementCounter(BuildingType building,int howMany){
@@ -163,6 +131,15 @@ public class MatchData {
 
     public Board getBoard() {
         return board;
+    }
+
+    public Integer getWorkerNumber(String workerID){
+       for(String player : ids.keySet()){
+           if(ids.get(player).contains(workerID)){
+               return ids.get(player).indexOf(workerID) + 1;
+           }
+       }
+       return null;
     }
 
     public void setClient() {

@@ -2,8 +2,8 @@ package it.polimi.ingsw.CLI.buildings;
 
 import it.polimi.ingsw.CLI.CharFigure;
 import it.polimi.ingsw.CLI.CharStream;
-import it.polimi.ingsw.CLI.enums.BackColor;
-import it.polimi.ingsw.CLI.enums.ForeColor;
+import it.polimi.ingsw.CLI.colors.BackColor;
+import it.polimi.ingsw.CLI.colors.ForeColor;
 
 class DomeBuilding implements CharFigure {
     private final CharStream stream;

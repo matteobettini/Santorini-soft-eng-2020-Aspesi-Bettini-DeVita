@@ -60,7 +60,7 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
             else gameOver = true;
         }
 
-        matchData.printMatch(youWin, gameOver);
+        OutputUtilities.printMatch(youWin, gameOver);
 
         if(matchData.getWinner() != null){
             if(matchData.getWinner().equals(matchData.getPlayerName())) System.out.println("You have won!");
@@ -72,4 +72,5 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
 
         }
     }
+
 }

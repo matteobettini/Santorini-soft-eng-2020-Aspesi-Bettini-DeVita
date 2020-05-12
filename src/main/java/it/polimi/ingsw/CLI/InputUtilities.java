@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -92,10 +93,11 @@ public class InputUtilities {
 
     public static String getWorkerChoice(List<String> possibleWorkers){
         //FIRST WE ORDER THE LIST OF POSSIBLE WORKERS BASED ON THE ASSUMPTION THAT WORKERS' IDS ARE IN LEXICOGRAPHICAL ORDER
-        possibleWorkers = possibleWorkers.stream().sorted().collect(Collectors.toList());
+
+        MatchData matchData = MatchData.getInstance();
 
 
-        List<Integer> availableWorkers = possibleWorkers.stream().map( w -> Character.getNumericValue(w.charAt(w.length() - 1))).collect(Collectors.toList());
+        List<Integer> availableWorkers = possibleWorkers.stream().map(matchData::getWorkerNumber).sorted().collect(Collectors.toList());
 
         Integer workerChoice = availableWorkers.get(0);
         boolean showCardsInGame = true;
@@ -111,7 +113,7 @@ public class InputUtilities {
                     count++;
                     if(count < end) System.out.print((wNumber) + ", ");
                     else{
-                        if(showCardsInGame) System.out.print((wNumber)  + " or enter " + (possibleWorkers.size() + 1) + " to see the cards in game: ");
+                        if(showCardsInGame) System.out.print((wNumber)  + " by entering its number or press " + (possibleWorkers.size() + 1) + " to see the cards in game: ");
                         else System.out.print((wNumber)  + ": ");
                     }
 
@@ -121,14 +123,15 @@ public class InputUtilities {
                 workerChoice = InputUtilities.getInt("Not a valid worker number, worker number: ");
                 if (workerChoice == null) return null;
                 else if(workerChoice == possibleWorkers.size() + 1){
-                    MatchData matchData = MatchData.getInstance();
-                    matchData.printCards();
+                    OutputUtilities.printCards();
                     showCardsInGame = false;
                 }
             }while(!availableWorkers.contains(workerChoice));
         }
 
-        return possibleWorkers.get(availableWorkers.indexOf(workerChoice));
+        Integer finalWorkerChoice = workerChoice;
+        return possibleWorkers.stream().filter(w -> matchData.getWorkerNumber(w).equals(finalWorkerChoice)).findFirst().orElse(null);
+
     }
 
     public static Integer getActionChoice(boolean makeChoiceForbidden, boolean restartForbidden, boolean confirmActionForbidden){
@@ -181,7 +184,9 @@ public class InputUtilities {
 
         StringBuilder positionsBuilder = new StringBuilder();
 
-        int workerNumber = Character.getNumericValue(worker.charAt(worker.length() - 1));
+        MatchData matchData = MatchData.getInstance();
+
+        int workerNumber = matchData.getWorkerNumber(worker);
 
         for(Point position : availablePositions){
             positionsBuilder.append("- ").append(board.getCoordinates(position)).append("\n");
@@ -212,6 +217,58 @@ public class InputUtilities {
         }while(error);
 
         return chosenPosition;
+    }
+
+    public static boolean getChosenBuildingsInPoint(Map<Point, List<BuildingType>> possibleBuildingsInPositions, Board board, String worker, List<Point> currentDataOrder, Map<Point, List<BuildingType>> currentBuilds){
+        StringBuilder possibleBuildsBuilder = new StringBuilder();
+
+        MatchData matchData = MatchData.getInstance();
+
+        int workerNumber = matchData.getWorkerNumber(worker);
+
+        for(Point position : possibleBuildingsInPositions.keySet()){
+            possibleBuildsBuilder.append("- ").append(board.getCoordinates(position));
+            for(BuildingType building : possibleBuildingsInPositions.get(position)){
+                possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(InputUtilities.buildingTypeToChar(building)).append(")");
+            }
+            possibleBuildsBuilder.append("\n");
+        }
+
+        System.out.println("Available buildings: ");
+        System.out.println(possibleBuildsBuilder.toString());
+
+        String command;
+        Point chosenPosition;
+        BuildingType chosenBuilding;
+        List<BuildingType> possibleBuildings;
+        boolean error = false;
+        boolean suggestion = true;
+        do{
+            if(error) System.out.println("Invalid buildings for worker" + (workerNumber) + ", retry");
+
+            do{
+                if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s buildings (ex A1 1, B2 4...): ");
+                else System.out.print("Choose your next worker" + (workerNumber) + "'s buildings: ");
+                suggestion = false;
+                command = InputUtilities.getLine();
+                if(command == null) return false;
+            }while(!InputUtilities.BUILDINGS_PATTERN.matcher(command).matches());
+
+            chosenPosition = board.getPoint(Character.getNumericValue(command.charAt(1)), Character.toUpperCase(command.charAt(0)));
+            chosenBuilding = InputUtilities.charToBuildingType(command.charAt(3));
+            possibleBuildings = possibleBuildingsInPositions.get(chosenPosition);
+
+            error = board.getCell(chosenPosition) == null || possibleBuildings == null || !possibleBuildings.contains(chosenBuilding);
+        }while(error);
+
+        List<BuildingType> helper = new ArrayList<>();
+
+        if(currentBuilds.containsKey(chosenPosition)) helper = currentBuilds.get(chosenPosition);
+        helper.add(chosenBuilding);
+        currentBuilds.put(chosenPosition, helper);
+        if(!currentDataOrder.contains(chosenPosition)) currentDataOrder.add(chosenPosition);
+
+        return true;
     }
 
     public static BuildingType charToBuildingType(Character building){

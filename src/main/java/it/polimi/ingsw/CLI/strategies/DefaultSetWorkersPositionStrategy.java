@@ -1,6 +1,7 @@
 package it.polimi.ingsw.CLI.strategies;
 
 import it.polimi.ingsw.CLI.*;
+import it.polimi.ingsw.packets.PacketDoAction;
 import it.polimi.ingsw.packets.PacketWorkersPositions;
 
 import java.awt.*;
@@ -12,12 +13,17 @@ import java.util.regex.Pattern;
 public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStrategy {
 
     @Override
-    public void handleSetWorkersPosition(boolean isRetry) {
+    public void handleSetWorkersPosition(String activePlayer, boolean isRetry) {
         MatchData matchData = MatchData.getInstance();
+
+        if(!activePlayer.equals(matchData.getPlayerName())){
+            System.out.println("\n" + activePlayer + " is setting his workers positions...");
+            return;
+        }
 
         Board board = matchData.getBoard();
 
-        if(board.getNumberOfWorkers() == 0) matchData.printMatch();
+        if(board.getNumberOfWorkers() == 0) OutputUtilities.printMatch();
 
         if(isRetry) System.out.println("One or more positions have been already occupied, try again.");
 

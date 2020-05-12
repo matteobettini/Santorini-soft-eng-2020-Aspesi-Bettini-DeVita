@@ -1,9 +1,6 @@
 package it.polimi.ingsw.CLI.strategies.game_mode_strategy.action_strategy;
 
-import it.polimi.ingsw.CLI.Board;
-import it.polimi.ingsw.CLI.GraphicalBoard;
-import it.polimi.ingsw.CLI.InputUtilities;
-import it.polimi.ingsw.CLI.MatchData;
+import it.polimi.ingsw.CLI.*;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.packets.PacketMove;
 import it.polimi.ingsw.packets.PacketPossibleBuilds;
@@ -13,7 +10,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class MoveActionStrategy implements ActionStrategy{
 
@@ -29,20 +25,18 @@ public class MoveActionStrategy implements ActionStrategy{
     public boolean handleMoveAction(PacketPossibleMoves packetPossibleMoves) {
         MatchData matchData = MatchData.getInstance();
         Client client = matchData.getClient();
-        String player = matchData.getPlayerName();
 
         //ELEMENT USED TO DISPLAY CHANGES
         Board board = matchData.getBoard();
         GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
 
-        boolean restartForbidden = false; //FALSE IF THE PLAYER CAN CHOSE THE WORKER AGAIN
+        boolean restartForbidden = false; //FALSE IF THE PLAYER CAN CHOOSE THE WORKER AGAIN
         boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE MOVES
         boolean confirmActionForbidden = false; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
+
         //THIS IF IS ACCESSED WHEN THE PLAYER HAS NOT ALREADY CHOOSE THE WORKER
         if(lastUsedWorker == null){
-
-            System.out.println("Make your move!");
 
             //IF THE PLAYER HAS NOT CHOSEN A WORKER HE CAN'T CONFIRM AN EMPTY MOVE
             confirmActionForbidden = true;
@@ -52,6 +46,8 @@ public class MoveActionStrategy implements ActionStrategy{
             for(String worker : packetPossibleMoves.getPossibleMoves().keySet()){
                 if(!packetPossibleMoves.getPossibleMoves().get(worker).isEmpty()) possibleWorkers.add(worker);
             }
+
+            if(possibleWorkers.size() == 1) restartForbidden = true;
 
             lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers);
             if(lastUsedWorker == null) return false;
@@ -63,7 +59,9 @@ public class MoveActionStrategy implements ActionStrategy{
 
         graphicalBoard.setPossibleActions(possiblePositions);
 
-        matchData.printMatch();
+        OutputUtilities.printMatch();
+
+        if(currentPositions.isEmpty()) System.out.println("Make your move!");
 
         graphicalBoard.resetPossibleActions();
 
@@ -76,12 +74,12 @@ public class MoveActionStrategy implements ActionStrategy{
         switch(choice){
             case 1:
                 //FIRST WE GET THE PLAYER CHOICE
-                Point chosenPosition = getChosenPosition(possiblePositions, board);
+                Point chosenPosition = InputUtilities.getChosenPosition(possiblePositions, board, lastUsedWorker);
                 if(chosenPosition ==  null) return false;
                 //THE CHOSEN POSITION IS ADDED TO CURRENT POSITIONS THAT WILL FORM THE PACKET CONFIRMATION
                 currentPositions.add(chosenPosition);
 
-                Integer workerNumber = Character.getNumericValue(lastUsedWorker.charAt(lastUsedWorker.length() - 1));
+                Integer workerNumber = matchData.getWorkerNumber(lastUsedWorker);
 
                 //WE DISPLAY CHANGES TO THE PLAYER WITHOUT MAKING ASSUMPTIONS ABOUT HIS GOD'S POWERS
                 graphicalBoard.removeWorker(matchData.getPlayerName(), workerNumber);
@@ -94,7 +92,7 @@ public class MoveActionStrategy implements ActionStrategy{
             case 2:
                 //WE RESET CHANGES TO THE GRAPHICAL BOARD, THE CHECKPOINT IS THE BOARD OBJECT IN THE MATCHDATA
                 matchData.makeGraphicalBoardEqualToBoard();
-                matchData.printMatch();
+                OutputUtilities.printMatch();
                 return true;
             case 3:
                 //IN CASE OF PLAYER'S CONFIRMATION WE SEND A PACKET THAT WON'T SIMULATE AND WE ARE SURE THAT IS CORRECT BECAUSE WE CHECKED POSSIBLE MOVES EVERY TIME
@@ -104,10 +102,6 @@ public class MoveActionStrategy implements ActionStrategy{
         }
 
         return false;
-    }
-
-    private Point getChosenPosition(List<Point> possiblePositions, Board board){
-        return InputUtilities.getChosenPosition(possiblePositions, board, lastUsedWorker);
     }
 
     @Override

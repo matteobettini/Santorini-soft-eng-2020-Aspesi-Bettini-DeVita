@@ -4,7 +4,9 @@ import it.polimi.ingsw.model.enums.BuildingType;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Board {
 
@@ -80,6 +82,10 @@ public class Board {
         return getCell(p1).getBuildings().contains(BuildingType.DOME); //|| (getCell(p1).getLevel() - getCell(lastPosition).getLevel()) > 1;
     }
 
+    public boolean thereIsWorker(Point p1){
+        return getCell(p1).getWorker() != null;
+    }
+
     public boolean canMove(String worker, Point lastPosition){
         if(lastPosition == null) lastPosition = getWorkerPosition(worker);
         List<Point> adjacentPoints = getAdjacentPoints(lastPosition);
@@ -96,6 +102,11 @@ public class Board {
         return null;
     }
 
+    public boolean canBuild(String worker){
+        List<Point> adjacentPoints = getAdjacentPoints(getWorkerPosition(worker));
+        return adjacentPoints.stream().anyMatch(p -> !thereIsDome(p) && !thereIsWorker(p));
+    }
+
     public boolean areAdjacent(Point p1, Point p2){
         return (p2.x == p1.x && p2.y == p1.y - 1) || (p2.x == p1.x && p2.y == p1.y + 1) || (p2.x == p1.x - 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y + 1) || (p2.x == p1.x + 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y + 1);
     }
@@ -109,6 +120,51 @@ public class Board {
             }
         }
         return adjacentPoints;
+    }
+
+    public Map<Point, List<BuildingType>> getPossibleBuildings(String worker){
+        List<Point> adjacentPoints = getAdjacentPoints(getWorkerPosition(worker));
+
+        Map<Point, List<BuildingType>> possibleBuildings = new HashMap<>();
+
+        for(Point position : adjacentPoints){
+            BuildingType topBuilding = getCell(position).getTopBuilding();
+            int level = topBuilding == null ? 1 : fromBuildingTypeToint(topBuilding) + 1;
+            List<BuildingType> buildings = new ArrayList<>();
+            for(int i = level; i <= 4; ++i) buildings.add(fromIntToBuildingType(i));
+            possibleBuildings.put(position, buildings);
+        }
+
+        return possibleBuildings;
+    }
+
+    public int fromBuildingTypeToint(BuildingType buildingType){
+
+        switch (buildingType){
+            case FIRST_FLOOR:
+                return 1;
+            case SECOND_FLOOR:
+                return 2;
+            case THIRD_FLOOR:
+                return 3;
+            case DOME:
+                return 4;
+        }
+
+        return 0;
+    }
+
+    public BuildingType fromIntToBuildingType(int level){
+
+        switch(level){
+            case 1:
+                return BuildingType.FIRST_FLOOR;
+            case 2:
+                return BuildingType.SECOND_FLOOR;
+            case 3:
+                return BuildingType.THIRD_FLOOR;
+        }
+        return BuildingType.DOME;
     }
 
 }

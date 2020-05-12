@@ -1,9 +1,7 @@
 package it.polimi.ingsw.CLI;
 
-import it.polimi.ingsw.CLI.enums.BackColor;
-import it.polimi.ingsw.CLI.enums.ForeColor;
-
-import java.util.List;
+import it.polimi.ingsw.CLI.colors.BackColor;
+import it.polimi.ingsw.CLI.colors.ForeColor;
 
 public class GraphicalStartMenu implements CharFigure{
     private final CharStream stream;

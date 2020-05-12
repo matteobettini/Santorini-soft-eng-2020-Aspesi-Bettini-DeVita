@@ -1,4 +1,4 @@
-package it.polimi.ingsw.CLI.enums;
+package it.polimi.ingsw.CLI.colors;
 
 public enum ForeColor {
     ANSI_BLACK("\u001B[30m"),
