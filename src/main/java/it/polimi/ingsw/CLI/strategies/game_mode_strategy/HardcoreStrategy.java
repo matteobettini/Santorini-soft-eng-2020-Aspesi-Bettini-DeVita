@@ -214,16 +214,7 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
                 case 1:
                     //FIRST WE GET THE PLAYER CHOICE
 
-                    Map<Point, List<BuildingType>> possibleBuildingsInPoints = board.getPossibleBuildings(lastUsedWorker);
-
-                    for(Point position : currentBuilds.keySet()){
-                        for(BuildingType building : currentBuilds.get(position)){
-                            int level = board.fromBuildingTypeToint(building);
-                            List<BuildingType> newBuildings = possibleBuildingsInPoints.get(position).stream().map(board::fromBuildingTypeToint).filter(x -> x > level).map(board::fromIntToBuildingType).collect(Collectors.toList());
-                            possibleBuildingsInPoints.put(position, newBuildings);
-                            if(possibleBuildingsInPoints.get(position).isEmpty()) possibleBuildingsInPoints.remove(position);
-                        }
-                    }
+                    Map<Point, List<BuildingType>> possibleBuildingsInPoints = board.getPossibleBuildings(lastUsedWorker, currentBuilds);
 
                     if (possibleBuildingsInPoints.isEmpty()) {
                         System.out.println("You can't build anymore!");

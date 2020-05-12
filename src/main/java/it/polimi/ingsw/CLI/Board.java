@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Board {
 
@@ -122,17 +123,35 @@ public class Board {
         return adjacentPoints;
     }
 
-    public Map<Point, List<BuildingType>> getPossibleBuildings(String worker){
+    public Map<Point, List<BuildingType>> getPossibleBuildings(String worker, Map<Point, List<BuildingType>> currentBuilds){
         List<Point> adjacentPoints = getAdjacentPoints(getWorkerPosition(worker));
 
         Map<Point, List<BuildingType>> possibleBuildings = new HashMap<>();
 
         for(Point position : adjacentPoints){
             BuildingType topBuilding = getCell(position).getTopBuilding();
-            int level = topBuilding == null ? 1 : fromBuildingTypeToint(topBuilding) + 1;
+            int level = topBuilding == null ? 0 : fromBuildingTypeToint(topBuilding);
+
             List<BuildingType> buildings = new ArrayList<>();
-            for(int i = level; i <= 4; ++i) buildings.add(fromIntToBuildingType(i));
+
+            if(level != fromBuildingTypeToint(BuildingType.DOME)){
+                buildings.add(fromIntToBuildingType(level + 1));
+                if(level + 1 != fromBuildingTypeToint(BuildingType.DOME)) buildings.add(fromIntToBuildingType(fromBuildingTypeToint(BuildingType.DOME)));
+            }
+
             possibleBuildings.put(position, buildings);
+        }
+
+        for(Point position : currentBuilds.keySet()){
+            if(!currentBuilds.get(position).isEmpty()){
+                int lastBuilding = fromBuildingTypeToint(currentBuilds.get(position).get(currentBuilds.get(position).size() - 1));
+                possibleBuildings.get(position).clear();
+                if(lastBuilding != fromBuildingTypeToint(BuildingType.DOME)){
+                    possibleBuildings.get(position).add(fromIntToBuildingType(lastBuilding + 1));
+                    if(lastBuilding + 1 != fromBuildingTypeToint(BuildingType.DOME)) possibleBuildings.get(position).add(BuildingType.DOME);
+                }
+                else possibleBuildings.remove(position);
+            }
         }
 
         return possibleBuildings;

@@ -14,6 +14,7 @@ public class Cell {
     public Cell(Point pos){
         this.position = pos;
         this.buildings = new ArrayList<>();
+        this.worker = null;
     }
 
     public List<BuildingType> getBuildings() {
