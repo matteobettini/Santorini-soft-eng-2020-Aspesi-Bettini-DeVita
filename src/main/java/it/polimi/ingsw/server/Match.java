@@ -2,7 +2,7 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.controller.Controller;
 import it.polimi.ingsw.model.ConcreteModel;
-import it.polimi.ingsw.observe.Observer;
+import it.polimi.ingsw.utils.observe.Observer;
 import it.polimi.ingsw.packets.ConnectionMessages;
 import it.polimi.ingsw.packets.PacketMatchStarted;
 import it.polimi.ingsw.view.ConnectionToClient;

@@ -1,6 +1,6 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.observe.Observer;
+import it.polimi.ingsw.utils.observe.Observer;
 import it.polimi.ingsw.packets.*;
 
 import java.io.Serializable;

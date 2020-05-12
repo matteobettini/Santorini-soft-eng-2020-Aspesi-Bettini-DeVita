@@ -1,8 +1,8 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.observe.Observer;
+import it.polimi.ingsw.utils.observe.Observer;
 import it.polimi.ingsw.packets.*;
-import it.polimi.ingsw.observe.Observable;
+import it.polimi.ingsw.utils.observe.Observable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -66,9 +66,9 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         timer.start();
     }
 
-    private void startTimerShorter(){ startTimer(30000); }
+    private void startTimerShorter(){ startTimer(500000); }
     private void startTimerLonger(){
-        startTimer(180000);
+        startTimer(500000);
     }
 
     void stopTimer(){
@@ -181,6 +181,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             while(active){
                 System.out.println("Connection [" + getClientNickname() + "]: I'M WAITING FOR AN OBJECT");
                 Object packetFromClient = is.readObject();
+                System.out.println("Connection [" + getClientNickname() + "]: OBJECT RECEIVED");
 
                 if(inMatch)
                     handlePacketInMatch(packetFromClient);

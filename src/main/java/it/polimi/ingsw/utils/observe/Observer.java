@@ -1,4 +1,4 @@
-package it.polimi.ingsw.observe;
+package it.polimi.ingsw.utils.observe;
 
 public interface Observer<T> {
 

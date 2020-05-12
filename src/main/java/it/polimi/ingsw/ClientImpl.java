@@ -1,6 +1,6 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.observe.Observer;
+import it.polimi.ingsw.utils.observe.Observer;
 import it.polimi.ingsw.packets.*;
 
 import java.io.IOException;
@@ -108,6 +108,7 @@ public class ClientImpl implements Client {
 
 
             } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
                 packetReceiver.interrupt();
                 notifyConnectionStatusObservers(new ConnectionStatus(true, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
             } finally {

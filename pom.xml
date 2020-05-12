@@ -121,6 +121,7 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.0.2</version>
 
+                    <!--
                     <configuration>
                         <archive>
                             <manifest>
@@ -130,8 +131,8 @@
                         </archive>
                         <finalName>Game server</finalName>
                     </configuration>
+-->
 
-                    <!--
                     <configuration>
                         <archive>
                             <manifest>
@@ -141,7 +142,7 @@
                         </archive>
                         <finalName>CLI</finalName>
                     </configuration>
-                    -->
+
                 </plugin>
                 <plugin>
                     <artifactId>maven-install-plugin</artifactId>

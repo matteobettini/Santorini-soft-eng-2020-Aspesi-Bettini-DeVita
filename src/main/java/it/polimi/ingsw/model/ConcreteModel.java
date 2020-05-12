@@ -4,7 +4,7 @@ import it.polimi.ingsw.cards.CardFactory;
 import it.polimi.ingsw.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.model.enums.SetupPhase;
-import it.polimi.ingsw.observe.Observer;
+import it.polimi.ingsw.utils.observe.Observer;
 import it.polimi.ingsw.packets.*;
 
 import java.awt.*;

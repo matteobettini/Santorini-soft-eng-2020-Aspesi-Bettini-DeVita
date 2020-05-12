@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.PlayerState;
 import it.polimi.ingsw.model.exceptions.PlayerLostSignal;
 import it.polimi.ingsw.model.exceptions.PlayerWonSignal;
-import it.polimi.ingsw.observe.Observer;
+import it.polimi.ingsw.utils.observe.Observer;
 import it.polimi.ingsw.packets.*;
 
 import java.awt.*;
