@@ -108,7 +108,6 @@ public class ClientImpl implements Client {
 
 
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
                 packetReceiver.interrupt();
                 notifyConnectionStatusObservers(new ConnectionStatus(true, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
             } finally {
@@ -140,7 +139,6 @@ public class ClientImpl implements Client {
                     notifyinsertNumOfPlayersAndGamemodeRequestObservers(messageFromServer.getMessage(), isRetry.get());
                     isRetry.set(false);
                 } else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
-                    System.out.println("[FROM SERVER]: INVALID PACKET");
                     assert (lastActionRequest != null);
                     isRetry.set(true);
                     incomingPackets.addFirst(lastActionRequest);

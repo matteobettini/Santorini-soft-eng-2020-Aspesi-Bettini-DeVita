@@ -103,7 +103,22 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
         Map<String, Point> workersToRestore = new HashMap<>();
 
         do {
+
+            Point lastWorkerPosition = currentChosenPositions.isEmpty() ? board.getWorkerPosition(lastUsedWorker) : currentChosenPositions.get(currentChosenPositions.size() - 1);
+
+            List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition).stream().filter(p -> board.canMove(lastUsedWorker, lastWorkerPosition)).collect(Collectors.toList());
+
+            if(availablePositions.isEmpty()){
+                System.out.println("You can't move anymore!");
+                makeChoiceForbidden = true;
+                break;
+            }
+
+            graphicalBoard.setPossibleActions(availablePositions);
+
             OutputUtilities.printMatch();
+
+            graphicalBoard.resetPossibleActions();
 
             if (currentChosenPositions.isEmpty()) {
                 if (isRetry) System.out.println("Not a valid move! Try again...");
@@ -122,15 +137,6 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
             switch (choice) {
                 case 1:
                     //FIRST WE GET THE PLAYER CHOICE
-                    Point lastWorkerPosition = currentChosenPositions.isEmpty() ? board.getWorkerPosition(lastUsedWorker) : currentChosenPositions.get(currentChosenPositions.size() - 1);
-
-                    List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition).stream().filter(p -> board.canMove(lastUsedWorker, lastWorkerPosition)).collect(Collectors.toList());
-
-                    if(availablePositions.isEmpty()){
-                        System.out.println("You can't move anymore!");
-                        makeChoiceForbidden = true;
-                        break;
-                    }
 
                     Point chosenPosition = InputUtilities.getChosenPosition(availablePositions, board, lastUsedWorker);
 
@@ -197,7 +203,20 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
         Integer choice;
 
         do {
+
+            Map<Point, List<BuildingType>> possibleBuildingsInPoints = board.getPossibleBuildings(lastUsedWorker, currentBuilds);
+
+            if (possibleBuildingsInPoints.isEmpty()) {
+                System.out.println("You can't build anymore!");
+                makeChoiceForbidden = true;
+                break;
+            }
+
+            graphicalBoard.setPossibleActions(new ArrayList<>(possibleBuildingsInPoints.keySet()));
+
             OutputUtilities.printMatch();
+
+            graphicalBoard.resetPossibleActions();
 
             if (currentDataOrder.isEmpty()) {
                 if (isRetry) System.out.println("Not a valid build! Try again...");
@@ -213,14 +232,6 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
             switch (choice) {
                 case 1:
                     //FIRST WE GET THE PLAYER CHOICE
-
-                    Map<Point, List<BuildingType>> possibleBuildingsInPoints = board.getPossibleBuildings(lastUsedWorker, currentBuilds);
-
-                    if (possibleBuildingsInPoints.isEmpty()) {
-                        System.out.println("You can't build anymore!");
-                        makeChoiceForbidden = true;
-                        break;
-                    }
 
                     boolean getChoice = InputUtilities.getChosenBuildingsInPoint(possibleBuildingsInPoints, board, lastUsedWorker, currentDataOrder, currentBuilds);
 

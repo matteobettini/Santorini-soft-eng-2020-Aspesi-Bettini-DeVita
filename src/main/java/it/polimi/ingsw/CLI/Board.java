@@ -130,16 +130,16 @@ public class Board {
 
         for(Point position : adjacentPoints){
             BuildingType topBuilding = getCell(position).getTopBuilding();
-            int level = topBuilding == null ? 0 : fromBuildingTypeToint(topBuilding);
+            int level = fromBuildingTypeToint(topBuilding);
 
             List<BuildingType> buildings = new ArrayList<>();
 
             if(level != fromBuildingTypeToint(BuildingType.DOME)){
                 buildings.add(fromIntToBuildingType(level + 1));
                 if(level + 1 != fromBuildingTypeToint(BuildingType.DOME)) buildings.add(fromIntToBuildingType(fromBuildingTypeToint(BuildingType.DOME)));
+                possibleBuildings.put(position, buildings);
             }
 
-            possibleBuildings.put(position, buildings);
         }
 
         for(Point position : currentBuilds.keySet()){
@@ -158,6 +158,8 @@ public class Board {
     }
 
     public int fromBuildingTypeToint(BuildingType buildingType){
+
+        if(buildingType == null) return 0;
 
         switch (buildingType){
             case FIRST_FLOOR:
