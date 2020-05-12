@@ -13,6 +13,7 @@ public class DefaultNicknameStrategy implements NicknameStrategy {
         nickname = InputUtilities.getLine();
         if(nickname == null) return;
         matchData.setPlayerName(nickname);
+        System.out.println("\n" + "Waiting in lobby...");
         matchData.getClient().send(new PacketNickname(nickname));
     }
 }

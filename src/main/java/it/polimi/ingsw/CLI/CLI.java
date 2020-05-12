@@ -106,6 +106,7 @@ public class CLI {
         setupStrategy = new DefaultSetupStrategy();
         chooseStarterStrategy = new DefaultChooseStarterStrategy();
         setWorkersPositionStrategy = new DefaultSetWorkersPositionStrategy();
+        updateBoardStrategy = new DefaultUpdateBoardStrategy();
     }
 
     public void setConnectionInGameStrategy(){
@@ -113,15 +114,8 @@ public class CLI {
     }
 
     public void setGameModeStrategy(boolean hardcore){
-        if(hardcore){
-            gameModeStrategy = new HardcoreStrategy();
-            updateBoardStrategy = new HardcoreStrategy();
-        }
-        else{
-            gameModeStrategy = new NormalStrategy();
-            updateBoardStrategy = new DefaultUpdateBoardStrategy();
-        }
-
+        if(hardcore) gameModeStrategy = new HardcoreStrategy();
+        else gameModeStrategy = new NormalStrategy();
     }
 
     private void setConnectionParameters(){
@@ -135,7 +129,13 @@ public class CLI {
             address = InputUtilities.getLine();
             if(address == null) return;
             firstLoop = false;
+            if(address.toLowerCase().equals("d")){
+                this.address = MatchData.DEFAULT_ADDRESS;
+                this.port = MatchData.DEFAULT_PORT;
+                return;
+            }
         }while (!addressIsValid(address));
+
 
         firstLoop = true;
 

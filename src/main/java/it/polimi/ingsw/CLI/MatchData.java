@@ -27,6 +27,8 @@ public class MatchData {
     private Map<BuildingType, Integer> buildingsCounter;
     private final int DEFAULT_MATCH_WIDTH = 159;
     private final int DEFAULT_MATCH_HEIGHT = 50;
+    public static String DEFAULT_ADDRESS = "127.0.0.1";
+    public static int DEFAULT_PORT = 4567;
 
     private GraphicalBoard graphicalBoard;
     private CharStream stream;

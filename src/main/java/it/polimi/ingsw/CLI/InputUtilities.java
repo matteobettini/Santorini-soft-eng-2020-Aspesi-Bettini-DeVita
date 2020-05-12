@@ -182,18 +182,20 @@ public class InputUtilities {
 
     public static Point getChosenPosition(List<Point> availablePositions, Board board, String worker){
 
-        StringBuilder positionsBuilder = new StringBuilder();
-
         MatchData matchData = MatchData.getInstance();
+
+        if(!matchData.isHardcore()){
+            StringBuilder positionsBuilder = new StringBuilder();
+            for(Point position : availablePositions){
+                positionsBuilder.append("- ").append(board.getCoordinates(position)).append("\n");
+            }
+
+            System.out.println("Available positions: ");
+            System.out.println(positionsBuilder.toString());
+        }
 
         int workerNumber = matchData.getWorkerNumber(worker);
 
-        for(Point position : availablePositions){
-            positionsBuilder.append("- ").append(board.getCoordinates(position)).append("\n");
-        }
-
-        System.out.println("Available positions: ");
-        System.out.println(positionsBuilder.toString());
 
         //THE PLAYER CAN NOW CHOOSE HIS WORKER'S NEXT POSITION
         String point;
@@ -220,22 +222,25 @@ public class InputUtilities {
     }
 
     public static boolean getChosenBuildingsInPoint(Map<Point, List<BuildingType>> possibleBuildingsInPositions, Board board, String worker, List<Point> currentDataOrder, Map<Point, List<BuildingType>> currentBuilds){
-        StringBuilder possibleBuildsBuilder = new StringBuilder();
 
         MatchData matchData = MatchData.getInstance();
 
         int workerNumber = matchData.getWorkerNumber(worker);
 
-        for(Point position : possibleBuildingsInPositions.keySet()){
-            possibleBuildsBuilder.append("- ").append(board.getCoordinates(position));
-            for(BuildingType building : possibleBuildingsInPositions.get(position)){
-                possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(InputUtilities.buildingTypeToChar(building)).append(")");
+        if(!matchData.isHardcore()){
+            StringBuilder possibleBuildsBuilder = new StringBuilder();
+            for(Point position : possibleBuildingsInPositions.keySet()){
+                possibleBuildsBuilder.append("- ").append(board.getCoordinates(position));
+                for(BuildingType building : possibleBuildingsInPositions.get(position)){
+                    possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(InputUtilities.buildingTypeToChar(building)).append(")");
+                }
+                possibleBuildsBuilder.append("\n");
             }
-            possibleBuildsBuilder.append("\n");
+
+            System.out.println("Available buildings: ");
+            System.out.println(possibleBuildsBuilder.toString());
         }
 
-        System.out.println("Available buildings: ");
-        System.out.println(possibleBuildsBuilder.toString());
 
         String command;
         Point chosenPosition;
@@ -266,7 +271,7 @@ public class InputUtilities {
         if(currentBuilds.containsKey(chosenPosition)) helper = currentBuilds.get(chosenPosition);
         helper.add(chosenBuilding);
         currentBuilds.put(chosenPosition, helper);
-        if(!currentDataOrder.contains(chosenPosition)) currentDataOrder.add(chosenPosition);
+        currentDataOrder.add(chosenPosition);
 
         return true;
     }

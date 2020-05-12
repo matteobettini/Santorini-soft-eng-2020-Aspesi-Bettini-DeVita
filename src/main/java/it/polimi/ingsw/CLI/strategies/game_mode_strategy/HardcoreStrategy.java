@@ -1,10 +1,7 @@
 package it.polimi.ingsw.CLI.strategies.game_mode_strategy;
 
 import it.polimi.ingsw.CLI.*;
-import it.polimi.ingsw.CLI.strategies.DefaultUpdateBoardStrategy;
-import it.polimi.ingsw.CLI.strategies.UpdateBoardStrategy;
 import it.polimi.ingsw.Client;
-import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.packets.*;
 
@@ -15,25 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
+public class HardcoreStrategy implements GameModeStrategy{
 
     private PacketDoAction lastAction;
-    private String lastUsedWorker;
-    private UpdateBoardStrategy updateBoardStrategy;
-    private String lastConfirmedWorker;
-
-    public HardcoreStrategy() {
-        this.updateBoardStrategy = new DefaultUpdateBoardStrategy();
-        this.lastUsedWorker = null;
-        this.lastConfirmedWorker = null;
-    }
-
-    @Override
-    public void handleUpdateBoard(PacketUpdateBoard packetUpdateBoard) {
-        if (lastConfirmedWorker == null) lastConfirmedWorker = lastUsedWorker;
-
-        updateBoardStrategy.handleUpdateBoard(packetUpdateBoard);
-    }
 
     @Override
     public void handleAction(PacketDoAction packetDoAction, boolean isRetry) {
@@ -41,7 +22,6 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
 
         if (!packetDoAction.getTo().equals(matchData.getPlayerName())) {
             OutputUtilities.displayOthersActions(packetDoAction.getActionType(), packetDoAction.getTo());
-            lastConfirmedWorker = null;
             return;
         }
 
@@ -49,10 +29,14 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
 
         switch (packetDoAction.getActionType()) {
             case MOVE:
-                handleMove(isRetry);
+                if (isRetry) System.out.println("Not a valid move! Try again...");
+                else System.out.println("Make your move!");
+                handleMove();
                 break;
             case BUILD:
-                handleBuild(isRetry);
+                if (isRetry) System.out.println("Not a valid build! Try again...");
+                else System.out.println("Make your build!");
+                handleBuild();
                 break;
             case MOVE_BUILD:
                 if (isRetry) System.out.println("Not a valid move or build! Try again...");
@@ -63,14 +47,14 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
                     if (choice == null) return;
                 } while (choice != 1 && choice != 2);
 
-                if (choice == 1) handleMove(false);
-                else handleBuild(false);
+                if (choice == 1) handleMove();
+                else handleBuild();
 
                 break;
         }
     }
 
-    private void handleMove(boolean isRetry) {
+    private void handleMove() {
         MatchData matchData = MatchData.getInstance();
         Client client = matchData.getClient();
         String player = matchData.getPlayerName();
@@ -84,17 +68,10 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
         boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE MOVES
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
-        //THIS IF IS ACCESSED WHEN THE PLAYER HAS NOT ALREADY CHOSEN THE WORKER
-        if (lastConfirmedWorker == null) {
 
-            List<String> possibleWorkers = workersID.stream().filter(board::canMove).collect(Collectors.toList());
+        List<String> possibleWorkers = workersID.stream().filter(board::canMove).collect(Collectors.toList());
 
-            lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers);
-            if (lastUsedWorker == null) return;
-        } else{
-            restartForbidden = true; //IF THE WORKER IS ALREADY CHOSEN, IN THE FIRST CHOICE THE PLAYER CAN'T RESTART
-            lastUsedWorker = lastConfirmedWorker;
-        }
+        String lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers);
 
         List<Point> currentChosenPositions = new ArrayList<>();
 
@@ -111,19 +88,9 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
             if(availablePositions.isEmpty()){
                 System.out.println("You can't move anymore!");
                 makeChoiceForbidden = true;
-                break;
             }
-
-            graphicalBoard.setPossibleActions(availablePositions);
 
             OutputUtilities.printMatch();
-
-            graphicalBoard.resetPossibleActions();
-
-            if (currentChosenPositions.isEmpty()) {
-                if (isRetry) System.out.println("Not a valid move! Try again...");
-                else System.out.println("Make your move!");
-            }
 
             confirmActionForbidden = currentChosenPositions.isEmpty();
 
@@ -162,7 +129,6 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
                     return;
             }
 
-            restartForbidden = false;
         } while (choice != 3);
 
         PacketMove packetConfirmation = new PacketMove(matchData.getPlayerName(), lastUsedWorker, false, currentChosenPositions);
@@ -171,7 +137,7 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
 
     }
 
-    private void handleBuild(boolean isRetry) {
+    private void handleBuild() {
         MatchData matchData = MatchData.getInstance();
         Client client = matchData.getClient();
         String player = matchData.getPlayerName();
@@ -185,17 +151,8 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
         boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE BUILDS
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
-        //THIS IF IS ACCESSED WHEN THE PLAYER HAS NOT ALREADY CHOSEN THE WORKER
-        if (lastConfirmedWorker == null) {
 
-            List<String> possibleWorkers = workersID.stream().filter(board::canBuild).collect(Collectors.toList());
-
-            lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers);
-            if (lastUsedWorker == null) return;
-        } else{
-            restartForbidden = true; //IF THE WORKER IS ALREADY CHOSEN, IN THE FIRST CHOICE THE PLAYER CAN'T RESTART
-            lastUsedWorker = lastConfirmedWorker;
-        }
+        String lastUsedWorker = InputUtilities.getWorkerChoice(workersID);
 
         Map<Point, List<BuildingType>> currentBuilds = new HashMap<>();
         ArrayList<Point> currentDataOrder = new ArrayList<>();
@@ -209,19 +166,9 @@ public class HardcoreStrategy implements GameModeStrategy, UpdateBoardStrategy {
             if (possibleBuildingsInPoints.isEmpty()) {
                 System.out.println("You can't build anymore!");
                 makeChoiceForbidden = true;
-                break;
             }
-
-            graphicalBoard.setPossibleActions(new ArrayList<>(possibleBuildingsInPoints.keySet()));
 
             OutputUtilities.printMatch();
-
-            graphicalBoard.resetPossibleActions();
-
-            if (currentDataOrder.isEmpty()) {
-                if (isRetry) System.out.println("Not a valid build! Try again...");
-                else System.out.println("Make your build!");
-            }
 
             confirmActionForbidden = currentDataOrder.isEmpty();
 

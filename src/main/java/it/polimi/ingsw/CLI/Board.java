@@ -83,10 +83,6 @@ public class Board {
         return getCell(p1).getBuildings().contains(BuildingType.DOME); //|| (getCell(p1).getLevel() - getCell(lastPosition).getLevel()) > 1;
     }
 
-    public boolean thereIsWorker(Point p1){
-        return getCell(p1).getWorker() != null;
-    }
-
     public boolean canMove(String worker, Point lastPosition){
         if(lastPosition == null) lastPosition = getWorkerPosition(worker);
         List<Point> adjacentPoints = getAdjacentPoints(lastPosition);
@@ -103,16 +99,15 @@ public class Board {
         return null;
     }
 
-    public boolean canBuild(String worker){
-        List<Point> adjacentPoints = getAdjacentPoints(getWorkerPosition(worker));
-        return adjacentPoints.stream().anyMatch(p -> !thereIsDome(p) && !thereIsWorker(p));
-    }
-
     public boolean areAdjacent(Point p1, Point p2){
         return (p2.x == p1.x && p2.y == p1.y - 1) || (p2.x == p1.x && p2.y == p1.y + 1) || (p2.x == p1.x - 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y) || (p2.x == p1.x + 1 && p2.y == p1.y + 1) || (p2.x == p1.x + 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y - 1) || (p2.x == p1.x - 1 && p2.y == p1.y + 1);
     }
 
     public List<Point> getAdjacentPoints(Point point){
+        return getAdjacentPoints(point, false);
+    }
+
+    public List<Point> getAdjacentPoints(Point point, boolean considerEquals){
         List<Point> adjacentPoints = new ArrayList<>();
         for (int i = 0; i < rows; ++i){
             for(int j = 0; j < columns; ++j){
@@ -120,44 +115,29 @@ public class Board {
                 if(areAdjacent(helper, point)) adjacentPoints.add(helper);
             }
         }
+        if(considerEquals) adjacentPoints.add(point);
         return adjacentPoints;
     }
 
     public Map<Point, List<BuildingType>> getPossibleBuildings(String worker, Map<Point, List<BuildingType>> currentBuilds){
-        List<Point> adjacentPoints = getAdjacentPoints(getWorkerPosition(worker));
+        List<Point> adjacentPoints = getAdjacentPoints(getWorkerPosition(worker), true);
 
         Map<Point, List<BuildingType>> possibleBuildings = new HashMap<>();
 
-        for(Point position : adjacentPoints){
-            BuildingType topBuilding = getCell(position).getTopBuilding();
-            int level = fromBuildingTypeToint(topBuilding);
+        List<BuildingType> possibleBuildingsInCell = new ArrayList<>();
 
-            List<BuildingType> buildings = new ArrayList<>();
+        for(int i = 1; i <= fromBuildingTypeToInt(BuildingType.DOME); ++i) possibleBuildingsInCell.add(fromIntToBuildingType(i));
 
-            if(level != fromBuildingTypeToint(BuildingType.DOME)){
-                buildings.add(fromIntToBuildingType(level + 1));
-                if(level + 1 != fromBuildingTypeToint(BuildingType.DOME)) buildings.add(fromIntToBuildingType(fromBuildingTypeToint(BuildingType.DOME)));
-                possibleBuildings.put(position, buildings);
-            }
-
-        }
-
-        for(Point position : currentBuilds.keySet()){
-            if(!currentBuilds.get(position).isEmpty()){
-                int lastBuilding = fromBuildingTypeToint(currentBuilds.get(position).get(currentBuilds.get(position).size() - 1));
-                possibleBuildings.get(position).clear();
-                if(lastBuilding != fromBuildingTypeToint(BuildingType.DOME)){
-                    possibleBuildings.get(position).add(fromIntToBuildingType(lastBuilding + 1));
-                    if(lastBuilding + 1 != fromBuildingTypeToint(BuildingType.DOME)) possibleBuildings.get(position).add(BuildingType.DOME);
-                }
-                else possibleBuildings.remove(position);
-            }
+        for(Point pos : adjacentPoints){
+            List<BuildingType> alreadyInserted = currentBuilds.get(pos) == null ? new ArrayList<>() : currentBuilds.get(pos);
+            List<BuildingType> buildingTypes = possibleBuildingsInCell.stream().filter(b -> (!getCell(pos).getBuildings().contains(b) && !alreadyInserted.contains(b))).collect(Collectors.toList());
+            possibleBuildings.put(pos, buildingTypes);
         }
 
         return possibleBuildings;
     }
 
-    public int fromBuildingTypeToint(BuildingType buildingType){
+    public int fromBuildingTypeToInt(BuildingType buildingType){
 
         if(buildingType == null) return 0;
 
