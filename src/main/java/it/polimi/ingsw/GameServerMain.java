@@ -20,7 +20,17 @@ public class GameServerMain {
             return; //Do not load the server if there are errors with the cards
         }
 
-        Server server = new ServerImpl(4567);
+        int port = 4567;
+
+        if(args.length > 0){
+            try{
+                int proposedPort = Integer.parseInt(args[0]);
+                if(proposedPort >= 1024 && proposedPort <= 65535)
+                    port = proposedPort;
+            }catch (NumberFormatException ignored){ }
+        }
+
+        Server server = new ServerImpl(port);
 
         server.startServer();
     }

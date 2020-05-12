@@ -156,6 +156,6 @@ public class CLI {
     }
 
     private boolean portIsValid(int port){
-        return port >= 1 && port <= 65535;
+        return port >= 1024 && port <= 65535;
     }
 }

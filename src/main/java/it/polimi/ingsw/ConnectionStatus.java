@@ -2,16 +2,16 @@ package it.polimi.ingsw;
 
 public class ConnectionStatus {
 
-    private final boolean closed;
+    private final ConnectionState state;
     private final String reasonOfClosure;
 
-    public ConnectionStatus(boolean closed, String  reasonOfClosure) {
-        this.closed = closed;
+    ConnectionStatus(ConnectionState state, String reasonOfClosure) {
+        this.state = state;
         this.reasonOfClosure = reasonOfClosure;
     }
 
-    public boolean isClosed() {
-        return closed;
+    public ConnectionState getState() {
+        return state;
     }
 
     public String getReasonOfClosure() {

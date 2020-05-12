@@ -9,8 +9,8 @@ public enum StatementType {
     IF("if"),
     NIF("nif");
 
-    private String code;
-    private StatementType(String code){
+    private final String code;
+    StatementType(String code){
         this.code = code;
     }
 

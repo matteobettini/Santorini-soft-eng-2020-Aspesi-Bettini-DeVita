@@ -77,11 +77,11 @@ public class ClientImpl implements Client {
                 is = new ObjectInputStream(socket.getInputStream());
 
             } catch (IOException e) {
-                manageClosure("Impossible to establish connection");
+                manageClosure(ConnectionState.UNABLE_TO_CONNECT, "Unable to connect to the server");
                 return;
             }
 
-            notifyConnectionStatusObservers(new ConnectionStatus(false, null));
+            notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CONNECTED, null));
 
             packetReceiver.start();
 
@@ -94,7 +94,7 @@ public class ClientImpl implements Client {
                         ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
                         if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
                             packetReceiver.interrupt();
-                            notifyConnectionStatusObservers(new ConnectionStatus(true, messageFromServer.getMessage()));
+                            notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, messageFromServer.getMessage()));
                             break;
                         }else if(messageFromServer == ConnectionMessages.MATCH_FINISHED){
                             end = true;
@@ -106,7 +106,7 @@ public class ClientImpl implements Client {
 
             } catch (IOException | ClassNotFoundException e) {
                 packetReceiver.interrupt();
-                notifyConnectionStatusObservers(new ConnectionStatus(true, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
+                notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
             } finally {
                 closeRoutine();
             }
@@ -141,7 +141,7 @@ public class ClientImpl implements Client {
                     incomingPackets.addFirst(lastActionRequest);
                 } else if (messageFromServer == ConnectionMessages.MATCH_FINISHED) {
                     ended.set(true);
-                    notifyConnectionStatusObservers(new ConnectionStatus(true, messageFromServer.getMessage()));
+                    notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.MATCH_ENDED, messageFromServer.getMessage()));
                 }
             } else if (packetFromServer instanceof PacketMatchStarted) {
                 PacketMatchStarted packetMatchStarted = (PacketMatchStarted) packetFromServer;
@@ -187,13 +187,13 @@ public class ClientImpl implements Client {
     }
 
     private void manageClosure(){
-        manageClosure(ConnectionMessages.CONNECTION_CLOSED.getMessage());
+        manageClosure(ConnectionState.CLOSURE_UNEXPECTED, ConnectionMessages.CONNECTION_CLOSED.getMessage());
     }
 
-    private void manageClosure(String reasonOfClosure){
+    private void manageClosure(ConnectionState connectionState, String reasonOfClosure){
         if(packetReceiver.isAlive())
             packetReceiver.interrupt();
-        notifyConnectionStatusObservers(new ConnectionStatus(true, reasonOfClosure));
+        notifyConnectionStatusObservers(new ConnectionStatus(connectionState, reasonOfClosure));
         closeRoutine();
     }
 
