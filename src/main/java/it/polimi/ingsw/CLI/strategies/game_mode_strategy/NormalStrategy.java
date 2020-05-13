@@ -19,6 +19,8 @@ public class NormalStrategy implements GameModeStrategy{
      */
     @Override
     public void handleAction(PacketDoAction packetDoAction, boolean isRetry) {
+        assert !isRetry;
+
         MatchData matchData = MatchData.getInstance();
         if(!packetDoAction.getTo().equals(matchData.getPlayerName())){
             OutputUtilities.displayOthersActions(packetDoAction.getActionType(), packetDoAction.getTo());
@@ -34,10 +36,14 @@ public class NormalStrategy implements GameModeStrategy{
                 break;
             case MOVE_BUILD:
                 Integer choice;
+                boolean firstLoop = true;
                 do{
+                    if(!firstLoop)
+                        System.out.print("Not a valid choice, ");
                     System.out.print("Do you want to make a move(1) or a build(2): ");
                     choice = InputUtilities.getInt("Not a valid choice, choose an action: ");
                     if (choice == null) return;
+                    firstLoop = false;
                 }while(choice != 1 && choice != 2);
 
                 if(choice == 1) handleMove();

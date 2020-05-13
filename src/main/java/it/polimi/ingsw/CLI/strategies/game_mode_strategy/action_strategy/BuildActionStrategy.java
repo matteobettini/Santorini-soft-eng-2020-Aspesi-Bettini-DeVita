@@ -16,8 +16,8 @@ import java.util.Map;
 public class BuildActionStrategy implements ActionStrategy{
 
     private String lastUsedWorker;
-    private Map<Point, List<BuildingType>> currentBuilds;
-    private List<Point> currentDataOrder;
+    private final Map<Point, List<BuildingType>> currentBuilds;
+    private final List<Point> currentDataOrder;
 
     /**
      * This method is the constructor for the normal build strategy.
@@ -61,7 +61,6 @@ public class BuildActionStrategy implements ActionStrategy{
 
 
         //ELEMENT USED TO DISPLAY CHANGES
-        Board board = matchData.getBoard();
         GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
 
         boolean restartForbidden = false; //FALSE IF THE PLAYER CAN CHOOSE THE WORKER AGAIN
@@ -112,7 +111,7 @@ public class BuildActionStrategy implements ActionStrategy{
                 //UPDATE TO THE GRAPHICAL BOARD
                 for(Point position : currentBuilds.keySet()) graphicalBoard.getCell(position).addBuildings(currentBuilds.get(position));
 
-                //WE THEN ASK FOR A NEW PACKETBUILD
+                //WE THEN ASK FOR A NEW PACKET BUILD
 
                 PacketBuild packetBuild = new PacketBuild(player, lastUsedWorker, true, currentBuilds, currentDataOrder);
                 client.send(packetBuild);

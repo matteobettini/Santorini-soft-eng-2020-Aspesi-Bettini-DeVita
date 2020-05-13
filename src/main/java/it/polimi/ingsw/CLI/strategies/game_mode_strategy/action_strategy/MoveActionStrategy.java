@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MoveActionStrategy implements ActionStrategy{
 
-    private List<Point> currentPositions;
+    private final List<Point> currentPositions;
     private String lastUsedWorker; //null if the action has just arrived
 
     /**
@@ -50,7 +50,7 @@ public class MoveActionStrategy implements ActionStrategy{
         boolean confirmActionForbidden = false; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
 
-        //THIS IF IS ACCESSED WHEN THE PLAYER HAS NOT ALREADY CHOOSE THE WORKER
+        //THIS IF IS ACCESSED WHEN THE PLAYER HAS NOT ALREADY CHOSEN THE WORKER
         if(lastUsedWorker == null){
 
             //IF THE PLAYER HAS NOT CHOSEN A WORKER HE CAN'T CONFIRM AN EMPTY MOVE
