@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class HardcoreStrategy implements GameModeStrategy{
 
@@ -37,12 +36,12 @@ public class HardcoreStrategy implements GameModeStrategy{
             case MOVE:
                 if (isRetry) System.out.println("Not a valid move! Try again...");
                 else System.out.println("Make your move!");
-                handleMove();
+                handleMove(isRetry);
                 break;
             case BUILD:
                 if (isRetry) System.out.println("Not a valid build! Try again...");
                 else System.out.println("Make your build!");
-                handleBuild();
+                handleBuild(isRetry);
                 break;
             case MOVE_BUILD:
                 if (isRetry) System.out.println("Not a valid move or build! Try again...");
@@ -53,8 +52,8 @@ public class HardcoreStrategy implements GameModeStrategy{
                     if (choice == null) return;
                 } while (choice != 1 && choice != 2);
 
-                if (choice == 1) handleMove();
-                else handleBuild();
+                if (choice == 1) handleMove(isRetry);
+                else handleBuild(isRetry);
 
                 break;
         }
@@ -67,7 +66,7 @@ public class HardcoreStrategy implements GameModeStrategy{
      * - make a choice and add it to the currentMoves.
      * - confirm the performed actions and send the packet move to the server.
      */
-    private void handleMove() {
+    private void handleMove(boolean isRetry) {
         MatchData matchData = MatchData.getInstance();
         Client client = matchData.getClient();
         String player = matchData.getPlayerName();
@@ -81,6 +80,7 @@ public class HardcoreStrategy implements GameModeStrategy{
         boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE MOVES
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
+        if(isRetry) OutputUtilities.printMatch();
 
         //List<String> possibleWorkers = workersID.stream().filter(board::canMove).collect(Collectors.toList());
 
@@ -159,7 +159,7 @@ public class HardcoreStrategy implements GameModeStrategy{
      * - make a choice and add it to the currentBuilds.
      * - confirm the performed actions and send the packet build to the server.
      */
-    private void handleBuild() {
+    private void handleBuild(boolean isRetry) {
         MatchData matchData = MatchData.getInstance();
         Client client = matchData.getClient();
         String player = matchData.getPlayerName();
@@ -173,6 +173,7 @@ public class HardcoreStrategy implements GameModeStrategy{
         boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE BUILDS
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
+        if(isRetry) OutputUtilities.printMatch();
 
         String lastUsedWorker = InputUtilities.getWorkerChoice(workersID);
 
