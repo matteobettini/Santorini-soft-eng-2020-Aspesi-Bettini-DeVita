@@ -2,13 +2,18 @@ package it.polimi.ingsw.CLI.buildings;
 
 import it.polimi.ingsw.CLI.CharFigure;
 import it.polimi.ingsw.CLI.CharStream;
-import it.polimi.ingsw.CLI.buildings.DomeBuilding;
-import it.polimi.ingsw.CLI.buildings.FirstFloorBuilding;
-import it.polimi.ingsw.CLI.buildings.SecondFloorBuilding;
-import it.polimi.ingsw.CLI.buildings.ThirdFloorBuilding;
 import it.polimi.ingsw.model.enums.BuildingType;
 
 public class BuildingFactory {
+
+    /**
+     * This method is the factory for the graphical building. Four possible instances are possible based on the given building type.
+     * @param stream is the object used by the graphical buildings to display themselves.
+     * @param buildingType is the type of the building used to return a certain CharFigure instance.
+     * @param RATEOX is the length on the X axis.
+     * @param RATEOY  is the length on the Y axis.
+     * @return a new instance of CharFigure that will override the dra method.
+     */
     public static CharFigure getBuilding(CharStream stream, BuildingType buildingType, int RATEOX, int RATEOY){
         switch (buildingType){
             case FIRST_FLOOR:

@@ -14,25 +14,47 @@ public class GraphicalCard implements CharFigure {
     private static final int width = 35;
     private static final int height = 20;
 
+    /**
+     * This constructor initializes the card's name, description and the stream used to display itself.
+     * @param stream is the CharStream used to display the GraphicalCard.
+     * @param cardName is the String containing the god card's name.
+     * @param description is the String containing the god card's description.
+     */
     public GraphicalCard(CharStream stream, String cardName, String description){
         this.cardName = cardName;
         this.description = description;
         this.stream = stream;
     }
 
+    /**
+     * This method returns the default width of a GraphicalCard.
+     * @return an integer representing the width.
+     */
     public static int getWidth() {
         return width;
     }
 
+    /**
+     * This method returns the default height of a GraphicalCard.
+     * @return an integer representing the height.
+     */
     public static int getHeight() {
         return height;
     }
 
+    /**
+     * This method is used to display the GraphicalCard on the stream. Since cards are always displayed
+     * relatively to the GraphicalCardsMenu this method is not implemented.
+     */
     @Override
-    public void draw() {
-        draw(0,0);
-    }
+    public void draw() { }
 
+    /**
+     * This method is used to display the GraphicalCard on the stream. GraphicalCards are always displayed
+     * relatively to the GraphicalCardsMenu.
+     * @param relX is the GraphicalCardMenu's relative X coordinate.
+     * @param relY is the GraphicalCardMenu's relative Y coordinate.
+     */
     @Override
     public void draw(int relX, int relY) {
         for(int i = 0; i <= width; ++i){

@@ -19,6 +19,12 @@ public class BuildActionStrategy implements ActionStrategy{
     private Map<Point, List<BuildingType>> currentBuilds;
     private List<Point> currentDataOrder;
 
+    /**
+     * This method is the constructor for the normal build strategy.
+     * lastUsedWorker is the String containing the id of the last used Worker during the build.
+     * currentBuilds maps the chosen buildings to their position on the board.
+     * currentDataOrder is the list of points that contains the info about the order of the performed builds.
+     */
     public BuildActionStrategy(){
         this.lastUsedWorker = null;
         this.currentBuilds = new HashMap<>();
@@ -26,11 +32,27 @@ public class BuildActionStrategy implements ActionStrategy{
     }
 
 
+    /**
+     * In case a packet of possible moves is received during the build turn it will be ignored.
+     * @param packetPossibleMoves is the object containing the workers' ids and their possible moves.
+     * @return false
+     */
     @Override
     public boolean handleMoveAction(PacketPossibleMoves packetPossibleMoves) {
         return false;
     }
 
+    /**
+     * This method will guide the player trough the choice of his builds.
+     * Firstly, if the lastUsedWorker is null, the player is queried on its preference based on the possible workers in the packet.
+     * After the display of the possible position of the builds through the graphical board and the possible buildings through the command line,
+     * the player has three different choices:
+     * - make a choice and then ask a new packet possible builds till an empty one is received.
+     * - restart the entire process again.
+     * - confirm the performed builds.
+     * @param packetPossibleBuilds is the object containing the workers' ids and their possible builds.
+     * @return true if the entire action is restarted, false if the action is confirmed or another possible builds packet is requested.
+     */
     @Override
     public boolean handleBuildAction(PacketPossibleBuilds packetPossibleBuilds) {
         MatchData matchData = MatchData.getInstance();

@@ -34,6 +34,9 @@ public class CLI {
     private MatchData matchData;
 
 
+    /**
+     * This constructor initialized the singleton instance of MatchData and prints the GraphicalStartMenu.
+     */
     public CLI(){
         this.matchData = MatchData.getInstance();
         this.askConnectionParameters = true;
@@ -46,11 +49,18 @@ public class CLI {
         stream.reset();
     }
 
+    /**
+     * The main creates a new instance of CLI and calls the CLI's method run.
+     */
     public static void main(String[] args){
         CLI cli = new CLI();
         cli.run();
     }
 
+    /**
+     * This method sets the initial strategies, then adds all the needed client's observers
+     * and finally asks the server's address and port to the user.
+     */
     public void run(){
 
         setInitialStrategies();
@@ -93,10 +103,17 @@ public class CLI {
         client.start(address, port);
     }
 
+    /**
+     * This method sets the boolean used to indicating the need of setting new connection parameters.
+     * @param askConnectionParameters is true if parameters should be set, false otherwise,
+     */
     public void setAskConnectionParameters(boolean askConnectionParameters) {
         this.askConnectionParameters = askConnectionParameters;
     }
 
+    /**
+     * This method sets the initial strategies.
+     */
     private void setInitialStrategies(){
         connectionStrategy = new ConnectionSetupStrategy();
         nicknameStrategy = new DefaultNicknameStrategy();
@@ -109,15 +126,25 @@ public class CLI {
         updateBoardStrategy = new DefaultUpdateBoardStrategy();
     }
 
+    /**
+     * This method sets the connection strategy to the ConnectionInGameStrategy.
+     */
     public void setConnectionInGameStrategy(){
         connectionStrategy = new ConnectionInGameStrategy();
     }
 
+    /**
+     * This method sets the game-mode strategy to the HardcoreStrategy or the NormalStrategy based on the given boolean.
+     * @param hardcore is true if the game-mode is hardcore, false if it is normal.
+     */
     public void setGameModeStrategy(boolean hardcore){
         if(hardcore) gameModeStrategy = new HardcoreStrategy();
         else gameModeStrategy = new NormalStrategy();
     }
 
+    /**
+     * This methods ask the server's connection parameters to the user.
+     */
     private void setConnectionParameters(){
         String address;
         Integer port;
@@ -151,10 +178,20 @@ public class CLI {
         this.port = port;
     }
 
+    /**
+     * This method checks through a regexp if the given IP address is valid.
+     * @param address is the IP address to check.
+     * @return true if the IP is valid, false otherwise.
+     */
     private boolean addressIsValid(String address) {
         return address != null && IP_PATTERN.matcher(address).matches();
     }
 
+    /**
+     * This method checks if the given number of port is valid.
+     * @param port is the port to validate.
+     * @return true if the port is valid, false otherwise.
+     */
     private boolean portIsValid(int port){
         return port >= 1024 && port <= 65535;
     }

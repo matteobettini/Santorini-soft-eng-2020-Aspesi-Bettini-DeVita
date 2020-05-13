@@ -4,6 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GraphicalLetter {
+
+    /**
+     * This method returns a list of Strings where each string is a row composing the letter.
+     * @param letter is the letter to obtain.
+     * @return a List of Strings.
+     */
     public static List<String> getLetter(char letter){
         List<String> letterRows = new ArrayList<>();
         switch (letter){
@@ -147,6 +153,12 @@ public class GraphicalLetter {
         return letterRows;
     }
 
+    /**
+     * This method returns a list of Strings where each string is a row of 0s and 1s where 1s indicates where
+     * the background can be coloured, 0s otherwise.
+     * @param letter is the given letter.
+     * @return a List of Strings.
+     */
     public static List<String> getColorLetter(char letter){
         List<String> letterRows = new ArrayList<>();
         switch (letter){

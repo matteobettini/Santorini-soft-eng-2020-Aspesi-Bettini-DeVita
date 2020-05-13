@@ -11,6 +11,12 @@ public class NormalStrategy implements GameModeStrategy{
     private ActionStrategy actionStrategy;
     private PacketDoAction lastAction;
 
+    /**
+     * This method is the handler for the move or build actions when the normal mode is set.
+     * It calls the different handlers based on the ActionType and manage the choice of the move or the build if permitted.
+     * @param packetDoAction is the packet containing the ActionType and its receiver.
+     * @param isRetry is true if the action is requested another time, false otherwise.
+     */
     @Override
     public void handleAction(PacketDoAction packetDoAction, boolean isRetry) {
         MatchData matchData = MatchData.getInstance();
@@ -41,6 +47,10 @@ public class NormalStrategy implements GameModeStrategy{
         }
     }
 
+    /**
+     * This method calls the handleMoveAction of the ActionStrategy and if the said method returns true the action is restarted.
+     * @param packetPossibleMoves is the packet containing the workers' ids and their possible moves.
+     */
     @Override
     public void handlePossibleMoves(PacketPossibleMoves packetPossibleMoves) {
         if(actionStrategy.handleMoveAction(packetPossibleMoves)){
@@ -48,6 +58,10 @@ public class NormalStrategy implements GameModeStrategy{
         }
     }
 
+    /**
+     * This method calls the handleBuildAction of the ActionStrategy and if the said method returns true the action is restarted.
+     * @param packetPossibleBuilds is the packet containing the workers' ids and their possible builds.
+     */
     @Override
     public void handlePossibleBuilds(PacketPossibleBuilds packetPossibleBuilds) {
         if(actionStrategy.handleBuildAction(packetPossibleBuilds)){
@@ -55,6 +69,9 @@ public class NormalStrategy implements GameModeStrategy{
         }
     }
 
+    /**
+     * This method asks the server for a PacketPossibleMoves so that the action can start once received.
+     */
     private void handleMove(){
         MatchData matchData = MatchData.getInstance();
         actionStrategy = new MoveActionStrategy();
@@ -62,6 +79,9 @@ public class NormalStrategy implements GameModeStrategy{
         matchData.getClient().send(packetMove);
     }
 
+    /**
+     * This method asks the server for a PacketPossibleBuilds so that the action can start once received.
+     */
     private void handleBuild(){
         MatchData matchData = MatchData.getInstance();
         actionStrategy = new BuildActionStrategy();

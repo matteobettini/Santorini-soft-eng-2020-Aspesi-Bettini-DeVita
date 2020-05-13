@@ -15,26 +15,52 @@ public class GraphicalMatchMenu implements CharFigure{
     private final CharStream stream;
     private boolean gameOver;
     private boolean youWin;
+    private final int defaultX = 0;
+    private final int defaultY = 0;
 
+    /**
+     * This constructor initializes the stream where the GraphicalMatchMenu print itself.
+     * @param stream is the CharStream instanced used to print.
+     */
     public GraphicalMatchMenu(CharStream stream){
         this.stream = stream;
         this.gameOver = false;
         this.youWin = false;
     }
 
+    /**
+     * This method is used to set the game over message.
+     * @param set is true if the message has to be printed, false otherwise.
+     */
     public void setGameOver(boolean set){
         this.gameOver = set;
     }
 
+    /**
+     * This method is used to set the you win message.
+     * @param set is true if the message has to be printed, false otherwise.
+     */
     public void setYouWin(boolean set){
         this.youWin = set;
     }
 
+    /**
+     * This method draws the GraphicalMatchMenu on the stream.
+     */
     @Override
     public void draw() {
-        draw(0, 0);
+        draw(defaultX, defaultY);
     }
 
+    /**
+     * This method draws the GraphicalMatchMenu on the stream.
+     * The drawn elements are:
+     * - A box containing the players' nickname, their status (green during their turn, false it's not adn red if they have lost),
+     * and the associated god card.
+     * - A box containing the number of available buildings.
+     * - A box containing the message of game over if set.
+     * - A box containing the message of you win if set.
+     */
     @Override
     public void draw(int relX, int relY) {
 
@@ -48,6 +74,11 @@ public class GraphicalMatchMenu implements CharFigure{
 
     }
 
+    /**
+     * This method draws the message 'You Win' if set.
+     * @param relX is the menu's X coordinate.
+     * @param relY is the menu's Y coordinate.
+     */
     private void printYouWin(int relX, int relY){
         int marginY = 18;
         int marginX = 70;
@@ -62,6 +93,11 @@ public class GraphicalMatchMenu implements CharFigure{
         stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_YELLOW, BackColor.ANSI_BRIGHT_BG_BLUE);
     }
 
+    /**
+     * This method draws the message 'Game Over' if set.
+     * @param relX is the menu's X coordinate.
+     * @param relY is the menu's Y coordinate.
+     */
     private void printGameOver(int relX, int relY){
         int marginY = 18;
         int marginX = 68;
@@ -74,6 +110,11 @@ public class GraphicalMatchMenu implements CharFigure{
         stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_RED, BackColor.ANSI_BG_BLACK);
     }
 
+    /**
+     * This method draws the box of the available buildings.
+     * @param relX is the menu's X coordinate.
+     * @param relY is the menu's Y coordinate.
+     */
     private void printAvailableBuildings(int relX, int relY){
         MatchData matchData = MatchData.getInstance();
         Map<BuildingType, Integer>  buildingsCounter = matchData.getBuildingsCounter();
@@ -95,6 +136,11 @@ public class GraphicalMatchMenu implements CharFigure{
         stream.addString(relX + 22, relY + 38, buildingsCounter.get(BuildingType.FIRST_FLOOR).toString(), BackColor.ANSI_BG_WHITE);
     }
 
+    /**
+     * This method draws the players's with their nicknames, their status and their god cards.
+     * @param relX is the menu's X coordinate.
+     * @param relY is the menu's Y coordinate.
+     */
     private void printPlayersBox(int relX, int relY){
         MatchData matchData = MatchData.getInstance();
         Map<String, Color> players = matchData.getPlayersColor();

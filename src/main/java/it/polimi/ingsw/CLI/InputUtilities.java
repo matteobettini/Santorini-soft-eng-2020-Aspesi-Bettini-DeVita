@@ -213,7 +213,7 @@ public class InputUtilities {
                 if(point == null) return null;
             }while(!POSITION_PATTERN.matcher(point).matches());
 
-            chosenPosition = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
+            chosenPosition = board.getPoint(point);
             assert board.getCell(chosenPosition) == null;
             error = !availablePositions.contains(chosenPosition);
         }while(error);
@@ -242,7 +242,7 @@ public class InputUtilities {
         }
 
 
-        String command;
+        String point;
         Point chosenPosition;
         BuildingType chosenBuilding;
         List<BuildingType> possibleBuildings;
@@ -255,12 +255,12 @@ public class InputUtilities {
                 if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s buildings (ex A1 1, B2 4...): ");
                 else System.out.print("Choose your next worker" + (workerNumber) + "'s buildings: ");
                 suggestion = false;
-                command = InputUtilities.getLine();
-                if(command == null) return false;
-            }while(!InputUtilities.BUILDINGS_PATTERN.matcher(command).matches());
+                point = InputUtilities.getLine();
+                if(point == null) return false;
+            }while(!InputUtilities.BUILDINGS_PATTERN.matcher(point).matches());
 
-            chosenPosition = board.getPoint(Character.getNumericValue(command.charAt(1)), Character.toUpperCase(command.charAt(0)));
-            chosenBuilding = InputUtilities.charToBuildingType(command.charAt(3));
+            chosenPosition = board.getPoint(point);
+            chosenBuilding = InputUtilities.charToBuildingType(point.charAt(3));
             possibleBuildings = possibleBuildingsInPositions.get(chosenPosition);
 
             error = board.getCell(chosenPosition) == null || possibleBuildings == null || !possibleBuildings.contains(chosenBuilding);

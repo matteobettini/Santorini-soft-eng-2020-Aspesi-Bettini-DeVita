@@ -5,53 +5,64 @@ import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.packets.PacketUpdateBoard;
 
 import java.awt.*;
+import java.util.List;
+import java.util.Map;
 
 public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
+
+    /**
+     * This method updates the board. It eventually makes the graphical board in line with the last updates to the board.
+     * If there is a winner or a loser it sets the info in the MatchData and then displays a message with the winner/loser through
+     * the GraphicalMatchMenu.
+     * @param packetUpdateBoard is the packet containing the updated workers positions, new buildings and in some cases the winner/loser.
+     */
     @Override
     public void handleUpdateBoard(PacketUpdateBoard packetUpdateBoard) {
 
         MatchData matchData = MatchData.getInstance();
         Board board = matchData.getBoard();
-        GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
         boolean youWin = false;
         boolean gameOver = false;
 
-        //FIRST WE UPDATE BOTH THE BOARD AND THE GRAPHICAL ONE
-        if(packetUpdateBoard.getNewBuildings() != null){
-            for(Point pos : packetUpdateBoard.getNewBuildings().keySet()){
-                for(BuildingType building : packetUpdateBoard.getNewBuildings().get(pos)){
+        Map<Point, List<BuildingType>> newBuildings = packetUpdateBoard.getNewBuildings();
+
+        //FIRST WE UPDATE THE BOARD
+        if(newBuildings != null){
+            for(Point pos : newBuildings.keySet()){
+                for(BuildingType building : newBuildings.get(pos)){
                     board.getCell(pos).addBuilding(building);
-                    //graphicalBoard.getCell(pos).addBuilding(building);
                     matchData.decrementCounter(building, 1);
                 }
             }
 
         }
 
+        Map<String, Point> workersPositions = packetUpdateBoard.getWorkersPositions();
+
         //SET UPDATED WORKERS' POSITIONS
-        if(packetUpdateBoard.getWorkersPositions() != null){
+        if(workersPositions != null){
             //RESET WORKERS' POSITIONS
             board.resetWorkers();
-            //graphicalBoard.resetWorkers();
 
-            for(String worker : packetUpdateBoard.getWorkersPositions().keySet()){
-                board.getCell(packetUpdateBoard.getWorkersPositions().get(worker)).setWorker(worker);
-                //graphicalBoard.getCell(packetUpdateBoard.getWorkersPositions().get(worker)).setWorker(worker);
-            }
+            for(String worker : workersPositions.keySet())
+                board.getCell(workersPositions.get(worker)).setWorker(worker);
         }
 
         matchData.makeGraphicalBoardEqualToBoard();
 
-        //IF THERE IS A LOSER OR A WINNER WE SET IT
-        if(packetUpdateBoard.getPlayerLostID() != null){
-            String loser = packetUpdateBoard.getPlayerLostID();
+        String loser = packetUpdateBoard.getPlayerLostID();
 
-            //WE ALSO SET IT IN THE MATCH MENU
+        //IF THERE IS A LOSER OR A WINNER WE SET IT
+        if(loser != null){
+
+            //WE SET IT IN THE MATCH MENU
             matchData.setLoser(loser);
             if(loser.equals(matchData.getPlayerName())) gameOver = true;
         }
-        if(packetUpdateBoard.getPlayerWonID() != null){
-            String winner = packetUpdateBoard.getPlayerWonID();
+
+        String winner = packetUpdateBoard.getPlayerWonID();
+
+        if(winner != null){
 
             matchData.setWinner(winner);
 

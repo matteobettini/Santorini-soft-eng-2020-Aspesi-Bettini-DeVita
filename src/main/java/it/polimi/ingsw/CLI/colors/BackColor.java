@@ -18,11 +18,18 @@ public enum BackColor {
     ANSI_BRIGHT_BG_CYAN ( "\u001B[106m"),
     ANSI_BRIGHT_BG_WHITE( "\u001B[107m");
 
+    /**
+     * This method is the constructor that sets the color's code for the background.
+     */
     private final String code;
     BackColor(String code){
         this.code = code;
     }
 
+    /**
+     * This method is the getter for the code.
+     * @return a String equal to the chosen color's code.
+     */
     public String getCode() {
         return code;
     }

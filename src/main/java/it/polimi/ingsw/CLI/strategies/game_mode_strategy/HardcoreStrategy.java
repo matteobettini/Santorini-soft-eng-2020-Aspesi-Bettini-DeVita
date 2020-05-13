@@ -16,6 +16,12 @@ public class HardcoreStrategy implements GameModeStrategy{
 
     private PacketDoAction lastAction;
 
+    /**
+     * This method is the handler for the move or build actions when the hardcore mode is set.
+     * It calls the different handlers based on the ActionType and manage the choice of the move or the build if permitted.
+     * @param packetDoAction is the packet containing the ActionType and its receiver.
+     * @param isRetry is true if the action is requested another time, false otherwise.
+     */
     @Override
     public void handleAction(PacketDoAction packetDoAction, boolean isRetry) {
         MatchData matchData = MatchData.getInstance();
@@ -54,6 +60,13 @@ public class HardcoreStrategy implements GameModeStrategy{
         }
     }
 
+    /**
+     * This method handles the move action. Since the hardcore mode is on, the player has the free choice on the worker and the adjacent positions
+     * without a built dome on them. The player has three possible choices during his move:
+     * - restart the entire action and choose everything again.
+     * - make a choice and add it to the currentMoves.
+     * - confirm the performed actions and send the packet move to the server.
+     */
     private void handleMove() {
         MatchData matchData = MatchData.getInstance();
         Client client = matchData.getClient();
@@ -85,12 +98,12 @@ public class HardcoreStrategy implements GameModeStrategy{
 
             List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition).stream().filter(p -> board.canMove(lastUsedWorker, lastWorkerPosition)).collect(Collectors.toList());
 
+            OutputUtilities.printMatch();
+
             if(availablePositions.isEmpty()){
                 System.out.println("You can't move anymore!");
                 makeChoiceForbidden = true;
             }
-
-            OutputUtilities.printMatch();
 
             confirmActionForbidden = currentChosenPositions.isEmpty();
 
@@ -137,6 +150,13 @@ public class HardcoreStrategy implements GameModeStrategy{
 
     }
 
+    /**
+     * This method handles the build action. Since the hardcore mode is on, the player has the free choice on the worker and the adjacent positions(only duplicates are discarded).
+     * The player has three possible choices during his move:
+     * - restart the entire action and choose everything again.
+     * - make a choice and add it to the currentBuilds.
+     * - confirm the performed actions and send the packet build to the server.
+     */
     private void handleBuild() {
         MatchData matchData = MatchData.getInstance();
         Client client = matchData.getClient();
@@ -163,12 +183,13 @@ public class HardcoreStrategy implements GameModeStrategy{
 
             Map<Point, List<BuildingType>> possibleBuildingsInPoints = board.getPossibleBuildings(lastUsedWorker, currentBuilds);
 
+            OutputUtilities.printMatch();
+
             if (possibleBuildingsInPoints.isEmpty()) {
                 System.out.println("You can't build anymore!");
                 makeChoiceForbidden = true;
             }
 
-            OutputUtilities.printMatch();
 
             confirmActionForbidden = currentDataOrder.isEmpty();
 
@@ -206,9 +227,15 @@ public class HardcoreStrategy implements GameModeStrategy{
 
     }
 
+    /**
+     * Since the hardcore mode is on, a packet with the possible moves is not expected and thus it's ignored.
+     */
     @Override
     public void handlePossibleMoves(PacketPossibleMoves packetPossibleMoves) { }
 
+    /**
+     * Since the hardcore mode is on, a packet with the possible builds is not expected and thus it's ignored.
+     */
     @Override
     public void handlePossibleBuilds(PacketPossibleBuilds packetPossibleBuilds) { }
 

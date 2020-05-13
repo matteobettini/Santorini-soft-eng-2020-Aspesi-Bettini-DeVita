@@ -16,11 +16,27 @@ public class MoveActionStrategy implements ActionStrategy{
     private List<Point> currentPositions;
     private String lastUsedWorker; //null if the action has just arrived
 
+    /**
+     * This method is the constructor for the normal move strategy.
+     * lastUsedWorker is the String containing the id of the last used Worker during the move.
+     * currentPositions contains the positions reached during the player turn.
+     */
     public MoveActionStrategy(){
         this.currentPositions = new LinkedList<>();
         this.lastUsedWorker = null;
     }
 
+    /**
+     * This method will guide the player trough the choice of his moves.
+     * Firstly, if the lastUsedWorker is null, the player is queried on its preference based on the possible workers in the packet.
+     * After the display of the possible position of the moves through the graphical board and the command line,
+     * the player has three different choices:
+     * - make a choice and then ask a new packet possible moves till an empty one is received.
+     * - restart the entire process again.
+     * - confirm the performed moves.
+     * @param packetPossibleMoves is the object containing the workers' ids and their possible moves.
+     * @return true if the entire action is restarted, false if the action is confirmed or another possible moves packet is requested.
+     */
     @Override
     public boolean handleMoveAction(PacketPossibleMoves packetPossibleMoves) {
         MatchData matchData = MatchData.getInstance();
@@ -104,6 +120,11 @@ public class MoveActionStrategy implements ActionStrategy{
         return false;
     }
 
+    /**
+     * In case a packet of possible builds is received during the move turn it will be ignored.
+     * @param packetPossibleBuilds is the object containing the workers' ids and their possible builds.
+     * @return false
+     */
     @Override
     public boolean handleBuildAction(PacketPossibleBuilds packetPossibleBuilds) { return false; }
 }

@@ -8,6 +8,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class DefaultSelectCardStrategy implements SelectCardStrategy {
+
+    /**
+     * This handler displays the available cards to the user. If the player is the challenger all the possible cards are displayed
+     * through the GraphicalCardsMenu. If not the player can choose one card among the cards previously chosen by the challenger.
+     * @param packetCardsFromServer is the packet containing the available cards and the number of choices to make.
+     * @param isRetry is true if the cards are requested another time, false otherwise.
+     */
     @Override
     public void handleCardStrategy(PacketCardsFromServer packetCardsFromServer,boolean isRetry) {
 
@@ -26,7 +33,7 @@ public class DefaultSelectCardStrategy implements SelectCardStrategy {
         matchData.setAllCards(packetCardsFromServer.getAllCards());
         graphicalCardsMenu.setAvailableCards(packetCardsFromServer.getAvailableCards());
 
-        int number = packetCardsFromServer.getNumberToChoose();
+        int numberToChoose = packetCardsFromServer.getNumberToChoose();
         if(!isRetry){
             CharStream stream = new CharStream(graphicalCardsMenu.getRequiredWidth(), graphicalCardsMenu.getRequiredHeight());
             graphicalCardsMenu.setStream(stream);
@@ -35,11 +42,11 @@ public class DefaultSelectCardStrategy implements SelectCardStrategy {
             stream.reset();
 
 
-            if (number > 1) System.out.println("\n" + "You are the challenger!");
-            System.out.print("Choose " + number + " " + (number == 1 ? "card" : "cards (ex. Athena, Apollo, ...)") + ": ");
+            if (numberToChoose > 1) System.out.println("\n" + "You are the challenger!");
+            System.out.print("Choose " + numberToChoose + " " + (numberToChoose == 1 ? "card" : "cards (ex. Athena, Apollo, ...)") + ": ");
         }
         else{
-            System.out.print("Choose " + number + " valid " + (number == 1 ? "card" : "cards") + ": ");
+            System.out.print("Choose " + numberToChoose + " valid " + (numberToChoose == 1 ? "card" : "cards") + ": ");
         }
 
         List<String> chosenCardsList;

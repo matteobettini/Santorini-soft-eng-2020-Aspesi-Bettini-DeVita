@@ -10,17 +10,32 @@ class ThirdFloorBuilding implements CharFigure {
     private final int RATEOX;
     private final int RATEOY;
 
+    /**
+     * /**
+     * This method is the constructor for the graphical third floor that implements the CharFigure interface.
+     * @param stream is the object used by the graphical third floor in order to display itself.
+     * @param RATEOX is the length on the X axis.
+     * @param RATEOY is the length on the Y axis.
+     */
     public ThirdFloorBuilding(CharStream stream, int RATEOX, int RATEOY){
         this.RATEOX = RATEOX;
         this.RATEOY = RATEOY;
         this.stream = stream;
     }
 
+    /**
+     * This method is overridden from the the CharFigure interface.
+     * Since the building position on the stream is relative to the one of the graphical board this method is not used.
+     */
     @Override
-    public void draw() {
-        draw(0,0);
-    }
+    public void draw() { }
 
+    /**
+     * This method will set colors and characters used to display the third floor through the stream.
+     * Colors of the Third Floor: Grey.
+     * @param relX is the position on the X axis and it is relative to a certain position on the board.
+     * @param relY is the position on the Y axis and it is relative to a certain position on the board.
+     */
     @Override
     public void draw(int relX, int relY) {
         relX += 8;

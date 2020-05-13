@@ -12,6 +12,13 @@ import java.util.regex.Pattern;
 
 public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStrategy {
 
+    /**
+     * This method handles the setting of the workers on the board. It sends the chosen positions to
+     * the server after having checked their correctness (but not if they are already occupied by other players).
+     * If the active player is not the user, this method displays who is setting his positions.
+     * @param activePlayer is the player asked to set his workers' positions.
+     * @param isRetry is true if the positions are asked another time, false otherwise.
+     */
     @Override
     public void handleSetWorkersPosition(String activePlayer, boolean isRetry) {
         MatchData matchData = MatchData.getInstance();
@@ -41,7 +48,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
                     point = InputUtilities.getLine();
                     if(point == null) return;
                 }while(!InputUtilities.POSITION_PATTERN.matcher(point).matches());
-                helper = board.getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0)));
+                helper = board.getPoint(point);
                 error = board.getCell(helper) == null || positions.containsValue(helper);
             }while(error);
             positions.put(workersID.get(i), helper);

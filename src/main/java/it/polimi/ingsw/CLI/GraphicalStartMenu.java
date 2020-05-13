@@ -9,22 +9,42 @@ public class GraphicalStartMenu implements CharFigure{
     private final int height;
     public static final int DEFAULT_WIDTH = 159;
     public static final int DEFAULT_HEIGHT = 30;
+    private final int defaultX = 0;
+    private final int defaultY = 0;
 
+    /**
+     * This constructor initializes the stream used by the GraphicalStartMenu to print itself, its width and height.
+     * @param stream is the CharStream used to display the menu.
+     * @param width is the width of the graphical menu.
+     * @param height is the height of the graphical menu.
+     */
     public GraphicalStartMenu(CharStream stream, int width, int height){
         this.stream = stream;
         this.width = width;
         this.height = height;
     }
 
+    /**
+     * This constructor initializes the stream used by the GraphicalStartMenu to print itself.
+     * @param stream is the CharStream used to display the menu.
+     */
     public GraphicalStartMenu(CharStream stream){
         this(stream, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
+    /**
+     * This method draws the GraphicalStartMenu on the stream.
+     */
     @Override
     public void draw() {
-        draw(0,0);
+        draw(defaultX,defaultY);
     }
 
+    /**
+     * This method draws the GraphicalStartMenu.
+     * @param relX is the relative X coordinate.
+     * @param relY is the relative Y coordinate.
+     */
     @Override
     public void draw(int relX, int relY) {
         for(int i = 0; i < width; ++i) {

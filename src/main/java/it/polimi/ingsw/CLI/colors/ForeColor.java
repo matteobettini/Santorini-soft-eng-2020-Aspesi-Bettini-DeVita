@@ -18,11 +18,18 @@ public enum ForeColor {
     ANSI_BRIGHT_CYAN ("\u001B[96m"),
     ANSI_BRIGHT_WHITE("\u001B[97m");
 
+    /**
+     * This method is the constructor that sets the color's code for the characters.
+     */
     private final String code;
     ForeColor(String code){
         this.code = code;
     }
 
+    /**
+     * This method is the getter for the code.
+     * @return a String equal to the chosen color's code.
+     */
     public String getCode() {
         return code;
     }

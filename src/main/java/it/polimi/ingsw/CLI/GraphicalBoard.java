@@ -17,6 +17,11 @@ public class GraphicalBoard implements CharFigure{
     private final int defaultY = 5;
     private List<Point> possiblePositions;
 
+    /**
+     * This constructor initializes the GraphicalBoard given the stream that will be used in order to print itself.
+     * The GraphicalBoard rep is a rows * columns matrix of GraphicalCells.
+     * @param stream is the given CHarStream.
+     */
     public GraphicalBoard(CharStream stream){
         this.stream = stream;
         this.graphicalCells = new GraphicalCell[rows][columns];
@@ -27,11 +32,21 @@ public class GraphicalBoard implements CharFigure{
         }
     }
 
+    /**
+     * This method is used to draw the GraphicalBoard on the stream. The absolute default coordinates are used.
+     */
     @Override
     public void draw() {
         draw(defaultX, defaultY);
     }
 
+    /**
+     * This method is used to draw the GraphicalBoard on the stream given the coordinates.
+     * Alongside the board coordinates are displayed and this method calls the worker and buildings' draw
+     * method to display themselves relatively to the GraphicalBoard position on th stream.
+     * @param relX is the X coordinate.
+     * @param relY is the Y coordinate.
+     */
     @Override
     public void draw(int relX, int relY) {
 
@@ -91,14 +106,28 @@ public class GraphicalBoard implements CharFigure{
 
     }
 
+    /**
+     * This method resets the highlighted cells that corresponds to the possible actions.
+     */
     public void resetPossibleActions(){
         this.possiblePositions = null;
     }
 
+    /**
+     * This method sets the highlighted cells that corresponds to the possible actions given a list of positions.
+     * @param possiblePositions is the list of possible positions.
+     */
     public void setPossibleActions(List<Point> possiblePositions){
         this.possiblePositions = possiblePositions;
     }
 
+    /**
+     * This method highlight the set possible positions on the GraphicalBoard in order to display
+     * possible actions to the user.
+     * @param positions is the list of positions to highlight.
+     * @param relX is the X coordinate of the GraphicalBoard.
+     * @param relY is the Y coordinate of the GraphicalBoard.
+     */
     private void highlightActions(List<Point> positions, int relX, int relY){
         ForeColor foreColor = ForeColor.ANSI_BLACK;
         BackColor backColor = BackColor.ANSI_BRIGHT_BG_GREEN;
@@ -121,17 +150,33 @@ public class GraphicalBoard implements CharFigure{
         }
     }
 
+    /**
+     * This method returns a GraphicalCell instance given its position on the GraphicalBoard.
+     * @param pos is the given position.
+     * @return and instance of GraphicalCell.
+     */
     public GraphicalCell getCell(Point pos){
         if (pos.x < 0 || pos.x >= rows || pos.y < 0 || pos.y >= columns) return null;
         return graphicalCells[pos.x][pos.y];
     }
 
+    /**
+     * This method removes a worker from the GraphicalBoard given its playerID and its number.
+     * @param playerID is the String containing the playerID.
+     * @param workerNumber is the number of the given worker.
+     */
     public void removeWorker(String playerID, Integer workerNumber){
         Point position = getWorkerPosition(playerID, workerNumber);
         if(position == null) return;
         graphicalCells[position.x][position.y].removeWorker();
     }
 
+    /**
+     * This method returns the position on the GraphicalBoard of the given worker.
+     * @param playerID is the String containing the playerID.
+     * @param workerNumber is the number of the given worker.
+     * @return a Point containing the worker's coordinates, null if it's not present.
+     */
     public Point getWorkerPosition(String playerID, Integer workerNumber){
         for(int i = 0; i < rows; ++i) {
             for (int j = 0; j < columns; ++j) {

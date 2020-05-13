@@ -5,6 +5,11 @@ import it.polimi.ingsw.CLI.MatchData;
 import it.polimi.ingsw.packets.PacketNickname;
 
 public class DefaultNicknameStrategy implements NicknameStrategy {
+
+    /**
+     * This method handles the request of the nickname to the user. It also sets the user nickname in the MatchData instance.
+     * @param message contains the message of request sent from the server.
+     */
     @Override
     public void handleNickname(String message) {
         MatchData matchData = MatchData.getInstance();

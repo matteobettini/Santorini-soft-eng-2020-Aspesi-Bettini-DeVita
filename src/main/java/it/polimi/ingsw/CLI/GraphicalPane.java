@@ -10,6 +10,15 @@ public class GraphicalPane implements CharFigure{
     private final ForeColor foreColor;
     private final BackColor backColor;
 
+    /**
+     * This constructor initializes the stream used by the GraphicalPane to print itself, its width and height and
+     * its box color/character colors.
+     * @param stream is the CharStream used to print.
+     * @param width is the width of the GraphicalPane.
+     * @param height is the height of the GraphicalPane.
+     * @param foreColor is the character's color.
+     * @param backColor is the box's color.
+     */
     public GraphicalPane(CharStream stream, int width, int height, ForeColor foreColor, BackColor backColor){
         this.stream = stream;
         this.height = height;
@@ -18,15 +27,30 @@ public class GraphicalPane implements CharFigure{
         this.foreColor = foreColor;
     }
 
+    /**
+     * This constructor initializes the stream used by the GraphicalPane to print itself, its width and height and
+     * its box color.
+     * @param stream is the CharStream used to print.
+     * @param width is the width of the GraphicalPane.
+     * @param height is the height of the GraphicalPane.
+     * @param backColor is the box's color.
+     */
     public GraphicalPane(CharStream stream, int width, int height, BackColor backColor){
         this(stream, width, height, null, backColor);
     }
 
+    /**
+     * This method draws the GraphicalPane on the stream. Since they are always drawn relatively to the game-scene, this
+     * method is not implemented.
+     */
     @Override
-    public void draw() {
-        draw(0,0);
-    }
+    public void draw() { }
 
+    /**
+     * This method draws the GraphicalPane on the stream given the relative coordinates.
+     * @param relX is the relative X coordinate.
+     * @param relY is the relative Y coordinate.
+     */
     @Override
     public void draw(int relX, int relY) {
         for(int i = 0; i <= width; ++i){
