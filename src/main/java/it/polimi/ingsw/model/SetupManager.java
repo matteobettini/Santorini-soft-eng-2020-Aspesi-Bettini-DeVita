@@ -3,9 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.cards.CardFile;
 import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.model.enums.SetupPhase;
+import it.polimi.ingsw.utils.Pair;
 import it.polimi.ingsw.utils.observe.Observer;
 import it.polimi.ingsw.packets.*;
-import javafx.util.Pair;
 
 import java.awt.*;
 import java.util.*;

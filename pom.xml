@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>13</maven.compiler.source>
         <maven.compiler.target>13</maven.compiler.target>
-        <javafx.version>13</javafx.version>
+        <!--<javafx.version>13</javafx.version>-->
     </properties>
 
     <dependencies>
@@ -31,7 +31,7 @@
             <version>5.6.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
             <version>14-ea+8</version>
@@ -50,7 +50,7 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>14-ea+8</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>

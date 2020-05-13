@@ -1,7 +1,7 @@
 package it.polimi.ingsw.packets;
 
 import it.polimi.ingsw.model.enums.BuildingType;
-import javafx.util.Pair;
+import it.polimi.ingsw.utils.Pair;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -29,7 +29,7 @@ public class PacketSetup implements Serializable {
 
         this.cards = new HashMap<>();
         for(String s : cards.keySet()){
-            Pair<String,String> internalPair = new Pair<>( cards.get(s).getKey(), cards.get(s).getValue());
+            Pair<String,String> internalPair = new Pair<>( cards.get(s).getFirst(), cards.get(s).getSecond());
             this.cards.put(s,internalPair);
         }
 

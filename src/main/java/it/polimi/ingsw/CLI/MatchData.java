@@ -3,7 +3,7 @@ package it.polimi.ingsw.CLI;
 import it.polimi.ingsw.Client;
 import it.polimi.ingsw.ClientImpl;
 import it.polimi.ingsw.model.enums.BuildingType;
-import javafx.util.Pair;
+import it.polimi.ingsw.utils.Pair;
 
 import java.awt.*;
 import java.util.HashMap;

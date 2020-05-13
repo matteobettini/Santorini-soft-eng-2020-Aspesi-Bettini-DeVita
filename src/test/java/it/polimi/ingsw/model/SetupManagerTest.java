@@ -8,7 +8,7 @@ import it.polimi.ingsw.model.enums.ActionType;
 import it.polimi.ingsw.model.enums.BuildingType;
 import it.polimi.ingsw.model.enums.SetupPhase;
 import it.polimi.ingsw.packets.*;
-import javafx.util.Pair;
+import it.polimi.ingsw.utils.Pair;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

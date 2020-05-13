@@ -5,7 +5,7 @@ import it.polimi.ingsw.CLI.buildings.BuildingFactory;
 import it.polimi.ingsw.CLI.colors.BackColor;
 import it.polimi.ingsw.CLI.colors.ForeColor;
 import it.polimi.ingsw.model.enums.BuildingType;
-import javafx.util.Pair;
+import it.polimi.ingsw.utils.Pair;
 
 import java.awt.*;
 import java.util.Map;
@@ -180,7 +180,7 @@ public class GraphicalMatchMenu implements CharFigure{
                 stream.addColor(relX + 7, relY + nextLine, BackColor.ANSI_BRIGHT_BG_GREEN);
                 stream.addColor(relX + 8, relY + nextLine, BackColor.ANSI_BRIGHT_BG_GREEN);
             }
-            String godCard = playersGodCardAssociation.get(player).getKey();
+            String godCard = playersGodCardAssociation.get(player).getFirst();
             if(godCard.length() >= 15){
                 godCard = godCard.substring(0, 12);
                 godCard = godCard.concat("...");

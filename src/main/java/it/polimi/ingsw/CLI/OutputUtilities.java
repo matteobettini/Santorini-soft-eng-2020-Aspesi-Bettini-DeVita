@@ -1,7 +1,7 @@
 package it.polimi.ingsw.CLI;
 
 import it.polimi.ingsw.model.enums.ActionType;
-import javafx.util.Pair;
+import it.polimi.ingsw.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +74,7 @@ public class OutputUtilities {
         List<String> godCards = new ArrayList<>();
 
         for(String player : playersCards.keySet()){
-            godCards.add(playersCards.get(player).getKey());
+            godCards.add(playersCards.get(player).getFirst());
         }
         GraphicalCardsMenu graphicalCardsMenu = new GraphicalCardsMenu();
         graphicalCardsMenu.setGodCards(allCards);
