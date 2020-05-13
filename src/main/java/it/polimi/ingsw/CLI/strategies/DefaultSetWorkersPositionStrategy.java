@@ -1,14 +1,15 @@
 package it.polimi.ingsw.CLI.strategies;
 
-import it.polimi.ingsw.CLI.*;
-import it.polimi.ingsw.packets.PacketDoAction;
+import it.polimi.ingsw.CLI.Board;
+import it.polimi.ingsw.CLI.InputUtilities;
+import it.polimi.ingsw.CLI.MatchData;
+import it.polimi.ingsw.CLI.OutputUtilities;
 import it.polimi.ingsw.packets.PacketWorkersPositions;
 
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStrategy {
 
@@ -48,7 +49,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
                     point = InputUtilities.getLine();
                     if(point == null) return;
                 }while(!InputUtilities.POSITION_PATTERN.matcher(point).matches());
-                helper = board.getPoint(point);
+                helper = InputUtilities.getPoint(point);
                 error = board.getCell(helper) == null || positions.containsValue(helper);
             }while(error);
             positions.put(workersID.get(i), helper);

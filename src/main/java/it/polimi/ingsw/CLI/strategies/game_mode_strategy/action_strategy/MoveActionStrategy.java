@@ -43,7 +43,6 @@ public class MoveActionStrategy implements ActionStrategy{
         Client client = matchData.getClient();
 
         //ELEMENT USED TO DISPLAY CHANGES
-        Board board = matchData.getBoard();
         GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
 
         boolean restartForbidden = false; //FALSE IF THE PLAYER CAN CHOOSE THE WORKER AGAIN
@@ -90,7 +89,7 @@ public class MoveActionStrategy implements ActionStrategy{
         switch(choice){
             case 1:
                 //FIRST WE GET THE PLAYER CHOICE
-                Point chosenPosition = InputUtilities.getChosenPosition(possiblePositions, board, lastUsedWorker);
+                Point chosenPosition = InputUtilities.getChosenPosition(possiblePositions, lastUsedWorker);
                 if(chosenPosition ==  null) return false;
                 //THE CHOSEN POSITION IS ADDED TO CURRENT POSITIONS THAT WILL FORM THE PACKET CONFIRMATION
                 currentPositions.add(chosenPosition);

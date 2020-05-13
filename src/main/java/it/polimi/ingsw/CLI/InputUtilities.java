@@ -20,23 +20,31 @@ public class InputUtilities {
     private static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4])$";
     public static final Pattern BUILDINGS_PATTERN = Pattern.compile(BUILDINGS_REGEXP);
 
+    /**
+     * This method gets a line from from the command line asynchronously.
+     * @return the String in input.
+     */
     public static String getLine(){
-        String name;
+        String input;
         do {
             try {
-                while (!input.ready()) {
+                while (!InputUtilities.input.ready()) {
                     Thread.sleep(200);
                 }
-                name = input.readLine();
+                input = InputUtilities.input.readLine();
             } catch (InterruptedException | IOException e) {
                 Thread.currentThread().interrupt();
                 return null;
             }
-        } while ("".equals(name));
-        return name;
+        } while ("".equals(input));
+        return input;
     }
 
 
+    /**
+     * This method gets an integer from from the command line asynchronously.
+     * @return the Integer in input.
+     */
     public static Integer getInt(String errorMessage){
         String numString;
         Integer num = null;
@@ -63,6 +71,10 @@ public class InputUtilities {
         return num;
     }
 
+    /**
+     * This method gets a boolean from from the command line asynchronously.
+     * @return the boolean in input.
+     */
     public static Boolean getBoolean(){
         String boolString;
         Boolean bool = null;
@@ -91,6 +103,11 @@ public class InputUtilities {
         return bool;
     }
 
+    /**
+     * This method makes the player choose the worker that will be used in his next action given the possible workers (the ones who can move/build).
+     * @param possibleWorkers is the list of workers' ids that re possible to choose.
+     * @return the chosen worker's id.
+     */
     public static String getWorkerChoice(List<String> possibleWorkers){
         //FIRST WE ORDER THE LIST OF POSSIBLE WORKERS BASED ON THE ASSUMPTION THAT WORKERS' IDS ARE IN LEXICOGRAPHICAL ORDER
 
@@ -134,6 +151,16 @@ public class InputUtilities {
 
     }
 
+    /**
+     * This method makes the player choose three different behaviours during his action:
+     * - 1 if the player wants to make a choice.
+     * - 2 if the player wants to restart the entire action.
+     * - 3 if the player wants to confirm his current decisions.
+     * @param makeChoiceForbidden is true if the choice is forbidden (there are no possible ones). false otherwise.
+     * @param restartForbidden is true if restart is forbidden (the player can't restart because there are no past actions to redo), false otherwise.
+     * @param confirmActionForbidden is true if the player cannot confirm his current actions (there are no current actions), false otherwise.
+     * @return an Integer corresponding to the chosen behaviour.
+     */
     public static Integer getActionChoice(boolean makeChoiceForbidden, boolean restartForbidden, boolean confirmActionForbidden){
         String choiceMessage;
         List<Integer> mapChoices = new ArrayList<>();
@@ -180,14 +207,59 @@ public class InputUtilities {
         return mapChoices.get(choice - 1);
     }
 
-    public static Point getChosenPosition(List<Point> availablePositions, Board board, String worker){
+    /**
+     * This method returns a Point given the coordinates used in the GraphicalBoard
+     * to display the board' positions to the user.
+     * @param x is the coordinate X that goes from 1 to #columns.
+     * @param y is the coordinate Y that goes from A to the (#rows)th letter of the alphabet.
+     * @return a Point containing the coordinates of the translated position on the board.
+     */
+    public static Point getPoint(int x, char y){
+        y = Character.toUpperCase(y);
+        if(x <= 0 || x > Board.getRows() || y < 'A' || y > 'E') return null;
+        x--;
+        int helper = Character.getNumericValue(y) - Character.getNumericValue('A');
+        return new Point(x, helper);
+    }
+
+    /**
+     * This method returns a Point given the coordinates used in the GraphicalBoard
+     * to display the board' positions to the user.
+     * @param point is a String containing the coordinates used to display positions in the GraphicalBoard (ex. A1, B3,...).
+     * @return a Point containing the coordinates of the translated position on the board.
+     */
+    public static Point getPoint(String point){
+        return InputUtilities.POSITION_PATTERN.matcher(point).matches() ? getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0))) : null;
+    }
+
+    /**
+     * This method returns the coordinates used to display positions on the GraphicalBoard given the real positions'
+     * coordinates in the board.
+     * @param position is a Point containing the coordinate X that goes from 0...columns and the coordinate Y that goes from 0...rows.
+     * @return a String containing the coordinates used to display positions in the GraphicalBoard (ex. A1, B3,...).
+     */
+    public static String getCoordinates(Point position){
+        if(position.x < 0 || position.x >= Board.getRows() || position.y < 0 || position.y >= Board.getColumns()) return null;
+        String coordinates = Character.toString((char) ('A' + position.y));
+        coordinates = coordinates.concat(Integer.toString(position.x + 1));
+        return coordinates;
+    }
+
+
+    /**
+     * This method makes the player choose his next move given the available positions.
+     * @param availablePositions is the List of possible choices.
+     * @param worker is the worker's id used during the move.
+     * @return a Point containing the chosen coordinates, null if there are problem with connections during the choice.
+     */
+    public static Point getChosenPosition(List<Point> availablePositions, String worker){
 
         MatchData matchData = MatchData.getInstance();
 
         if(!matchData.isHardcore()){
             StringBuilder positionsBuilder = new StringBuilder();
             for(Point position : availablePositions){
-                positionsBuilder.append("- ").append(board.getCoordinates(position)).append("\n");
+                positionsBuilder.append("- ").append(getCoordinates(position)).append("\n");
             }
 
             System.out.println("Available positions: ");
@@ -213,15 +285,22 @@ public class InputUtilities {
                 if(point == null) return null;
             }while(!POSITION_PATTERN.matcher(point).matches());
 
-            chosenPosition = board.getPoint(point);
-            assert board.getCell(chosenPosition) == null;
+            chosenPosition = getPoint(point);
             error = !availablePositions.contains(chosenPosition);
         }while(error);
 
         return chosenPosition;
     }
 
-    public static boolean getChosenBuildingsInPoint(Map<Point, List<BuildingType>> possibleBuildingsInPositions, Board board, String worker, List<Point> currentDataOrder, Map<Point, List<BuildingType>> currentBuilds){
+    /**
+     * This method makes the player choose his next building action given the possible buildings and their position on the board.
+     * @param possibleBuildingsInPositions is the map that associates positions to the possible buildings.
+     * @param worker is the worker's id used during the build.
+     * @param currentDataOrder is the current order of positions where the player built.
+     * @param currentBuilds is a map that associates the positions to the buildings built during the action.
+     * @return true if the choice is performed, false otherwise (errors due to disconnections).
+     */
+    public static boolean getChosenBuildingsInPoint(Map<Point, List<BuildingType>> possibleBuildingsInPositions, String worker, List<Point> currentDataOrder, Map<Point, List<BuildingType>> currentBuilds){
 
         MatchData matchData = MatchData.getInstance();
 
@@ -230,7 +309,7 @@ public class InputUtilities {
         if(!matchData.isHardcore()){
             StringBuilder possibleBuildsBuilder = new StringBuilder();
             for(Point position : possibleBuildingsInPositions.keySet()){
-                possibleBuildsBuilder.append("- ").append(board.getCoordinates(position));
+                possibleBuildsBuilder.append("- ").append(getCoordinates(position));
                 for(BuildingType building : possibleBuildingsInPositions.get(position)){
                     possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(InputUtilities.buildingTypeToChar(building)).append(")");
                 }
@@ -259,11 +338,11 @@ public class InputUtilities {
                 if(point == null) return false;
             }while(!InputUtilities.BUILDINGS_PATTERN.matcher(point).matches());
 
-            chosenPosition = board.getPoint(point);
+            chosenPosition = getPoint(point.substring(0, 2));
             chosenBuilding = InputUtilities.charToBuildingType(point.charAt(3));
             possibleBuildings = possibleBuildingsInPositions.get(chosenPosition);
 
-            error = board.getCell(chosenPosition) == null || possibleBuildings == null || !possibleBuildings.contains(chosenBuilding);
+            error = possibleBuildings == null || !possibleBuildings.contains(chosenBuilding);
         }while(error);
 
         List<BuildingType> helper = new ArrayList<>();
@@ -276,6 +355,11 @@ public class InputUtilities {
         return true;
     }
 
+    /**
+     * This method maps char to the corresponding BuildingType.
+     * @param building is the given char.
+     * @return a BuildingType.
+     */
     public static BuildingType charToBuildingType(Character building){
         switch (building){
             case '1':
@@ -291,6 +375,11 @@ public class InputUtilities {
         return BuildingType.DOME;
     }
 
+    /**
+     * This method maps BuildingType to the corresponding char.
+     * @param building is the given BuildingType.
+     * @return a Character.
+     */
     public static Character buildingTypeToChar(BuildingType building){
         switch (building){
             case FIRST_FLOOR:

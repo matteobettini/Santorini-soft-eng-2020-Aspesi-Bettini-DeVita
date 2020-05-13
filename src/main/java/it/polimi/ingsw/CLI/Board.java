@@ -78,44 +78,6 @@ public class Board {
     }
 
     /**
-     * This method returns a Point given the coordinates used in the GraphicalBoard
-     * to display the board' positions to the user.
-     * @param x is the coordinate X that goes from 1 to #columns.
-     * @param y is the coordinate Y that goes from A to the (#rows)th letter of the alphabet.
-     * @return a Point containing the coordinates of the translated position on the board.
-     */
-    public Point getPoint(int x, char y){
-        y = Character.toUpperCase(y);
-        if(x <= 0 || x > rows || y < 'A' || y > 'E') return null;
-        x--;
-        int helper = Character.getNumericValue(y) - Character.getNumericValue('A');
-        return new Point(x, helper);
-    }
-
-    /**
-     * This method returns a Point given the coordinates used in the GraphicalBoard
-     * to display the board' positions to the user.
-     * @param point is a String containing the coordinates used to display positions in the GraphicalBoard (ex. A1, B3,...).
-     * @return a Point containing the coordinates of the translated position on the board.
-     */
-    public Point getPoint(String point){
-        return InputUtilities.POSITION_PATTERN.matcher(point).matches() ? getPoint(Character.getNumericValue(point.charAt(1)), Character.toUpperCase(point.charAt(0))) : null;
-    }
-
-    /**
-     * This method returns the coordinates used to display positions on the GraphicalBoard given the real positions'
-     * coordinates in the board.
-     * @param position is a Point containing the coordinate X that goes from 0...columns and the coordinate Y that goes from 0...rows.
-     * @return a String containing the coordinates used to display positions in the GraphicalBoard (ex. A1, B3,...).
-     */
-    public String getCoordinates(Point position){
-        if(position.x < 0 || position.x >= rows || position.y < 0 || position.y >= columns) return null;
-        String coordinates = Character.toString((char) ('A' + position.y));
-        coordinates = coordinates.concat(Integer.toString(position.x + 1));
-        return coordinates;
-    }
-
-    /**
      * This method removes all the worker on the board. It is used when a PacketUpdateBoard is received and thus
      * the new workers' position should be set.
      */

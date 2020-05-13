@@ -87,6 +87,7 @@ public class BuildActionStrategy implements ActionStrategy{
 
         //POSSIBLE POSITIONS CONTAINS THE POSITIONS THAT THE PLAYER CAN CHOOSE AT THIS TIME DURING THE BUILD
         Map<Point, List<BuildingType>> possibleBuildingsInPositions = packetPossibleBuilds.getPossibleBuilds().get(lastUsedWorker);
+
         graphicalBoard.setPossibleActions(new ArrayList<>(possibleBuildingsInPositions.keySet()));
 
         OutputUtilities.printMatch();
@@ -104,7 +105,7 @@ public class BuildActionStrategy implements ActionStrategy{
 
         switch(choice){
             case 1:
-                boolean getChoice = InputUtilities.getChosenBuildingsInPoint(possibleBuildingsInPositions, board, lastUsedWorker, currentDataOrder, currentBuilds);
+                boolean getChoice = InputUtilities.getChosenBuildingsInPoint(possibleBuildingsInPositions, lastUsedWorker, currentDataOrder, currentBuilds);
 
                 if(!getChoice) return false;
 

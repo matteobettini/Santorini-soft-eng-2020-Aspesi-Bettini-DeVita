@@ -62,7 +62,7 @@ public class SampleClient {
                 return;
             }
 
-            notifyConnectionStatusObservers(new ConnectionStatus(false, null));
+            notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CONNECTED, null));
 
             try{
                 while (true) {
@@ -71,7 +71,7 @@ public class SampleClient {
                         ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
                         if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
                             executor.shutdownNow();
-                            notifyConnectionStatusObservers(new ConnectionStatus(true, messageFromServer.getMessage()));
+                            notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, messageFromServer.getMessage()));
                             break;
                         }
                     }
@@ -81,7 +81,7 @@ public class SampleClient {
 
             } catch (IOException | ClassNotFoundException e) {
                 executor.shutdownNow();
-                notifyConnectionStatusObservers(new ConnectionStatus(true, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
+                notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.MATCH_ENDED, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
             } finally {
                 closeRoutine();
             }
@@ -177,7 +177,7 @@ public class SampleClient {
 
     private void manageClosure(String reasonOfClosure){
         executor.shutdownNow();
-        notifyConnectionStatusObservers(new ConnectionStatus(true, reasonOfClosure));
+        notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, reasonOfClosure));
         closeRoutine();
     }
 
@@ -202,7 +202,7 @@ public class SampleClient {
     }
 
     private String getLine(){
-        String name = null;
+        String name;
         try {
             while (!input.ready()){
                 Thread.sleep(200);
@@ -268,7 +268,7 @@ public class SampleClient {
 
 
     public void notifyConnectionStatusObservers(ConnectionStatus p){
-        System.out.println("Connection closed: [" + p.isClosed() + "], reason: [" + p.getReasonOfClosure() +"]");
+        System.out.println("Connection closed: [" + p.getState().toString() + "], reason: [" + p.getReasonOfClosure() +"]");
     }
 
 

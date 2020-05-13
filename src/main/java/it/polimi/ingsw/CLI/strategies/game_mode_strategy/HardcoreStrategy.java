@@ -118,7 +118,7 @@ public class HardcoreStrategy implements GameModeStrategy{
                 case 1:
                     //FIRST WE GET THE PLAYER CHOICE
 
-                    Point chosenPosition = InputUtilities.getChosenPosition(availablePositions, board, lastUsedWorker);
+                    Point chosenPosition = InputUtilities.getChosenPosition(availablePositions,lastUsedWorker);
 
                     if(chosenPosition == null) return;
 
@@ -201,7 +201,7 @@ public class HardcoreStrategy implements GameModeStrategy{
                 case 1:
                     //FIRST WE GET THE PLAYER CHOICE
 
-                    boolean getChoice = InputUtilities.getChosenBuildingsInPoint(possibleBuildingsInPoints, board, lastUsedWorker, currentDataOrder, currentBuilds);
+                    boolean getChoice = InputUtilities.getChosenBuildingsInPoint(possibleBuildingsInPoints, lastUsedWorker, currentDataOrder, currentBuilds);
 
                     if(!getChoice) return;
 
