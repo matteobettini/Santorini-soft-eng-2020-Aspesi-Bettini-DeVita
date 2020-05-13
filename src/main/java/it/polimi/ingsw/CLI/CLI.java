@@ -31,7 +31,7 @@ public class CLI {
     private SetWorkersPositionStrategy setWorkersPositionStrategy;
     private UpdateBoardStrategy updateBoardStrategy;
 
-    private MatchData matchData;
+    private final MatchData matchData;
 
 
     /**
@@ -67,7 +67,7 @@ public class CLI {
 
         matchData.reset();
 
-        matchData.setClient();
+        matchData.setNewClient();
 
         Client client = matchData.getClient();
 
@@ -75,7 +75,7 @@ public class CLI {
 
         client.addInsertNickRequestObserver( (message, isRetry) -> nicknameStrategy.handleNickname(message));
 
-        client.addInsertNumOfPlayersAndGamemodeRequestObserver( ((message, isRetry) -> requestNumberOfPlayersGameModeStrategy.handleRequestNumberOfPlayerGameMode(message)));
+        client.addInsertNumOfPlayersAndGamemodeRequestObserver( ((message, isRetry) -> requestNumberOfPlayersGameModeStrategy.handleRequestNumberOfPlayerGameMode(message, isRetry)));
 
         client.addPacketMatchStartedObserver( packetMatchStarted -> matchStartedStrategy.handleMatchStarted(packetMatchStarted, this));
 
@@ -154,7 +154,7 @@ public class CLI {
             if(firstLoop) System.out.print("Enter the server's IP address: ");
             else  System.out.print("IP address not valid, enter the server's IP address: ");
             address = InputUtilities.getLine();
-            if(address == null) return;
+            assert address != null;
             firstLoop = false;
             if(address.toLowerCase().equals("d")){
                 this.address = MatchData.DEFAULT_ADDRESS;
@@ -170,7 +170,7 @@ public class CLI {
             if(firstLoop) System.out.print("Enter the server's port: ");
             else System.out.print("Enter a valid server's port: ");
             port = InputUtilities.getInt("Not valid, enter the server's port: ");
-            if(port == null) port = - 1;
+            assert port != null;
             firstLoop = false;
         }while (!portIsValid(port));
 

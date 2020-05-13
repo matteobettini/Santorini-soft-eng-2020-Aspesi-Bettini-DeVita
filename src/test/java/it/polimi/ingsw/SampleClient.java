@@ -7,8 +7,10 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,10 +25,13 @@ public class SampleClient {
     private final BufferedReader input;
     
     private Object lastPacketReceived;
+    private final BlockingDeque<Object> incomingPackets;
 
-    private final ExecutorService executor;
-    private final ReentrantLock lockReceive = new ReentrantLock(true);
     private final AtomicBoolean started = new AtomicBoolean(false);
+    private final AtomicBoolean isRetry = new AtomicBoolean(false);
+    private final AtomicBoolean ended = new AtomicBoolean(false);
+
+    private final Thread packetReceiver;
 
 
     public static void main(String[] args) {
@@ -36,8 +41,9 @@ public class SampleClient {
 
     public SampleClient(){
 
-        this.executor = Executors.newCachedThreadPool();
+        this.packetReceiver = new Thread(this::manageIncomingPackets);
         this.input = new BufferedReader(new InputStreamReader(System.in));
+        this.incomingPackets = new LinkedBlockingDeque<>();
     }
 
     public void asyncStart(String address, int port){
@@ -50,38 +56,44 @@ public class SampleClient {
         if(started.compareAndSet(false, true)) {
 
             try {
+
                 this.socket = new Socket();
                 this.socket.connect(new InetSocketAddress(address, port), 3000);
-                System.out.println("Connection established to server at: " + address + " port: " + port);
 
                 os = new ObjectOutputStream(socket.getOutputStream());
                 is = new ObjectInputStream(socket.getInputStream());
 
             } catch (IOException e) {
-                manageClosure("Impossible to establish connection");
+                manageClosure(ConnectionState.UNABLE_TO_CONNECT, "Unable to connect to the server");
                 return;
             }
 
             notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CONNECTED, null));
 
+            packetReceiver.start();
+
+            boolean end = false;
+
             try{
-                while (true) {
+                while (!end) {
                     Object packetFromServer = is.readObject();
                     if(packetFromServer instanceof ConnectionMessages) {
                         ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
                         if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
-                            executor.shutdownNow();
+                            packetReceiver.interrupt();
                             notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, messageFromServer.getMessage()));
                             break;
+                        }else if(messageFromServer == ConnectionMessages.MATCH_FINISHED){
+                            end = true;
                         }
                     }
-                    executor.submit(new Thread(() -> manageIncomingPacket(packetFromServer)));
+                    incomingPackets.add(packetFromServer);
                 }
 
 
             } catch (IOException | ClassNotFoundException e) {
-                executor.shutdownNow();
-                notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.MATCH_ENDED, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
+                packetReceiver.interrupt();
+                notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
             } finally {
                 closeRoutine();
             }
@@ -90,15 +102,23 @@ public class SampleClient {
 
 
     
-    private void manageIncomingPacket(Object packetFromServer) {
-        lockReceive.lock();
-        try {
+    private void manageIncomingPackets() {
+        while(!ended.get()) {
+
+            Object packetFromServer;
+            try {
+                packetFromServer = incomingPackets.take();
+            } catch (InterruptedException e) {
+                ended.set(true);
+                break;
+            }
+
             if (packetFromServer instanceof ConnectionMessages) {
                 ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
                 if (messageFromServer == ConnectionMessages.INSERT_NICKNAME || messageFromServer == ConnectionMessages.INVALID_NICKNAME || messageFromServer == ConnectionMessages.TAKEN_NICKNAME) {
                     System.out.println("\n" + messageFromServer.getMessage());
                     String name = getLine();
-                    if(name == null)
+                    if (name == null)
                         return;
                     clientNickname = name;
                     PacketNickname packetNickname = new PacketNickname(name);
@@ -113,21 +133,24 @@ public class SampleClient {
                         return;
                     PacketNumOfPlayersAndGamemode packetNumOfPlayersAndGamemode = new PacketNumOfPlayersAndGamemode(numOfPlayers, hardcore);
                     send(packetNumOfPlayersAndGamemode);
-                }else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
+                } else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
                     System.out.println("[FROM SERVER]: INVALID PACKET");
                     assert (lastPacketReceived != null);
-                    manageIncomingPacket(lastPacketReceived);
+                    incomingPackets.addFirst(lastPacketReceived);
+                } else if (messageFromServer == ConnectionMessages.MATCH_FINISHED) {
+                    ended.set(true);
+                    notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.MATCH_ENDED, messageFromServer.getMessage()));
                 }
             } else if (packetFromServer instanceof PacketMatchStarted) {
                 PacketMatchStarted packetMatchStarted = (PacketMatchStarted) packetFromServer;
                 System.out.println("\nMatch started!!!\nPlayers: " + packetMatchStarted.getPlayers() + "\nHardcore: " + packetMatchStarted.isHardcore());
             } else if (packetFromServer instanceof PacketCardsFromServer) {
                 PacketCardsFromServer packetCardsFromServer = (PacketCardsFromServer) packetFromServer;
-                if(!packetCardsFromServer.getTo().equals(clientNickname))
+                if (!packetCardsFromServer.getTo().equals(clientNickname))
                     return;
                 System.out.println("\nChoose your cards!\nHere are all the cards: " + packetCardsFromServer.getAvailableCards() + "\nChoose: " + packetCardsFromServer.getNumberToChoose());
                 String chosenCards = getLine();
-                if(chosenCards == null)
+                if (chosenCards == null)
                     return;
                 List<String> chosenCardsList = Arrays.asList(chosenCards.split("\\s*,\\s*"));
                 PacketCardsFromClient packetCardsFromClient = new PacketCardsFromClient(chosenCardsList);
@@ -137,13 +160,13 @@ public class SampleClient {
                 System.out.println("\nHere is the setup!\nHere are all the cards: " + packetSetup.getCards() + "\n" + packetSetup.getIds() + "\n" + packetSetup.getColors());
             } else if (packetFromServer instanceof PacketDoAction) {
                 PacketDoAction packetDoAction = (PacketDoAction) packetFromServer;
-                if(!packetDoAction.getTo().equals(clientNickname))
+                if (!packetDoAction.getTo().equals(clientNickname))
                     return;
                 System.out.println("\nDo this action: " + packetDoAction.getActionType());
                 if (packetDoAction.getActionType() == ActionType.CHOOSE_START_PLAYER) {
                     System.out.println("\n" + "Choose a start player by writing his name");
                     String startPlayer = getLine();
-                    if(startPlayer == null)
+                    if (startPlayer == null)
                         return;
                     PacketStartPlayer packetStartPlayer = new PacketStartPlayer(startPlayer);
                     send(packetStartPlayer);
@@ -152,57 +175,56 @@ public class SampleClient {
                     System.out.println("\n" + "DEMO ENDS HERE");
                 }
             }
-            if(packetFromServer instanceof PacketDoAction || packetFromServer instanceof PacketCardsFromServer || packetFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE)
+            if (packetFromServer instanceof PacketDoAction || packetFromServer instanceof PacketCardsFromServer || packetFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE)
                 lastPacketReceived = packetFromServer;
 
-        }finally {
-            lockReceive.unlock();
         }
     }
 
 
 
-    public void send(Object packet){
-        try {
-            os.writeObject(packet);
-            os.flush();
-        }catch (IOException e){
-            manageClosure();
+    public void send(Serializable packet) {
+        if (started.get() && !ended.get()){
+            try {
+                os.writeObject(packet);
+                os.flush();
+            } catch (IOException e) {
+                manageClosure();
+            }
         }
     }
 
     private void manageClosure(){
-        manageClosure(ConnectionMessages.CONNECTION_CLOSED.getMessage());
+        manageClosure(ConnectionState.CLOSURE_UNEXPECTED, ConnectionMessages.CONNECTION_CLOSED.getMessage());
     }
 
-    private void manageClosure(String reasonOfClosure){
-        executor.shutdownNow();
-        notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, reasonOfClosure));
+    private void manageClosure(ConnectionState connectionState, String reasonOfClosure){
+        if(packetReceiver.isAlive())
+            packetReceiver.interrupt();
+        notifyConnectionStatusObservers(new ConnectionStatus(connectionState, reasonOfClosure));
         closeRoutine();
     }
 
 
-    public void closeRoutine(){
-
-        try {
-            input.close();
-        } catch (IOException ignored) { }
-        try {
-            is.close();
-        }catch (IOException ignored){}
-        try {
-            os.close();
-        }catch (IOException ignored){}
-        try{
-            socket.close();
-        }catch (IOException ignored){ }
+    private void closeRoutine(){
 
         started.set(false);
 
+        try {
+            is.close();
+        }catch (Exception ignored){}
+        try {
+            os.close();
+        }catch (Exception ignored){}
+        try{
+            socket.close();
+        }catch (Exception ignored){ }
+
     }
 
+
     private String getLine(){
-        String name;
+        String name = null;
         try {
             while (!input.ready()){
                 Thread.sleep(200);
@@ -268,7 +290,7 @@ public class SampleClient {
 
 
     public void notifyConnectionStatusObservers(ConnectionStatus p){
-        System.out.println("Connection closed: [" + p.getState().toString() + "], reason: [" + p.getReasonOfClosure() +"]");
+        System.out.println("Connection closed: [" + p.getState() + "], reason: [" + p.getReasonOfClosure() +"]");
     }
 
 

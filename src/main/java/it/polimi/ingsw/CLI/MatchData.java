@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.enums.BuildingType;
 import javafx.util.Pair;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +24,8 @@ public class MatchData {
     private String loser;
     private Board board;
     private Map<BuildingType, Integer> buildingsCounter;
-    private final int DEFAULT_MATCH_WIDTH = 159;
-    private final int DEFAULT_MATCH_HEIGHT = 50;
+    private static final int DEFAULT_MATCH_WIDTH = 159;
+    private static final int DEFAULT_MATCH_HEIGHT = 50;
     public static String DEFAULT_ADDRESS = "127.0.0.1";
     public static int DEFAULT_PORT = 4567;
 
@@ -46,7 +45,6 @@ public class MatchData {
         if(matchDataSingleton == null){
             matchDataSingleton = new MatchData();
         }
-
         return matchDataSingleton;
     }
 
@@ -83,6 +81,7 @@ public class MatchData {
      * This method instantiates the MatchData attributes needed to start a new match.
      */
     public void reset(){
+        this.client = null;
         this.board = new Board();
         this.stream = new CharStream(DEFAULT_MATCH_WIDTH, DEFAULT_MATCH_HEIGHT);
         this.graphicalBoard = new GraphicalBoard(stream);
@@ -226,9 +225,9 @@ public class MatchData {
     }
 
     /**
-     * This method sets the Client instance.
+     * This method creates and sets a new Client instance.
      */
-    public void setClient() {
+    public void setNewClient() {
         this.client = new ClientImpl();
     }
 

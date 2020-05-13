@@ -133,7 +133,7 @@ public class ClientImpl implements Client {
                 } else if (messageFromServer == ConnectionMessages.INVALID_NICKNAME || messageFromServer == ConnectionMessages.TAKEN_NICKNAME) {
                     notifyInsertNickRequestObserver(messageFromServer.getMessage(), true);
                 } else if (messageFromServer == ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE) {
-                    notifyinsertNumOfPlayersAndGamemodeRequestObservers(messageFromServer.getMessage(), isRetry.get());
+                    notifyInsertNumOfPlayersAndGamemodeRequestObservers(messageFromServer.getMessage(), isRetry.get());
                     isRetry.set(false);
                 } else if (messageFromServer == ConnectionMessages.INVALID_PACKET) {
                     assert (lastActionRequest != null);
@@ -266,7 +266,7 @@ public class ClientImpl implements Client {
             o.update(p,isRetry);
         }
     }
-    public void notifyinsertNumOfPlayersAndGamemodeRequestObservers(String p, boolean isRetry){
+    public void notifyInsertNumOfPlayersAndGamemodeRequestObservers(String p, boolean isRetry){
         for(ClientObserver<String> o : insertNumOfPlayersAndGamemodeRequestObservers){
             o.update(p,isRetry);
         }

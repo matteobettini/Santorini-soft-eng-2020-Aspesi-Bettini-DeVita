@@ -11,10 +11,13 @@ public class DefaultRequestNumberOfPlayersGameModeStrategy implements RequestNum
      * @param message is the message of request sent from the server.
      */
     @Override
-    public void handleRequestNumberOfPlayerGameMode(String message) {
+    public void handleRequestNumberOfPlayerGameMode(String message, boolean isRetry) {
         MatchData matchData = MatchData.getInstance();
         Integer number;
-        System.out.println("\n" + message);
+
+        String retryPrefix = "The chosen number of players is incorrect, ";
+
+        System.out.println("\n" + (isRetry ? retryPrefix : "") + message);
         System.out.print("Number of Players: ");
         number = InputUtilities.getInt("Not a number,select a valid number of players: ");
         if(number == null) return;

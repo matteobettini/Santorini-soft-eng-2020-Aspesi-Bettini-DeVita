@@ -77,7 +77,7 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
             if(matchData.getWinner().equals(matchData.getPlayerName())) System.out.println("You have won!");
             else System.out.println(matchData.getWinner() + " has won!");
         }
-        if(matchData.getLoser() != null){
+        else if(matchData.getLoser() != null){
             if(matchData.getLoser().equals(matchData.getPlayerName())) System.out.println("You have lost!");
             else System.out.println(matchData.getLoser() + " has lost!");
 
