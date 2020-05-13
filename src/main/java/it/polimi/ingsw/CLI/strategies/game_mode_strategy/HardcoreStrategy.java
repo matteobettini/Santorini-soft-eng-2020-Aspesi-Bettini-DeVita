@@ -82,9 +82,9 @@ public class HardcoreStrategy implements GameModeStrategy{
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
 
-        List<String> possibleWorkers = workersID.stream().filter(board::canMove).collect(Collectors.toList());
+        //List<String> possibleWorkers = workersID.stream().filter(board::canMove).collect(Collectors.toList());
 
-        String lastUsedWorker = InputUtilities.getWorkerChoice(possibleWorkers);
+        String lastUsedWorker = InputUtilities.getWorkerChoice(workersID);
 
         List<Point> currentChosenPositions = new ArrayList<>();
 
@@ -96,7 +96,9 @@ public class HardcoreStrategy implements GameModeStrategy{
 
             Point lastWorkerPosition = currentChosenPositions.isEmpty() ? board.getWorkerPosition(lastUsedWorker) : currentChosenPositions.get(currentChosenPositions.size() - 1);
 
-            List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition).stream().filter(p -> board.canMove(lastUsedWorker, lastWorkerPosition)).collect(Collectors.toList());
+            //List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition).stream().filter(p -> board.canMove(lastUsedWorker, lastWorkerPosition)).collect(Collectors.toList());
+
+            List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition);
 
             OutputUtilities.printMatch();
 

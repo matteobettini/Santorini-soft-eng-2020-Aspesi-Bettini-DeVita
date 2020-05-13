@@ -45,6 +45,7 @@ public class OutputUtilities {
      * @param gameOver  is true if the message game over has to be displayed in a GraphicalPane, false otherwise.
      */
     public static void printMatch(boolean youWin, boolean gameOver){
+        assert !youWin || !gameOver;
         MatchData matchData = MatchData.getInstance();
         CharStream stream = matchData.getStream();
         GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
