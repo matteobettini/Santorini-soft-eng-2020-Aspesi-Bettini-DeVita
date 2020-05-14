@@ -14,7 +14,8 @@ public enum ConnectionMessages implements Serializable {
     CONNECTION_CLOSED("Connection closed"),
     MATCH_FINISHED("A player has won the match and thus the game is finished"),
     MATCH_INTERRUPTED("Match ended due to disconnected or not responding clients"),
-    TIMER_ENDED("You took too long to make your decision");
+    TIMER_ENDED("You took too long to make your decision"),
+    PING("Ping");
 
     private final String message;
     private static final long serialVersionUID = -68031328223481106L;

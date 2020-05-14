@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class ConnectionToClient extends Observable<Object> implements Runnable{
@@ -24,7 +25,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private ObjectOutputStream os;
     private ObjectInputStream is;
 
-    private boolean active;
+    private final AtomicBoolean active = new AtomicBoolean(false);
     private boolean inMatch;
 
     private boolean nickAsked;
@@ -35,6 +36,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private boolean desiredHardcore;
 
     private Thread timer;
+    private final Thread pinger;
 
     /**
      * The constructor of the connection
@@ -44,7 +46,6 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      */
     public ConnectionToClient(Socket socket)  {
         this.socket = socket;
-        this.active = true;
         this.inMatch = false;
         this.desiredNumOfPlayers = -1;
         this.desiredHardcore = false;
@@ -52,6 +53,18 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         this.nickAsked = false;
         this.desiresAsked = false;
 
+        this.pinger = new Thread(() -> {
+            while(active.get()) {
+                try {
+                    Thread.sleep(1000);
+                    internalSend(ConnectionMessages.PING);
+                } catch (InterruptedException e) {
+                    break;
+                } catch (IOException e){
+                    closeRoutine();
+                }
+            }
+        });
     }
 
     private void startTimer(int milliseconds){
@@ -66,9 +79,9 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         timer.start();
     }
 
-    private void startTimerShorter(){ startTimer(500000); }
+    private void startTimerShorter(){ startTimer(20000); }
     private void startTimerLonger(){
-        startTimer(500000);
+        startTimer(180000);
     }
 
     void stopTimer(){
@@ -173,29 +186,37 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     @Override
     public void run() {
         try{
+
             os = new ObjectOutputStream(socket.getOutputStream());
             is = new ObjectInputStream(socket.getInputStream());
 
+            active.set(true);
+
+            pinger.start();
+
             askNickname();
 
-            while(active){
+            while(active.get()){
                 System.out.println("Connection [" + getClientNickname() + "]: I'M WAITING FOR AN OBJECT");
                 Object packetFromClient = is.readObject();
                 System.out.println("Connection [" + getClientNickname() + "]: OBJECT RECEIVED");
 
-                if(inMatch)
-                    handlePacketInMatch(packetFromClient);
-                else
-                    handlePacketInSetup(packetFromClient);
-
+                if(!(packetFromClient == ConnectionMessages.PING)) {
+                    if (inMatch)
+                        handlePacketInMatch(packetFromClient);
+                    else
+                        handlePacketInSetup(packetFromClient);
+                }
             }
             System.err.println("Connection [" + getClientNickname() + "]: error i'm inactive");
 
         }catch (IOException | ClassNotFoundException e){
-            //System.out.println("Connection [" + getClientNickname() + "]: exception in run {" + e.getMessage() + "}");
+            System.out.println("Connection [" + getClientNickname() + "]: exception in run {" + e.getMessage() + "}");
+        }finally {
             closeRoutineFull();
         }
     }
+
     private void handlePacketInSetup(Object packetFromClient) throws IOException {
 
         if (packetFromClient instanceof PacketNickname && nickAsked) {
@@ -240,7 +261,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
         System.err.println("Connection [" + getClientNickname() + "]: closing socket");
         stopTimer();
-        active = false;
+        active.set(false);
         closureHandler.update(this);
 
         closeRoutine();
@@ -260,7 +281,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     private synchronized void closeRoutine(boolean timerEnded){
 
-        active = false;
+        active.set(false);
         stopTimer();
 
         try {
@@ -292,7 +313,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      * @return the active flag
      */
     public boolean isActive() {
-        return active;
+        return active.get();
     }
 
     /**

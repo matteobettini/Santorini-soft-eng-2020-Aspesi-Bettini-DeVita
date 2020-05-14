@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientImpl implements Client {
 
@@ -28,12 +29,14 @@ public class ClientImpl implements Client {
 
     private final BlockingDeque<Object> incomingPackets;
     private final Thread packetReceiver;
+    private final Thread pinger;
 
     private Socket socket;
 
     private ObjectOutputStream os;
     private ObjectInputStream is;
 
+    private final ReentrantLock sendLock = new ReentrantLock(true);
 
     private Object lastActionRequest;
 
@@ -58,6 +61,16 @@ public class ClientImpl implements Client {
         this.connectionStatusObservers = new ConcurrentLinkedQueue<>();
 
         this.packetReceiver = new Thread(this::manageIncomingPackets);
+        this.pinger = new Thread(() -> {
+            while(started.get() && !ended.get()){
+                try {
+                    Thread.sleep(1000);
+                    send(ConnectionMessages.PING);
+                } catch (InterruptedException e){
+                    break;
+                }
+            }
+        });
 
     }
     @Override
@@ -86,28 +99,36 @@ public class ClientImpl implements Client {
             notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CONNECTED, null));
 
             packetReceiver.start();
+            pinger.start();
 
             boolean end = false;
+            boolean skip;
 
             try{
-                while (!end) {
+                while (!end && started.get()) {
+                    skip = false;
                     Object packetFromServer = is.readObject();
                     if(packetFromServer instanceof ConnectionMessages) {
                         ConnectionMessages messageFromServer = (ConnectionMessages) packetFromServer;
-                        if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
+                        if(messageFromServer == ConnectionMessages.PING)
+                            skip = true;
+                        else if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
                             packetReceiver.interrupt();
+                            pinger.interrupt();
                             notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, messageFromServer.getMessage()));
                             break;
                         }else if(messageFromServer == ConnectionMessages.MATCH_FINISHED){
                             end = true;
                         }
                     }
-                    incomingPackets.add(packetFromServer);
+                    if(!skip)
+                        incomingPackets.add(packetFromServer);
                 }
 
 
             } catch (IOException | ClassNotFoundException e) {
                 packetReceiver.interrupt();
+                pinger.interrupt();
                 notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
             } finally {
                 closeRoutine();
@@ -178,13 +199,18 @@ public class ClientImpl implements Client {
 
     @Override
     public void send(Serializable packet) {
-        if (started.get() && !ended.get()){
-            try {
-                os.writeObject(packet);
-                os.flush();
-            } catch (IOException e) {
-                manageClosure();
+        sendLock.lock();
+        try {
+            if (started.get() && !ended.get()) {
+                try {
+                    os.writeObject(packet);
+                    os.flush();
+                } catch (IOException e) {
+                    manageClosure();
+                }
             }
+        }finally {
+            sendLock.unlock();
         }
     }
 
