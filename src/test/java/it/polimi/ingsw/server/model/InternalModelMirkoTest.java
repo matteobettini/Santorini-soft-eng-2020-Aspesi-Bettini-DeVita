@@ -2,7 +2,6 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.server.cards.CardFactory;
 import it.polimi.ingsw.server.cards.CardFile;
-import it.polimi.ingsw.server.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.common.enums.BuildingType;
 import it.polimi.ingsw.server.model.enums.LevelType;
@@ -37,7 +36,7 @@ class InternalModelMirkoTest {
     private Worker MirkoW2;
 
     @BeforeAll
-    static void init() throws CardLoadingException, InvalidCardException {
+    static void init() throws InvalidCardException {
         //CardFactory
         cardFactory = CardFactory.getInstance();
     }

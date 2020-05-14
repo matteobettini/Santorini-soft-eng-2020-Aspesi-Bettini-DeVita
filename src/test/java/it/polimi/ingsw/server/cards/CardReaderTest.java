@@ -4,6 +4,10 @@ import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.util.List;
 
 class CardReaderTest {
 
@@ -16,9 +20,8 @@ class CardReaderTest {
     @Test
     void testWrongFilePath(){
         CardFile defaultFile = CardPatcherTest.getDefaultStrategyExample();
-        File cardFile = new File("src/test.xml");
         try{
-            CardFile card = CardReader.readCard(defaultFile, cardFile);
+            List<CardFile> card = CardReader.readCards(defaultFile, "/test.xml");
             assert false;
         } catch (InvalidCardException e) {
             assert true;
@@ -31,9 +34,8 @@ class CardReaderTest {
     @Test
     void testValidWithEffectData() {
         CardFile defaultFile = CardPatcherTest.getDefaultStrategyExample();
-        File cardFile = new File("src/test/resources/ExampleCards/ValidCardWithEffectData.xml");
         try{
-            CardFile card = CardReader.readCard(defaultFile, cardFile);
+            List<CardFile> card = CardReader.readCards(defaultFile, "/ExampleCards/ValidCardWithEffectData.xml");
         } catch (InvalidCardException e) {
             assert false;
         }
@@ -45,9 +47,8 @@ class CardReaderTest {
     @Test
     void testValidWithNoEffectData() {
         CardFile defaultFile = CardPatcherTest.getDefaultStrategyExample();
-        File cardFile = new File("src/test/resources/ExampleCards/ValidCard.xml");
         try{
-            CardFile card = CardReader.readCard(defaultFile, cardFile);
+            List<CardFile> card = CardReader.readCards(defaultFile, "/ExampleCards/ValidCard.xml");
         } catch (InvalidCardException e) {
             assert false;
         }
@@ -59,9 +60,8 @@ class CardReaderTest {
     @Test
     void testInvalidSyntax() {
         CardFile defaultFile = CardPatcherTest.getDefaultStrategyExample();
-        File cardFile = new File("src/test/resources/ExampleCards/InvalidSyntaxCard.xml");
         try{
-            CardFile card = CardReader.readCard(defaultFile, cardFile);
+            List<CardFile> card = CardReader.readCards(defaultFile, "/ExampleCards/InvalidSyntaxCard.xml");
             assert false;
         } catch (InvalidCardException e) {
             assert true;
@@ -74,9 +74,8 @@ class CardReaderTest {
     @Test
     void testInvalidSyntaxWithoutDTD(){
         CardFile defaultFile = CardPatcherTest.getDefaultStrategyExample();
-        File cardFile = new File("src/test/resources/ExampleCards/InvalidSyntaxCardNoDTD.xml");
         try{
-            CardFile card = CardReader.readCard(defaultFile, cardFile);
+            List<CardFile> card = CardReader.readCards(defaultFile, "/ExampleCards/InvalidSyntaxCardNoDTD.xml");
             assert false;
         } catch (InvalidCardException e) {
             assert true;
@@ -89,9 +88,8 @@ class CardReaderTest {
     @Test
     void testInvalidSyntaxInvalidDTD(){
         CardFile defaultFile = CardPatcherTest.getDefaultStrategyExample();
-        File cardFile = new File("src/test/resources/ExampleCards/InvalidSyntaxCardInvalidDTD.xml");
         try{
-            CardFile card = CardReader.readCard(defaultFile, cardFile);
+            List<CardFile> card = CardReader.readCards(defaultFile, "/ExampleCards/InvalidSyntaxCardInvalidDTD.xml");
             assert false;
         } catch (InvalidCardException e) {
             assert true;

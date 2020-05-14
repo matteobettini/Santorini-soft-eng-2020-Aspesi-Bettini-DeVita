@@ -1,6 +1,5 @@
 package it.polimi.ingsw.server.cards;
 
-import it.polimi.ingsw.server.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +14,7 @@ class CardFactoryTest {
         try{
             CardFactory factory = CardFactory.getInstance();
             assert true;
-        } catch (CardLoadingException | InvalidCardException e) {
+        } catch (InvalidCardException e) {
             assert false;
         }
     }
@@ -26,7 +25,7 @@ class CardFactoryTest {
         try{
             factory = CardFactory.getInstance();
             assert true;
-        } catch (CardLoadingException | InvalidCardException e) {
+        } catch (InvalidCardException e) {
             assert false;
         }
         CardFile defaultStrategy = factory.getDefaultStrategy();

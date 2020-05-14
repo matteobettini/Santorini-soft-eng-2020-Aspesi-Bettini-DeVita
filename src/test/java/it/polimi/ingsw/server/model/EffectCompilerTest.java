@@ -5,7 +5,6 @@ import it.polimi.ingsw.server.cards.RuleEffect;
 import it.polimi.ingsw.server.cards.RuleEffectImplTest;
 import it.polimi.ingsw.server.cards.enums.AllowType;
 import it.polimi.ingsw.server.cards.enums.EffectType;
-import it.polimi.ingsw.server.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.common.enums.BuildingType;
 import it.polimi.ingsw.server.model.enums.LevelType;
@@ -50,7 +49,7 @@ class EffectCompilerTest {
 */
 
     @BeforeEach
-    void setUp() throws CardLoadingException, InvalidCardException {
+    void setUp() throws InvalidCardException {
         List<String> players = new ArrayList<>();
         players.add("Andrea");
         players.add("Matteo");

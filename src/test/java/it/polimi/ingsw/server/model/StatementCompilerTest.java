@@ -5,7 +5,6 @@ import it.polimi.ingsw.server.cards.RuleStatement;
 import it.polimi.ingsw.server.cards.RuleStatementImplTest;
 import it.polimi.ingsw.server.cards.enums.StatementType;
 import it.polimi.ingsw.server.cards.enums.StatementVerbType;
-import it.polimi.ingsw.server.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.common.enums.BuildingType;
 import it.polimi.ingsw.server.model.enums.LevelType;
@@ -53,7 +52,7 @@ class StatementCompilerTest {
 */
 
     @BeforeEach
-    void setUp() throws CardLoadingException, InvalidCardException {
+    void setUp() throws InvalidCardException {
         List<String> players = new ArrayList<>();
         players.add("Andrea");
         players.add("Matteo");

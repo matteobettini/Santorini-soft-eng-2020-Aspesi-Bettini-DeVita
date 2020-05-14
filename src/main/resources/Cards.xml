@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--DTD schema-->
+<!DOCTYPE Cards [
+    <!ELEMENT Cards (Card+) >
+    <!ELEMENT Card (name, description, rules) >
+    <!ELEMENT rules (rule+) >
+    <!ELEMENT rule (statements, effect) >
+    <!ELEMENT name (#PCDATA) >
+    <!ELEMENT description (#PCDATA) >
+    <!ELEMENT statements ((if | nif)+) >
+    <!ELEMENT effect (type, subtype?, data?, nextstate?) >
+    <!ELEMENT type (#PCDATA) >
+    <!ELEMENT data (#PCDATA) >
+    <!ELEMENT nextstate (#PCDATA)>
+    <!ELEMENT subtype (#PCDATA)>
+    <!ELEMENT if (subject, verb, object) >
+    <!ELEMENT nif (subject, verb, object) >
+    <!ELEMENT subject (#PCDATA)>
+    <!ELEMENT verb (#PCDATA)>
+    <!ELEMENT object (#PCDATA)>
+    <!ATTLIST rule
+        event (MOVE | BUILD) #REQUIRED >
+]>
+<!--Cards-->
+<Cards>
+    <!--Apollo-->
+    <Card>
+        <name>Apollo</name>
+        <description>
+            Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.
+        </description>
+        <rules>
+            <rule event="MOVE">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Hai un'interazione con un altro worker-->
+                        <subject>YOU</subject>
+                        <verb>INTERACTION_NUM</verb>
+                        <object>1</object>
+                    </if>
+                    <if> <!--Quell'unica interazione era nella posizione finale ed era un avversario-->
+                        <subject>FINAL_POSITION</subject>
+                        <verb>POSITION_EQUALS</verb>
+                        <object>OPPONENTS</object>
+                    </if>
+                    <!--Verranno aggiunte
+                    <if> Se hai appena iniziato il turno
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>TURN_STARTED</object>
+                    </if>
+                    <if> Ti vuoi muovere solo di una cella adiacente, senza passare per cupole
+                        <subject>YOU</subject>
+                        <verb>MOVE_LENGTH</verb>
+                        <object>1</object>
+                    </if>
+                    <nif> Nel tuo spostamento, non ci sono step con il delta livello > 1 (non sei salito per più di un livello)
+                        <subject>YOU</subject>
+                        <verb>EXISTS_DELTA_MORE</verb>
+                        <object>1</object>
+                    </nif>
+                    -->
+                </statements>
+                <effect> <!--Sposta l'avversario al tuo posto-->
+                    <type>ALLOW</type>
+                    <subtype>SET_OPPONENT</subtype>
+                    <data>SWAP</data>
+                    <!--Verrà aggiunto
+                    <nextstate>MOVED</nextstate>
+                    -->
+                    <!--
+                        (APPLY)  Verifica che la posizione di destinazione sia libera.
+                                        Una carta che consente lo scambio con un worker alla destinazione
+                                        dovrà spostare prima worker dalla cella di destinazione.
+                    -->
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+    <!--Artemis-->
+    <Card>
+        <name>Artemis</name>
+        <description>
+            Your Move: Your Worker may move one additional time, but not back to its initial space.
+        </description>
+        <rules>
+            <rule event="MOVE">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Hai preventivato due spostamenti adiacenti-->
+                        <subject>YOU</subject>
+                        <verb>MOVE_LENGTH</verb>
+                        <object>2</object>
+                    </if>
+                    <nif> <!--Le posizioni iniziali e finali non corrispondono-->
+                        <subject>FINAL_POSITION</subject>
+                        <verb>POSITION_EQUALS</verb>
+                        <object>START_POSITION</object>
+                    </nif>
+                    <!--Verranno aggiunte
+                    <if> Se hai appena iniziato il turno
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>TURN_STARTED</object>
+                    </if>
+                    <nif> Nel tuo spostamento, non ci sono step con il delta livello > 1 (non sei salito per più di un livello)
+                        <subject>YOU</subject>
+                        <verb>EXISTS_DELTA_MORE</verb>
+                        <object>1</object>
+                    </nif>
+                    <if> <Non ti sei scontrato con altri giocatori
+                        <subject>YOU</subject>
+                        <verb>INTERACTION_NUM</verb>
+                        <object>0</object>
+                    </if>
+                    -->
+                </statements>
+                <effect>
+                    <type>ALLOW</type> <!--La tua mossa è permessa-->
+                    <!--Verrà aggiunto
+                    <nextstate>MOVED</nextstate>
+                    -->
+                    <!--
+                        (APPLY)     Verifica che la posizione di destinazione sia libera.
+                                    Una carta che consente lo scambio con un worker alla destinazione
+                                    dovrà spostare prima worker dalla cella di destinazione.
+                    -->
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+    <!--Athena-->
+    <Card>
+        <name>Athena</name>
+        <description>
+            Opponent’s Turn: If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn.
+        </description>
+        <rules>
+            <rule event="MOVE">
+                <statements>
+                    <nif> <!--Non sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </nif>
+                    <if> <!--Il possessore della carta è salito di almeno un livello nel suo turno-->
+                        <subject>CARD_OWNER</subject>
+                        <verb>HAS_FLAG</verb>
+                        <object>MOVED_UP_ONCE</object>
+                    </if>
+                    <if> <!--Tu vuoi salire di almeno un livello-->
+                        <subject>YOU</subject>
+                        <verb>EXISTS_DELTA_MORE</verb>
+                        <object>0</object>
+                    </if>
+                </statements>
+                <effect>
+                    <type>DENY</type> <!--Hai perso-->
+                    <!--Il tag nextstate non viene ereditato perché non serve-->
+                    <!--Non serve applicare la mossa, in ogni caso il fatto che il player potesse
+                        farla è garantito dagli allow-->
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+    <!--Atlas-->
+    <Card>
+        <name>Atlas</name>
+        <description>
+            Your Build: Your Worker may build a dome at any level.
+        </description>
+        <rules>
+            <rule event="BUILD">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Vuoi costruire cupole su un livello diverso dal terzo (ma non sopra un'altra cupola)-->
+                        <subject>YOU</subject>
+                        <verb>BUILD_DOME_EXCEPT</verb>
+                        <object>THIRD_FLOOR</object>
+                    </if>
+                    <!--Verranno aggiunti
+                    <if> Se ti sei mosso
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>MOVED</object>
+                    </if>
+                    <if> Vuoi costruire solo un edificio, adiacente a te
+                        <subject>YOU</subject>
+                        <verb>BUILD_NUM</verb>
+                        <object>1</object>
+                    </if>
+                    -->
+                </statements>
+                <effect>
+                    <type>ALLOW</type>
+                    <!--Verrà aggiunto
+                    <nextstate>BUILT</nextstate>
+                    -->
+                    <!--
+                        (APPLY)     > Si occupa della verifica che le celle di destinazione
+                                    non siano occupate da un worker o da una cupola
+                                    > Controlla che la consecutio degli edifici sia corretta
+                                    (con eccezione per le cupole, il cui controllo è lasciato a
+                                    BUILD_DOME_EXCEPT)
+                    -->
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+    <!--Demeter-->
+    <Card>
+        <name>Demeter</name>
+        <description>
+            Your Build: Your Worker may build one additional time, but not on the same space.
+        </description>
+        <rules>
+            <rule event="BUILD">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Vuoi costruire 2 edifici vicino a te-->
+                        <subject>YOU</subject>
+                        <verb>BUILD_NUM</verb>
+                        <object>2</object>
+                    </if>
+                    <nif> <!--Le posizioni dell'edificio 1 e 2 non corrispondono-->
+                        <subject>YOU</subject>
+                        <verb>BUILD_IN_SAME_SPOT</verb>
+                        <object>ALL</object>
+                    </nif>
+                    <!--Verranno aggiunti
+                    <if> Se ti sei mosso
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>MOVED</object>
+                    </if>
+                    <nif> Non vuoi costruire cupole su un livello diverso dal terzo
+                        <subject>YOU</subject>
+                        <verb>BUILD_DOME_EXCEPT</verb>
+                        <object>THIRD_FLOOR</object>
+                    </nif>
+                    -->
+                </statements>
+                <effect>
+                    <type>ALLOW</type>
+                    <!--Verrà aggiunto
+                    <nextstate>BUILT</nextstate>
+                    -->
+                    <!--
+                        (APPLY)     > Si occupa della verifica che le celle di destinazione
+                                    non siano occupate da un worker o da una cupola
+                                    > Controlla che la consecutio degli edifici sia corretta
+                                    (con eccezione per le cupole, il cui controllo è lasciato a
+                                    BUILD_DOME_EXCEPT)
+                    -->
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+    <!--Hephaestus-->
+    <Card>
+        <name>Hephaestus</name>
+        <description>
+            Your Build: Your Worker may build one additional block (not dome) on top of your first block.
+        </description>
+        <rules>
+            <rule event="BUILD">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Vuoi costruire 2 edifici-->
+                        <subject>YOU</subject>
+                        <verb>BUILD_NUM</verb>
+                        <object>2</object>
+                    </if>
+                    <if> <!--Le posizioni dell'edificio 1 e 2 corrispondono-->
+                        <subject>YOU</subject>
+                        <verb>BUILD_IN_SAME_SPOT</verb>
+                        <object>ALL</object>
+                    </if>
+                    <nif> <!--Non vuoi però costruire cupole sul terzo piano-->
+                        <subject>YOU</subject>
+                        <verb>BUILD_DOME</verb>
+                        <object>THIRD_FLOOR</object>
+                    </nif>
+                    <!--Verranno aggiunti
+                    <if> Se ti sei mosso
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>MOVED</object>
+                    </if>
+                    <nif> Non vuoi costruire cupole su un livello diverso dal terzo
+                        <subject>YOU</subject>
+                        <verb>BUILD_DOME_EXCEPT</verb>
+                        <object>THIRD_FLOOR</object>
+                    </nif> In realtà basterebbe predicato EXISTS_DOME, e così si tolgono sia questo che BUILD_DOME per questa regola
+                    -->
+                </statements>
+                <effect>
+                    <type>ALLOW</type>
+                    <!--Verrà aggiunto
+                    <nextstate>BUILT</nextstate>
+                    -->
+                    <!--
+                        (APPLY)     > Si occupa della verifica che le celle di destinazione
+                                    non siano occupate da un worker o da una cupola
+                                    > Controlla che la consecutio degli edifici sia corretta
+                                    (con eccezione per le cupole, il cui controllo è lasciato a
+                                    BUILD_DOME_EXCEPT)
+                    -->
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+    <!--Minotaur-->
+    <Card>
+        <name>Minotaur</name>
+        <description>
+            Your Move: Your Worker may move into an opponent Worker’s space, if their Worker can be forced one space straight backwards to an unoccupied space at any level.
+        </description>
+        <rules>
+            <rule event="MOVE">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Hai un'interazione con un altro worker-->
+                        <subject>YOU</subject>
+                        <verb>INTERACTION_NUM</verb>
+                        <object>1</object>
+                    </if>
+                    <if> <!--Quell'unica interazione era nella posizione finale ed era un avversario-->
+                        <subject>FINAL_POSITION</subject>
+                        <verb>POSITION_EQUALS</verb>
+                        <object>OPPONENTS</object>
+                    </if>
+                    <!--Verranno aggiunti
+                    <if> Se hai appena iniziato il turno
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>TURN_STARTED</object>
+                    </if>
+                    <if> Ti vuoi muovere solo di una cella adiacente, senza passare per cupole
+                        <subject>YOU</subject>
+                        <verb>MOVE_LENGTH</verb>
+                        <object>1</object>
+                    </if>
+                    <nif> Nel tuo spostamento, non ci sono step con il delta livello > 1 (non sei salito per più di un livello)
+                        <subject>YOU</subject>
+                        <verb>EXISTS_DELTA_MORE</verb>
+                        <object>1</object>
+                    </nif>
+                    -->
+                </statements>
+                <effect>
+                    <type>ALLOW</type> <!--Sposta l'avversario avanti di uno, se possibile-->
+                    <subtype>SET_OPPONENT</subtype>
+                    <data>PUSH_STRAIGHT</data>
+                    <!--Verrà aggiunto
+                    <nextstate>MOVED</nextstate>
+                    -->
+                    <!--
+                        (APPLY)     Verifica che il push si possa effettuare.
+                                    Applica quindi il push e lo spostamento
+                    -->
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+    <!--Pan-->
+    <Card>
+        <name>Pan</name>
+        <description>
+            Win Condition: You also win if your Worker moves down two or more levels.
+        </description>
+        <rules>
+            <rule event="MOVE">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Vuoi scendere di due o più livelli-->
+                        <subject>YOU</subject>
+                        <verb>EXISTS_DELTA_LESS</verb>
+                        <object>-1</object>
+                    </if>
+                </statements>
+                <effect>
+                    <type>WIN</type>
+                    <!--Il tag nextstate non viene ereditato perché non serve-->
+                    <!--La mossa viene applicata dall'allow specifico, in ogni caso il fatto che 
+                        il player potesse farla è garantito dagli allow-->
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+    <!--Prometheus-->
+    <Card>
+        <name>Prometheus</name>
+        <description>
+            Your Turn: If your Worker does not move up, it may build both before and after moving.
+        </description>
+        <rules>
+            <rule event="BUILD">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Il tuo turno è appena iniziato-->
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>TURN_STARTED</object>  
+                    </if>
+                    <!--Verranno aggiunti
+                    <if> Vuoi costruire solo un edificio, adiacente a te
+                        <subject>YOU</subject>
+                        <verb>BUILD_NUM</verb>
+                        <object>1</object>
+                    </if>
+                    <nif> Non vuoi costruire cupole su un livello diverso dal terzo
+                        <subject>YOU</subject>
+                        <verb>BUILD_DOME_EXCEPT</verb>
+                        <object>THIRD_FLOOR</object>
+                    </nif>
+                    -->
+                </statements>
+                <effect>
+                    <type>ALLOW</type> <!--Ti permetto di costruire-->
+                    <nextstate>FIRST_BUILT</nextstate> <!--Cambia lo stato di default per poter muoverti-->
+                    <!--
+                        (APPLY)     > Si occupa della verifica che le celle di destinazione
+                                    non siano occupate da un worker o da una cupola
+                                    > Controlla che la consecutio degli edifici sia corretta
+                                    (con eccezione per le cupole, il cui controllo è lasciato a
+                                    BUILD_DOME_EXCEPT)
+                    -->
+                </effect>
+            </rule>
+            <rule event="MOVE">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Hai sfruttato il potere di FIRST_BUILT-->
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>FIRST_BUILT</object>  
+                    </if>
+                    <nif> <!--Non sei salito-->
+                        <subject>YOU</subject>
+                        <verb>EXISTS_DELTA_MORE</verb>
+                        <object>0</object>  
+                    </nif>
+                    <!--Verranno aggiunti
+                    <if> Ti vuoi muovere solo di una cella adiacente, senza passare per cupole
+                        <subject>YOU</subject>
+                        <verb>MOVE_LENGTH</verb>
+                        <object>1</object>
+                    </if>
+                    <if> Non ti sei scontrato con altri giocatori
+                        <subject>YOU</subject>
+                        <verb>INTERACTION_NUM</verb>
+                        <object>0</object>
+                    </if>
+                    -->     
+                </statements>
+                <effect>
+                    <type>ALLOW</type>
+                    <!--Verrà aggiunto
+                    <nextstate>MOVED</nextstate>
+                    -->
+                    <!--
+                        (APPLY)     Verifica che la posizione di destinazione sia libera.
+                                    Una carta che consente lo scambio con un worker alla destinazione
+                                    dovrà spostare prima worker dalla cella di destinazione.
+                    -->
+                </effect>
+            </rule>
+            <!--La seconda build è garantita dalla strategia di default-->
+        </rules>
+    </Card>
+</Cards>

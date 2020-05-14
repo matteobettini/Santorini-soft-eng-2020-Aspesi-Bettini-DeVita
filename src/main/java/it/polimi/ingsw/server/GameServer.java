@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.cards.CardFactory;
-import it.polimi.ingsw.server.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.server.communication.Server;
 
@@ -15,7 +14,7 @@ public class GameServer {
 
         try {
             CardFactory.getInstance();
-        } catch (CardLoadingException | InvalidCardException e) {
+        } catch (InvalidCardException e) {
             System.err.println("[" + e.getClass().toString() + "]" + e.getMessage());
             return; //Do not load the server if there are errors with the cards
         }

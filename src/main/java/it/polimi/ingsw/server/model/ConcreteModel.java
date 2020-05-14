@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.server.cards.CardFactory;
-import it.polimi.ingsw.server.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.server.model.enums.SetupPhase;
 import it.polimi.ingsw.common.utils.observe.Observer;
@@ -22,7 +21,7 @@ public class ConcreteModel implements ObservableModel, Model {
         this.factory = null;
         try {
             this.factory = CardFactory.getInstance();
-        } catch (CardLoadingException | InvalidCardException e) {
+        } catch (InvalidCardException e) {
             assert false;
         }
         this.internalModel = new InternalModel(players, factory, isHardCore);

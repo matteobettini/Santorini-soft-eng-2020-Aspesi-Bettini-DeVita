@@ -2,7 +2,6 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.server.cards.CardFactory;
 import it.polimi.ingsw.server.cards.CardFile;
-import it.polimi.ingsw.server.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.common.enums.ActionType;
 import it.polimi.ingsw.common.enums.BuildingType;
@@ -107,7 +106,7 @@ class TurnLogicMatteoTest {
     PacketMove packetMove;
 
     @BeforeAll
-    static void init() throws CardLoadingException, InvalidCardException {
+    static void init() throws InvalidCardException {
         //CardFactory
         cardFactory = CardFactory.getInstance();
     }

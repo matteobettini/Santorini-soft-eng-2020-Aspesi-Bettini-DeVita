@@ -1,34 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Card SYSTEM "CardSchema.dtd">
-<Card>
-    <name>Apollo</name>
-    <description>
-        Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.
-    </description>
-    <rules>
-        <rule event="MOVE">
-            <statements>
-                <if> <!--Sei il possessore della carta-->
-                    <subject>YOU</subject>
-                    <verb>PLAYER_EQUALS</verb>
-                    <object>CARD_OWNER</object>
-                </if>
-                <if> <!--Hai un'interazione con un altro worker-->
-                    <subject>YOU</subject>
-                    <verb>INTERACTION_NUM</verb>
-                    <object>1</object>
-                </if>
-                <if> <!--Quell'unica interazione era nella posizione finale ed era un avversario-->
-                    <subject>FINAL_POSITION</subject>
-                    <verb>POSITION_EQUALS</verb>
-                    <object>OPPONENTS</object>
-                </if>
-            </statements>
-            <effect> <!--Sposta l'avversario al tuo posto-->
-                <type>ALLOW</type>
-                <subtype>SET_OPPONENT</subtype>
-                <data>SWAP</data>
-            </effect>
-        </rule>
-    </rules>
-</Card>
+<!--DTD schema-->
+<!DOCTYPE Cards [
+    <!ELEMENT Cards (Card+) >
+    <!ELEMENT Card (name, description, rules) >
+    <!ELEMENT rules (rule+) >
+    <!ELEMENT rule (statements, effect) >
+    <!ELEMENT name (#PCDATA) >
+    <!ELEMENT description (#PCDATA) >
+    <!ELEMENT statements ((if | nif)+) >
+    <!ELEMENT effect (type, subtype?, data?, nextstate?) >
+    <!ELEMENT type (#PCDATA) >
+    <!ELEMENT data (#PCDATA) >
+    <!ELEMENT nextstate (#PCDATA)>
+    <!ELEMENT subtype (#PCDATA)>
+    <!ELEMENT if (subject, verb, object) >
+    <!ELEMENT nif (subject, verb, object) >
+    <!ELEMENT subject (#PCDATA)>
+    <!ELEMENT verb (#PCDATA)>
+    <!ELEMENT object (#PCDATA)>
+    <!ATTLIST rule
+        event (MOVE | BUILD) #REQUIRED >
+]>
+<!--Cards-->
+<Cards>
+    <Card>
+        <name>Apollo</name>
+        <description>
+            Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.
+        </description>
+        <rules>
+            <rule event="MOVE">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Hai un'interazione con un altro worker-->
+                        <subject>YOU</subject>
+                        <verb>INTERACTION_NUM</verb>
+                        <object>1</object>
+                    </if>
+                    <if> <!--Quell'unica interazione era nella posizione finale ed era un avversario-->
+                        <subject>FINAL_POSITION</subject>
+                        <verb>POSITION_EQUALS</verb>
+                        <object>OPPONENTS</object>
+                    </if>
+                </statements>
+                <effect> <!--Sposta l'avversario al tuo posto-->
+                    <type>ALLOW</type>
+                    <subtype>SET_OPPONENT</subtype>
+                    <data>SWAP</data>
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+</Cards>

@@ -2,7 +2,6 @@ package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.server.cards.*;
 import it.polimi.ingsw.server.cards.enums.TriggerType;
-import it.polimi.ingsw.server.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.server.model.enums.PlayerState;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,7 +22,7 @@ class MapCompilerTest {
     private Player Andrea;
 
     @BeforeAll
-    static void init() throws CardLoadingException, InvalidCardException {
+    static void init() throws InvalidCardException {
         cardFactory = CardFactory.getInstance();
     }
 

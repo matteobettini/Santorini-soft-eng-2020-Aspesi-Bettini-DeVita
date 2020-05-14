@@ -121,7 +121,7 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.0.2</version>
 
-                    <!--
+<!--
                     <configuration>
                         <archive>
                             <manifest>
@@ -129,7 +129,7 @@
                                 <mainClass>it.polimi.ingsw.server.GameServer</mainClass>
                             </manifest>
                         </archive>
-                        <finalName>Game server</finalName>
+                        <finalName>GameServer</finalName>
                     </configuration>
 -->
 
@@ -140,7 +140,7 @@
                                 <mainClass>it.polimi.ingsw.client.GameClient</mainClass>
                             </manifest>
                         </archive>
-                        <finalName>CLI</finalName>
+                        <finalName>GameClient</finalName>
                     </configuration>
 
                 </plugin>

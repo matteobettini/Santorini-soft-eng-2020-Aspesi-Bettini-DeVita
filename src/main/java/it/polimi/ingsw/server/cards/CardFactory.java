@@ -1,11 +1,9 @@
 package it.polimi.ingsw.server.cards;
 
 import it.polimi.ingsw.server.cards.enums.*;
-import it.polimi.ingsw.server.cards.exceptions.CardLoadingException;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.server.model.enums.PlayerState;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,7 +11,7 @@ import java.util.List;
  * Singleton for cards
  */
 public class CardFactory {
-    private static String cardPath = "src/main/resources/cards";
+    private static String cardsPath = "Cards.xml";
 
     private CardFile defaultCard;
     private List<CardFile> cards;
@@ -23,7 +21,12 @@ public class CardFactory {
     private CardFactory()  {
     }
 
-    public synchronized static CardFactory getInstance() throws CardLoadingException, InvalidCardException{
+    /**
+     * Gets an instance for this cards' singleton
+     * @return Instance of CardFactory
+     * @throws InvalidCardException If there are problems during cards parsing
+     */
+    public synchronized static CardFactory getInstance() throws InvalidCardException{
         if (instance == null){
             instance = new CardFactory();
             instance.defaultCard = instance.generateDefaultStrategy();
@@ -89,20 +92,7 @@ public class CardFactory {
         return defaultCard;
     }
 
-    private List<CardFile> loadCards() throws InvalidCardException, CardLoadingException {
-        List<CardFile> result = new LinkedList<>();
-        try{
-            File cardDir = new File(cardPath);
-            File[] files = cardDir.listFiles((File dir, String name) -> name.toLowerCase().endsWith(".xml"));
-            if (files == null){
-                throw new CardLoadingException("Cannot scan card's dir");
-            }
-            for(File card : files){
-                result.add(CardReader.readCard(defaultCard,card));
-            }
-        }catch (NullPointerException | SecurityException ex){
-            throw new CardLoadingException("Card's dir not found or not accessible");
-        }
-        return result;
+    private List<CardFile> loadCards() throws InvalidCardException {
+        return CardReader.readCards(defaultCard, cardsPath);
     }
 }

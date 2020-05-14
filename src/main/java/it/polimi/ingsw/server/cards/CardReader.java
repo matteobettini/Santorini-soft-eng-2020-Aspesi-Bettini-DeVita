@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.cards;
 
+import it.polimi.ingsw.common.utils.ResourceScanner;
 import it.polimi.ingsw.server.cards.enums.*;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
 import it.polimi.ingsw.server.model.enums.PlayerState;
@@ -7,21 +8,21 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
 
 /**
- * This class allows to read a card from a file.
- * The card returned (in form of CardFile) is completely checked syntactically and semantically.
+ * This class allows to read cards from a file.
+ * The cards returned (in form of List of CardFile) are completely checked syntactically and semantically.
  *
  * Syntax exceptions are maintained even if DTD syntax checking was introduced.
  * Checks were maintained anyway in order to be fully covered from external DTD manipulation, during reading phase.
@@ -29,36 +30,33 @@ import java.util.List;
 class CardReader {
 
     /**
-     * Read a card from an XML file
+     * Read a list of cards from an XML file
      * @param defaultCard Default strategy card, in the form of CardFile
-     * @param file File initialized with the path where the card's XML is placed
-     * @return CardFile of the indicated card
-     * @throws InvalidCardException If card has problems syntactically or semantically.
+     * @param file The path where the cards' XML is placed
+     * @return List of CardFile of the indicated cards
+     * @throws InvalidCardException If one of the card has problems syntactically or semantically.
      *                              It's always indicated the cause as message
      */
-    public static CardFile readCard(CardFile defaultCard, File file) throws InvalidCardException{
+    public static List<CardFile> readCards(CardFile defaultCard, String file) throws InvalidCardException{
         assert (defaultCard != null && file != null);
         Document document;
         try{
             document = getXMLDocument(file);
-        } catch (SAXException | ParserConfigurationException | IOException e) {
+        } catch (Exception e) {
             throw new InvalidCardException("[XML PARSE][" + e.getClass().toString() + "]" + e.getMessage());
         }
-        CardFileImpl cardFile = parseCard(document);
-        CardValidator.checkCardFile(cardFile);
-        CardPatcher.patchCard(defaultCard,cardFile);
-        return cardFile;
+        return parseCards(defaultCard,document);
     }
 
     /**
      * Read XML Document from file
-     * @param cardFile File initialized with the path of the card
+     * @param cardFile The path of the file
      * @return Document containing parsed XML data
      * @throws IOException If the file could not be read
      * @throws ParserConfigurationException If the parser finds invalid config
      * @throws SAXException If syntax check goes wrong
      */
-    private static Document getXMLDocument(File cardFile) throws IOException, ParserConfigurationException, SAXException {
+    private static Document getXMLDocument(String cardFile) throws IOException, ParserConfigurationException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setValidating(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -75,27 +73,58 @@ class CardReader {
                     }
                 }
         );
-        Document document = builder.parse(cardFile);
+
+        ResourceScanner scanner = ResourceScanner.getInstance();
+        Document document = builder.parse(scanner.getResourceAsStream(cardFile));
         document.getDocumentElement().normalize();
         return document;
     }
 
     /**
-     * Parse the CardFile from the document XML
-     * @param xml Document to be parsed
-     * @return CardFileImpl containing CardFile data
-     * @throws InvalidCardException If Syntax error occurs during the process
+     * Parses a file containing cards into a list of CardFile
+     * @param defaultCard Default strategy to patch the cards
+     * @param xml Document xml of the file
+     * @return List of CardFile
+     * @throws InvalidCardException If syntax error occurs during the process
      */
-    private static CardFileImpl parseCard(Document xml) throws InvalidCardException {
+    private static List<CardFile> parseCards(CardFile defaultCard, Document xml) throws InvalidCardException{
+        List<CardFile> cardFiles = new LinkedList<>();
         //Check root node
         Element root = xml.getDocumentElement();
-        if (!root.getNodeName().equals("Card")){
-            throw new InvalidCardException("[CARD PARSER]Wrong root tag");
+        if (!root.getNodeName().equals("Cards")){
+            throw new InvalidCardException("[CARDS PARSER]Wrong root tag");
         }
+        //Get cards
+        NodeList nList = root.getElementsByTagName("Card");
+        if (nList.getLength() == 0){
+            throw new InvalidCardException("[CARDS PARSER]At least one card must be defined");
+        }
+        //For each card, parse it
+        for(int i = 0; i<nList.getLength();i++){
+            Node cardNode = nList.item(i);
+            if (cardNode.getNodeType() != Node.ELEMENT_NODE){
+                throw new InvalidCardException("[CARD PARSER]Cannot read card " + (i+1));
+            }
+            CardFileImpl cardFile = parseCard((Element)cardNode);
+            //Check and patch the card
+            CardValidator.checkCardFile(cardFile);
+            CardPatcher.patchCard(defaultCard,cardFile);
+            //If everything okay, add it to the list
+            cardFiles.add(cardFile);
+        }
+        return cardFiles;
+    }
 
+    /**
+     * Parse the CardFile from the xml element
+     * @param cardElement Card tag to be parsed
+     * @return CardFileImpl containing CardFile data
+     * @throws InvalidCardException If syntax error occurs during the process
+     */
+    private static CardFileImpl parseCard(Element cardElement) throws InvalidCardException {
         //Get card name
         String cardName;
-        NodeList nList = root.getElementsByTagName("name");
+        NodeList nList = cardElement.getElementsByTagName("name");
         if (nList.getLength() != 1){
             throw new InvalidCardException("[CARD PARSER]Missing/Multiple tag name");
         }
@@ -106,7 +135,7 @@ class CardReader {
 
         //Get card description
         String cardDescription;
-        nList = xml.getElementsByTagName("description");
+        nList = cardElement.getElementsByTagName("description");
         if (nList.getLength() != 1){
             throw new InvalidCardException("[CARD PARSER]Missing/Multiple tag description");
         }
@@ -116,15 +145,15 @@ class CardReader {
         }
 
         //Parse the rules
-        List<CardRuleImpl> cardRules = extractCardRules(xml);
+        List<CardRuleImpl> cardRules = extractCardRules(cardElement);
         return new CardFileImpl(cardName,cardDescription,cardRules);
     }
 
-    private static List<CardRuleImpl> extractCardRules(Document xml) throws InvalidCardException{
+    private static List<CardRuleImpl> extractCardRules(Element cardElement) throws InvalidCardException{
         List<CardRuleImpl> rulesList = new LinkedList<>();
 
         //Get card rules
-        NodeList nRules = xml.getElementsByTagName("rules");
+        NodeList nRules = cardElement.getElementsByTagName("rules");
         if (nRules.getLength() != 1){
             throw new InvalidCardException("[RULE PARSER]Missing/Multiple tag rules");
         }
