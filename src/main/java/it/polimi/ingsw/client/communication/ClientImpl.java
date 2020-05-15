@@ -15,6 +15,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientImpl implements Client {
 
+    public static final int PING_PERIOD = 1000;
+    public static final int CONNECTION_TIMEOUT = 3000;
+    public static final int INVALID_IP_TIMEOUT = 2000;
 
     private final Queue<Observer<PacketSetup>> packetSetupObservers;
     private final Queue<ClientObserver<PacketCardsFromServer>> packetCardsFromServerObservers;
@@ -64,7 +67,7 @@ public class ClientImpl implements Client {
         this.pinger = new Thread(() -> {
             while(started.get() && !ended.get()) {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(PING_PERIOD);
                     send(ConnectionMessages.PING);
                 } catch (InterruptedException e) {
                     break;
@@ -86,7 +89,9 @@ public class ClientImpl implements Client {
             try {
 
                 this.socket = new Socket();
-                this.socket.connect(new InetSocketAddress(address, port), 3000);
+                this.socket.connect(new InetSocketAddress(address, port), INVALID_IP_TIMEOUT);
+                this.socket.setSoTimeout(CONNECTION_TIMEOUT);
+
 
                 os = new ObjectOutputStream(socket.getOutputStream());
                 is = new ObjectInputStream(socket.getInputStream());
