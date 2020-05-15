@@ -165,7 +165,7 @@ public class InputUtilities {
      */
     public static Integer getActionChoice(boolean makeChoiceForbidden, boolean restartForbidden, boolean confirmActionForbidden){
         String choiceMessage;
-        List<Integer> mapChoices = new ArrayList<>();
+        List<Character> mapChoices = new ArrayList<>();
 
         if(makeChoiceForbidden && restartForbidden && confirmActionForbidden){
             assert false;
@@ -175,38 +175,46 @@ public class InputUtilities {
         else if(makeChoiceForbidden && confirmActionForbidden) return 2;
         else if(restartForbidden && confirmActionForbidden) return 1;
         else if(makeChoiceForbidden){
-            choiceMessage = "Do you want to restart the selection(1) or confirm the current actions(2)? ";
-            mapChoices.add(2);
-            mapChoices.add(3);
+            choiceMessage = "Do you want to restart the selection(r) or confirm the current actions(c)? ";
+            mapChoices.add('r');
+            mapChoices.add('c');
 
         }
         else if(restartForbidden){
-            choiceMessage = "Do you want to make a choice(1) or confirm the current actions(2)? ";
-            mapChoices.add(1);
-            mapChoices.add(3);
+            choiceMessage = "Do you want to make a choice(m) or confirm the current actions(c)? ";
+            mapChoices.add('m');
+            mapChoices.add('c');
 
         }
         else if(confirmActionForbidden){
-            choiceMessage = "Do you want to make a choice (1) or restart the selection(2)? ";
-            mapChoices.add(1);
-            mapChoices.add(2);
+            choiceMessage = "Do you want to make a choice (m) or restart the selection(r)? ";
+            mapChoices.add('m');
+            mapChoices.add('r');
 
         }
         else{
-            choiceMessage = "Do you want to make a choice(1), restart the selection(2) or confirm the current actions(3)? ";
-            mapChoices.add(1);
-            mapChoices.add(2);
-            mapChoices.add(3);
+            choiceMessage = "Do you want to make a choice(m), restart the selection(r) or confirm the current actions(c)? ";
+            mapChoices.add('m');
+            mapChoices.add('r');
+            mapChoices.add('c');
         }
 
-        Integer choice;
+        char choice;
         do{
             System.out.print(choiceMessage);
-            choice = InputUtilities.getInt("Not a valid action number, choose an action: ");
-            if (choice == null) return -1;
-        }while(choice <= 0 || choice > mapChoices.size());
+            String line = InputUtilities.getLine();
+            if (line == null) return -1;
+            if(line.length() != 1) choice = ' ';
+            else choice = line.toLowerCase().charAt(0);
+        }while(!mapChoices.contains(choice));
 
-        return mapChoices.get(choice - 1);
+        if(choice == 'm') return 1;
+        else  if (choice == 'r') return 2;
+        else if (choice == 'c') return 3;
+
+        assert false;
+
+        return -1;
     }
 
     /**

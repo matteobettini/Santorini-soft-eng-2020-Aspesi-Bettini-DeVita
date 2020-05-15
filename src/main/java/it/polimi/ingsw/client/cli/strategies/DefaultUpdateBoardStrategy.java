@@ -50,8 +50,6 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
                 board.getCell(workersPositions.get(worker)).setWorker(worker);
         }
 
-        matchData.makeGraphicalBoardEqualToBoard();
-
         String loser = packetUpdateBoard.getPlayerLostID();
 
         //IF THERE IS A LOSER OR A WINNER WE SET IT
@@ -60,6 +58,11 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
             //WE SET IT IN THE MATCH MENU
             matchData.setLoser(loser);
             if(loser.equals(matchData.getPlayerName())) gameOver = true;
+
+            for(String workersLoser : matchData.getIds().get(loser)){
+                board.getCell(board.getWorkerPosition(workersLoser)).removeWorker();
+            }
+
         }
 
         String winner = packetUpdateBoard.getPlayerWonID();
@@ -73,17 +76,15 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
             else gameOver = true;
         }
 
+        matchData.makeGraphicalBoardEqualToBoard();
+
         OutputUtilities.printMatch(youWin, gameOver);
 
-        if(matchData.getWinner() != null){
-            if(matchData.getWinner().equals(matchData.getPlayerName())) System.out.println("You have won!");
-            else System.out.println(matchData.getWinner() + " has won!");
-        }
-        else if(matchData.getLoser() != null){
-            if(matchData.getLoser().equals(matchData.getPlayerName())) System.out.println("You have lost!");
-            else System.out.println(matchData.getLoser() + " has lost!");
+        if(matchData.getPlayerName().equals(loser)) System.out.println("You have lost!");
+        else if(loser != null) System.out.println(matchData.getLoser() + " has lost!");
 
-        }
+        if(matchData.getPlayerName().equals(winner)) System.out.println("You have won!");
+        else if(winner != null)System.out.println(matchData.getWinner() + " has won!");
     }
 
 }
