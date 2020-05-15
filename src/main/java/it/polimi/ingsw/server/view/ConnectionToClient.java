@@ -279,22 +279,22 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
 
-    private synchronized void closeRoutine(boolean timerEnded){
+    private synchronized void closeRoutine(boolean timerEnded) {
 
         active.set(false);
         stopTimer();
 
-        try {
-            if(timerEnded){
+        if (timerEnded) {
+            try {
                 os.writeObject(ConnectionMessages.TIMER_ENDED);
                 os.flush();
-            }
-        }catch (IOException ignored){ }
+            }catch(IOException ignored){}
+        }
 
         try{
             os.writeObject(ConnectionMessages.CONNECTION_CLOSED);
             os.flush();
-        }catch (IOException ignored){ }
+        }catch (IOException ignored){}
 
         try {
             is.close();

@@ -62,11 +62,11 @@ public class ClientImpl implements Client {
 
         this.packetReceiver = new Thread(this::manageIncomingPackets);
         this.pinger = new Thread(() -> {
-            while(started.get() && !ended.get()){
+            while(started.get() && !ended.get()) {
                 try {
                     Thread.sleep(1000);
                     send(ConnectionMessages.PING);
-                } catch (InterruptedException e){
+                } catch (InterruptedException e) {
                     break;
                 }
             }
@@ -92,7 +92,7 @@ public class ClientImpl implements Client {
                 is = new ObjectInputStream(socket.getInputStream());
 
             } catch (IOException e) {
-                manageClosure(ConnectionState.UNABLE_TO_CONNECT, "Unable to connect to the server");
+                manageUnconnected();
                 return;
             }
 
@@ -105,7 +105,7 @@ public class ClientImpl implements Client {
             boolean skip;
 
             try{
-                while (!end && started.get()) {
+                while (!end) {
                     skip = false;
                     Object packetFromServer = is.readObject();
                     if(packetFromServer instanceof ConnectionMessages) {
@@ -118,13 +118,13 @@ public class ClientImpl implements Client {
                             notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, messageFromServer.getMessage()));
                             break;
                         }else if(messageFromServer == ConnectionMessages.MATCH_FINISHED){
+                            pinger.interrupt();
                             end = true;
                         }
                     }
                     if(!skip)
                         incomingPackets.add(packetFromServer);
                 }
-
 
             } catch (IOException | ClassNotFoundException e) {
                 packetReceiver.interrupt();
@@ -206,7 +206,7 @@ public class ClientImpl implements Client {
                     os.writeObject(packet);
                     os.flush();
                 } catch (IOException e) {
-                    manageClosure();
+                    closeRoutine();
                 }
             }
         }finally {
@@ -214,14 +214,11 @@ public class ClientImpl implements Client {
         }
     }
 
-    private void manageClosure(){
-        manageClosure(ConnectionState.CLOSURE_UNEXPECTED, ConnectionMessages.CONNECTION_CLOSED.getMessage());
-    }
 
-    private void manageClosure(ConnectionState connectionState, String reasonOfClosure){
+    private void manageUnconnected(){
         if(packetReceiver.isAlive())
             packetReceiver.interrupt();
-        notifyConnectionStatusObservers(new ConnectionStatus(connectionState, reasonOfClosure));
+        notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.UNABLE_TO_CONNECT, "Unable to connect to the server"));
         closeRoutine();
     }
 
