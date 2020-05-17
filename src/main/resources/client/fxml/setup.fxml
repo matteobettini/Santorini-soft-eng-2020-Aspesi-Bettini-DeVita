@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.gui.controllers.SetupController">
+    <children>
+      <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" styleClass="santorini-pane">
+         <padding>
+            <Insets bottom="50.0" left="100.0" right="100.0" top="50.0" />
+         </padding>
+         <center>
+            <GridPane BorderPane.alignment="CENTER">
+            <columnConstraints>
+               <ColumnConstraints hgrow="SOMETIMES" maxWidth="281.0" minWidth="10.0" prefWidth="206.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="476.0" minWidth="10.0" prefWidth="455.0" />
+               <ColumnConstraints hgrow="SOMETIMES" maxWidth="215.0" minWidth="10.0" prefWidth="211.0" />
+            </columnConstraints>
+            <rowConstraints>
+               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+               <children>
+                  <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
+                     <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" text="Choose a Nickname" textFill="WHITE">
+                           <font>
+                              <Font name="Calibri" size="30.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="txtUsername" alignment="CENTER" text="" />
+                     </children>
+                  </VBox>
+                  <VBox fx:id="chooseNumPane" alignment="CENTER_LEFT" layoutX="304.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" text="Choose Numbers of Players" textFill="WHITE">
+                           <font>
+                              <Font name="Calibri" size="30.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="cboPlayerNumber" prefWidth="200.0" />
+                     </children>
+                  </VBox>
+                  <VBox fx:id="chooseModePane" alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" text="Choose Game Mode" textFill="WHITE">
+                           <font>
+                              <Font name="Calibri" size="30.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="cboMode" prefWidth="200.0" />
+                     </children>
+                  </VBox>
+               </children>
+               <BorderPane.margin>
+                  <Insets bottom="20.0" top="120.0" />
+               </BorderPane.margin>
+               <styleClass>
+                  <String fx:value="back-4" />
+                  <String fx:value="back-rounded" />
+               </styleClass>
+            </GridPane>
+         </center>
+         <bottom>
+            <Button fx:id="btnNext" mnemonicParsing="false" onMouseClicked="#onBtnNextClicked" text="Next" BorderPane.alignment="CENTER">
+               <padding>
+                  <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+               </padding>
+               <font>
+                  <Font name="Calibri" size="30.0" />
+               </font>
+               <styleClass>
+                    <String fx:value="btn" />
+                    <String fx:value="btn-blue" />
+                </styleClass>
+            </Button>
+         </bottom>
+      </BorderPane>
+      <HBox fx:id="msgPane" alignment="CENTER" maxHeight="100.0" prefHeight="100.0" prefWidth="200.0" StackPane.alignment="TOP_CENTER">
+         <children>
+            <Label fx:id="lblMsg" alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" text="Message for the user" textFill="WHITE">
+               <font>
+                  <Font name="Calibri" size="30.0" />
+               </font>
+            </Label>
+         </children>
+         <styleClass>
+            <String fx:value="back-4" />
+            <String fx:value="message-pane" />
+         </styleClass>
+      </HBox>
+      <HBox fx:id="waitPane" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="back-7" visible="false">
+            <children>
+                <VBox alignment="CENTER" prefHeight="500.0" prefWidth="900.0" spacing="20.0">
+                    <children>
+                        <Label fx:id="lblWait" alignment="CENTER" contentDisplay="CENTER" prefHeight="41.0" prefWidth="646.0" text="Please wait ..." textFill="WHITE">
+                            <font>
+                                <Font name="Calibri" size="35.0" />
+                            </font>
+                        </Label>
+                        <ImageView fx:id="imgWait" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="/client/textures/gear.gif" />
+                            </image>
+                        </ImageView>
+                        <Button fx:id="btnClose" alignment="BOTTOM_CENTER" mnemonicParsing="false" onMouseClicked="#onBtnCloseClicked" text="Close" visible="false">
+                            <font>
+                                <Font name="Calibri" size="30.0" />
+                            </font>
+                            <padding>
+                                <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+                            </padding>
+                            <styleClass>
+                                <String fx:value="btn" />
+                                <String fx:value="btn-blue" />
+                            </styleClass>
+                        </Button>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+    <stylesheets>
+      <URL value="@/client/fxml/styles/global.css" />
+   </stylesheets>
+</StackPane>

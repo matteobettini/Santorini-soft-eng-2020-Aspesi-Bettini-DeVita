@@ -11,7 +11,7 @@ import java.util.List;
  * Singleton for cards
  */
 public class CardFactory {
-    private static String cardsPath = "Cards.xml";
+    private static String cardsPath = "server/Cards.xml";
 
     private CardFile defaultCard;
     private List<CardFile> cards;

@@ -64,6 +64,7 @@ public class ClientImpl implements Client {
         this.connectionStatusObservers = new ConcurrentLinkedQueue<>();
 
         this.packetReceiver = new Thread(this::manageIncomingPackets);
+        this.packetReceiver.setDaemon(true);
         this.pinger = new Thread(() -> {
             while(started.get() && !ended.get()) {
                 try {
@@ -74,12 +75,14 @@ public class ClientImpl implements Client {
                 }
             }
         });
-
+        this.pinger.setDaemon(true);
     }
     @Override
     public void asyncStart(String address, int port){
         if(!started.get()) {
-            new Thread(()->start(address, port)).start();
+            Thread thread = new Thread(()->start(address, port));
+            thread.setDaemon(true);
+            thread.start();
         }
     }
     @Override

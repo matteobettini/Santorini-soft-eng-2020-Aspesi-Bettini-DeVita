@@ -1,6 +1,7 @@
 package it.polimi.ingsw.common.utils;
 
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Scanner for game resources inside jar or filesystem
@@ -33,6 +34,17 @@ public class ResourceScanner {
                 = getContextClassLoader().getResourceAsStream(resource);
 
         return in == null ? getClass().getResourceAsStream(resource) : in;
+    }
+
+    /**
+     * Get the resource url by a specified path
+     * @param resource Path of the resource
+     * @return URL of the resource
+     */
+    public URL getResourcePath(String resource){
+        final URL url
+                = getContextClassLoader().getResource(resource);
+        return url == null ? getClass().getResource(resource) : url;
     }
 
     private ClassLoader getContextClassLoader() {
