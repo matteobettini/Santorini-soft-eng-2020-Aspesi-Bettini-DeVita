@@ -1,0 +1,39 @@
+.santorini-pane{
+    -fx-background-image: url("/client/textures/santorini_board.png");
+    -fx-background-size: stretch, auto;
+    -fx-background-position: center;
+}
+.message-pane{
+    -fx-background-radius: 0 0 20 20;
+}
+.btn{
+    -fx-background-radius: 10 10 10 10;
+}
+.btn-blue{
+    -fx-background-color:  #0288D1;
+    -fx-text-fill: #FFFFFF;
+}
+.back-2{
+    -fx-background-color: rgb(0,0,0,0.2);
+}
+.back-3{
+    -fx-background-color: rgb(0,0,0,0.3);
+}
+.back-4{
+    -fx-background-color: rgb(0,0,0,0.4);
+}
+.back-5{
+    -fx-background-color: rgb(0,0,0,0.5);
+}
+.back-6{
+    -fx-background-color: rgb(0,0,0,0.6);
+}
+.back-7{
+    -fx-background-color: rgb(0,0,0,0.7);
+}
+.back-8{
+    -fx-background-color: rgb(0,0,0,0.8);
+}
+.back-rounded{
+    -fx-background-radius: 20 20 20 20;
+}
