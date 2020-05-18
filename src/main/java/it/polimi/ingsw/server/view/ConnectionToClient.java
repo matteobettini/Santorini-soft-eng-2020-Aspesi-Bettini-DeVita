@@ -10,12 +10,17 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     private static final String NICKNAME_REGEXP = "^([a-zA-Z0-9._\\-]{1,20})$";
     private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEXP);
+    private static final int TIMER_SHORT = 30000;
+    private static final int TIMER_LONG = 200000;
+    public static final int PING_PERIOD = 1000;
+    public static final int CONNECTION_TIMEOUT = 3000;
 
     private Observer<ConnectionToClient> nickNameChosenHandler;
     private Observer<ConnectionToClient> gameDesiresHandler;
@@ -34,6 +39,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private String clientNickname;
     private int desiredNumOfPlayers;
     private boolean desiredHardcore;
+
+    private final ReentrantLock sendLock = new ReentrantLock(true);
 
     private Thread timer;
     private final Thread pinger;
@@ -56,7 +63,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         this.pinger = new Thread(() -> {
             while(active.get()) {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(PING_PERIOD);
                     internalSend(ConnectionMessages.PING);
                 } catch (InterruptedException e) {
                     break;
@@ -79,10 +86,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         timer.start();
     }
 
-    private void startTimerShorter(){ startTimer(20000); }
-    private void startTimerLonger(){
-        startTimer(180000);
-    }
+    private void startTimerShorter(){ startTimer(TIMER_SHORT); }
+    private void startTimerLonger(){ startTimer(TIMER_LONG); }
 
     void stopTimer(){
         if(timer != null && timer.isAlive()) {
@@ -92,12 +97,17 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
     private void internalSend(Serializable packet) throws IOException{
+        sendLock.lock();
         try {
-            os.writeObject(packet);
-            os.flush();
-        }catch (IOException e){
-            System.err.println("Connection [" + getClientNickname() + "]: error in send");
-            throw e;
+            try {
+                os.writeObject(packet);
+                os.flush();
+            } catch (IOException e) {
+                System.err.println("Connection [" + getClientNickname() + "]: error in send");
+                throw e;
+            }
+        }finally {
+            sendLock.unlock();
         }
     }
 
@@ -186,6 +196,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     @Override
     public void run() {
         try{
+            this.socket.setSoTimeout(CONNECTION_TIMEOUT);
 
             os = new ObjectOutputStream(socket.getOutputStream());
             is = new ObjectInputStream(socket.getInputStream());
