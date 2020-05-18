@@ -137,6 +137,23 @@ class Cell{
     }
 
     /**
+     * This method checks if it is possible to build on the Cell and, if it is, checks
+     * whether the resulting cell would be a complete tower, specifying if considering worker check or not
+     * @param b is the List of BuildingType of the buildings to check.
+     * @param excludeWorkerControl true, if excluding worker presence check, false otherwise
+     * @return true if it is "possible" to build onto the previous building or the ground
+     *         and if the resulting cell would be a complete tower, false otherwise.
+     *         The actual possibility is linked to the presence of the worker
+     */
+    public boolean canBuildAndWouldItBeFullTower(List<BuildingType> b, boolean excludeWorkerControl){
+        if(!canBuild(b,excludeWorkerControl))
+            return false;
+        List<BuildingType> tempBuildings = new ArrayList<>(buildings);
+        tempBuildings.addAll(b);
+        return tempBuildings.size() == Board.FULL_TOWER_HEIGHT;
+    }
+
+    /**
      * This method returns the level of the cell (i.e GROUND if there are no buildings).
      * @return the LevelType associated to the Cell.
      */

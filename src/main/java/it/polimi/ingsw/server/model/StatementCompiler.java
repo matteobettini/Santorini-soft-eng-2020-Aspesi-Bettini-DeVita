@@ -70,6 +70,15 @@ class StatementCompiler {
            case BUILD_IN_SAME_SPOT:
                result = compileBuildInSameSpot(statement);
                break;
+           case IS_NEAR:
+               result = compileIsNear(statement, owner);
+               break;
+           case COMPLETE_A_TOWER_NEAR:
+               result = compileCompleteATowerNear(model, statement, owner);
+               break;
+           case LAST_BUILD_ON:
+               result = compileLastBuildOn(statement);
+               break;
        }
        return result;
     }
@@ -451,4 +460,137 @@ class StatementCompiler {
         });
         return  lambdaStatement;
     }
+
+    private static LambdaStatement compileIsNear(RuleStatement statement, Player owner){
+        boolean isNif = statement.getType() == StatementType.NIF;
+        LambdaStatement lambdaStatement = null;
+
+        if(statement.getSubject().equals("START_POSITION")){
+            lambdaStatement = ((moveData, buildData) -> {
+                boolean result = false;
+
+                Worker myWorker;
+                List<Worker> cardOwnerWorkers = owner.getWorkers();
+
+                if(buildData == null)
+                    myWorker = moveData.getWorker();
+                else
+                    myWorker = buildData.getWorker();
+
+                Point startPosition = myWorker.getPosition();
+
+                for(Worker hisWorker : cardOwnerWorkers){
+                    if(Board.areAdjacent(startPosition, hisWorker.getPosition(), true)) {
+                        result = true;
+                        break;
+                    }
+                }
+
+                if(isNif)
+                    result = !result;
+
+                return result;
+            });
+        } else if(statement.getSubject().equals("FINAL_POSITION")){
+            lambdaStatement = ((moveData, buildData) -> {
+                boolean result = false;
+
+                assert buildData == null;
+
+                List<Worker> cardOwnerWorkers = owner.getWorkers();
+                List<Point> moves = moveData.getData();
+                Point finalPosition = moves.get(moves.size() - 1);
+
+                for(Worker hisWorker : cardOwnerWorkers)
+                    if(Board.areAdjacent(finalPosition, hisWorker.getPosition(), true)) {
+                        result = true;
+                        break;
+                    }
+
+
+                if(isNif)
+                    result = !result;
+
+                return result;
+            });
+        } else if(statement.getSubject().equals("ONE_BUILD_POSITION")){
+            lambdaStatement = ((moveData, buildData) -> {
+                boolean result = false;
+
+                assert moveData == null;
+
+                List<Worker> cardOwnerWorkers = owner.getWorkers();
+                Set<Point> buildPoints = buildData.getData().keySet();
+
+                for(Point buildPoint : buildPoints)
+                    for (Worker hisWorker : cardOwnerWorkers)
+                        if (Board.areAdjacent(buildPoint, hisWorker.getPosition(), true)) {
+                            result = true;
+                            break;
+                        }
+
+                if(isNif)
+                    result = !result;
+
+                return result;
+            });
+        }
+
+        return  lambdaStatement;
+    }
+
+    private static LambdaStatement compileCompleteATowerNear(InternalModel model, RuleStatement statement, Player owner) {
+
+        boolean isNif = statement.getType() == StatementType.NIF;
+
+        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+            boolean result = false;
+
+            assert moveData == null;
+
+            List<Worker> cardOwnerWorkers = owner.getWorkers();
+            Map<Point,List<BuildingType>> builds = buildData.getData();
+
+            for(Point buildPoint : builds.keySet()) {
+                for (Worker hisWorker : cardOwnerWorkers) {
+                    if (Board.areAdjacent(buildPoint, hisWorker.getPosition(), true)) {
+                        if (model.getBoard().getCell(buildPoint).canBuildAndWouldItBeFullTower(builds.get(buildPoint),true)) {
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+                if(result)
+                    break;
+            }
+
+            if(isNif)
+                result = !result;
+
+            return result;
+        });
+        return  lambdaStatement;
+    }
+
+    private static LambdaStatement compileLastBuildOn(RuleStatement statement) {
+
+        boolean isNif = statement.getType() == StatementType.NIF;
+
+        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+            assert moveData == null;
+
+            List<Point> buildsOrder = buildData.getDataOrder();
+
+            Point lastBuildPoint = buildsOrder.get(buildsOrder.size() - 1);
+
+            boolean result = Board.isOnPerimeter(lastBuildPoint);
+
+            if(isNif)
+                result = !result;
+
+            return result;
+        });
+        return  lambdaStatement;
+    }
+
 }

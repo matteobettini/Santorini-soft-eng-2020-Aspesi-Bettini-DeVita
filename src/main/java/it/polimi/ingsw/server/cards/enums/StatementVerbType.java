@@ -17,5 +17,9 @@ public enum StatementVerbType {
     BUILD_NUM,
     BUILD_DOME_EXCEPT,
     BUILD_DOME,
-    BUILD_IN_SAME_SPOT
+    BUILD_IN_SAME_SPOT,
+    IS_NEAR,
+    COMPLETE_A_TOWER_NEAR,
+    LAST_BUILD_ON,
+    IS_THE_HIGHEST
 }
