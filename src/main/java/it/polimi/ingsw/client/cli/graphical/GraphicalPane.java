@@ -65,7 +65,7 @@ class GraphicalPane implements CharFigure {
                     //STRAIGHT LINES
                 else if(j > 0 && j < height && (i == 0 || i == width) ) stream.addChar('║', i + relX, j + relY, foreColor, backColor);
                 else if(i > 0 && i < width && (j == 0 || j == height)) stream.addChar('═', i + relX, j + relY, foreColor, backColor);
-                else stream.addChar('\0',i + relX, j + relY, null, backColor);
+                else stream.addChar('\0',i + relX, j + relY, backColor);
             }
         }
     }

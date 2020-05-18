@@ -26,15 +26,9 @@ class GraphicalWorker implements CharFigure {
      */
     public GraphicalWorker(CharStream stream, Color color, int RATEOX, int RATEOY, Integer number, String playerName){
         this.stream = stream;
-        if(color.equals(Color.CYAN)){
-            this.color = BackColor.ANSI_BRIGHT_BG_CYAN;
-        }
-        else if(color.equals(Color.WHITE)){
-            this.color = BackColor.ANSI_BG_PURPLE;
-        }
-        else if(color.equals(Color.ORANGE)){
-            this.color = BackColor.ANSI_BG_YELLOW;
-        }
+        if(color.equals(Color.CYAN)) this.color = BackColor.ANSI_BRIGHT_BG_CYAN;
+        else if(color.equals(Color.WHITE)) this.color = BackColor.ANSI_BG_PURPLE;
+        else if(color.equals(Color.ORANGE)) this.color = BackColor.ANSI_BG_YELLOW;
         else this.color = BackColor.ANSI_BG_WHITE;
         this.RATEOX = RATEOX;
         this.RATEOY = RATEOY;

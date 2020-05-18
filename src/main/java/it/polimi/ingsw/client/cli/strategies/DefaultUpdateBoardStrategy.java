@@ -78,13 +78,13 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
 
         matchData.makeGraphicalBoardEqualToBoard();
 
-        OutputUtilities.printMatch(youWin, gameOver);
+        if(loser == null || matchData.getIds().size() != 2) OutputUtilities.printMatch(youWin, gameOver);
 
         if(matchData.getPlayerName().equals(loser)) System.out.println("You have lost!");
-        else if(loser != null) System.out.println(matchData.getLoser() + " has lost!");
+        else if(loser != null) System.out.println(loser + " has lost!");
 
         if(matchData.getPlayerName().equals(winner)) System.out.println("You have won!");
-        else if(winner != null)System.out.println(matchData.getWinner() + " has won!");
+        else if(winner != null)System.out.println(winner + " has won!");
     }
 
 }
