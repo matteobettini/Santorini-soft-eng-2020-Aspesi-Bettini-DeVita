@@ -485,7 +485,7 @@ class StatementCompilerTest {
      * If there is a single move, then the evaluation should be true with the Statement Type NIF.
      */
     @Test
-    void moveLenght_Test1(){
+    void moveLength_Test1(){
         RuleStatement playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.MOVE_LENGTH, "0");
         LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
 
@@ -511,7 +511,7 @@ class StatementCompilerTest {
      * If there are two moves, then the evaluation should be true with the Statement Type NIF.
      */
     @Test
-    void moveLenght_Test2(){
+    void moveLength_Test2(){
         RuleStatement playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.MOVE_LENGTH, "1");
         LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
 
@@ -559,7 +559,7 @@ class StatementCompilerTest {
      * If there are more than two moves, then the evaluation should be false with the Statement Type IF, true with NIF.
      */
     @Test
-    void moveLenght_Test3(){
+    void moveLength_Test3(){
         RuleStatement playerEqualsStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.MOVE_LENGTH, "2");
         LambdaStatement compiledStatement = StatementCompiler.compileStatement(model, playerEqualsStatement, Andrea);
 

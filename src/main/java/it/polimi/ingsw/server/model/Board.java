@@ -23,8 +23,6 @@ class Board {
     public static final int NUM_OF_THIRD_FLOOR = 14;
     public static final int NUM_OF_DOME = 18;
 
-    public static final int FULL_TOWER_HEIGHT = 4;
-
     public static final int ROWS = 5;
     public static final int COLUMNS = 5;
 
@@ -141,9 +139,9 @@ class Board {
      */
     public static boolean isOnPerimeter(Point point){
         assert point != null;
-        if(point.x == 0 || point.x == 4){
+        if(point.x == 0 || point.x == ROWS-1){
             return point.y >= 0 && point.y < COLUMNS;
-        } else if(point.y == 0 || point.y == 4) {
+        } else if(point.y == 0 || point.y == COLUMNS-1) {
             return point.x >= 0 && point.x < ROWS;
         }
         return false;

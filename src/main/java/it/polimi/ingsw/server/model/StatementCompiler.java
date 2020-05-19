@@ -73,8 +73,8 @@ class StatementCompiler {
            case IS_NEAR:
                result = compileIsNear(statement, owner);
                break;
-           case COMPLETE_A_TOWER_NEAR:
-               result = compileCompleteATowerNear(model, statement, owner);
+           case ONLY_COMPLETE_TOWERS_NEAR:
+               result = compileOnlyCompleteTowersNear(model, statement, owner);
                break;
            case LAST_BUILD_ON:
                result = compileLastBuildOn(statement);
@@ -539,12 +539,13 @@ class StatementCompiler {
         return  lambdaStatement;
     }
 
-    private static LambdaStatement compileCompleteATowerNear(InternalModel model, RuleStatement statement, Player owner) {
+    private static LambdaStatement compileOnlyCompleteTowersNear(InternalModel model, RuleStatement statement, Player owner) {
 
         boolean isNif = statement.getType() == StatementType.NIF;
 
         LambdaStatement lambdaStatement = ((moveData, buildData) -> {
-            boolean result = false;
+
+            boolean result = true;
 
             assert moveData == null;
 
@@ -554,13 +555,12 @@ class StatementCompiler {
             for(Point buildPoint : builds.keySet()) {
                 for (Worker hisWorker : cardOwnerWorkers) {
                     if (Board.areAdjacent(buildPoint, hisWorker.getPosition(), true)) {
-                        if (model.getBoard().getCell(buildPoint).canBuildAndWouldItBeFullTower(builds.get(buildPoint),true)) {
-                            result = true;
+                        result = model.getBoard().getCell(buildPoint).canBuildAndWouldItBeFullTower(builds.get(buildPoint),true);
+                        if (!result)
                             break;
-                        }
                     }
                 }
-                if(result)
+                if (!result)
                     break;
             }
 

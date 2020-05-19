@@ -17,6 +17,8 @@ import java.util.Objects;
 
 class Cell{
 
+    public static final int FULL_TOWER_HEIGHT = 4;
+
     private String workerID;
     private final Point position;
     private final List<BuildingType> buildings;
@@ -150,7 +152,7 @@ class Cell{
             return false;
         List<BuildingType> tempBuildings = new ArrayList<>(buildings);
         tempBuildings.addAll(b);
-        return tempBuildings.size() == Board.FULL_TOWER_HEIGHT;
+        return tempBuildings.size() == Cell.FULL_TOWER_HEIGHT;
     }
 
     /**
