@@ -8,6 +8,7 @@ import it.polimi.ingsw.common.enums.BuildingType;
 import it.polimi.ingsw.common.utils.Pair;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class MatchData {
     private boolean hardcore;
     private String playerName;
     private String winner;
-    private String loser;
+    private List<String> losers;
     private Board board;
     private Map<BuildingType, Integer> buildingsCounter;
     private static final int DEFAULT_MATCH_WIDTH = 159;
@@ -88,7 +89,7 @@ public class MatchData {
         this.stream = new CharStream(DEFAULT_MATCH_WIDTH, DEFAULT_MATCH_HEIGHT);
         this.graphicalBoard = new GraphicalBoard(stream);
         this.buildingsCounter = new HashMap<>();
-        this.loser = null;
+        this.losers = new ArrayList<>();
         this.winner = null;
     }
 
@@ -200,8 +201,8 @@ public class MatchData {
      * This method returns the loser's nickname.
      * @return a String containing the loser's nickname.
      */
-    public String getLoser() {
-        return loser;
+    public List<String> getLosers() {
+        return losers;
     }
 
     /**
@@ -292,8 +293,8 @@ public class MatchData {
     /**
      * Setter for the loser's nickname.
      */
-    public void setLoser(String loser) {
-        this.loser = loser;
+    public void addLoser(String loser) {
+        this.losers.add(loser);
     }
 
     /**

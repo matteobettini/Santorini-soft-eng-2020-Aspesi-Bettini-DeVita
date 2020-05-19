@@ -31,6 +31,12 @@ public class OutputUtilities {
             case MOVE_BUILD:
                 action = "move or build";
                 break;
+            case SET_WORKERS_POSITION:
+                System.out.println("\n" + activePlayer + " is setting his workers' positions...");
+                return;
+            case CHOOSE_START_PLAYER:
+                System.out.println("\n" + activePlayer + " is choosing the starting player...");
+                return;
             default:
                 action = "action";
         }

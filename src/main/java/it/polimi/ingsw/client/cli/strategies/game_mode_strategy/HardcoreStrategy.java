@@ -38,13 +38,9 @@ public class HardcoreStrategy implements GameModeStrategy{
 
         switch (packetDoAction.getActionType()) {
             case MOVE:
-                if (isRetry) System.out.println("Not a valid move! Try again...");
-                else System.out.println("Make your move!");
                 handleMove(isRetry);
                 break;
             case BUILD:
-                if (isRetry) System.out.println("Not a valid build! Try again...");
-                else System.out.println("Make your build!");
                 handleBuild(isRetry);
                 break;
             case MOVE_BUILD:
@@ -85,6 +81,9 @@ public class HardcoreStrategy implements GameModeStrategy{
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
         if(isRetry) OutputUtilities.printMatch();
+
+        if (isRetry) System.out.println("Not a valid move! Try again...");
+        else System.out.println("Make your move!");
 
         //List<String> possibleWorkers = workersID.stream().filter(board::canMove).collect(Collectors.toList());
 
@@ -178,6 +177,9 @@ public class HardcoreStrategy implements GameModeStrategy{
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
         if(isRetry) OutputUtilities.printMatch();
+
+        if (isRetry) System.out.println("Not a valid build! Try again...");
+        else System.out.println("Make your build!");
 
         String lastUsedWorker = InputUtilities.getWorkerChoice(workersID);
 

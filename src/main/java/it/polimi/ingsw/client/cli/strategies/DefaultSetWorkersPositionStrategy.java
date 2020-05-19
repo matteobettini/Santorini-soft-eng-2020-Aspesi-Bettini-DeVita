@@ -4,6 +4,7 @@ import it.polimi.ingsw.client.cli.match_data.Board;
 import it.polimi.ingsw.client.cli.utilities.InputUtilities;
 import it.polimi.ingsw.client.cli.match_data.MatchData;
 import it.polimi.ingsw.client.cli.utilities.OutputUtilities;
+import it.polimi.ingsw.common.enums.ActionType;
 import it.polimi.ingsw.common.packets.PacketWorkersPositions;
 
 import java.awt.*;
@@ -25,7 +26,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
         MatchData matchData = MatchData.getInstance();
 
         if(!activePlayer.equals(matchData.getPlayerName())){
-            System.out.println("\n" + activePlayer + " is setting his workers positions...");
+            OutputUtilities.displayOthersActions(ActionType.SET_WORKERS_POSITION, activePlayer);
             return;
         }
 

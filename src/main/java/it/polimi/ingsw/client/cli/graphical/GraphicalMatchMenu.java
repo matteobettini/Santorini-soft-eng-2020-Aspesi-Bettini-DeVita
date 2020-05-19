@@ -10,6 +10,7 @@ import it.polimi.ingsw.common.enums.BuildingType;
 import it.polimi.ingsw.common.utils.Pair;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Map;
 
 public class GraphicalMatchMenu implements CharFigure {
@@ -147,7 +148,7 @@ public class GraphicalMatchMenu implements CharFigure {
         MatchData matchData = MatchData.getInstance();
         Map<String, Color> players = matchData.getPlayersColor();
         Map<String, Pair<String, String>> playersGodCardAssociation = matchData.getPlayersCards();
-        String loser = matchData.getLoser();
+        List<String> losers = matchData.getLosers();
         String activePlayer = matchData.getCurrentActivePlayer();
 
         BackColor col;
@@ -169,7 +170,7 @@ public class GraphicalMatchMenu implements CharFigure {
             }
             else col = BackColor.ANSI_BG_WHITE;
             if(activePlayer != null && !activePlayer.equals(player)){
-                if(loser != null && loser.equals(player)){
+                if(losers.contains(player)){
                     stream.addColor(relX + 7, relY + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
                     stream.addColor(relX + 8, relY + + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
                 }

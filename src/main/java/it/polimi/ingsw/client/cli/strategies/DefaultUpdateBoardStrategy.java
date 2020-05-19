@@ -56,7 +56,7 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
         if(loser != null){
 
             //WE SET IT IN THE MATCH MENU
-            matchData.setLoser(loser);
+            matchData.addLoser(loser);
             if(loser.equals(matchData.getPlayerName())) gameOver = true;
 
             for(String workersLoser : matchData.getIds().get(loser)){
@@ -78,7 +78,9 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
 
         matchData.makeGraphicalBoardEqualToBoard();
 
-        if(loser == null || matchData.getIds().size() != 2) OutputUtilities.printMatch(youWin, gameOver);
+        int playersStillInGame = matchData.getIds().size() - matchData.getLosers().size();
+
+        if(playersStillInGame != 1 || winner != null) OutputUtilities.printMatch(youWin, gameOver);
 
         if(matchData.getPlayerName().equals(loser)) System.out.println("You have lost!");
         else if(loser != null) System.out.println(loser + " has lost!");
