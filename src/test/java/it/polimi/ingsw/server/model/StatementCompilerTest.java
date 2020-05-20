@@ -2647,7 +2647,7 @@ class StatementCompilerTest {
 
     }
     /*
-        Testing build in same spot succeeds whaen building in just one spot
+        Testing build in same spot succeeds when building in just one spot
      */
     @Test
     void buildInSameSpot_Test2(){
@@ -2689,5 +2689,186 @@ class StatementCompilerTest {
         lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Matteo);
 
         assertFalse(lambdaStatement.evaluate(null, buildData));
+    }
+
+    /**
+     * Test if given workers on the same level isTheHighest correctly returns false
+     */
+    @Test
+    void isTheHighest_Test1(){
+        /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   |A1  |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 |A2  | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+       */
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(1,1);
+
+        moves.add(point1);
+
+
+        MoveData moveData = new MoveData(Andrea, AndreaW1, moves);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        //TRY STATEMENT WITH NIF
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        //TRY WHEN WORKERS ARE ON THE FIRST FLOOR
+        model.getBoard().getCell(AndreaW1.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW2.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW1.getPosition()).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(AndreaW2.getPosition()).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(AndreaW1.getPosition()).setWorker(AndreaW1.getID());
+        model.getBoard().getCell(AndreaW2.getPosition()).setWorker(AndreaW2.getID());
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        //TRY STATEMENT WITH NIF
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        //TRY WHEN WORKERS ARE ON THE SECOND FLOOR
+        model.getBoard().getCell(AndreaW1.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW2.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW1.getPosition()).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(AndreaW2.getPosition()).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(AndreaW1.getPosition()).setWorker(AndreaW1.getID());
+        model.getBoard().getCell(AndreaW2.getPosition()).setWorker(AndreaW2.getID());
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        //TRY STATEMENT WITH NIF
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        //TRY WHEN WORKERS ARE ON THE THIRD FLOOR
+        model.getBoard().getCell(AndreaW1.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW2.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW1.getPosition()).addBuilding(BuildingType.THIRD_FLOOR);
+        model.getBoard().getCell(AndreaW2.getPosition()).addBuilding(BuildingType.THIRD_FLOOR);
+        model.getBoard().getCell(AndreaW1.getPosition()).setWorker(AndreaW1.getID());
+        model.getBoard().getCell(AndreaW2.getPosition()).setWorker(AndreaW2.getID());
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        //TRY STATEMENT WITH NIF
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+    }
+
+    /**
+     * Test if given workers on the different level isTheHighest correctly returns true when the highest workers tries to move.
+     */
+    @Test
+    void isTheHighest_Test2(){
+        /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   |A1F1|    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 |A2  | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+       */
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(1,1);
+
+        moves.add(point1);
+
+        model.getBoard().getCell(AndreaW1.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW1.getPosition()).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(AndreaW1.getPosition()).setWorker(AndreaW1.getID());
+
+        MoveData moveData = new MoveData(Andrea, AndreaW1, moves);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        //TRY STATEMENT WITH NIF
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        //TRY WHEN W1 IS ON SF AND W2 ON FF
+
+        model.getBoard().getCell(AndreaW1.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW2.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW1.getPosition()).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(AndreaW2.getPosition()).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(AndreaW1.getPosition()).setWorker(AndreaW1.getID());
+        model.getBoard().getCell(AndreaW2.getPosition()).setWorker(AndreaW2.getID());
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        //TRY STATEMENT WITH NIF
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        //TRY WHEN W2 IS ON TF AND W1 ON SF
+
+        model.getBoard().getCell(AndreaW2.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW2.getPosition()).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(AndreaW2.getPosition()).addBuilding(BuildingType.THIRD_FLOOR);
+        model.getBoard().getCell(AndreaW2.getPosition()).setWorker(AndreaW2.getID());
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        //TRY STATEMENT WITH NIF
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+
     }
 }

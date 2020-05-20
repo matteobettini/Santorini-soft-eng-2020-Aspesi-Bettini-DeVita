@@ -79,6 +79,9 @@ class StatementCompiler {
            case LAST_BUILD_ON:
                result = compileLastBuildOn(statement);
                break;
+           case IS_THE_HIGHEST:
+               result = compileIsTheHighest(model, statement, owner);
+               break;
        }
        return result;
     }
@@ -87,7 +90,7 @@ class StatementCompiler {
         assert (owner != null);
         boolean isNif = statement.getType() == StatementType.NIF;
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             if(moveData == null){
                 result = buildData.getPlayer().equals(owner);
@@ -101,7 +104,6 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileStateEquals(RuleStatement statement) {
@@ -109,7 +111,7 @@ class StatementCompiler {
         boolean isNif = statement.getType() == StatementType.NIF;
         PlayerState object = PlayerState.valueOf(statement.getObject());
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             if(moveData == null){
                 result = (buildData.getPlayer().getState() == object);
@@ -122,7 +124,6 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileHasFlag(RuleStatement statement, Player owner) {
@@ -172,7 +173,7 @@ class StatementCompiler {
         int object = Integer.parseInt(statement.getObject());
         boolean isNif = statement.getType() == StatementType.NIF;
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
 
             boolean result = false;
             assert (buildData == null);
@@ -186,7 +187,6 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileExistsDeltaMore(InternalModel model, RuleStatement statement) {
@@ -195,7 +195,7 @@ class StatementCompiler {
         boolean isNif = statement.getType() == StatementType.NIF;
 
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             assert(buildData == null);
 
@@ -214,14 +214,13 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileExistsDeltaLess(InternalModel model, RuleStatement statement) {
         int object = Integer.parseInt(statement.getObject());
         boolean isNif = statement.getType() == StatementType.NIF;
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             assert(buildData == null);
 
@@ -240,7 +239,6 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileExistsLevelType(InternalModel model, RuleStatement statement) {
@@ -248,7 +246,7 @@ class StatementCompiler {
         LevelType object = LevelType.valueOf(statement.getObject());
         boolean isNif = statement.getType() == StatementType.NIF;
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             assert (buildData == null);
             List<Point> moves = moveData.getData();
@@ -264,8 +262,6 @@ class StatementCompiler {
 
             return result;
         });
-
-        return lambdaStatement;
     }
 
     private static LambdaStatement compileInteractionNum(InternalModel model, RuleStatement statement) {
@@ -273,7 +269,7 @@ class StatementCompiler {
         boolean isNif = statement.getType() == StatementType.NIF;
         int object = Integer.parseInt(statement.getObject());
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             assert(buildData == null);
             List<Point> moves = moveData.getData();
@@ -293,7 +289,6 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compilePositionEquals(InternalModel model, RuleStatement statement) {
@@ -349,7 +344,7 @@ class StatementCompiler {
         boolean isNif = statement.getType() == StatementType.NIF;
         int object = Integer.parseInt(statement.getObject());
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             assert(moveData == null);
 
@@ -368,7 +363,6 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileBuildDomeExcept(InternalModel model, RuleStatement statement) {
@@ -376,7 +370,7 @@ class StatementCompiler {
         boolean isNif = statement.getType() == StatementType.NIF;
         LevelType object = LevelType.valueOf(statement.getObject());
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             assert(moveData == null);
             Map<Point,List<BuildingType>> builds = buildData.getData();
@@ -402,7 +396,6 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileBuildDome(InternalModel model, RuleStatement statement) {
@@ -410,7 +403,7 @@ class StatementCompiler {
         boolean isNif = statement.getType() == StatementType.NIF;
         LevelType object = LevelType.valueOf(statement.getObject());
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             assert(moveData == null);
             Map<Point,List<BuildingType>> builds = buildData.getData();
@@ -437,14 +430,13 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileBuildInSameSpot(RuleStatement statement) {
 
         boolean isNif = statement.getType() == StatementType.NIF;
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             boolean result = false;
             assert (moveData == null);
 
@@ -458,82 +450,85 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileIsNear(RuleStatement statement, Player owner){
         boolean isNif = statement.getType() == StatementType.NIF;
         LambdaStatement lambdaStatement = null;
 
-        if(statement.getSubject().equals("START_POSITION")){
-            lambdaStatement = ((moveData, buildData) -> {
-                boolean result = false;
+        switch (statement.getSubject()){
+            case "START_POSITION":
+                lambdaStatement = ((moveData, buildData) -> {
+                    boolean result = false;
 
-                Worker myWorker;
-                List<Worker> cardOwnerWorkers = owner.getWorkers();
+                    Worker myWorker;
+                    List<Worker> cardOwnerWorkers = owner.getWorkers();
 
-                if(buildData == null)
-                    myWorker = moveData.getWorker();
-                else
-                    myWorker = buildData.getWorker();
+                    if(buildData == null)
+                        myWorker = moveData.getWorker();
+                    else
+                        myWorker = buildData.getWorker();
 
-                Point startPosition = myWorker.getPosition();
+                    Point startPosition = myWorker.getPosition();
 
-                for(Worker hisWorker : cardOwnerWorkers){
-                    if(Board.areAdjacent(startPosition, hisWorker.getPosition(), true)) {
-                        result = true;
-                        break;
-                    }
-                }
-
-                if(isNif)
-                    result = !result;
-
-                return result;
-            });
-        } else if(statement.getSubject().equals("FINAL_POSITION")){
-            lambdaStatement = ((moveData, buildData) -> {
-                boolean result = false;
-
-                assert buildData == null;
-
-                List<Worker> cardOwnerWorkers = owner.getWorkers();
-                List<Point> moves = moveData.getData();
-                Point finalPosition = moves.get(moves.size() - 1);
-
-                for(Worker hisWorker : cardOwnerWorkers)
-                    if(Board.areAdjacent(finalPosition, hisWorker.getPosition(), true)) {
-                        result = true;
-                        break;
+                    for(Worker hisWorker : cardOwnerWorkers){
+                        if(Board.areAdjacent(startPosition, hisWorker.getPosition(), true)) {
+                            result = true;
+                            break;
+                        }
                     }
 
+                    if(isNif)
+                        result = !result;
 
-                if(isNif)
-                    result = !result;
+                    return result;
+                });
+                break;
+            case "FINAL_POSITION":
+                lambdaStatement = ((moveData, buildData) -> {
+                    boolean result = false;
 
-                return result;
-            });
-        } else if(statement.getSubject().equals("ONE_BUILD_POSITION")){
-            lambdaStatement = ((moveData, buildData) -> {
-                boolean result = false;
+                    assert buildData == null;
 
-                assert moveData == null;
+                    List<Worker> cardOwnerWorkers = owner.getWorkers();
+                    List<Point> moves = moveData.getData();
+                    Point finalPosition = moves.get(moves.size() - 1);
 
-                List<Worker> cardOwnerWorkers = owner.getWorkers();
-                Set<Point> buildPoints = buildData.getData().keySet();
-
-                for(Point buildPoint : buildPoints)
-                    for (Worker hisWorker : cardOwnerWorkers)
-                        if (Board.areAdjacent(buildPoint, hisWorker.getPosition(), true)) {
+                    for(Worker hisWorker : cardOwnerWorkers)
+                        if(Board.areAdjacent(finalPosition, hisWorker.getPosition(), true)) {
                             result = true;
                             break;
                         }
 
-                if(isNif)
-                    result = !result;
 
-                return result;
-            });
+                    if(isNif)
+                        result = !result;
+
+                    return result;
+                });
+                break;
+            case "ONE_BUILD_POSITION":
+                lambdaStatement = ((moveData, buildData) -> {
+                    boolean result = false;
+
+                    assert moveData == null;
+
+                    List<Worker> cardOwnerWorkers = owner.getWorkers();
+                    Set<Point> buildPoints = buildData.getData().keySet();
+
+                    for(Point buildPoint : buildPoints)
+                        for (Worker hisWorker : cardOwnerWorkers)
+                            if (Board.areAdjacent(buildPoint, hisWorker.getPosition(), true)) {
+                                result = true;
+                                break;
+                            }
+
+                    if(isNif)
+                        result = !result;
+
+                    return result;
+                });
+                break;
         }
 
         return  lambdaStatement;
@@ -543,7 +538,7 @@ class StatementCompiler {
 
         boolean isNif = statement.getType() == StatementType.NIF;
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
 
             boolean result = true;
 
@@ -569,14 +564,13 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
     }
 
     private static LambdaStatement compileLastBuildOn(RuleStatement statement) {
 
         boolean isNif = statement.getType() == StatementType.NIF;
 
-        LambdaStatement lambdaStatement = ((moveData, buildData) -> {
+        return ((moveData, buildData) -> {
             assert moveData == null;
 
             List<Point> buildsOrder = buildData.getDataOrder();
@@ -590,7 +584,33 @@ class StatementCompiler {
 
             return result;
         });
-        return  lambdaStatement;
+    }
+
+    private static LambdaStatement compileIsTheHighest(InternalModel model, RuleStatement statement, Player owner) {
+
+        boolean isNif = statement.getType() == StatementType.NIF;
+
+        return ((moveData, buildData) -> {
+            assert buildData == null;
+
+            List<Worker> playerWorkers = owner.getWorkers();
+
+            Board board = model.getBoard();
+
+            Worker highestWorker = playerWorkers.stream().reduce(null, (w1, w2) -> {
+                if(w1 == null) return w2;
+                if(board.getCell(w1.getPosition()).getHeight() > board.getCell(w2.getPosition()).getHeight()) return w1;
+                else if(board.getCell(w1.getPosition()).getHeight() < board.getCell(w2.getPosition()).getHeight()) return w2;
+                return null;
+            });
+
+            boolean result = moveData.getWorker().equals(highestWorker);
+
+            if(isNif)
+                result = !result;
+
+            return result;
+        });
     }
 
 }
