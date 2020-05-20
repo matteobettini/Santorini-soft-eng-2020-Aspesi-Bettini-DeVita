@@ -2,11 +2,12 @@
 <!--DTD schema-->
 <!DOCTYPE Cards [
     <!ELEMENT Cards (Card+) >
-    <!ELEMENT Card (name, description, rules) >
+    <!ELEMENT Card (name, description, players, rules) >
     <!ELEMENT rules (rule+) >
     <!ELEMENT rule (statements, effect) >
     <!ELEMENT name (#PCDATA) >
     <!ELEMENT description (#PCDATA) >
+    <!ELEMENT players (#PCDATA) >
     <!ELEMENT statements ((if | nif)+) >
     <!ELEMENT effect (type, subtype?, data?, nextstate?) >
     <!ELEMENT type (#PCDATA) >
@@ -28,6 +29,7 @@
         <description>
             Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="MOVE">
                 <statements>

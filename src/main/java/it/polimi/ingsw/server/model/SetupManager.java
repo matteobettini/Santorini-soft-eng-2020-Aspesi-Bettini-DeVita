@@ -55,8 +55,7 @@ class SetupManager{
         assert (players.size() == 2 || players.size() == 3);
 
         //HERE WE PUT CONTROLS ON THE GODS AVAILABLE FOR THE NUMBER OF PLAYERS IN THE GAME
-        /*if(players.size() == 3)
-           cards = cards.stream().filter(x -> x.isPlayableIn3).collect(Collectors.toList());*/
+        cards = cards.stream().filter(x -> x.getNumbersOfPlayers().contains(players.size())).collect(Collectors.toList());
 
         this.allCards = new HashMap<>();
         for (CardFile card : cards)

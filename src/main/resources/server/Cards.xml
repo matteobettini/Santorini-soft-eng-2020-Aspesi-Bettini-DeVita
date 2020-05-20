@@ -2,11 +2,12 @@
 <!--DTD schema-->
 <!DOCTYPE Cards [
     <!ELEMENT Cards (Card+) >
-    <!ELEMENT Card (name, description, rules) >
+    <!ELEMENT Card (name, description, players, rules) >
     <!ELEMENT rules (rule+) >
     <!ELEMENT rule (statements, effect) >
     <!ELEMENT name (#PCDATA) >
     <!ELEMENT description (#PCDATA) >
+    <!ELEMENT players (#PCDATA) >
     <!ELEMENT statements ((if | nif)+) >
     <!ELEMENT effect (type, subtype?, data?, nextstate?) >
     <!ELEMENT type (#PCDATA) >
@@ -29,6 +30,7 @@
         <description>
             Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -87,6 +89,7 @@
         <description>
             Your Move: Your Worker may move one additional time, but not back to its initial space.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -143,6 +146,7 @@
         <description>
             Opponent’s Turn: If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -177,6 +181,7 @@
         <description>
             Your Build: Your Worker may build a dome at any level.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="BUILD">
                 <statements>
@@ -225,6 +230,7 @@
         <description>
             Your Build: Your Worker may build one additional time, but not on the same space.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="BUILD">
                 <statements>
@@ -278,6 +284,7 @@
         <description>
             Your Build: Your Worker may build one additional block (not dome) on top of your first block.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="BUILD">
                 <statements>
@@ -336,6 +343,7 @@
         <description>
             Your Move: Your Worker may move into an opponent Worker’s space, if their Worker can be forced one space straight backwards to an unoccupied space at any level.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -393,6 +401,7 @@
         <description>
             Win Condition: You also win if your Worker moves down two or more levels.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -422,6 +431,7 @@
         <description>
             Your Turn: If your Worker does not move up, it may build both before and after moving.
         </description>
+        <players>2,3</players>
         <rules>
             <rule event="BUILD">
                 <statements>

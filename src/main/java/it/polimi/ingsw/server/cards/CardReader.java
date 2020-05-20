@@ -16,9 +16,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  * This class allows to read cards from a file.
@@ -144,9 +146,24 @@ class CardReader {
             throw new InvalidCardException("[CARD PARSER]Invalid card description");
         }
 
+        //Get possible numbers of players
+
+        String numbersOfPlayers;
+        List<Integer> possibleNumbersOfPlayers;
+
+        nList = cardElement.getElementsByTagName("players");
+        if (nList.getLength() != 1){
+            throw new InvalidCardException("[CARD PARSER]Missing/Multiple tag numbers of players");
+        }
+        numbersOfPlayers = nList.item(0).getTextContent().trim();
+        possibleNumbersOfPlayers = Arrays.stream(numbersOfPlayers.split("\\s*,\\s*")).map(Integer::parseInt).collect(Collectors.toList());
+        if (possibleNumbersOfPlayers.isEmpty()){
+            throw new InvalidCardException("[CARD PARSER]Invalid numbers of players");
+        }
+
         //Parse the rules
         List<CardRuleImpl> cardRules = extractCardRules(cardElement);
-        return new CardFileImpl(cardName,cardDescription,cardRules);
+        return new CardFileImpl(cardName,cardDescription,cardRules, possibleNumbersOfPlayers);
     }
 
     private static List<CardRuleImpl> extractCardRules(Element cardElement) throws InvalidCardException{

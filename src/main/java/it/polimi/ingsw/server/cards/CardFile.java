@@ -16,6 +16,11 @@ public interface CardFile {
      */
     String getDescription();
     /**
+     * Getter for the card instance possible numbers of players
+     * @return a List of Integer containing the possible numbers of players
+     */
+    List<Integer> getNumbersOfPlayers();
+    /**
      * Getter for this card's rules
      * @return List of all the rules of the card
      */

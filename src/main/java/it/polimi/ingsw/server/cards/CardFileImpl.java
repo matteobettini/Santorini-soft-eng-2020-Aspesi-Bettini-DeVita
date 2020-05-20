@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.cards;
 
 import it.polimi.ingsw.server.cards.enums.TriggerType;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -17,12 +18,26 @@ class CardFileImpl implements CardFile {
     private final String name;
     private final String description;
     private final List<CardRuleImpl> rules;
+    private final List<Integer> numbersOfPlayers;
+
+    public CardFileImpl(String name, String description, List<CardRuleImpl> rules, List<Integer> numbersOfPlayers) {
+        assert (name != null && description != null && rules != null);
+        this.name = name;
+        this.description = description;
+        this.rules = rules;
+        this.numbersOfPlayers = numbersOfPlayers;
+    }
 
     public CardFileImpl(String name, String description, List<CardRuleImpl> rules) {
         assert (name != null && description != null && rules != null);
         this.name = name;
         this.description = description;
         this.rules = rules;
+        List<Integer> numbersOfPlayers = new ArrayList<>();
+        numbersOfPlayers.add(2);
+        numbersOfPlayers.add(3);
+        numbersOfPlayers.add(4);
+        this.numbersOfPlayers = numbersOfPlayers;
     }
 
     /**
@@ -40,6 +55,12 @@ class CardFileImpl implements CardFile {
     public String getDescription(){
         return this.description;
     }
+
+    /**
+     * Getter for the card instance possible numbers of players
+     * @return a List of Integer containing the possible numbers of players
+     */
+    public List<Integer> getNumbersOfPlayers() { return new ArrayList<>(this.numbersOfPlayers); }
 
     /**
      * Getter for this card's rules

@@ -57,6 +57,18 @@ class StatementValidator {
             case EXISTS_DELTA_LESS:
                 existsDeltaLessValidate(stm);
                 break;
+            case IS_NEAR:
+                isNearValidate(stm);
+                break;
+            case ONLY_COMPLETE_TOWERS_NEAR:
+                onlyCompleteTowersNearValidate(stm);
+                break;
+            case LAST_BUILD_ON:
+                lastBuildOnValidate(stm);
+                break;
+            case IS_THE_HIGHEST:
+                isTheHighestValidate(stm);
+                break;
             default:
                 assert false;
         }
@@ -130,7 +142,7 @@ class StatementValidator {
                 throw new InvalidStatementSubjectException("[MOVE_LENGTH] Subject '" + stm.getSubject() + "' not supported");
         }
         try{
-            Integer val = Integer.parseInt(stm.getObject());
+            int val = Integer.parseInt(stm.getObject());
             if (val <= 0){
                 throw new InvalidStatementObjectException("[MOVE_LENGTH] Object '" + stm.getObject() + "' is not > 0");
             }
@@ -205,7 +217,7 @@ class StatementValidator {
                 throw new InvalidStatementSubjectException("[INTERACTION_NUM] Subject '" + stm.getSubject() + "' not supported");
         }
         try{
-            Integer val = Integer.parseInt(stm.getObject());
+            int val = Integer.parseInt(stm.getObject());
             if (val < 0){
                 throw new InvalidStatementObjectException("[INTERACTION_NUM] Object '" + stm.getObject() + "' is not >= 0");
             }
@@ -246,7 +258,7 @@ class StatementValidator {
                 throw new InvalidStatementSubjectException("[BUILD_NUM] Subject '" + stm.getSubject() + "' not supported");
         }
         try{
-            Integer val = Integer.parseInt(stm.getObject());
+            int val = Integer.parseInt(stm.getObject());
             if (val <= 0){
                 throw new InvalidStatementObjectException("[BUILD_NUM] Object '" + stm.getObject() + "' is not > 0");
             }
@@ -313,4 +325,84 @@ class StatementValidator {
                 throw new InvalidStatementObjectException("[BUILD_IN_SAME_SPOT] Object '" + stm.getObject() + "' not supported" );
         }
     }
+
+    /**
+     * Check IS_NEAR
+     * @param stm IS_NEAR statement
+     */
+    private static void isNearValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+        switch (stm.getSubject()){
+            case "START_POSITION":
+            case "FINAL_POSITION":
+            case "ONE_BUILD_POSITION":
+                break;
+            default:
+                throw new InvalidStatementSubjectException("[IS_NEAR] Subject '" + stm.getSubject() + "' not supported" );
+        }
+        switch (stm.getObject()){
+            case "CARD_OWNER":
+                break;
+            default:
+                throw new InvalidStatementObjectException("[IS_NEAR] Object '" + stm.getObject() + "' not supported" );
+        }
+    }
+
+    /**
+     * Check ONLY_COMPLETE_TOWERS_NEAR
+     * @param stm  ONLY_COMPLETE_TOWERS_NEAR statement
+     */
+    private static void onlyCompleteTowersNearValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+        switch (stm.getSubject()){
+            case "YOU":
+                break;
+            default:
+                throw new InvalidStatementSubjectException("[ONLY_COMPLETE_TOWERS_NEAR] Subject '" + stm.getSubject() + "' not supported" );
+        }
+        switch (stm.getObject()){
+            case "CARD_OWNER":
+                break;
+            default:
+                throw new InvalidStatementObjectException("[ONLY_COMPLETE_TOWERS_NEAR] Object '" + stm.getObject() + "' not supported" );
+        }
+    }
+
+    /**
+     * Check LAST_BUILD_ON
+     * @param stm  LAST_BUILD_ON statement
+     */
+    private static void lastBuildOnValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+        switch (stm.getSubject()){
+            case "YOU":
+                break;
+            default:
+                throw new InvalidStatementSubjectException("[LAST_BUILD_ON] Subject '" + stm.getSubject() + "' not supported" );
+        }
+        switch (stm.getObject()){
+            case "PERIMETER":
+                break;
+            default:
+                throw new InvalidStatementObjectException("[LAST_BUILD_ON] Object '" + stm.getObject() + "' not supported" );
+        }
+    }
+
+    /**
+     * Check IS_THE_HIGHEST
+     * @param stm  IS_THE_HIGHEST statement
+     */
+    private static void isTheHighestValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+        switch (stm.getSubject()){
+            case "CHOSEN_WORKER":
+                break;
+            default:
+                throw new InvalidStatementSubjectException("[IS_THE_HIGHEST] Subject '" + stm.getSubject() + "' not supported" );
+        }
+        switch (stm.getObject()){
+            case "YOUR_WORKERS":
+                break;
+            default:
+                throw new InvalidStatementObjectException("[IS_THE_HIGHEST] Object '" + stm.getObject() + "' not supported" );
+        }
+    }
+
+
 }
