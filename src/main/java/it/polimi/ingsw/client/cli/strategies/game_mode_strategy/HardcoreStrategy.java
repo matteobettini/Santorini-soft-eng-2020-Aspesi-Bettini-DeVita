@@ -44,6 +44,7 @@ public class HardcoreStrategy implements GameModeStrategy{
                 handleBuild(isRetry);
                 break;
             case MOVE_BUILD:
+                OutputUtilities.printMatch();
                 if (isRetry) System.out.println("Not a valid move or build! Try again...");
                 Integer choice;
                 do {
@@ -52,8 +53,8 @@ public class HardcoreStrategy implements GameModeStrategy{
                     if (choice == null) return;
                 } while (choice != 1 && choice != 2);
 
-                if (choice == 1) handleMove(isRetry);
-                else handleBuild(isRetry);
+                if (choice == 1) handleMove(false);
+                else handleBuild(false);
 
                 break;
         }
@@ -80,9 +81,10 @@ public class HardcoreStrategy implements GameModeStrategy{
         boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE MOVES
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
-        if(isRetry) OutputUtilities.printMatch();
-
-        if (isRetry) System.out.println("Not a valid move! Try again...");
+        if (isRetry){
+            OutputUtilities.printMatch();
+            System.out.println("Not a valid move! Try again...");
+        }
         else System.out.println("Make your move!");
 
         //List<String> possibleWorkers = workersID.stream().filter(board::canMove).collect(Collectors.toList());
@@ -114,13 +116,13 @@ public class HardcoreStrategy implements GameModeStrategy{
 
             choice = InputUtilities.getActionChoice(makeChoiceForbidden, restartForbidden, confirmActionForbidden);
 
-            if (choice == -1) return;
+            if (choice == InputUtilities.ERROR) return;
 
             for (String worker : workersToRestore.keySet())
                 graphicalBoard.getCell(workersToRestore.get(worker)).setWorker(worker);
 
             switch (choice) {
-                case 1:
+                case InputUtilities.MAKE_CHOICE:
                     //FIRST WE GET THE PLAYER CHOICE
 
                     Point chosenPosition = InputUtilities.getChosenPosition(availablePositions,lastUsedWorker);
@@ -139,7 +141,7 @@ public class HardcoreStrategy implements GameModeStrategy{
                     graphicalBoard.removeWorker(matchData.getPlayerName(), workerNumber);
                     graphicalBoard.getCell(chosenPosition).setWorker(lastUsedWorker);
                     break;
-                case 2:
+                case InputUtilities.RESTART:
                     //WE RESET CHANGES TO THE GRAPHICAL BOARD, THE CHECKPOINT IS THE BOARD OBJECT IN THE MATCHDATA
                     matchData.makeGraphicalBoardEqualToBoard();
                     //WE CALL THIS METHOD AGAIN BECAUSE THE PROCESS SHOULD RESTART FROM THE BEGINNING
@@ -147,7 +149,7 @@ public class HardcoreStrategy implements GameModeStrategy{
                     return;
             }
 
-        } while (choice != 3);
+        } while (choice != InputUtilities.CONFIRM);
 
         PacketMove packetConfirmation = new PacketMove(matchData.getPlayerName(), lastUsedWorker, false, currentChosenPositions);
         matchData.makeGraphicalBoardEqualToBoard();
@@ -176,9 +178,10 @@ public class HardcoreStrategy implements GameModeStrategy{
         boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE BUILDS
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
-        if(isRetry) OutputUtilities.printMatch();
-
-        if (isRetry) System.out.println("Not a valid build! Try again...");
+        if (isRetry){
+            OutputUtilities.printMatch();
+            System.out.println("Not a valid build! Try again...");
+        }
         else System.out.println("Make your build!");
 
         String lastUsedWorker = InputUtilities.getWorkerChoice(workersID);
@@ -204,10 +207,10 @@ public class HardcoreStrategy implements GameModeStrategy{
 
             choice = InputUtilities.getActionChoice(makeChoiceForbidden, restartForbidden, confirmActionForbidden);
 
-            if (choice == -1) return;
+            if (choice == InputUtilities.ERROR) return;
 
             switch (choice) {
-                case 1:
+                case InputUtilities.MAKE_CHOICE:
                     //FIRST WE GET THE PLAYER CHOICE
 
                     boolean getChoice = InputUtilities.getChosenBuildingsInPoint(possibleBuildingsInPoints, lastUsedWorker, currentDataOrder, currentBuilds);
@@ -219,7 +222,7 @@ public class HardcoreStrategy implements GameModeStrategy{
                         graphicalBoard.getCell(position).addBuildings(currentBuilds.get(position));
 
                     break;
-                case 2:
+                case InputUtilities.RESTART:
                     //WE RESET CHANGES TO THE GRAPHICAL BOARD, THE CHECKPOINT IS THE BOARD OBJECT IN THE MATCHDATA
                     matchData.makeGraphicalBoardEqualToBoard();
                     //WE CALL THIS METHOD AGAIN BECAUSE THE PROCESS SHOULD RESTART FROM THE BEGINNING
@@ -228,7 +231,7 @@ public class HardcoreStrategy implements GameModeStrategy{
             }
 
             restartForbidden = false;
-        } while (choice != 3);
+        } while (choice != InputUtilities.CONFIRM);
 
         PacketBuild packetBuildConfirmation = new PacketBuild(player, lastUsedWorker, false, currentBuilds, currentDataOrder);
         matchData.makeGraphicalBoardEqualToBoard();

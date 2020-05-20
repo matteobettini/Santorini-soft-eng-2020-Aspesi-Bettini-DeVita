@@ -87,10 +87,10 @@ public class MoveActionStrategy implements ActionStrategy{
         if(possiblePositions.isEmpty()) makeChoiceForbidden = true;
 
         Integer choice = InputUtilities.getActionChoice(makeChoiceForbidden,restartForbidden, confirmActionForbidden);
-        if(choice == -1) return false;
+        if(choice == InputUtilities.ERROR) return false;
 
         switch(choice){
-            case 1:
+            case InputUtilities.MAKE_CHOICE:
                 //FIRST WE GET THE PLAYER CHOICE
                 Point chosenPosition = InputUtilities.getChosenPosition(possiblePositions, lastUsedWorker);
                 if(chosenPosition ==  null) return false;
@@ -107,12 +107,12 @@ public class MoveActionStrategy implements ActionStrategy{
                 PacketMove packetMove = new PacketMove(matchData.getPlayerName(), lastUsedWorker, true, currentPositions);
                 client.send(packetMove);
                 break;
-            case 2:
+            case InputUtilities.RESTART:
                 //WE RESET CHANGES TO THE GRAPHICAL BOARD, THE CHECKPOINT IS THE BOARD OBJECT IN THE MATCHDATA
                 matchData.makeGraphicalBoardEqualToBoard();
                 OutputUtilities.printMatch();
                 return true;
-            case 3:
+            case InputUtilities.CONFIRM:
                 //IN CASE OF PLAYER'S CONFIRMATION WE SEND A PACKET THAT WON'T SIMULATE AND WE ARE SURE THAT IS CORRECT BECAUSE WE CHECKED POSSIBLE MOVES EVERY TIME
                 PacketMove packetConfirmation = new PacketMove(matchData.getPlayerName(),lastUsedWorker, false, currentPositions);
                 client.send(packetConfirmation);

@@ -103,10 +103,10 @@ public class BuildActionStrategy implements ActionStrategy{
 
         Integer choice = InputUtilities.getActionChoice(makeChoiceForbidden,restartForbidden, confirmActionForbidden);
 
-        if(choice == -1) return false;
+        if(choice == InputUtilities.ERROR) return false;
 
         switch(choice){
-            case 1:
+            case InputUtilities.MAKE_CHOICE:
                 boolean getChoice = InputUtilities.getChosenBuildingsInPoint(possibleBuildingsInPositions, lastUsedWorker, currentDataOrder, currentBuilds);
 
                 if(!getChoice) return false;
@@ -119,12 +119,12 @@ public class BuildActionStrategy implements ActionStrategy{
                 PacketBuild packetBuild = new PacketBuild(player, lastUsedWorker, true, currentBuilds, currentDataOrder);
                 client.send(packetBuild);
                 break;
-            case 2:
+            case InputUtilities.RESTART:
                 //WE RESET CHANGES TO THE GRAPHICAL BOARD, THE CHECKPOINT IS THE BOARD OBJECT IN THE MATCHDATA
                 matchData.makeGraphicalBoardEqualToBoard();
                 OutputUtilities.printMatch();
                 return true;
-            case 3:
+            case InputUtilities.CONFIRM:
                 PacketBuild packetBuildConfirmation = new PacketBuild(player,lastUsedWorker, false, currentBuilds, currentDataOrder);
                 client.send(packetBuildConfirmation);
                 break;

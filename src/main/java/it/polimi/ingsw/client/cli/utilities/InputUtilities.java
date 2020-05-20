@@ -17,10 +17,14 @@ import java.util.stream.Collectors;
 public class InputUtilities {
 
     private static final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-    private static final String POSITIONS_REGEXP = "^(([A-E]|[a-e])[1-5])$";
+    public static final String POSITIONS_REGEXP = "^(([A-E]|[a-e])[1-5])$";
     public static final Pattern POSITION_PATTERN = Pattern.compile(POSITIONS_REGEXP);
-    private static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4])$";
+    public static final String BUILDINGS_REGEXP = "^(([A-E]|[a-e])[1-5][ ][1-4])$";
     public static final Pattern BUILDINGS_PATTERN = Pattern.compile(BUILDINGS_REGEXP);
+    public static final int MAKE_CHOICE = 1;
+    public static final int RESTART = 2;
+    public static final int CONFIRM = 3;
+    public static final int ERROR = -1;
 
     /**
      * This method gets a line from from the command line asynchronously.
@@ -169,11 +173,11 @@ public class InputUtilities {
 
         if(makeChoiceForbidden && restartForbidden && confirmActionForbidden){
             assert false;
-            return -1; //IMPOSSIBLE CONFIGURATION
+            return ERROR; //IMPOSSIBLE CONFIGURATION
         }
-        else if(makeChoiceForbidden && restartForbidden) return 3;
-        else if(makeChoiceForbidden && confirmActionForbidden) return 2;
-        else if(restartForbidden && confirmActionForbidden) return 1;
+        else if(makeChoiceForbidden && restartForbidden) return CONFIRM;
+        else if(makeChoiceForbidden && confirmActionForbidden) return RESTART;
+        else if(restartForbidden && confirmActionForbidden) return MAKE_CHOICE;
         else if(makeChoiceForbidden){
             choiceMessage = "Do you want to restart the selection(r) or confirm the current actions(c)? ";
             mapChoices.add('r');
@@ -203,18 +207,18 @@ public class InputUtilities {
         do{
             System.out.print(choiceMessage);
             String line = InputUtilities.getLine();
-            if (line == null) return -1;
+            if (line == null) return ERROR;
             if(line.length() != 1) choice = ' ';
             else choice = line.toLowerCase().charAt(0);
         }while(!mapChoices.contains(choice));
 
-        if(choice == 'm') return 1;
-        else  if (choice == 'r') return 2;
-        else if (choice == 'c') return 3;
+        if(choice == 'm') return MAKE_CHOICE;
+        else  if (choice == 'r') return RESTART;
+        else if (choice == 'c') return CONFIRM;
 
         assert false;
 
-        return -1;
+        return ERROR;
     }
 
     /**

@@ -1,12 +1,12 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.enums.BuildingType;
 import it.polimi.ingsw.server.cards.CardFactory;
 import it.polimi.ingsw.server.cards.RuleStatement;
 import it.polimi.ingsw.server.cards.RuleStatementImplTest;
 import it.polimi.ingsw.server.cards.enums.StatementType;
 import it.polimi.ingsw.server.cards.enums.StatementVerbType;
 import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
-import it.polimi.ingsw.common.enums.BuildingType;
 import it.polimi.ingsw.server.model.enums.LevelType;
 import it.polimi.ingsw.server.model.enums.PlayerFlag;
 import it.polimi.ingsw.server.model.enums.PlayerState;
@@ -15,9 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
-import java.lang.reflect.Array;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -3626,5 +3625,52 @@ class StatementCompilerTest {
         assertTrue(lambdaStatement.evaluate(moveData, null));
 
 
+    }
+
+    /**
+     * Test if given workers on the different level isTheHighest correctly returns true when the highest workers tries to build.
+     */
+    @Test
+    void isTheHighest_Test3(){
+        /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   |A1  |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |x FF|    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 |A2  | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+       */
+
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        Point point = new Point(1, 1);
+        buildOrder.add(point);
+        List<BuildingType> buildsInPoint = new ArrayList<>();
+        buildsInPoint.add(BuildingType.FIRST_FLOOR);
+        builds.put(point, buildsInPoint);
+
+        model.getBoard().getCell(AndreaW1.getPosition()).removeWorker();
+        model.getBoard().getCell(AndreaW1.getPosition()).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(AndreaW1.getPosition()).setWorker(AndreaW1.getID());
+
+        BuildData buildData = new BuildData(Andrea, AndreaW1, builds, buildOrder);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        //TRY STATEMENT WITH NIF
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
     }
 }
