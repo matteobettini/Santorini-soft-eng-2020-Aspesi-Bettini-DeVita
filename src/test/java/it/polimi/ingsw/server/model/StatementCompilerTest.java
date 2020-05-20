@@ -2831,14 +2831,17 @@ class StatementCompilerTest {
 
         assertFalse(lambdaStatement.evaluate(moveData, null));
 
-        //TRY WHEN W1 IS ON SF AND W2 ON FF
+        //TRY WHEN W1 IS ON SF AND W2 ON FF, BUT A WORKER OF ANOTHER PLAYER IS ABOVE THEM
 
         model.getBoard().getCell(AndreaW1.getPosition()).removeWorker();
         model.getBoard().getCell(AndreaW2.getPosition()).removeWorker();
+        model.getBoard().getCell(MatteoW2.getPosition()).removeWorker();
         model.getBoard().getCell(AndreaW1.getPosition()).addBuilding(BuildingType.SECOND_FLOOR);
         model.getBoard().getCell(AndreaW2.getPosition()).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(MatteoW2.getPosition()).addBuilding(BuildingType.THIRD_FLOOR);
         model.getBoard().getCell(AndreaW1.getPosition()).setWorker(AndreaW1.getID());
         model.getBoard().getCell(AndreaW2.getPosition()).setWorker(AndreaW2.getID());
+        model.getBoard().getCell(MatteoW2.getPosition()).setWorker(MatteoW2.getID());
 
         ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
         lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
@@ -2851,7 +2854,7 @@ class StatementCompilerTest {
 
         assertFalse(lambdaStatement.evaluate(moveData, null));
 
-        //TRY WHEN W2 IS ON TF AND W1 ON SF
+        //TRY WHEN W2 IS ON TF AND W1 ON SF, BUT A WORKER OF ANOTHER PLAYER IS ON TF TOO
 
         model.getBoard().getCell(AndreaW2.getPosition()).removeWorker();
         model.getBoard().getCell(AndreaW2.getPosition()).addBuilding(BuildingType.SECOND_FLOOR);

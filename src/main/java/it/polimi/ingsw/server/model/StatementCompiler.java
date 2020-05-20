@@ -593,23 +593,21 @@ class StatementCompiler {
         return ((moveData, buildData) -> {
 
             Player player;
-            if(buildData == null)
+            Worker workerOnMove;
+            if(buildData == null){
                 player = moveData.getPlayer();
-            else
+                workerOnMove = moveData.getWorker();
+            }
+            else{
                 player = buildData.getPlayer();
-
-            List<Worker> playerWorkers = player.getWorkers();
+                workerOnMove = buildData.getWorker();
+            }
 
             Board board = model.getBoard();
 
-            Worker highestWorker = playerWorkers.stream().reduce(null, (w1, w2) -> {
-                if(w1 == null) return w2;
-                if(board.getCell(w1.getPosition()).getHeight() > board.getCell(w2.getPosition()).getHeight()) return w1;
-                else if(board.getCell(w1.getPosition()).getHeight() < board.getCell(w2.getPosition()).getHeight()) return w2;
-                return null;
-            });
+            Boolean isNotTheHighest = player.getWorkers().stream().map( w -> !w.equals(workerOnMove) && board.getCell(w.getPosition()).getHeight() >= board.getCell(workerOnMove.getPosition()).getHeight()).filter(b -> b).findAny().orElse(false);
 
-            boolean result = moveData.getWorker().equals(highestWorker);
+            boolean result = !isNotTheHighest;
 
             if(isNif)
                 result = !result;
