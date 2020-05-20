@@ -80,7 +80,7 @@ class StatementCompiler {
                result = compileLastBuildOn(statement);
                break;
            case IS_THE_HIGHEST:
-               result = compileIsTheHighest(model, statement, owner);
+               result = compileIsTheHighest(model, statement);
                break;
        }
        return result;
@@ -586,14 +586,19 @@ class StatementCompiler {
         });
     }
 
-    private static LambdaStatement compileIsTheHighest(InternalModel model, RuleStatement statement, Player owner) {
+    private static LambdaStatement compileIsTheHighest(InternalModel model, RuleStatement statement) {
 
         boolean isNif = statement.getType() == StatementType.NIF;
 
         return ((moveData, buildData) -> {
-            assert buildData == null;
 
-            List<Worker> playerWorkers = owner.getWorkers();
+            Player player;
+            if(buildData == null)
+                player = moveData.getPlayer();
+            else
+                player = buildData.getPlayer();
+
+            List<Worker> playerWorkers = player.getWorkers();
 
             Board board = model.getBoard();
 
