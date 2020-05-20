@@ -155,8 +155,16 @@ class CardReader {
         if (nList.getLength() != 1){
             throw new InvalidCardException("[CARD PARSER]Missing/Multiple tag numbers of players");
         }
+
         numbersOfPlayers = nList.item(0).getTextContent().trim();
-        possibleNumbersOfPlayers = Arrays.stream(numbersOfPlayers.split("\\s*,\\s*")).map(Integer::parseInt).collect(Collectors.toList());
+
+        try{
+            possibleNumbersOfPlayers = Arrays.stream(numbersOfPlayers.split("\\s*,\\s*")).map(Integer::parseInt).collect(Collectors.toList());
+        }
+        catch (NumberFormatException e){
+            throw new InvalidCardException("[CARD PARSER]Invalid numbers of players");
+        }
+
         if (possibleNumbersOfPlayers.isEmpty()){
             throw new InvalidCardException("[CARD PARSER]Invalid numbers of players");
         }

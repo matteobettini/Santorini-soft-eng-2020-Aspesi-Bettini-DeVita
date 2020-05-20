@@ -665,4 +665,194 @@ class StatementValidatorTest {
             assert true;
         }
     }
+
+    /**
+     * Test IS_NEAR
+     * - Normal
+     */
+    @Test
+    void testIsNear() {
+        //Check correct subject and object
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("START_POSITION", StatementVerbType.IS_NEAR, "CARD_OWNER");
+        try {
+            StatementValidator.checkRuleStatement(stmOkay);
+            assert true;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e) {
+            assert false;
+        }
+        stmOkay = RuleStatementImplTest.getStatement("FINAL_POSITION", StatementVerbType.IS_NEAR, "CARD_OWNER");
+        try {
+            StatementValidator.checkRuleStatement(stmOkay);
+            assert true;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e) {
+            assert false;
+        }
+        stmOkay = RuleStatementImplTest.getStatement("ONE_BUILD_POSITION", StatementVerbType.IS_NEAR, "CARD_OWNER");
+        try {
+            StatementValidator.checkRuleStatement(stmOkay);
+            assert true;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e) {
+            assert false;
+        }
+        //Check wrong subject and correct object
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.IS_NEAR, "CARD_OWNER");
+        try {
+            StatementValidator.checkRuleStatement(stmWrongSubject);
+            assert false;
+        } catch (InvalidStatementSubjectException e){
+            assert true;
+        }catch (InvalidStatementObjectException e) {
+            assert false;
+        }
+        //Check correct subject and wrong object
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("START_POSITION", StatementVerbType.IS_NEAR, "WRONG_OBJECT");
+        try {
+            StatementValidator.checkRuleStatement(stmWrongObject);
+            assert false;
+        } catch (InvalidStatementSubjectException e){
+            assert false;
+        }catch (InvalidStatementObjectException e) {
+            assert true;
+        }
+        //Check wrong subject and wrong object
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.IS_NEAR, "WRONG_OBJECT");
+        try {
+            StatementValidator.checkRuleStatement(stmWrong);
+            assert false;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e){
+            assert true;
+        }
+    }
+
+    /**
+     * Test ONLY_COMPLETE_TOWERS_NEAR
+     * - Normal
+     */
+    @Test
+    void testOnlyCompleteTowersNear() {
+        //Check correct subject and object
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        try {
+            StatementValidator.checkRuleStatement(stmOkay);
+            assert true;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e) {
+            assert false;
+        }
+        //Check wrong subject and correct object
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        try {
+            StatementValidator.checkRuleStatement(stmWrongSubject);
+            assert false;
+        } catch (InvalidStatementSubjectException e){
+            assert true;
+        }catch (InvalidStatementObjectException e) {
+            assert false;
+        }
+        //Check correct subject and wrong object
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "WRONG_OBJECT");
+        try {
+            StatementValidator.checkRuleStatement(stmWrongObject);
+            assert false;
+        } catch (InvalidStatementSubjectException e){
+            assert false;
+        }catch (InvalidStatementObjectException e) {
+            assert true;
+        }
+        //Check wrong subject and wrong object
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "WRONG_OBJECT");
+        try {
+            StatementValidator.checkRuleStatement(stmWrong);
+            assert false;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e){
+            assert true;
+        }
+    }
+
+    /**
+     * Test LAST_BUILD_ON
+     * - Normal
+     */
+    @Test
+    void testLastBuildOn() {
+        //Check correct subject and object
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("YOU", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        try {
+            StatementValidator.checkRuleStatement(stmOkay);
+            assert true;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e) {
+            assert false;
+        }
+        //Check wrong subject and correct object
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        try {
+            StatementValidator.checkRuleStatement(stmWrongSubject);
+            assert false;
+        } catch (InvalidStatementSubjectException e){
+            assert true;
+        }catch (InvalidStatementObjectException e) {
+            assert false;
+        }
+        //Check correct subject and wrong object
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("YOU", StatementVerbType.LAST_BUILD_ON, "WRONG_OBJECT");
+        try {
+            StatementValidator.checkRuleStatement(stmWrongObject);
+            assert false;
+        } catch (InvalidStatementSubjectException e){
+            assert false;
+        }catch (InvalidStatementObjectException e) {
+            assert true;
+        }
+        //Check wrong subject and wrong object
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.LAST_BUILD_ON, "WRONG_OBJECT");
+        try {
+            StatementValidator.checkRuleStatement(stmWrong);
+            assert false;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e){
+            assert true;
+        }
+    }
+
+    /**
+     * Test IS_THE_HIGHEST
+     * - Normal
+     */
+    @Test
+    void testIsTheHighest() {
+        //Check correct subject and object
+        RuleStatement stmOkay = RuleStatementImplTest.getStatement("CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        try {
+            StatementValidator.checkRuleStatement(stmOkay);
+            assert true;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e) {
+            assert false;
+        }
+        //Check wrong subject and correct object
+        RuleStatement stmWrongSubject = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.IS_THE_HIGHEST, "YOUR_WORKERS");
+        try {
+            StatementValidator.checkRuleStatement(stmWrongSubject);
+            assert false;
+        } catch (InvalidStatementSubjectException e){
+            assert true;
+        }catch (InvalidStatementObjectException e) {
+            assert false;
+        }
+        //Check correct subject and wrong object
+        RuleStatement stmWrongObject = RuleStatementImplTest.getStatement("CHOSEN_WORKER", StatementVerbType.IS_THE_HIGHEST, "WRONG_OBJECT");
+        try {
+            StatementValidator.checkRuleStatement(stmWrongObject);
+            assert false;
+        } catch (InvalidStatementSubjectException e){
+            assert false;
+        }catch (InvalidStatementObjectException e) {
+            assert true;
+        }
+        //Check wrong subject and wrong object
+        RuleStatement stmWrong = RuleStatementImplTest.getStatement("WRONG_SUBJECT", StatementVerbType.IS_THE_HIGHEST, "WRONG_OBJECT");
+        try {
+            StatementValidator.checkRuleStatement(stmWrong);
+            assert false;
+        } catch (InvalidStatementSubjectException | InvalidStatementObjectException e){
+            assert true;
+        }
+    }
 }
