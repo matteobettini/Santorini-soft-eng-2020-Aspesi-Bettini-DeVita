@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.List;
 
@@ -1232,7 +1233,6 @@ class StatementCompilerTest {
         lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
         assertTrue(lambdaStatement.evaluate(moveData, null));
     }
-
     /**
      * Testing exists level type when moving from two points [GROUND] -> [FIRST_FLOOR]
      * Should return true with IF and false with NIF
@@ -1322,7 +1322,6 @@ class StatementCompilerTest {
         assertTrue(compiledStmFirstIF.evaluate(moveData,null));
         assertFalse(compiledStmFirstNIF.evaluate(moveData,null));
     }
-
     /**
      *  Testing exists level type when moving from two points [FIRST_FLOOR] -> [GROUND]
      *  Should return false with IF and true with NIF
@@ -1366,8 +1365,6 @@ class StatementCompilerTest {
         assertFalse(compiledStmFirstIF.evaluate(moveData,null));
         assertTrue(compiledStmFirstNIF.evaluate(moveData,null));
     }
-
-
     /*
        Tests a move with 3 interactions on a wide range of different levels
     */
@@ -2690,7 +2687,764 @@ class StatementCompilerTest {
 
         assertFalse(lambdaStatement.evaluate(null, buildData));
     }
+    /*
+          Testing IS_NEAR with subject START_POSITION
+           when there are 3 players and the player moving
+           starts his move near to only one of the other players
+       */
+    @Test
+    void isNear_StartPosition_Test1(){
 
+    /*
+              0    1     2    3    4
+            +----+----+----+----+----+
+        0   | A1 |    |    |    |    |
+            +----+----+----+----+----+
+        1   |    |    |    |    |    |
+            +----+----+----+----+----+
+        2   | 1  | B1 | A2 | B2 |    |
+            +----+----+----+----+----+
+        3   | 2  |    |    | D2 |    |
+            +----+----+----+----+----+
+        4   |    |  3 | D1 |    |    |
+            +----+----+----+----+----+
+    */
+
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(0,2);
+        Point point2 = new Point(0,3);
+        Point point3 = new Point(1, 4);
+        moves.add(point1);
+        moves.add(point2);
+        moves.add(point3);
+        MoveData moveData = new MoveData(Matteo, MatteoW1, moves);
+
+        // START POSITION OF MATTEO W1 IS NEAR ANDREA
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"START_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"START_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        // START POSITION OF MATTEO W1 IS NOT NEAR MIRKO
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"START_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"START_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+
+
+    }
+    /*
+          Testing IS_NEAR with subject START_POSITION
+           when there are 3 players and the player moving
+           starts his move near both the other players
+       */
+    @Test
+    void isNear_StartPosition_Test2(){
+
+        /*
+              0    1     2    3    4
+            +----+----+----+----+----+
+        0   | A1 |    |    |    |    |
+            +----+----+----+----+----+
+        1   |    |    |    |    |    |
+            +----+----+----+----+----+
+        2   |    | B1 | A2 | B2 | 1  |
+            +----+----+----+----+----+
+        3   |    |    |    | D2 |    |
+            +----+----+----+----+----+
+        4   |    |    | D1 |    |    |
+            +----+----+----+----+----+
+    */
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(4,2);
+        moves.add(point1);
+        MoveData moveData = new MoveData(Matteo, MatteoW2, moves);
+
+
+        // START POSITION OF MATTEO W2 IS NEAR ANDREA
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"START_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"START_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        // START POSITION OF MATTEO W2 IS NEAR MIRKO
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"START_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"START_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+    }
+    /*
+        Testing IS_NEAR with subject FINAL_POSITION
+         when there are 3 players and the player moving
+         finishes his move near to only one of the other players
+     */
+    @Test
+    void isNear_FinalPositionPosition_Test3(){
+
+    /*
+              0    1     2    3    4
+            +----+----+----+----+----+
+        0   | A1 |    |    |    |    |
+            +----+----+----+----+----+
+        1   |    |    |    |    |    |
+            +----+----+----+----+----+
+        2   | 1  | B1 | A2 | B2 |    |
+            +----+----+----+----+----+
+        3   | 2  |    |    | D2 |    |
+            +----+----+----+----+----+
+        4   |    |  3 | D1 |    |    |
+            +----+----+----+----+----+
+    */
+
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(0,2);
+        Point point2 = new Point(0,3);
+        Point point3 = new Point(1, 4);
+        moves.add(point1);
+        moves.add(point2);
+        moves.add(point3);
+        MoveData moveData = new MoveData(Matteo, MatteoW1, moves);
+
+        // FINAL POSITION OF MATTEO W1 IS NEAR MIRKO
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"FINAL_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"FINAL_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        // FINAL POSITION OF MATTEO W1 IS NOT NEAR ANDREA
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"FINAL_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"FINAL_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+    }
+    /*
+          Testing IS_NEAR with subject FINAL_POSITION
+           when there are 3 players and the player moving
+           finishes his move near both the other players
+       */
+    @Test
+    void isNear_FinalPosition_Test4(){
+
+        /*
+              0    1     2    3    4
+            +----+----+----+----+----+
+        0   | A1 |    |    |    |    |
+            +----+----+----+----+----+
+        1   |    |    |    |    |    |
+            +----+----+----+----+----+
+        2   |    | B1 | A2 | B2 |    |
+            +----+----+----+----+----+
+        3   |    |    |  1 | D2 |    |
+            +----+----+----+----+----+
+        4   |    |    | D1 |    |    |
+            +----+----+----+----+----+
+    */
+
+        List<Point> moves = new ArrayList<>();
+        Point point1 = new Point(2,3);
+        moves.add(point1);
+        MoveData moveData = new MoveData(Matteo, MatteoW2, moves);
+
+
+        // FINAL POSITION OF MATTEO W2 IS NEAR ANDREA
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"FINAL_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"FINAL_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+        // FINAL POSITION OF MATTEO W2 IS NEAR MIRKO
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"FINAL_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertTrue(lambdaStatement.evaluate(moveData, null));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"FINAL_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertFalse(lambdaStatement.evaluate(moveData, null));
+
+    }
+    /*
+           Testing IS_NEAR with subject ONE_BUILD_POSITION
+            when there are 3 players and the player does not build
+            near to any other player
+        */
+    @Test
+    void isNear_oneBuildPosition_Test5(){
+
+    /*
+              0    1     2    3    4
+            +----+----+----+----+----+
+        0   | A1 |    |    |    |    |
+            +----+----+----+----+----+
+        1   |    |    |    |    |    |
+            +----+----+----+----+----+
+        2   | SF | B1 | A2 | B2 |    |
+            +----+----+----+----+----+
+        3   |    |    |    | D2 |    |
+            +----+----+----+----+----+
+        4   |    |    | D1 |    |    |
+            +----+----+----+----+----+
+    */
+
+
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildsOrder = new ArrayList<>();
+
+        builds.put(new Point(0,2), Arrays.asList(BuildingType.FIRST_FLOOR, BuildingType.SECOND_FLOOR));
+        buildsOrder.add(new Point(0,2));
+
+        BuildData buildData = new BuildData(Matteo,MatteoW1,builds, buildsOrder);
+
+        // ONE BUILD POSITION POSITION OF MATTEO W1 IS NOT NEAR TO ANY OTHER PLAYER
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+    }
+    /*
+          Testing IS_NEAR with subject ONE_BUILD_POSITION
+           when there are 3 players and the player builds
+           near to one other player
+       */
+    @Test
+    void isNear_oneBuildPosition_Test6(){
+
+    /*
+              0    1     2    3    4
+            +----+----+----+----+----+
+        0   | A1 |    |    |    |    |
+            +----+----+----+----+----+
+        1   |    | DM |    |    |    |
+            +----+----+----+----+----+
+        2   | SF | B1 | A2 | B2 |    |
+            +----+----+----+----+----+
+        3   |    |    |    | D2 |    |
+            +----+----+----+----+----+
+        4   |    |    | D1 |    |    |
+            +----+----+----+----+----+
+    */
+
+
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildsOrder = new ArrayList<>();
+
+        builds.put(new Point(0,2), Arrays.asList(BuildingType.FIRST_FLOOR, BuildingType.SECOND_FLOOR));
+        builds.put(new Point(1,1), Collections.singletonList(BuildingType.DOME));
+        buildsOrder.add(new Point(0,2));
+        buildsOrder.add(new Point(1,1));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildsOrder);
+
+        // ONE BUILD POSITION POSITION OF MATTEO W1 IS NEAR ANDREA
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+
+        // NO BUILD POSITION POSITION OF MATTEO W1 IS NEAR MIRKO
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+    }
+    /*
+          Testing IS_NEAR with subject ONE_BUILD_POSITION
+           when there are 3 players and the player builds
+           near to both the other players
+       */
+    @Test
+    void isNear_oneBuildPosition_Test7(){
+
+    /*
+              0    1     2    3    4
+            +----+----+----+----+----+
+        0   | A1 |    |    |    |    |
+            +----+----+----+----+----+
+        1   |    |    |    |    |    |
+            +----+----+----+----+----+
+        2   | SF | B1 | A2 | B2 |    |
+            +----+----+----+----+----+
+        3   |    |    | FF | D2 |    |
+            +----+----+----+----+----+
+        4   |    |    | D1 |    |    |
+            +----+----+----+----+----+
+    */
+
+
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildsOrder = new ArrayList<>();
+
+        builds.put(new Point(0,2), Arrays.asList(BuildingType.FIRST_FLOOR, BuildingType.SECOND_FLOOR));
+        builds.put(new Point(2,3), Collections.singletonList(BuildingType.FIRST_FLOOR));
+        buildsOrder.add(new Point(0,2));
+        buildsOrder.add(new Point(2,3));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildsOrder);
+
+        // ONE BUILD POSITION POSITION OF MATTEO W1 IS NEAR ANDREA
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+
+        // ONE BUILD POSITION POSITION OF MATTEO W1 IS NEAR MIRKO
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF,"ONE_BUILD_POSITION", StatementVerbType.IS_NEAR,"CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+    }
+    /*
+            Tests ONLY_COMPLETE_TOWERS_NEAR
+            when the player builds far
+            from the card owner
+         */
+    @Test
+    void onlyCompleteTowersNear_Test1(){
+         /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    | FF | DM |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        builds.put(new Point(1,1), Collections.singletonList(BuildingType.FIRST_FLOOR));
+        builds.put(new Point(2,1), Collections.singletonList(BuildingType.DOME));
+
+        buildOrder.add(new Point(1,1));
+        buildOrder.add(new Point(2,1));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
+
+        // MATTEO W1 BUILDS NOTHING NEAR THE CARD OWNER
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+
+
+    }
+    /*
+           Tests ONLY_COMPLETE_TOWERS_NEAR
+           when the player builds
+           near the card owner, but does not complete any tower
+        */
+    @Test
+    void onlyCompleteTowersNear_Test2(){
+         /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    | DM |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        builds.put(new Point(2,1), Collections.singletonList(BuildingType.DOME));
+
+        buildOrder.add(new Point(2,1));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
+
+        // MATTEO W1 BUILDS NEAR TO THE CARD OWNER BUT DOES NOT COMPLETE ANY TOWER
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+
+
+    }
+    /*
+           Tests ONLY_COMPLETE_TOWERS_NEAR
+           when the player builds
+           near the card owner, completing one tower
+        */
+    @Test
+    void onlyCompleteTowersNear_Test3(){
+         /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    | DM |    |    |    |
+        +----+----+----+----+----+
+    2   | DM | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        builds.put(new Point(0,2), Collections.singletonList(BuildingType.DOME));
+        builds.put(new Point(1,1), Arrays.asList(BuildingType.FIRST_FLOOR, BuildingType.SECOND_FLOOR, BuildingType.THIRD_FLOOR, BuildingType.DOME));
+
+        buildOrder.add(new Point(0,2));
+        buildOrder.add(new Point(1,1));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Andrea);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+    }
+    /*
+          Tests ONLY_COMPLETE_TOWERS_NEAR
+          when the player builds
+          near the card owner, completing one tower
+          but also building something else that does not
+          complete a tower near him
+       */
+    @Test
+    void onlyCompleteTowersNear_Test4(){
+         /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   | DM | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    | SF | DM | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        builds.put(new Point(0,2), Collections.singletonList(BuildingType.DOME));
+        builds.put(new Point(1,3), Arrays.asList(BuildingType.FIRST_FLOOR, BuildingType.SECOND_FLOOR));
+        builds.put(new Point(2,3), Arrays.asList(BuildingType.FIRST_FLOOR, BuildingType.SECOND_FLOOR, BuildingType.THIRD_FLOOR, BuildingType.DOME));
+
+        buildOrder.add(new Point(0,2));
+        buildOrder.add(new Point(1,3));
+        buildOrder.add(new Point(2,3));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+    }
+    /*
+        Tests ONLY_COMPLETE_TOWERS_NEAR
+        when the player builds
+        near the card owner, only completing towers near him
+     */
+    @Test
+    void onlyCompleteTowersNear_Test5(){
+         /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   | DM | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    | DM | DM | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        builds.put(new Point(0,2), Collections.singletonList(BuildingType.DOME));
+        builds.put(new Point(1,3), Arrays.asList(BuildingType.FIRST_FLOOR, BuildingType.SECOND_FLOOR, BuildingType.THIRD_FLOOR, BuildingType.DOME));
+        builds.put(new Point(2,3), Arrays.asList(BuildingType.FIRST_FLOOR, BuildingType.SECOND_FLOOR, BuildingType.THIRD_FLOOR, BuildingType.DOME));
+
+        buildOrder.add(new Point(0,2));
+        buildOrder.add(new Point(1,3));
+        buildOrder.add(new Point(2,3));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.ONLY_COMPLETE_TOWERS_NEAR, "CARD_OWNER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+    }
+    /*
+       Tests LAST_BUILd_ON
+       when the player does not build
+       on the perimeter
+     */
+    @Test
+    void lastBuildOn_Test1(){
+         /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   |    | FF | DM |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        builds.put(new Point(1,1), Collections.singletonList(BuildingType.FIRST_FLOOR));
+        builds.put(new Point(2,1), Collections.singletonList(BuildingType.DOME));
+
+        buildOrder.add(new Point(1,1));
+        buildOrder.add(new Point(2,1));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+    }
+    /*
+       Tests LAST_BUILd_ON
+       when the player builds
+       his last build on the perimeter
+     */
+    @Test
+    void lastBuildOn_Test2(){
+         /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   | FF | FF | DM |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        builds.put(new Point(1,1), Collections.singletonList(BuildingType.FIRST_FLOOR));
+        builds.put(new Point(2,1), Collections.singletonList(BuildingType.DOME));
+        builds.put(new Point(0,1), Collections.singletonList(BuildingType.FIRST_FLOOR));
+
+        buildOrder.add(new Point(1,1));
+        buildOrder.add(new Point(2,1));
+        buildOrder.add(new Point(0,1));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+    }
+    /*
+       Tests LAST_BUILd_ON
+       when the player builds
+       only on the perimeter
+     */
+    @Test
+    void lastBuildOn_Test3(){
+         /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   | FF |    |   |    |    |
+        +----+----+----+----+----+
+    2   | DM | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+
+        builds.put(new Point(0,2), Collections.singletonList(BuildingType.DOME));
+        builds.put(new Point(0,1), Collections.singletonList(BuildingType.FIRST_FLOOR));
+
+        buildOrder.add(new Point(0,1));
+        buildOrder.add(new Point(0,2));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+    }
+    /*
+       Tests LAST_BUILd_ON
+       when the player builds
+       everything on the perimeter
+       except the last build
+     */
+    @Test
+    void lastBuildOn_Test4(){
+         /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 |    |    |    |    |
+        +----+----+----+----+----+
+    1   | FF |    |   |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    | DM |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+
+        builds.put(new Point(1,3), Collections.singletonList(BuildingType.DOME));
+        builds.put(new Point(0,1), Collections.singletonList(BuildingType.FIRST_FLOOR));
+
+        buildOrder.add(new Point(0,1));
+        buildOrder.add(new Point(1,3));
+
+        BuildData buildData = new BuildData(Matteo, MatteoW1, builds, buildOrder);
+
+        RuleStatement ruleStatement = RuleStatementImplTest.getStatement(StatementType.IF, "YOU", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        LambdaStatement lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertFalse(lambdaStatement.evaluate(null, buildData));
+
+        ruleStatement = RuleStatementImplTest.getStatement(StatementType.NIF, "YOU", StatementVerbType.LAST_BUILD_ON, "PERIMETER");
+        lambdaStatement = StatementCompiler.compileStatement(model, ruleStatement, Mirko);
+
+        assertTrue(lambdaStatement.evaluate(null, buildData));
+    }
     /**
      * Test if given workers on the same level isTheHighest correctly returns false
      */
@@ -2701,7 +3455,7 @@ class StatementCompilerTest {
         +----+----+----+----+----+
     0   |A1  |    |    |    |    |
         +----+----+----+----+----+
-    1   |    |    |    |    |    |
+    1   |    | 1  |    |    |    |
         +----+----+----+----+----+
     2   |    | B1 |A2  | B2 |    |
         +----+----+----+----+----+
@@ -2788,7 +3542,6 @@ class StatementCompilerTest {
         assertTrue(lambdaStatement.evaluate(moveData, null));
 
     }
-
     /**
      * Test if given workers on the different level isTheHighest correctly returns true when the highest workers tries to move.
      */
@@ -2797,7 +3550,7 @@ class StatementCompilerTest {
         /*
           0    1     2    3    4
         +----+----+----+----+----+
-    0   |A1F1|    |    |    |    |
+    0   |A1F1| 1  |    |    |    |
         +----+----+----+----+----+
     1   |    |    |    |    |    |
         +----+----+----+----+----+
