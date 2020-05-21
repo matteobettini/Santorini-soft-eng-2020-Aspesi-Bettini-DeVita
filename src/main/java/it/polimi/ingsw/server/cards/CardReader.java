@@ -165,7 +165,7 @@ class CardReader {
             throw new InvalidCardException("[CARD PARSER]Invalid numbers of players");
         }
 
-        if (possibleNumbersOfPlayers.isEmpty()){
+        if (possibleNumbersOfPlayers.isEmpty() || possibleNumbersOfPlayers.stream().anyMatch(n -> n <= 1 || n > 4)){
             throw new InvalidCardException("[CARD PARSER]Invalid numbers of players");
         }
 
