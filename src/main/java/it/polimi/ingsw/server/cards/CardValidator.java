@@ -68,6 +68,8 @@ class CardValidator {
                     case INTERACTION_NUM:
                     case EXISTS_LEVEL_TYPE:
                     case POSITION_EQUALS:
+                    case IS_NEAR:
+                    case IS_THE_HIGHEST:
                         return true;
                 }
                 break;
@@ -80,6 +82,10 @@ class CardValidator {
                     case BUILD_DOME:
                     case BUILD_DOME_EXCEPT:
                     case BUILD_IN_SAME_SPOT:
+                    case IS_NEAR:
+                    case ONLY_COMPLETE_TOWERS_NEAR:
+                    case LAST_BUILD_ON:
+                    case IS_THE_HIGHEST:
                         return true;
                 }
                 break;
@@ -103,6 +109,7 @@ class CardValidator {
             case BUILD:
                 switch (rule.getEffect().getAllowType()){
                     case STANDARD:
+                    case BUILD_UNDER:
                         return;
                 }
                 break;

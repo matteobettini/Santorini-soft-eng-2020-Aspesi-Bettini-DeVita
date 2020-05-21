@@ -21,7 +21,7 @@ class CardFileImpl implements CardFile {
     private final List<Integer> numbersOfPlayers;
 
     public CardFileImpl(String name, String description, List<CardRuleImpl> rules, List<Integer> numbersOfPlayers) {
-        assert (name != null && description != null && rules != null);
+        assert (name != null && description != null && rules != null && numbersOfPlayers != null);
         this.name = name;
         this.description = description;
         this.rules = rules;

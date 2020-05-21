@@ -30,7 +30,7 @@
         <description>
             Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -89,7 +89,7 @@
         <description>
             Your Move: Your Worker may move one additional time, but not back to its initial space.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -146,7 +146,7 @@
         <description>
             Opponent’s Turn: If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -181,7 +181,7 @@
         <description>
             Your Build: Your Worker may build a dome at any level.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="BUILD">
                 <statements>
@@ -230,7 +230,7 @@
         <description>
             Your Build: Your Worker may build one additional time, but not on the same space.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="BUILD">
                 <statements>
@@ -284,7 +284,7 @@
         <description>
             Your Build: Your Worker may build one additional block (not dome) on top of your first block.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="BUILD">
                 <statements>
@@ -343,7 +343,7 @@
         <description>
             Your Move: Your Worker may move into an opponent Worker’s space, if their Worker can be forced one space straight backwards to an unoccupied space at any level.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -401,7 +401,7 @@
         <description>
             Win Condition: You also win if your Worker moves down two or more levels.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -431,7 +431,7 @@
         <description>
             Your Turn: If your Worker does not move up, it may build both before and after moving.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="BUILD">
                 <statements>
@@ -515,4 +515,192 @@
             <!--La seconda build è garantita dalla strategia di default-->
         </rules>
     </Card>
+
+    <Card>
+        <name>Aphrodite</name>
+        <description>
+            Any Move: If an opponent Worker starts its turn neighboring one of your Workers, its last move must be to a space neighboring one of your Workers.
+        </description>
+        <players>2,4</players>
+        <rules>
+            <rule event="MOVE">
+                <statements>
+                    <nif> <!--Non sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </nif>
+                    <if> <!--Inizi la mossa vicino ad un worker del possessore della carta-->
+                        <subject>START_POSITION</subject>
+                        <verb>IS_NEAR</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <nif> <!--E non finisci di nuovo vicino ad un suo worker-->
+                        <subject>FINAL_POSITION</subject>
+                        <verb>IS_NEAR</verb>
+                        <object>CARD_OWNER</object>
+                    </nif>
+                </statements>
+                <effect>
+                    <type>DENY</type>
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+
+    <Card>
+        <name>Limus</name>
+        <description>
+            Opponent’s Turn: Opponent Workers cannot build on spaces neighboring your Workers, unless building a dome to create a Complete Tower.
+        </description>
+        <players>2,3</players>
+        <rules>
+            <rule event="BUILD">
+                <statements>
+                    <nif> <!--Non sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </nif>
+                    <if> <!--Vuoi costruire in almeno una cella vicino al cardowner-->
+                        <subject>ONE_BUILD_POSITION</subject>
+                        <verb>IS_NEAR</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <nif> <!--Non hai creato solo torri complete vicino al cardowner-->
+                        <subject>YOU</subject>
+                        <verb>ONLY_COMPLETE_TOWERS_NEAR</verb>
+                        <object>CARD_OWNER</object>
+                    </nif>
+                </statements>
+                <effect>
+                    <type>DENY</type>
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+
+    <Card>
+        <name>Hestia</name>
+        <description>
+            Your Build: Your Worker may build one additional time, but this cannot be on a perimeter space.
+        </description>
+        <players>2,3</players>
+        <rules>
+            <rule event="BUILD">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Vuoi costruire due edifici-->
+                        <subject>YOU</subject>
+                        <verb>BUILD_NUM</verb>
+                        <object>2</object>
+                    </if>
+                    <!--Verranno aggiunti
+                    <if> Se ti sei mosso
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>MOVED</object>
+                    </if>
+                    <nif> Non vuoi costruire cupole su un livello diverso dal terzo
+                        <subject>YOU</subject>
+                        <verb>BUILD_DOME_EXCEPT</verb>
+                        <object>THIRD_FLOOR</object>
+                    </nif>
+                    -->
+                </statements>
+                <effect>
+                    <type>ALLOW</type>
+                </effect>
+            </rule>
+            <rule event="BUILD">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <if> <!--Vuoi costruire due edifici-->
+                        <subject>YOU</subject>
+                        <verb>BUILD_NUM</verb>
+                        <object>2</object>
+                    </if>
+                    <if> <!--Vuoi costruire l'ultimo edificio sul perimetro-->
+                        <subject>YOU</subject>
+                        <verb>LAST_BUILD_ON</verb>
+                        <object>PERIMETER</object>
+                    </if>
+                </statements>
+                <effect>
+                    <type>DENY</type>
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+
+    <Card>
+        <name>Hypnus</name>
+        <description>
+            Start of Opponent’s Turn: If one of your opponent’s Workers is higher than all of their others, it cannot move.
+        </description>
+        <players>2,3</players>
+        <rules>
+            <rule event="MOVE">
+                <statements>
+                    <nif> <!--Non sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </nif>
+                    <if> <!--Vuoi muovere il worker più in alto dei tuoi-->
+                        <subject>CHOSEN_WORKER</subject>
+                        <verb>IS_THE_HIGHEST</verb>
+                        <object>YOUR_WORKERS</object>
+                    </if>
+                </statements>
+                <effect>
+                    <type>DENY</type>
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+
+    <Card>
+        <name>Zeus</name>
+        <description>
+            Your Build: Your Worker may build a block under itself.
+        </description>
+        <players>2,3</players>
+        <rules>
+            <rule event="BUILD">
+                <statements>
+                    <if> <!--Sei il possessore della carta-->
+                        <subject>YOU</subject>
+                        <verb>PLAYER_EQUALS</verb>
+                        <object>CARD_OWNER</object>
+                    </if>
+                    <!--Verranno aggiunti
+                    <if> Se ti sei mosso
+                        <subject>YOU</subject>
+                        <verb>STATE_EQUALS</verb>
+                        <object>MOVED</object>
+                    </if>
+                    <if> Vuoi costruire solo un edificio, adiacente a te
+                        <subject>YOU</subject>
+                        <verb>BUILD_NUM</verb>
+                        <object>1</object>
+                    </if>
+                    -->
+                </statements>
+                <effect>
+                    <type>ALLOW</type>
+                    <subtype>BUILD_UNDER</subtype>
+                </effect>
+            </rule>
+        </rules>
+    </Card>
+
 </Cards>
