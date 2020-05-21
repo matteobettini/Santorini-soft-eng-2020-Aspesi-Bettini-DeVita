@@ -249,7 +249,7 @@ class SetupManager{
                     workersPositions.put(w.getID(), w.getPosition());
             }
         }
-        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPositions, null, null, null);
+        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPositions);
         notifyPacketUpdateBoardObservers(packetUpdateBoard);
 
 

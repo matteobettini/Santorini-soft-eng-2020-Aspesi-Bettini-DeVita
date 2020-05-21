@@ -56,7 +56,7 @@ class TurnLogic {
 
         if (stillInGamePlayers.size() == 1) {
             String winner = stillInGamePlayers.get(0).getNickname();
-            PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null, null, null, winner);
+            PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(winner, true);
             notifyPacketUpdateBoardObservers(packetUpdateBoard);
             model.setWinner(stillInGamePlayers.get(0));
             stillInGamePlayers.clear();
@@ -175,7 +175,7 @@ class TurnLogic {
             return;
         }
 
-        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPosition, null, null, winner);
+        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPosition, winner);
         notifyPacketUpdateBoardObservers(packetUpdateBoard);
 
         if(winner != null && gameFinishedHandler != null)
@@ -228,7 +228,7 @@ class TurnLogic {
         }
 
 
-        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null, newBuildings, null, winner);
+        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(winner, newBuildings);
         notifyPacketUpdateBoardObservers(packetUpdateBoard);
 
         if(winner != null && gameFinishedHandler != null)
@@ -400,7 +400,7 @@ class TurnLogic {
             activePlayerIndex--;
         stillInGamePlayers.remove(currPlayer);
 
-        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(null, null, currPlayer.getNickname(), null);
+        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(currPlayer.getNickname(), false);
         notifyPacketUpdateBoardObservers(packetUpdateBoard);
         setNextPlayer();
     }

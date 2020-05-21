@@ -6,6 +6,7 @@ import it.polimi.ingsw.client.cli.match_data.MatchData;
 import it.polimi.ingsw.client.cli.graphical.buildings.BuildingFactory;
 import it.polimi.ingsw.client.cli.colors.BackColor;
 import it.polimi.ingsw.client.cli.colors.ForeColor;
+import it.polimi.ingsw.client.cli.utilities.OutputUtilities;
 import it.polimi.ingsw.common.enums.BuildingType;
 import it.polimi.ingsw.common.utils.Pair;
 
@@ -146,29 +147,19 @@ public class GraphicalMatchMenu implements CharFigure {
      */
     private void printPlayersBox(int relX, int relY){
         MatchData matchData = MatchData.getInstance();
-        Map<String, Color> players = matchData.getPlayersColor();
+        Map<String, Color> playersColor = matchData.getPlayersColor();
         Map<String, Pair<String, String>> playersGodCardAssociation = matchData.getPlayersCards();
         List<String> losers = matchData.getLosers();
         String activePlayer = matchData.getCurrentActivePlayer();
 
-        BackColor col;
         int nextLine = 5;
         GraphicalPane playersBox = new GraphicalPane(stream, 35, 8, BackColor.ANSI_BG_BLUE);
         playersBox.draw(relX + 5 , relY + nextLine);
         stream.addString(relX + 10, relY + nextLine + 1, "PLAYERS", BackColor.ANSI_BG_BLUE);
         stream.addString(relX + 25, relY + + nextLine + 1, "GODCARD", BackColor.ANSI_BG_BLUE);
         nextLine += 3;
-        for(String player : players.keySet()){
-            if(players.get(player).equals(Color.CYAN)){
-                col = BackColor.ANSI_BRIGHT_BG_CYAN;
-            }
-            else if(players.get(player).equals(Color.WHITE)){
-                col = BackColor.ANSI_BG_PURPLE;
-            }
-            else if(players.get(player).equals(Color.ORANGE)){
-                col = BackColor.ANSI_BG_YELLOW;
-            }
-            else col = BackColor.ANSI_BG_WHITE;
+        for(String player : playersColor.keySet()){
+
             if(activePlayer != null && !activePlayer.equals(player)){
                 if(losers.contains(player)){
                     stream.addColor(relX + 7, relY + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
@@ -193,6 +184,8 @@ public class GraphicalMatchMenu implements CharFigure {
                 player = player.substring(0, 12);
                 player = player.concat("...");
             }
+
+            BackColor col = OutputUtilities.fromColorToBackColor(playersColor.get(player));
             stream.addString(relX + 10, relY + nextLine, player, col);
             nextLine += 2;
         }

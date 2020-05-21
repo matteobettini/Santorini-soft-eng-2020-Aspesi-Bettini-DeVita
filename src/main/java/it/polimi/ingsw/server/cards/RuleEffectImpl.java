@@ -28,6 +28,10 @@ class RuleEffectImpl implements RuleEffect {
     public RuleEffectImpl(EffectType type, PlayerState playerNextState) {
         this(type,null,playerNextState,null);
     }
+    public RuleEffectImpl(EffectType type, AllowType allowType, PlayerState playerNextState) { this(type, allowType, playerNextState,null); }
+    public RuleEffectImpl(EffectType type) {
+        this(type,null, null,null);
+    }
 
     /**
      * Getter for the effect type of this rule effect

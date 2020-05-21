@@ -25,7 +25,7 @@ public class NormalStrategy implements GameModeStrategy{
 
         MatchData matchData = MatchData.getInstance();
         if(!packetDoAction.getTo().equals(matchData.getPlayerName())){
-            OutputUtilities.displayOthersActions(packetDoAction.getActionType(), packetDoAction.getTo());
+            OutputUtilities.displayOthersActions(packetDoAction.getActionType(), packetDoAction.getTo(), matchData.getPlayersColor().get(packetDoAction.getTo()));
             return;
         }
         lastAction = packetDoAction;

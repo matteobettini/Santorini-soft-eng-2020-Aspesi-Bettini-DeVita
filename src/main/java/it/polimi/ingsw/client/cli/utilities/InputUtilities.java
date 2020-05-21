@@ -325,7 +325,7 @@ public class InputUtilities {
             for(Point position : possibleBuildingsInPositions.keySet()){
                 possibleBuildsBuilder.append("- ").append(getCoordinates(position));
                 for(BuildingType building : possibleBuildingsInPositions.get(position)){
-                    possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(InputUtilities.buildingTypeToChar(building)).append(")");
+                    possibleBuildsBuilder.append(" ").append(building.toString()).append("(").append(InputUtilities.fromBuildingTypeToInt(building)).append(")");
                 }
                 possibleBuildsBuilder.append("\n");
             }
@@ -353,7 +353,7 @@ public class InputUtilities {
             }while(!InputUtilities.BUILDINGS_PATTERN.matcher(point).matches());
 
             chosenPosition = getPoint(point.substring(0, 2));
-            chosenBuilding = InputUtilities.charToBuildingType(point.charAt(3));
+            chosenBuilding = InputUtilities.fromIntToBuildingType(point.charAt(3) - '0');
             possibleBuildings = possibleBuildingsInPositions.get(chosenPosition);
 
             error = possibleBuildings == null || !possibleBuildings.contains(chosenBuilding);
@@ -370,42 +370,43 @@ public class InputUtilities {
     }
 
     /**
-     * This method maps char to the corresponding BuildingType.
-     * @param building is the given char.
-     * @return a BuildingType.
+     * This method map BuildingType to the corresponding number. (ex. DOME -> 4)
+     * @param buildingType is the BuildingType enum to map.
+     * @return an integer associated with the given enum.
      */
-    public static BuildingType charToBuildingType(Character building){
-        switch (building){
-            case '1':
-                return BuildingType.FIRST_FLOOR;
-            case '2':
-                return  BuildingType.SECOND_FLOOR;
-            case '3':
-                return BuildingType.THIRD_FLOOR;
-            case '4':
-                return BuildingType.DOME;
+    public static int fromBuildingTypeToInt(BuildingType buildingType){
+
+        if(buildingType == null) return 0;
+
+        switch (buildingType){
+            case FIRST_FLOOR:
+                return 1;
+            case SECOND_FLOOR:
+                return 2;
+            case THIRD_FLOOR:
+                return 3;
+            case DOME:
+                return 4;
         }
-        assert false;
-        return BuildingType.DOME;
+
+        return 0;
     }
 
     /**
-     * This method maps BuildingType to the corresponding char.
-     * @param building is the given BuildingType.
-     * @return a Character.
+     * This method map an integer to the corresponding BuildingType. (ex. 2 -> SECOND_FLOOR)
+     * @param level is the integer enum to map.
+     * @return a BuildingType enum associated with the given integer.
      */
-    public static Character buildingTypeToChar(BuildingType building){
-        switch (building){
-            case FIRST_FLOOR:
-                return '1';
-            case SECOND_FLOOR:
-                return  '2';
-            case THIRD_FLOOR:
-                return '3';
-            case DOME:
-                return '4';
+    public static BuildingType fromIntToBuildingType(int level){
+
+        switch(level){
+            case 1:
+                return BuildingType.FIRST_FLOOR;
+            case 2:
+                return BuildingType.SECOND_FLOOR;
+            case 3:
+                return BuildingType.THIRD_FLOOR;
         }
-        assert false;
-        return '0';
+        return BuildingType.DOME;
     }
 }

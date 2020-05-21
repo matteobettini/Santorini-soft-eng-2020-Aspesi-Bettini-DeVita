@@ -14,7 +14,7 @@ public class CharStream {
     private final char[][] content;
     private final String[][]colors;
 
-    private static final String ANSI_RESET  = "\u001B[0m";
+    public static final String ANSI_RESET  = "\u001B[0m";
 
     /**
      * This constructor initializes the stream's width and height to the given ones.

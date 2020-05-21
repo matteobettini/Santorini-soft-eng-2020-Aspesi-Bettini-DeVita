@@ -26,7 +26,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
         MatchData matchData = MatchData.getInstance();
 
         if(!activePlayer.equals(matchData.getPlayerName())){
-            OutputUtilities.displayOthersActions(ActionType.SET_WORKERS_POSITION, activePlayer);
+            OutputUtilities.displayOthersActions(ActionType.SET_WORKERS_POSITION, activePlayer, matchData.getPlayersColor().get(activePlayer));
             return;
         }
 
@@ -34,7 +34,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
 
         if(board.getNumberOfWorkers() == 0) OutputUtilities.printMatch();
 
-        if(isRetry) System.out.println("One or more positions have been already occupied, try again.");
+        if(isRetry) System.out.println("\nOne or more positions have been already occupied, try again.");
 
         Map<String, Point> positions = new HashMap<>();
         List<String> workersID = matchData.getIds().get(matchData.getPlayerName());

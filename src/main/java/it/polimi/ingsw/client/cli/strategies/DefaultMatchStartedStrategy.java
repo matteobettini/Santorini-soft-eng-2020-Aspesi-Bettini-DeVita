@@ -1,7 +1,9 @@
 package it.polimi.ingsw.client.cli.strategies;
 
 import it.polimi.ingsw.client.cli.CLI;
+import it.polimi.ingsw.client.cli.colors.ForeColor;
 import it.polimi.ingsw.client.cli.match_data.MatchData;
+import it.polimi.ingsw.client.cli.utilities.CharStream;
 import it.polimi.ingsw.common.packets.PacketMatchStarted;
 
 public class DefaultMatchStartedStrategy implements MatchStartedStrategy {
@@ -22,8 +24,8 @@ public class DefaultMatchStartedStrategy implements MatchStartedStrategy {
             System.out.println("- " + player);
         }
         System.out.print("Selected mode: ");
-        if(packetMatchStarted.isHardcore()) System.out.println("Hardcore");
-        else System.out.println("Normal");
+        if(packetMatchStarted.isHardcore()) System.out.println(ForeColor.ANSI_BRIGHT_RED.getCode() + "Hardcore" + CharStream.ANSI_RESET);
+        else System.out.println(ForeColor.ANSI_BRIGHT_GREEN.getCode() + "Normal"+ CharStream.ANSI_RESET);
         matchData.setHardcore(packetMatchStarted.isHardcore());
         cli.setGameModeStrategy(packetMatchStarted.isHardcore());
     }

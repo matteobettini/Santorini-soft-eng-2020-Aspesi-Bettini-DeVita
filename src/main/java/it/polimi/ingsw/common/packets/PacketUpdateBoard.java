@@ -44,6 +44,31 @@ public class PacketUpdateBoard implements Serializable {
         this.playerWonID = playerWonID;
     }
 
+    public PacketUpdateBoard(String playerID, boolean winner){
+        this.workersPositions = null;
+        this.newBuildings = null;
+        if(winner){
+            this.playerWonID = playerID;
+            this.playerLostID = null;
+        }
+        else{
+            this.playerLostID = playerID;
+            this.playerWonID = null;
+        }
+    }
+
+    public PacketUpdateBoard(Map<String, Point> workersPositions, String playerWonID){
+        this(workersPositions, null, null, playerWonID);
+    }
+
+    public PacketUpdateBoard(Map<String, Point> workersPositions){
+        this(workersPositions, null, null, null);
+    }
+
+    public PacketUpdateBoard(String playerWonID, Map<Point, List<BuildingType>> newBuildings){
+        this(null, newBuildings, null, playerWonID);
+    }
+
     public Map<String, Point> getWorkersPositions() {
         return workersPositions;
     }

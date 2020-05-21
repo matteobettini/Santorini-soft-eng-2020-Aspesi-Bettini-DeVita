@@ -68,20 +68,20 @@ public class CardFactory {
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.MOVE_LENGTH, "1"));
         statements.add(new RuleStatementImpl(StatementType.NIF,"YOU", StatementVerbType.EXISTS_DELTA_MORE, "1"));
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.INTERACTION_NUM, "0"));
-        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED,null);
+        RuleEffectImpl effect = new RuleEffectImpl(EffectType.ALLOW, AllowType.STANDARD, PlayerState.MOVED);
         rules.add(new CardRuleImpl(TriggerType.MOVE,statements,effect));
         //BUILD ALLOW
         statements = new LinkedList<>();
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.STATE_EQUALS, "MOVED"));
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.BUILD_NUM, "1"));
         statements.add(new RuleStatementImpl(StatementType.NIF,"YOU", StatementVerbType.BUILD_DOME_EXCEPT, "THIRD_FLOOR"));
-        effect = new RuleEffectImpl(EffectType.ALLOW,AllowType.STANDARD, PlayerState.BUILT,null);
+        effect = new RuleEffectImpl(EffectType.ALLOW,AllowType.STANDARD, PlayerState.BUILT);
         rules.add(new CardRuleImpl(TriggerType.BUILD,statements,effect));
         //MOVE WIN
         statements = new LinkedList<>();
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.EXISTS_DELTA_MORE, "0"));
         statements.add(new RuleStatementImpl(StatementType.IF,"YOU", StatementVerbType.EXISTS_LEVEL_TYPE, "THIRD_FLOOR"));
-        effect = new RuleEffectImpl(EffectType.WIN,null);
+        effect = new RuleEffectImpl(EffectType.WIN);
         rules.add(new CardRuleImpl(TriggerType.MOVE,statements,effect));
         //Generate card
         CardFile defaultCard = new CardFileImpl("Default Strategy", "None", rules);

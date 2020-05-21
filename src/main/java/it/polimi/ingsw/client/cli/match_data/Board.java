@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.cli.match_data;
 
+import it.polimi.ingsw.client.cli.utilities.InputUtilities;
 import it.polimi.ingsw.common.enums.BuildingType;
 
 import java.awt.*;
@@ -180,7 +181,7 @@ public class Board {
 
         List<BuildingType> possibleBuildingsInCell = new ArrayList<>();
 
-        for(int i = 1; i <= fromBuildingTypeToInt(BuildingType.DOME); ++i) possibleBuildingsInCell.add(fromIntToBuildingType(i));
+        for(int i = InputUtilities.fromBuildingTypeToInt(BuildingType.FIRST_FLOOR); i <= InputUtilities.fromBuildingTypeToInt(BuildingType.DOME); ++i) possibleBuildingsInCell.add(InputUtilities.fromIntToBuildingType(i));
 
         for(Point pos : adjacentPoints){
             List<BuildingType> alreadyInserted = currentBuilds.get(pos) == null ? new ArrayList<>() : currentBuilds.get(pos);
@@ -189,47 +190,6 @@ public class Board {
         }
 
         return possibleBuildings;
-    }
-
-    /**
-     * This method map BuildingType to the corresponding number. (ex. DOME -> 4)
-     * @param buildingType is the BuildingType enum to map.
-     * @return an integer associated with the given enum.
-     */
-    public int fromBuildingTypeToInt(BuildingType buildingType){
-
-        if(buildingType == null) return 0;
-
-        switch (buildingType){
-            case FIRST_FLOOR:
-                return 1;
-            case SECOND_FLOOR:
-                return 2;
-            case THIRD_FLOOR:
-                return 3;
-            case DOME:
-                return 4;
-        }
-
-        return 0;
-    }
-
-    /**
-     * This method map an integer to the corresponding BuildingType. (ex. 2 -> SECOND_FLOOR)
-     * @param level is the integer enum to map.
-     * @return a BuildingType enum associated with the given integer.
-     */
-    public BuildingType fromIntToBuildingType(int level){
-
-        switch(level){
-            case 1:
-                return BuildingType.FIRST_FLOOR;
-            case 2:
-                return BuildingType.SECOND_FLOOR;
-            case 3:
-                return BuildingType.THIRD_FLOOR;
-        }
-        return BuildingType.DOME;
     }
 
 }

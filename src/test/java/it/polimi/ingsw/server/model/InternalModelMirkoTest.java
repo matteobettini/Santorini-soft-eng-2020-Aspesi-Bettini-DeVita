@@ -59,6 +59,70 @@ class InternalModelMirkoTest {
         AndreaW2 = Andrea.getWorkers().get(1);
     }
 
+    /**
+     * Test if Aphrodite correctly forbid possible positions to opponents and make them lose.
+     */
+    @Test
+    void testCompiledCardStrategyAphrodite1(){
+
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                | X  |M1  |    | M2 |    |
+                +----+----+----+----+----+
+            2   | A1 |    |    |    |    |
+                |    | X  |    |    |    |
+                +----+----+----+----+----+
+            3   | F  | F  |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile aphrodite = cardFactory.getCards().stream().filter(c->c.getName().equals("Aphrodite")).findAny().orElse(null);
+        CardFile hephaestus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hephaestus")).findAny().orElse(null);
+
+        Mirko.setCard(aphrodite);
+        Andrea.setCard(hephaestus);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startCell = new Point(0,2);
+        Point forbiddenCell = new Point(0,3);
+        Point aphroditeCell = new Point(1,1);
+
+        board.getCell(startCell).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(startCell);
+        board.getCell(aphroditeCell).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(aphroditeCell);
+        board.getCell(new Point(3,1)).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(new Point(3,1));
+
+        List<Point> points = new LinkedList<>();
+        points.add(forbiddenCell);
+
+        PacketMove packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertFalse(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(Andrea.getState(),PlayerState.TURN_STARTED);
+        assertEquals(AndreaW1.getPosition(), startCell);
+        assertEquals(board.getCell(startCell).getWorkerID(),AndreaW1.getID());
+
+    }
+
 
     /**
      * Test if Hephaestus can correctly build FIRST_FLOOR and SECOND_FLOOR at the same time but on the same spot. (b1)

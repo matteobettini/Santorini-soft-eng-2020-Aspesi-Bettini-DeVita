@@ -112,7 +112,7 @@ public class GraphicalCardsMenu implements CharFigure {
         }
 
         if(availableCards.size() != godCards.size()){
-            printAvailableOrChosen("CHOOSE A CARD", relX, relY, availableCards, BackColor.ANSI_BRIGHT_BG_GREEN, 33);
+            printAvailableOrChosen("CHOOSE A CARD", relX, relY, availableCards, BackColor.ANSI_BRIGHT_BG_GREEN, 40);
             return;
         }
 
