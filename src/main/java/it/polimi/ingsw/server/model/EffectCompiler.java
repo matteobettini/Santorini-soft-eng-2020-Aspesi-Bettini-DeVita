@@ -19,7 +19,7 @@ import java.util.List;
 class EffectCompiler {
 
     /** Compiles the given effect
-     * @param model the internal model is needed to incapsulate it in the lambdas
+     * @param model the internal model is needed to encapsulate it in the lambdas
      * @param effect the effect to compile
      * @return the compiled effect
      */
@@ -49,10 +49,7 @@ class EffectCompiler {
             case DENY:
                 compiledEffect = ((moveData, buildData, simulate) -> {
                     if (!simulate) {
-                        if (moveData == null)
-                            throw new PlayerLostSignal();
-                        else
-                            throw new PlayerLostSignal();
+                        throw new PlayerLostSignal();
                     }
                     return true;
                 });
@@ -60,10 +57,7 @@ class EffectCompiler {
             case WIN:
                 compiledEffect = ((moveData, buildData, simulate) -> {
                     if (!simulate) {
-                        if (moveData == null)
-                            throw new PlayerWonSignal();
-                        else
-                            throw new PlayerWonSignal();
+                        throw new PlayerWonSignal();
                     }
                     return true;
                 });
@@ -137,28 +131,8 @@ class EffectCompiler {
                         return false;
                 }
 
-                long numOfFirstFloorsIWantToUse = allBuildingsIWantToBuild.stream()
-                        .filter((buildingType -> buildingType == BuildingType.FIRST_FLOOR))
-                        .count();
-                long numOfSecondFloorsIWantToUse = allBuildingsIWantToBuild.stream()
-                        .filter((buildingType -> buildingType == BuildingType.SECOND_FLOOR))
-                        .count();
-                long numOfThirdFloorsIWantToUse = allBuildingsIWantToBuild.stream()
-                        .filter((buildingType -> buildingType == BuildingType.THIRD_FLOOR))
-                        .count();
-                long numOfDomesIWantToUse = allBuildingsIWantToBuild.stream()
-                        .filter((buildingType -> buildingType == BuildingType.DOME))
-                        .count();
-
-                if(numOfFirstFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.FIRST_FLOOR))
+                if(!areThereEnoughBuildings(model,allBuildingsIWantToBuild))
                     return false;
-                if(numOfSecondFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.SECOND_FLOOR))
-                    return false;
-                if(numOfThirdFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.THIRD_FLOOR))
-                    return false;
-                if(numOfDomesIWantToUse > model.getBoard().availableBuildings(BuildingType.DOME))
-                    return false;
-
 
                 if(!simulate){
                     buildingPos = builds.keySet().iterator();
@@ -168,19 +142,13 @@ class EffectCompiler {
                         for(BuildingType b : whatIWantToBuildHere)
                             if(!model.getBoard().getCell(whereIWantToBuild).addBuilding(b)) {
                                 System.err.println("L'effetto allow build del worker " + buildData.getWorker().getID() + "nell applicazione dell'effetto ha trovato cose diverse da quelle che ha checkato nell'effetto");
-                                return false;
+                                assert false;
                             }
                     }
 
                     Board board = model.getBoard();
-                    for( int i=0; i < numOfFirstFloorsIWantToUse; i++)
-                        board.useBuilding(BuildingType.FIRST_FLOOR);
-                    for( int i=0; i < numOfSecondFloorsIWantToUse; i++)
-                        board.useBuilding(BuildingType.SECOND_FLOOR);
-                    for( int i=0; i < numOfThirdFloorsIWantToUse; i++)
-                        board.useBuilding(BuildingType.THIRD_FLOOR);
-                    for( int i=0; i < numOfDomesIWantToUse; i++)
-                        board.useBuilding(BuildingType.DOME);
+                    for(BuildingType b : allBuildingsIWantToBuild)
+                        board.useBuilding(b);
 
                     // Set next player state
                     buildData.getPlayer().setPlayerState(nextPlayerState);
@@ -328,7 +296,7 @@ class EffectCompiler {
     private static LambdaEffect compileAllowBuildUnderEffect(InternalModel model, RuleEffect effect){
         PlayerState nextPlayerState = effect.getNextState();
 
-        return ((moveData, buildData, simulate) -> {
+        return (moveData, buildData, simulate) -> {
             assert moveData == null;
 
             Map<Point, List<BuildingType>> builds = buildData.getData();
@@ -336,91 +304,59 @@ class EffectCompiler {
             List<BuildingType> allBuildingsIWantToBuild = new ArrayList<>();
             Worker workerOnBuild = buildData.getWorker();
 
-            //THE WORKER ON BUILD IS REMOVES SINCE IT CAN BUILD UNDER ITSELF
 
-            model.getBoard().getCell(workerOnBuild.getPosition()).removeWorker();
-
-            // CHeck i can build the chosen buildings in the chosen cells
             while(buildingPos.hasNext()){
                 Point whereIWantToBuild = buildingPos.next();
+                Cell cellWhereIWantToBuild = model.getBoard().getCell(whereIWantToBuild);
                 List<BuildingType> whatIWantToBuildHere = builds.get(whereIWantToBuild);
-                //THE WORKER CAN'T BUILD A DOME UNDER ITSELF
-                if(whatIWantToBuildHere.contains(BuildingType.DOME) && whereIWantToBuild.equals(workerOnBuild.getPosition())){
-                    model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+                boolean isMyPos = whereIWantToBuild.equals(workerOnBuild.getPosition());
+
+                // I CHECK THE POSSIBILITY OF BUILDING USING THE EXCLUDE WORKER FLAG
+                if(!cellWhereIWantToBuild.canBuild(whatIWantToBuildHere, isMyPos))
                     return false;
-                }
+
+                // WHEN I'M TRYING TO BUILD UNDER MYSELF THE WORKER CAN'T BUILD A DOME
+                if(isMyPos && whatIWantToBuildHere.contains(BuildingType.DOME))
+                    return false;
+
                 allBuildingsIWantToBuild.addAll(whatIWantToBuildHere);
-                if(!model.getBoard().getCell(whereIWantToBuild).canBuild(whatIWantToBuildHere)){
-                    model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
-                    return false;
-                }
             }
 
-            long numOfFirstFloorsIWantToUse = allBuildingsIWantToBuild.stream()
-                    .filter((buildingType -> buildingType == BuildingType.FIRST_FLOOR))
-                    .count();
-            long numOfSecondFloorsIWantToUse = allBuildingsIWantToBuild.stream()
-                    .filter((buildingType -> buildingType == BuildingType.SECOND_FLOOR))
-                    .count();
-            long numOfThirdFloorsIWantToUse = allBuildingsIWantToBuild.stream()
-                    .filter((buildingType -> buildingType == BuildingType.THIRD_FLOOR))
-                    .count();
-            long numOfDomesIWantToUse = allBuildingsIWantToBuild.stream()
-                    .filter((buildingType -> buildingType == BuildingType.DOME))
-                    .count();
-
-            if(numOfFirstFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.FIRST_FLOOR)){
-                model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+            if(!areThereEnoughBuildings(model,allBuildingsIWantToBuild))
                 return false;
-            }
-            if(numOfSecondFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.SECOND_FLOOR)){
-                model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
-                return false;
-            }
-            if(numOfThirdFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.THIRD_FLOOR)){
-                model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
-                return false;
-            }
-            if(numOfDomesIWantToUse > model.getBoard().availableBuildings(BuildingType.DOME)){
-                model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
-                return false;
-            }
-
 
             if(!simulate){
+
                 buildingPos = builds.keySet().iterator();
                 while(buildingPos.hasNext()){
                     Point whereIWantToBuild = buildingPos.next();
+                    Cell cellWhereIWantToBuild = model.getBoard().getCell(whereIWantToBuild);
                     List<BuildingType> whatIWantToBuildHere = builds.get(whereIWantToBuild);
-                    for(BuildingType b : whatIWantToBuildHere)
-                        if(!model.getBoard().getCell(whereIWantToBuild).addBuilding(b)) {
+                    boolean isMyPos = whereIWantToBuild.equals(workerOnBuild.getPosition());
+                    if(isMyPos)
+                        cellWhereIWantToBuild.removeWorker();
+                    for(BuildingType b : whatIWantToBuildHere){
+                        if(!cellWhereIWantToBuild.addBuilding(b)){
                             System.err.println("The allow build under effect of worker " + buildData.getWorker().getID() + " encountered different things compared to the checked ones");
                             model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
-                            return false;
+                            assert  false;
                         }
+                    }
+                    if(isMyPos)
+                        cellWhereIWantToBuild.setWorker(workerOnBuild.getID());
                 }
 
                 Board board = model.getBoard();
-                for( int i=0; i < numOfFirstFloorsIWantToUse; i++)
-                    board.useBuilding(BuildingType.FIRST_FLOOR);
-                for( int i=0; i < numOfSecondFloorsIWantToUse; i++)
-                    board.useBuilding(BuildingType.SECOND_FLOOR);
-                for( int i=0; i < numOfThirdFloorsIWantToUse; i++)
-                    board.useBuilding(BuildingType.THIRD_FLOOR);
-                for( int i=0; i < numOfDomesIWantToUse; i++)
-                    board.useBuilding(BuildingType.DOME);
+                for(BuildingType b : allBuildingsIWantToBuild)
+                    board.useBuilding(b);
 
                 // Set next player state
                 buildData.getPlayer().setPlayerState(nextPlayerState);
             }
 
-            //THE WORKER ON BUILD IS PLACED IN ITS INITIAL POSITION
-
-            model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
-
             return true;
 
-        });
+        };
 
     }
 
@@ -428,6 +364,31 @@ class EffectCompiler {
         List<Integer> deltas = board.getMoveDeltas(moveData.getData(),startPosition);
         if (deltas.stream().max(Integer::compareTo).orElse(0) > 0) //If the player moved up at least once
             moveData.getPlayer().addFlag(PlayerFlag.MOVED_UP_ONCE);
+    }
+
+    // INTELLIJ WANTS TO INVERT IT BUT IT'S BETTER THIS WAY :)
+    private static boolean areThereEnoughBuildings(InternalModel model, List<BuildingType> allBuildingsIWantToBuild){
+
+        long numOfFirstFloorsIWantToUse = allBuildingsIWantToBuild.stream()
+                .filter((buildingType -> buildingType == BuildingType.FIRST_FLOOR))
+                .count();
+        long numOfSecondFloorsIWantToUse = allBuildingsIWantToBuild.stream()
+                .filter((buildingType -> buildingType == BuildingType.SECOND_FLOOR))
+                .count();
+        long numOfThirdFloorsIWantToUse = allBuildingsIWantToBuild.stream()
+                .filter((buildingType -> buildingType == BuildingType.THIRD_FLOOR))
+                .count();
+        long numOfDomesIWantToUse = allBuildingsIWantToBuild.stream()
+                .filter((buildingType -> buildingType == BuildingType.DOME))
+                .count();
+
+        if(numOfFirstFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.FIRST_FLOOR))
+            return false;
+        if(numOfSecondFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.SECOND_FLOOR))
+            return false;
+        if(numOfThirdFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.THIRD_FLOOR))
+            return false;
+        return numOfDomesIWantToUse <= model.getBoard().availableBuildings(BuildingType.DOME);
     }
 
 }
