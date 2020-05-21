@@ -36,6 +36,9 @@ class EffectValidator {
             case SET_OPPONENT:
                 setOpponentPositionValidate(effect);
                 break;
+            case BUILD_UNDER:
+                buildUnderValidate(effect);
+                break;
             default:
                 assert false;
         }
@@ -58,6 +61,12 @@ class EffectValidator {
                 break;
             default:
                 throw new InvalidRuleEffectException("[ALLOW][SET_OPPONENT] Data '" + effect_data + "' is not supported");
+        }
+    }
+
+    private static void buildUnderValidate(RuleEffect effect) throws InvalidRuleEffectException {
+        if (effect.getData() != null){
+            throw new InvalidRuleEffectException("[ALLOW][BUILD_UNDER] Effect data not supported");
         }
     }
 

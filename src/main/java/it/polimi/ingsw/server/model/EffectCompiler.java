@@ -39,6 +39,9 @@ class EffectCompiler {
                     case SET_OPPONENT:
                         compiledEffect = compileAllowSetOpponentEffect(model, effect);
                         break;
+                    case BUILD_UNDER:
+                        compiledEffect = compileAllowBuildUnderEffect(model, effect);
+                        break;
                     default:
                         assert false;
                 }
@@ -74,7 +77,7 @@ class EffectCompiler {
 
         PlayerState nextPlayerState = effect.getNextState();
 
-        LambdaEffect lambdaEffect = (moveData, buildData, simulate) -> {
+        return (moveData, buildData, simulate) -> {
 
             if(buildData == null) {
 
@@ -188,7 +191,7 @@ class EffectCompiler {
             }
             return false;
         };
-        return  lambdaEffect;
+
     }
 
     private static LambdaEffect compileAllowSetOpponentEffect(InternalModel model, RuleEffect effect) {
@@ -320,6 +323,105 @@ class EffectCompiler {
             });
         }
         return lambdaEffect;
+    }
+
+    private static LambdaEffect compileAllowBuildUnderEffect(InternalModel model, RuleEffect effect){
+        PlayerState nextPlayerState = effect.getNextState();
+
+        return ((moveData, buildData, simulate) -> {
+            assert moveData == null;
+
+            Map<Point, List<BuildingType>> builds = buildData.getData();
+            Iterator<Point> buildingPos = builds.keySet().iterator();
+            List<BuildingType> allBuildingsIWantToBuild = new ArrayList<>();
+            Worker workerOnBuild = buildData.getWorker();
+
+            //THE WORKER ON BUILD IS REMOVES SINCE IT CAN BUILD UNDER ITSELF
+
+            model.getBoard().getCell(workerOnBuild.getPosition()).removeWorker();
+
+            // CHeck i can build the chosen buildings in the chosen cells
+            while(buildingPos.hasNext()){
+                Point whereIWantToBuild = buildingPos.next();
+                List<BuildingType> whatIWantToBuildHere = builds.get(whereIWantToBuild);
+                //THE WORKER CAN'T BUILD A DOME UNDER ITSELF
+                if(whatIWantToBuildHere.contains(BuildingType.DOME) && whereIWantToBuild.equals(workerOnBuild.getPosition())){
+                    model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+                    return false;
+                }
+                allBuildingsIWantToBuild.addAll(whatIWantToBuildHere);
+                if(!model.getBoard().getCell(whereIWantToBuild).canBuild(whatIWantToBuildHere)){
+                    model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+                    return false;
+                }
+            }
+
+            long numOfFirstFloorsIWantToUse = allBuildingsIWantToBuild.stream()
+                    .filter((buildingType -> buildingType == BuildingType.FIRST_FLOOR))
+                    .count();
+            long numOfSecondFloorsIWantToUse = allBuildingsIWantToBuild.stream()
+                    .filter((buildingType -> buildingType == BuildingType.SECOND_FLOOR))
+                    .count();
+            long numOfThirdFloorsIWantToUse = allBuildingsIWantToBuild.stream()
+                    .filter((buildingType -> buildingType == BuildingType.THIRD_FLOOR))
+                    .count();
+            long numOfDomesIWantToUse = allBuildingsIWantToBuild.stream()
+                    .filter((buildingType -> buildingType == BuildingType.DOME))
+                    .count();
+
+            if(numOfFirstFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.FIRST_FLOOR)){
+                model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+                return false;
+            }
+            if(numOfSecondFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.SECOND_FLOOR)){
+                model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+                return false;
+            }
+            if(numOfThirdFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.THIRD_FLOOR)){
+                model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+                return false;
+            }
+            if(numOfDomesIWantToUse > model.getBoard().availableBuildings(BuildingType.DOME)){
+                model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+                return false;
+            }
+
+
+            if(!simulate){
+                buildingPos = builds.keySet().iterator();
+                while(buildingPos.hasNext()){
+                    Point whereIWantToBuild = buildingPos.next();
+                    List<BuildingType> whatIWantToBuildHere = builds.get(whereIWantToBuild);
+                    for(BuildingType b : whatIWantToBuildHere)
+                        if(!model.getBoard().getCell(whereIWantToBuild).addBuilding(b)) {
+                            System.err.println("The allow build under effect of worker " + buildData.getWorker().getID() + " encountered different things compared to the checked ones");
+                            model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+                            return false;
+                        }
+                }
+
+                Board board = model.getBoard();
+                for( int i=0; i < numOfFirstFloorsIWantToUse; i++)
+                    board.useBuilding(BuildingType.FIRST_FLOOR);
+                for( int i=0; i < numOfSecondFloorsIWantToUse; i++)
+                    board.useBuilding(BuildingType.SECOND_FLOOR);
+                for( int i=0; i < numOfThirdFloorsIWantToUse; i++)
+                    board.useBuilding(BuildingType.THIRD_FLOOR);
+                for( int i=0; i < numOfDomesIWantToUse; i++)
+                    board.useBuilding(BuildingType.DOME);
+
+                // Set next player state
+                buildData.getPlayer().setPlayerState(nextPlayerState);
+            }
+
+            //THE WORKER ON BUILD IS PLACED IN ITS INITIAL POSITION
+
+            model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());
+
+            return true;
+
+        });
+
     }
 
     private static void setPlayerFlags(Board board, MoveData moveData, Point startPosition){

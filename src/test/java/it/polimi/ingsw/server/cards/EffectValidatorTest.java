@@ -53,6 +53,50 @@ class EffectValidatorTest {
     }
 
     /**
+     * Test BUILD_UNDER with null data
+     */
+    @Test
+    void testBuildUnderWithNullData(){
+        RuleEffect buildUnderOK = new RuleEffectImpl(EffectType.ALLOW, AllowType.BUILD_UNDER,null, null);
+        try{
+            EffectValidator.checkRuleEffect(buildUnderOK);
+            assert true;
+        } catch (InvalidRuleEffectException e) {
+            assert false;
+        }
+        buildUnderOK = new RuleEffectImpl(EffectType.ALLOW, AllowType.BUILD_UNDER, PlayerState.TURN_STARTED, null);
+        try{
+            EffectValidator.checkRuleEffect(buildUnderOK);
+            assert true;
+        } catch (InvalidRuleEffectException e) {
+            assert false;
+        }
+    }
+
+    /**
+     * Test BUILD_UNDER with not null data
+     */
+    @Test
+    void testBuildUnderWithNotNullData(){
+        String data = "SWAP";
+
+        RuleEffect buildUnderWrong = new RuleEffectImpl(EffectType.ALLOW, AllowType.BUILD_UNDER,null, data);
+        try{
+            EffectValidator.checkRuleEffect(buildUnderWrong);
+            assert false;
+        } catch (InvalidRuleEffectException e) {
+            assert true;
+        }
+        buildUnderWrong = new RuleEffectImpl(EffectType.ALLOW, AllowType.BUILD_UNDER, PlayerState.TURN_STARTED, data);
+        try{
+            EffectValidator.checkRuleEffect(buildUnderWrong);
+            assert false;
+        } catch (InvalidRuleEffectException e) {
+            assert true;
+        }
+    }
+
+    /**
      * Test DENY with null data or allow subtype
      */
     @Test

@@ -833,4 +833,115 @@ class EffectCompilerTest {
 
     }
 
+    /*
+        Test a successful build under with a first floor and a second floor
+     */
+    @Test
+    void buildUnderEffect_Test1() throws PlayerWonSignal, PlayerLostSignal {
+      /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   | A1 | FF | SF |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+*/
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.BUILD_UNDER, PlayerState.BUILT, null);
+
+        LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
+
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        Point point1 = new Point(0,0);
+        buildOrder.add(point1);
+        buildOrder.add(point1);
+        List<BuildingType> buildsInPoint = new ArrayList<>();
+        buildsInPoint.add(BuildingType.FIRST_FLOOR);
+        buildsInPoint.add(BuildingType.SECOND_FLOOR);
+        builds.put(point1, buildsInPoint);
+
+
+        BuildData buildData = new BuildData(Andrea, AndreaW1, builds, buildOrder);
+
+        assertTrue(lambdaEffect.apply(null,buildData,true));
+        assertEquals(model.getBoard().getCell(point1).getTopBuilding(), LevelType.GROUND);
+        assertEquals(model.getBoard().getCell(point1).getWorkerID(), AndreaW1.getID());
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        assertTrue(lambdaEffect.apply(null,buildData,false));
+        assertEquals(model.getBoard().getCell(point1).getTopBuilding(), LevelType.SECOND_FLOOR);
+        assertTrue(model.getBoard().getCell(point1).hasWorker());
+        assertEquals(Andrea.getState(), PlayerState.BUILT);
+
+        assertEquals(model.getBoard().availableBuildings(BuildingType.FIRST_FLOOR), Board.NUM_OF_FIRST_FLOOR-1);
+        assertEquals(model.getBoard().availableBuildings(BuildingType.SECOND_FLOOR), Board.NUM_OF_SECOND_FLOOR-1);
+
+    }
+
+    /*
+       Test an unsuccessful build under with a first floor,second floor, third floor and a dome
+    */
+    @Test
+    void buildUnderEffect_Test2() throws PlayerWonSignal, PlayerLostSignal {
+      /*
+          0    1     2    3    4
+        +----+----+----+----+----+
+    0   |A1  | FF | SF |    |    |
+        +----+----+----+----+----+
+    1   |    |    |    |    |    |
+        +----+----+----+----+----+
+    2   |    | B1 | A2 | B2 |    |
+        +----+----+----+----+----+
+    3   |    |    |    | D2 |    |
+        +----+----+----+----+----+
+    4   |    |    | D1 |    |    |
+        +----+----+----+----+----+
+
+
+*/
+
+        RuleEffect ruleEffect = RuleEffectImplTest.getRuleEffect(EffectType.ALLOW, AllowType.BUILD_UNDER, PlayerState.BUILT, null);
+
+        LambdaEffect lambdaEffect = EffectCompiler.compileEffect(model, ruleEffect);
+
+        Map<Point,List<BuildingType>> builds = new HashMap<>();
+        List<Point> buildOrder = new LinkedList<>();
+
+        Point point1 = new Point(0,0);
+        buildOrder.add(point1);
+        buildOrder.add(point1);
+        List<BuildingType> buildsInPoint = new ArrayList<>();
+        buildsInPoint.add(BuildingType.FIRST_FLOOR);
+        buildsInPoint.add(BuildingType.SECOND_FLOOR);
+        buildsInPoint.add(BuildingType.THIRD_FLOOR);
+        buildsInPoint.add(BuildingType.DOME);
+        builds.put(point1, buildsInPoint);
+
+
+        BuildData buildData = new BuildData(Andrea, AndreaW1, builds, buildOrder);
+
+        assertFalse(lambdaEffect.apply(null,buildData,true));
+        assertEquals(model.getBoard().getCell(point1).getTopBuilding(), LevelType.GROUND);
+        assertEquals(model.getBoard().getCell(point1).getWorkerID(), AndreaW1.getID());
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        assertFalse(lambdaEffect.apply(null,buildData,false));
+        assertEquals(model.getBoard().getCell(point1).getTopBuilding(), LevelType.GROUND);
+        assertEquals(model.getBoard().getCell(point1).getWorkerID(), AndreaW1.getID());
+        assertEquals(Andrea.getState(), PlayerState.TURN_STARTED);
+
+        assertEquals(model.getBoard().availableBuildings(BuildingType.FIRST_FLOOR), Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(model.getBoard().availableBuildings(BuildingType.SECOND_FLOOR), Board.NUM_OF_SECOND_FLOOR);
+        assertEquals(model.getBoard().availableBuildings(BuildingType.THIRD_FLOOR), Board.NUM_OF_THIRD_FLOOR);
+        assertEquals(model.getBoard().availableBuildings(BuildingType.DOME), Board.NUM_OF_DOME);
+
+    }
+
 }
