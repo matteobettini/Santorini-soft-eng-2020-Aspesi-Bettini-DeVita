@@ -131,7 +131,7 @@ class EffectCompiler {
                         return false;
                 }
 
-                if(!areThereEnoughBuildings(model,allBuildingsIWantToBuild))
+                if(notEnoughBuildings(model, allBuildingsIWantToBuild))
                     return false;
 
                 if(!simulate){
@@ -322,7 +322,7 @@ class EffectCompiler {
                 allBuildingsIWantToBuild.addAll(whatIWantToBuildHere);
             }
 
-            if(!areThereEnoughBuildings(model,allBuildingsIWantToBuild))
+            if(notEnoughBuildings(model, allBuildingsIWantToBuild))
                 return false;
 
             if(!simulate){
@@ -366,8 +366,7 @@ class EffectCompiler {
             moveData.getPlayer().addFlag(PlayerFlag.MOVED_UP_ONCE);
     }
 
-    // INTELLIJ WANTS TO INVERT IT BUT IT'S BETTER THIS WAY :)
-    private static boolean areThereEnoughBuildings(InternalModel model, List<BuildingType> allBuildingsIWantToBuild){
+    private static boolean notEnoughBuildings(InternalModel model, List<BuildingType> allBuildingsIWantToBuild){
 
         long numOfFirstFloorsIWantToUse = allBuildingsIWantToBuild.stream()
                 .filter((buildingType -> buildingType == BuildingType.FIRST_FLOOR))
@@ -383,12 +382,12 @@ class EffectCompiler {
                 .count();
 
         if(numOfFirstFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.FIRST_FLOOR))
-            return false;
+            return true;
         if(numOfSecondFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.SECOND_FLOOR))
-            return false;
+            return true;
         if(numOfThirdFloorsIWantToUse > model.getBoard().availableBuildings(BuildingType.THIRD_FLOOR))
-            return false;
-        return numOfDomesIWantToUse <= model.getBoard().availableBuildings(BuildingType.DOME);
+            return true;
+        return numOfDomesIWantToUse > model.getBoard().availableBuildings(BuildingType.DOME);
     }
 
 }
