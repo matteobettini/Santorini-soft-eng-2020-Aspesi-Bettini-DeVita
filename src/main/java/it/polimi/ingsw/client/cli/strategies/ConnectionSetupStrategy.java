@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.cli.strategies;
 import it.polimi.ingsw.client.cli.CLI;
 import it.polimi.ingsw.client.cli.colors.ForeColor;
 import it.polimi.ingsw.client.cli.utilities.CharStream;
+import it.polimi.ingsw.client.cli.utilities.OutputUtilities;
 import it.polimi.ingsw.client.communication.enums.ConnectionState;
 import it.polimi.ingsw.client.communication.ConnectionStatus;
 
@@ -25,7 +26,7 @@ public class ConnectionSetupStrategy implements ConnectionStrategy {
         assert connectionState != ConnectionState.MATCH_ENDED && connectionState !=  ConnectionState.CLOSURE_UNEXPECTED;
 
         if(connectionState == ConnectionState.CONNECTED){
-            System.out.println(ForeColor.ANSI_BRIGHT_GREEN.getCode() + "\nConnection established!" + CharStream.ANSI_RESET);
+            System.out.println(ForeColor.ANSI_BRIGHT_GREEN.getCode() + "\nConnection established!" + OutputUtilities.ANSI_RESET);
             cli.setConnectionInGameStrategy();
         }
         else{

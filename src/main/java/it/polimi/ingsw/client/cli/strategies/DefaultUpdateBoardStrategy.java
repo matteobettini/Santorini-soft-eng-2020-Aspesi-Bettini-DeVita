@@ -2,7 +2,6 @@ package it.polimi.ingsw.client.cli.strategies;
 
 import it.polimi.ingsw.client.cli.match_data.Board;
 import it.polimi.ingsw.client.cli.match_data.MatchData;
-import it.polimi.ingsw.client.cli.utilities.CharStream;
 import it.polimi.ingsw.client.cli.utilities.OutputUtilities;
 import it.polimi.ingsw.common.enums.BuildingType;
 import it.polimi.ingsw.common.packets.PacketUpdateBoard;
@@ -84,10 +83,10 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
         if(playersStillInGame != 1 || winner != null) OutputUtilities.printMatch(youWin, gameOver);
 
         if(matchData.getPlayerName().equals(loser)) System.out.println("You have lost!");
-        else if(loser != null) System.out.println("\n"+ OutputUtilities.fromColorToBackColor(matchData.getPlayersColor().get(loser)).getCode() +loser + " has lost!" + CharStream.ANSI_RESET);
+        else if(loser != null) System.out.println("\n"+ OutputUtilities.fromColorToBackColor(matchData.getPlayersColor().get(loser)).getCode() +loser + " has lost!" + OutputUtilities.ANSI_RESET);
 
         if(matchData.getPlayerName().equals(winner)) System.out.println("You have won!");
-        else if(winner != null)System.out.println("\n"+ OutputUtilities.fromColorToBackColor(matchData.getPlayersColor().get(winner)).getCode() + winner + " has won!" + CharStream.ANSI_RESET);
+        else if(winner != null)System.out.println("\n"+ OutputUtilities.fromColorToBackColor(matchData.getPlayersColor().get(winner)).getCode() + winner + " has won!" + OutputUtilities.ANSI_RESET);
     }
 
 }

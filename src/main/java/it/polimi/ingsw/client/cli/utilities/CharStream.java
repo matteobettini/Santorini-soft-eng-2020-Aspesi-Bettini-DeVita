@@ -14,8 +14,6 @@ public class CharStream {
     private final char[][] content;
     private final String[][]colors;
 
-    public static final String ANSI_RESET  = "\u001B[0m";
-
     /**
      * This constructor initializes the stream's width and height to the given ones.
      * The content is saved in a height * width char matrix and the colors in a height * width String matrix.
@@ -251,23 +249,24 @@ public class CharStream {
      * This method prints the content ot the stream and its colors.
      */
     public void print(PrintStream stream){
+        stream.println();
         for(int row = 0;row < height; row++){
             String color = null;
             for(int col = 0;col < width; col++){
                 if (colors[row][col] != null){
                     if (!colors[row][col].equals(color)){
                         color = colors[row][col];
-                        stream.print(ANSI_RESET);
+                        stream.print(OutputUtilities.ANSI_RESET);
                         stream.print(color);
                     }
                 }else{
                     color = null;
-                    stream.print(ANSI_RESET);
+                    stream.print(OutputUtilities.ANSI_RESET);
                 }
                 if(content[row][col] != '\0') stream.print(content[row][col]);
                 else stream.print(" ");
             }
-            stream.print(ANSI_RESET);
+            stream.print(OutputUtilities.ANSI_RESET);
             stream.println();
         }
         stream.println();
