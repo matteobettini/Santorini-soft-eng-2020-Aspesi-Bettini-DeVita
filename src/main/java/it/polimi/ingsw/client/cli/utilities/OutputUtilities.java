@@ -35,7 +35,7 @@ public class OutputUtilities {
                 action = "move or build";
                 break;
             case SET_WORKERS_POSITION:
-                System.out.println("\n" + fromColorToForeColor(playerColor).getCode() + activePlayer + " is setting his workers' positions..." + CharStream.ANSI_RESET);
+                System.out.println("\n" + fromColorToBackColor(playerColor).getCode() + activePlayer + " is setting his workers' positions..." + CharStream.ANSI_RESET);
                 return;
             case CHOOSE_START_PLAYER:
                 System.out.println("\n" + activePlayer + " is choosing the starting player...");
@@ -43,7 +43,7 @@ public class OutputUtilities {
             default:
                 action = "action";
         }
-        System.out.println("\n" + fromColorToForeColor(playerColor).getCode() + activePlayer + " is performing his " + action + "..." + CharStream.ANSI_RESET);
+        System.out.println("\n" + fromColorToBackColor(playerColor).getCode() + activePlayer + " is performing his " + action + "..." + CharStream.ANSI_RESET);
     }
 
     public static void displayOthersActions(ActionType actionType, String activePlayer){
@@ -52,29 +52,17 @@ public class OutputUtilities {
 
     public static ForeColor fromColorToForeColor(Color color){
         if(color == null) return ForeColor.ANSI_WHITE;
-        if(color.equals(Color.CYAN)){
-            return ForeColor.ANSI_BRIGHT_CYAN;
-        }
-        else if(color.equals(Color.WHITE)){
-            return ForeColor.ANSI_PURPLE;
-        }
-        else if(color.equals(Color.ORANGE)){
-            return ForeColor.ANSI_YELLOW;
-        }
+        if(color.equals(Color.CYAN)) return ForeColor.ANSI_BRIGHT_CYAN;
+        else if(color.equals(Color.WHITE)) return ForeColor.ANSI_PURPLE;
+        else if(color.equals(Color.ORANGE))return ForeColor.ANSI_YELLOW;
         else return ForeColor.ANSI_WHITE;
     }
 
     public static BackColor fromColorToBackColor(Color color){
         if(color == null) return BackColor.ANSI_BG_WHITE;
-        if(color.equals(Color.CYAN)){
-            return BackColor.ANSI_BRIGHT_BG_CYAN;
-        }
-        else if(color.equals(Color.WHITE)){
-            return BackColor.ANSI_BG_PURPLE;
-        }
-        else if(color.equals(Color.ORANGE)){
-            return BackColor.ANSI_BG_YELLOW;
-        }
+        if(color.equals(Color.CYAN)) return BackColor.ANSI_BRIGHT_BG_CYAN;
+        else if(color.equals(Color.WHITE)) return BackColor.ANSI_BG_PURPLE;
+        else if(color.equals(Color.ORANGE)) return BackColor.ANSI_BG_YELLOW;
         else return BackColor.ANSI_BG_WHITE;
     }
 

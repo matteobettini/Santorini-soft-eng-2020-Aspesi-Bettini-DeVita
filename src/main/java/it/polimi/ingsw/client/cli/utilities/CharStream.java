@@ -109,13 +109,12 @@ public class CharStream {
      * @param foreColor is the color of the content.
      * @param backColor is the color of the background.
      */
-    public boolean addString(int x, int y, String str, ForeColor foreColor, BackColor backColor){
-        if (x < 0 || x + str.length() >= width || y < 0 || y  >= height) return false;
+    public void addString(int x, int y, String str, ForeColor foreColor, BackColor backColor){
+        if (x < 0 || x + str.length() >= width || y < 0 || y  >= height) return;
         for(int x1 = 0 ; x1 <str.length(); x1++){
             content[y][x + x1] = str.charAt(x1);
             addColor(x + x1, y, foreColor, backColor);
         }
-        return true;
     }
 
     /**
@@ -125,8 +124,8 @@ public class CharStream {
      * @param str is the String to add.
      * @param foreColor is the color of the content.
      */
-    public boolean addString(int x, int y, String str, ForeColor foreColor){
-        return addString(x, y, str, foreColor, null);
+    public void addString(int x, int y, String str, ForeColor foreColor){
+        addString(x, y, str, foreColor, null);
     }
 
     /**
@@ -136,8 +135,8 @@ public class CharStream {
      * @param str is the String to add.
      * @param backColor is the color of the background.
      */
-    public boolean addString(int x, int y, String str, BackColor backColor){
-        return addString(x, y, str, null, backColor);
+    public void addString(int x, int y, String str, BackColor backColor){
+      addString(x, y, str, null, backColor);
     }
 
     /**
@@ -146,8 +145,8 @@ public class CharStream {
      * @param y is the coordinate Y.
      * @param str is the String to add.
      */
-    public boolean addString(int x, int y, String str){
-        return addString(x,y,str,null,null);
+    public void addString(int x, int y, String str){
+        addString(x,y,str,null,null);
     }
 
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GraphicalCardsMenu implements CharFigure {
 
@@ -77,7 +78,7 @@ public class GraphicalCardsMenu implements CharFigure {
      * @param availableCards is a list containing the available cards' names.
      */
     public void setAvailableCards(List<String> availableCards) {
-        this.availableCards = availableCards;
+        this.availableCards = availableCards.stream().sorted().collect(Collectors.toList());
     }
 
     /**
@@ -85,7 +86,7 @@ public class GraphicalCardsMenu implements CharFigure {
      * @param chosenCards  is a list containing the chosen cards' names.
      */
     public void setChosenCards(List<String> chosenCards) {
-        this.chosenCards = chosenCards;
+        this.chosenCards = chosenCards.stream().sorted().collect(Collectors.toList());
     }
 
     /**
@@ -130,7 +131,7 @@ public class GraphicalCardsMenu implements CharFigure {
         stream.setMessage("GOD CARDS", relX + marginForHeading + 5, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW);
         int countY = 0;
         int countX = 0;
-        for (String godCard : godCards.keySet()) {
+        for (String godCard : availableCards) {
             GraphicalCard graphicalCard = new GraphicalCard(stream, godCard, godCards.get(godCard));
             graphicalCard.draw(relX + GraphicalCard.getWidth() * countY + cardsPerRow * (countY + 1), relY + marginForTitle + GraphicalCard.getHeight() * countX + 2 * (countX + 1));
             countY++;
