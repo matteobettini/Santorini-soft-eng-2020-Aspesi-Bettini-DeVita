@@ -60,7 +60,7 @@ class InternalModelMirkoTest {
     }
 
     /**
-     * Test if Aphrodite correctly forbid possible positions to opponents and make them lose.
+     * Test if Aphrodite correctly forbids possible positions to opponents and makes them lose.
      */
     @Test
     void testCompiledCardStrategyAphrodite1(){
@@ -123,6 +123,880 @@ class InternalModelMirkoTest {
 
     }
 
+    /**
+     * Test if Hypnus correctly forbids possible positions to the highest opponents' worker and makes him lose.
+     */
+    @Test
+    void testCompiledCardStrategyHypnus1(){
+
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |M1FF|    | M2 |    |
+                +----+----+----+----+----+
+            2   | A1 | x1 |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    | x2 |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile artemis = cardFactory.getCards().stream().filter(c->c.getName().equals("Artemis")).findAny().orElse(null);
+        CardFile hypnus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hypnus")).findAny().orElse(null);
+
+        Mirko.setCard(artemis);
+        Andrea.setCard(hypnus);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startCell = new Point(1,1);
+        Point firstMoveCell = new Point(1,2);
+        Point secondMoveCell = new Point(1,3);
+        Point hypnusCell = new Point(0,2);
+
+        board.getCell(hypnusCell).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(hypnusCell);
+
+        board.getCell(startCell).addBuilding(BuildingType.FIRST_FLOOR);
+        board.getCell(startCell).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(startCell);
+
+        board.getCell(new Point(3,1)).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(new Point(3,1));
+
+        List<Point> points = new LinkedList<>();
+        points.add(firstMoveCell);
+        points.add(secondMoveCell);
+
+        PacketMove packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertFalse(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert true;
+        }
+
+        assertEquals(Mirko.getState(),PlayerState.TURN_STARTED);
+        assertEquals(MirkoW1.getPosition(), startCell);
+        assertEquals(board.getCell(startCell).getWorkerID(),MirkoW1.getID());
+
+    }
+
+    /**
+     * Test if Hypnus correctly doesnt' forbid possible positions to the opponents' worker.
+     */
+    @Test
+    void testCompiledCardStrategyHypnus2(){
+
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    | M1 |    | M2 |    |
+                +----+----+----+----+----+
+            2   | A1 | x1 |    |    |    |
+                |    | FF |    |    |    |
+                +----+----+----+----+----+
+            3   |    | x2 |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile artemis = cardFactory.getCards().stream().filter(c->c.getName().equals("Artemis")).findAny().orElse(null);
+        CardFile hypnus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hypnus")).findAny().orElse(null);
+
+        Mirko.setCard(artemis);
+        Andrea.setCard(hypnus);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startCell = new Point(1,1);
+        Point firstMoveCell = new Point(1,2);
+        Point secondMoveCell = new Point(1,3);
+        Point hypnusCell = new Point(0,2);
+
+        board.getCell(hypnusCell).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(hypnusCell);
+
+        board.getCell(startCell).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(startCell);
+
+        board.getCell(new Point(3,1)).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(new Point(3,1));
+
+        board.getCell(firstMoveCell).addBuilding(BuildingType.FIRST_FLOOR);
+
+        List<Point> points = new LinkedList<>();
+        points.add(firstMoveCell);
+        points.add(secondMoveCell);
+
+        PacketMove packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Mirko.getState(),PlayerState.MOVED);
+        assertEquals(MirkoW1.getPosition(), secondMoveCell);
+        assertEquals(board.getCell(secondMoveCell).getWorkerID(),MirkoW1.getID());
+
+    }
+
+    /**
+     * Hestia tries to build an additional block on the perimeter space, since the mode is set to hardcore she should lose.
+     */
+    @Test
+    void testCompiledCardStrategyHestia1(){
+
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                | X  |    |    |    |    |
+                +----+----+----+----+----+
+            2   | A1 |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile hestia = cardFactory.getCards().stream().filter(c->c.getName().equals("Hestia")).findAny().orElse(null);
+
+        Andrea.setCard(hestia);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startCell = new Point(0,2);
+        Point endCell = new Point(0,1);
+
+        board.getCell(startCell).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(startCell);
+
+        List<Point> points = new LinkedList<>();
+        points.add(endCell);
+
+        PacketMove packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(),PlayerState.MOVED);
+        assertEquals(AndreaW1.getPosition(), endCell);
+        assertEquals(board.getCell(endCell).getWorkerID(),AndreaW1.getID());
+
+         /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   | X  |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                | A1 | X  |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //NOW ANDREA'S W1 TRIES TO BUILD A FIRST FLOOR ON 1,1 AND A FIRST FLOOR ON 0,0 WHICH IS ON THE PERIMETER -> HE LOSES
+
+        Point buildCell = new Point(1,1);
+        Point perimeterBuildCell = new Point(0,0);
+
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<BuildingType> buildingTypes = new LinkedList<>();
+        List<Point> dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.FIRST_FLOOR);
+        dataOrder.add(buildCell);
+        builds.put(buildCell,buildingTypes);
+        dataOrder.add(perimeterBuildCell);
+        builds.put(perimeterBuildCell, buildingTypes);
+
+        PacketBuild packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertFalse(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
+            assert true;
+        }
+
+        assertEquals(board.getCell(buildCell).getTopBuilding(), LevelType.GROUND);
+        assertEquals(Andrea.getState(),PlayerState.MOVED);
+
+    }
+
+    /**
+     * Hestia tries to build an additional block not on the perimeter space and in the same space of the first build, this action should be allowed.
+     */
+    @Test
+    void testCompiledCardStrategyHestia2(){
+
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                | X  |    |    |    |    |
+                +----+----+----+----+----+
+            2   | A1 |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile hestia = cardFactory.getCards().stream().filter(c->c.getName().equals("Hestia")).findAny().orElse(null);
+
+        Andrea.setCard(hestia);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startCell = new Point(0,2);
+        Point endCell = new Point(0,1);
+
+        board.getCell(startCell).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(startCell);
+
+        List<Point> points = new LinkedList<>();
+        points.add(endCell);
+
+        PacketMove packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(),PlayerState.MOVED);
+        assertEquals(AndreaW1.getPosition(), endCell);
+        assertEquals(board.getCell(endCell).getWorkerID(),AndreaW1.getID());
+
+         /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                | A1 | X  |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //NOW ANDREA'S W1 TRIES TO BUILD A FIRST FLOOR AND A SECOND FLOOR ON 1,1
+
+        Point buildCell = new Point(1,1);
+
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<BuildingType> buildingTypes = new LinkedList<>();
+        List<Point> dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.FIRST_FLOOR);
+        buildingTypes.add(BuildingType.SECOND_FLOOR);
+        dataOrder.add(buildCell);
+        dataOrder.add(buildCell);
+        builds.put(buildCell,buildingTypes);
+
+        PacketBuild packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertTrue(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+
+        assertEquals(board.getCell(buildCell).getTopBuilding(), LevelType.SECOND_FLOOR);
+        assertEquals(Andrea.getState(),PlayerState.BUILT);
+
+    }
+
+    /**
+     * Hestia tries to build an additional block NOT on the perimeter space and NOT in the same space of the first build, this action should be allowed.
+     */
+    @Test
+    void testCompiledCardStrategyHestia3(){
+
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                | X  |    |    |    |    |
+                +----+----+----+----+----+
+            2   | A1 |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile hestia = cardFactory.getCards().stream().filter(c->c.getName().equals("Hestia")).findAny().orElse(null);
+
+        Andrea.setCard(hestia);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startCell = new Point(0,2);
+        Point endCell = new Point(0,1);
+
+        board.getCell(startCell).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(startCell);
+
+        List<Point> points = new LinkedList<>();
+        points.add(endCell);
+
+        PacketMove packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(),PlayerState.MOVED);
+        assertEquals(AndreaW1.getPosition(), endCell);
+        assertEquals(board.getCell(endCell).getWorkerID(),AndreaW1.getID());
+
+         /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                | A1 | X1 |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |    | X2 |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //NOW ANDREA'S W1 TRIES TO BUILD A FIRST FLOOR ON 1,1 AND A FIRST FLOOR ON 1,2
+
+        Point firstBuildCell = new Point(1,1);
+        Point secondBuildCell = new Point(1,2);
+
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<BuildingType> buildingTypes = new LinkedList<>();
+        List<Point> dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.FIRST_FLOOR);
+        dataOrder.add(firstBuildCell);
+        builds.put(firstBuildCell,buildingTypes);
+        dataOrder.add(secondBuildCell);
+        builds.put(secondBuildCell,buildingTypes);
+
+        PacketBuild packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertTrue(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+
+        assertEquals(board.getCell(firstBuildCell).getTopBuilding(), LevelType.FIRST_FLOOR);
+        assertEquals(board.getCell(secondBuildCell).getTopBuilding(), LevelType.FIRST_FLOOR);
+        assertEquals(Andrea.getState(),PlayerState.BUILT);
+
+    }
+
+    /**
+     * Atlas tries to build a dome (it doesn't complete a tower) near Limus' worker.
+     * Since this action is a deny and the mode is set to hardcore Atlas should lose.
+     */
+    @Test
+    void testCompiledCardStrategyLimus1(){
+
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                | X  |M1  |    | M2 |    |
+                +----+----+----+----+----+
+            2   | A1 |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile limus = cardFactory.getCards().stream().filter(c->c.getName().equals("Limus")).findAny().orElse(null);
+        CardFile atlas = cardFactory.getCards().stream().filter(c->c.getName().equals("Atlas")).findAny().orElse(null);
+
+        Mirko.setCard(limus);
+        Andrea.setCard(atlas);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startCell = new Point(0,2);
+        Point endCell = new Point(0,1);
+        Point buildCell = new Point(1,2);
+        Point limusCell = new Point(1, 1);
+
+        board.getCell(startCell).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(startCell);
+        board.getCell(limusCell).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(limusCell);
+        board.getCell(new Point(3,1)).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(new Point(3,1));
+
+        List<Point> points = new LinkedList<>();
+        points.add(endCell);
+
+        PacketMove packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(),PlayerState.MOVED);
+        assertEquals(AndreaW1.getPosition(), endCell);
+        assertEquals(board.getCell(endCell).getWorkerID(),AndreaW1.getID());
+
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |A1  |M1  |    | M2 |    |
+                +----+----+----+----+----+
+            2   |    | X  |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //NOW ANDREA'S W1 TRIES TO BUILD A DOME NEAR MIRKO'S WORKER
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<BuildingType> buildingTypes = new LinkedList<>();
+        List<Point> dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.DOME);
+        dataOrder.add(buildCell);
+        builds.put(buildCell,buildingTypes);
+
+        PacketBuild packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertFalse(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
+            assert true;
+        }
+
+        assertEquals(board.getCell(buildCell).getTopBuilding(), LevelType.GROUND);
+        assertEquals(Andrea.getState(),PlayerState.MOVED);
+
+    }
+
+    /**
+     * Atlas tries to build a dome (it completes a tower) near Limus' worker. This action should be allowed.
+     */
+    @Test
+    void testCompiledCardStrategyLimus2(){
+
+        /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |M1  |    | M2 |    |
+                +----+----+----+----+----+
+            2   | A1 | TF |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |    |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile limus = cardFactory.getCards().stream().filter(c->c.getName().equals("Limus")).findAny().orElse(null);
+        CardFile atlas = cardFactory.getCards().stream().filter(c->c.getName().equals("Atlas")).findAny().orElse(null);
+
+        Mirko.setCard(limus);
+        Andrea.setCard(atlas);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startCell = new Point(0,2);
+        Point endCell = new Point(0,1);
+        Point buildCell = new Point(1,2);
+        Point limusCell = new Point(1, 1);
+
+        model.getBoard().getCell(buildCell).addBuilding(BuildingType.FIRST_FLOOR);
+        model.getBoard().getCell(buildCell).addBuilding(BuildingType.SECOND_FLOOR);
+        model.getBoard().getCell(buildCell).addBuilding(BuildingType.THIRD_FLOOR);
+
+        board.getCell(startCell).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(startCell);
+        board.getCell(limusCell).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(limusCell);
+        board.getCell(new Point(3,1)).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(new Point(3,1));
+
+        List<Point> points = new LinkedList<>();
+        points.add(endCell);
+
+        PacketMove packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(),PlayerState.MOVED);
+        assertEquals(AndreaW1.getPosition(), endCell);
+        assertEquals(board.getCell(endCell).getWorkerID(),AndreaW1.getID());
+
+        //NOW ANDREA'S W1 TRIES TO BUILD A DOME NEAR MIRKO'S WORKER
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<BuildingType> buildingTypes = new LinkedList<>();
+        List<Point> dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.DOME);
+        dataOrder.add(buildCell);
+        builds.put(buildCell,buildingTypes);
+
+        PacketBuild packetBuild = new PacketBuild(Andrea.getNickname(),AndreaW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertTrue(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+
+        assertEquals(board.getCell(buildCell).getTopBuilding(), LevelType.DOME);
+        assertEquals(Andrea.getState(),PlayerState.BUILT);
+
+    }
+
+    /**
+     * Test if Zeus correctly can build a block under itself.
+     * Test if Zeus can't build a Dome under itself.
+     */
+    @Test
+    void testCompiledCardStrategyZeus1(){
+
+        /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   | M1 |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   | m  |    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+
+        CardFile zeus = cardFactory.getCards().stream().filter(c->c.getName().equals("Zeus")).findAny().orElse(null);
+
+        Mirko.setCard(zeus);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startCell = new Point(0,2);
+        Point endCell = new Point(0,3);
+
+        board.getCell(startCell).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(startCell);
+
+        List<Point> points = new LinkedList<>();
+        points.add(endCell);
+
+        PacketMove packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(), points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(MirkoW1.getPosition(),endCell);
+        assertEquals(board.getCell(endCell).getWorkerID(),MirkoW1.getID());
+        assertEquals(Mirko.getState(),PlayerState.MOVED);
+
+        /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |M1FF|    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+
+        Point buildPoint = new Point(0,3);
+
+        Map<Point, List<BuildingType>> builds = new HashMap<>();
+        List<BuildingType> buildingTypes = new LinkedList<>();
+        List<Point> dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.FIRST_FLOOR);
+        dataOrder.add(buildPoint);
+        builds.put(buildPoint,buildingTypes);
+
+        PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertTrue(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+
+        assertEquals(board.getCell(buildPoint).getTopBuilding(), LevelType.FIRST_FLOOR);
+        assertEquals(PlayerState.BUILT,Mirko.getState());
+
+        Mirko.setPlayerState(PlayerState.MOVED);
+
+        /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |M1SF|    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        builds = new HashMap<>();
+        buildingTypes = new LinkedList<>();
+        dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.SECOND_FLOOR);
+        dataOrder.add(buildPoint);
+        builds.put(buildPoint,buildingTypes);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertTrue(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+
+        assertEquals(board.getCell(buildPoint).getTopBuilding(), LevelType.SECOND_FLOOR);
+        assertEquals(PlayerState.BUILT,Mirko.getState());
+
+        Mirko.setPlayerState(PlayerState.MOVED);
+
+        /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |M1TF|    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        builds = new HashMap<>();
+        buildingTypes = new LinkedList<>();
+        dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.THIRD_FLOOR);
+        dataOrder.add(buildPoint);
+        builds.put(buildPoint,buildingTypes);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertTrue(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
+            assert false;
+        }
+
+        assertEquals(board.getCell(buildPoint).getTopBuilding(), LevelType.THIRD_FLOOR);
+        assertEquals(PlayerState.BUILT,Mirko.getState());
+
+        Mirko.setPlayerState(PlayerState.MOVED);
+
+        /*
+
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            2   |    |    |    |    |    |
+                |    |    |    |    |    |
+                +----+----+----+----+----+
+            3   |M1 D|    |    |    |    |
+                +----+----+----+----+----+
+            4   |    |    |    |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        builds = new HashMap<>();
+        buildingTypes = new LinkedList<>();
+        dataOrder = new ArrayList<>();
+        buildingTypes.add(BuildingType.DOME);
+        dataOrder.add(buildPoint);
+        builds.put(buildPoint,buildingTypes);
+
+        packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,dataOrder);
+
+        assertNotNull(packetBuild);
+
+        try{
+            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            assertFalse(model.makeBuild(buildData));
+        } catch (InvalidPacketException | PlayerWonSignal | PlayerLostSignal e) {
+            assert true;
+        }
+
+        assertEquals(board.getCell(buildPoint).getTopBuilding(), LevelType.THIRD_FLOOR);
+        assertEquals(PlayerState.MOVED,Mirko.getState());
+
+    }
+
 
     /**
      * Test if Hephaestus can correctly build FIRST_FLOOR and SECOND_FLOOR at the same time but on the same spot. (b1)
@@ -180,8 +1054,7 @@ class InternalModelMirkoTest {
 
         assertEquals(MirkoW1.getPosition(),endCell);
         assertEquals(board.getCell(endCell).getWorkerID(),MirkoW1.getID());
-
-        Mirko.setPlayerState(PlayerState.MOVED);
+        assertEquals(Mirko.getState(),PlayerState.MOVED);
 
         Point buildPoint = new Point(1,3);
 
@@ -2162,12 +3035,15 @@ class InternalModelMirkoTest {
         List<Point> moves = new ArrayList<>();
         moves.add(new Point(0,0));
         PacketMove packetMove = new PacketMove("Marco", MirkoW1.getID(),moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+        
+        assertNull(moveData);
 
         /*CASE MOVES IS NULL
         moves = null;
@@ -2205,12 +3081,15 @@ class InternalModelMirkoTest {
         moves.add(new Point(0,0));
 
         PacketMove packetMove = new PacketMove(Mirko.getNickname(), "MirkoW3",moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(moveData);
     }
 
     /**
@@ -2223,12 +3102,15 @@ class InternalModelMirkoTest {
         List<Point> moves = new ArrayList<>();
 
         PacketMove packetMove = new PacketMove(Mirko.getNickname(), MirkoW1.getID(),moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(moveData);
     }
 
     /**
@@ -2241,12 +3123,15 @@ class InternalModelMirkoTest {
         moves.add(new Point(6,6));
 
         PacketMove packetMove = new PacketMove(Mirko.getNickname(), MirkoW1.getID(),moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(moveData);
     }
 
     /**
@@ -2264,12 +3149,15 @@ class InternalModelMirkoTest {
         moves.add(firstMove);
 
         PacketMove packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(moveData);
     }
 
     /**
@@ -2287,12 +3175,15 @@ class InternalModelMirkoTest {
         moves.add(firstMove);
 
         PacketMove packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(moveData);
     }
 
     /**
@@ -2312,12 +3203,15 @@ class InternalModelMirkoTest {
         moves.add(secondMove);
 
         PacketMove packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(moveData);
     }
 
     /**
@@ -2338,12 +3232,15 @@ class InternalModelMirkoTest {
         moves.add(secondMove);
 
         PacketMove packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(moveData);
     }
 
     /**
@@ -2354,12 +3251,15 @@ class InternalModelMirkoTest {
         List<Point> moves = new ArrayList<>();
         moves.add(new Point(0,0));
         PacketMove packetMove = new PacketMove(Andrea.getNickname(), MirkoW1.getID(),moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(moveData);
     }
 
     /**
@@ -2381,12 +3281,16 @@ class InternalModelMirkoTest {
         moves.add(secondMove);
 
         PacketMove packetMove = new PacketMove("Mirko", MirkoW1.getID(),moves);
+        MoveData moveData = null;
         try{
-            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            moveData = model.packetMoveToMoveData(packetMove);
             assert true;
         } catch (InvalidPacketException e) {
             assert false;
         }
+
+        assertNotNull(moveData);
+        assertEquals(moveData.getData(), moves);
 
     }
 
@@ -2418,13 +3322,15 @@ class InternalModelMirkoTest {
 
         //CASE WRONG PLAYER
         PacketBuild packetBuild = new PacketBuild("Marco",MirkoW1.getID(),builds,orderBuilds);
-
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
 
         /*CASE BUILDSORDER IS NULL
 
@@ -2492,12 +3398,15 @@ class InternalModelMirkoTest {
         //CASE WRONG WORKER
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),"MirkoW3",builds,orderBuilds);
 
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
     }
 
     /**
@@ -2525,12 +3434,15 @@ class InternalModelMirkoTest {
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
 
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
     }
 
     /**
@@ -2562,12 +3474,15 @@ class InternalModelMirkoTest {
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
 
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
     }
 
     /**
@@ -2590,12 +3505,15 @@ class InternalModelMirkoTest {
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
 
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
     }
 
     /**
@@ -2620,12 +3538,15 @@ class InternalModelMirkoTest {
         //CASE BUILDINGTYPE LIST IN BUILDS IS EMPTY
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
 
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
     }
 
     /**
@@ -2652,12 +3573,15 @@ class InternalModelMirkoTest {
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
 
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
     }
 
     /**
@@ -2686,12 +3610,15 @@ class InternalModelMirkoTest {
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
 
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
     }
 
     /**
@@ -2722,12 +3649,15 @@ class InternalModelMirkoTest {
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
 
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
     }
 
     /**
@@ -2755,12 +3685,15 @@ class InternalModelMirkoTest {
         //CASE WRONG PLAYER
         PacketBuild packetBuild = new PacketBuild(Andrea.getNickname(),MirkoW1.getID(),builds,orderBuilds);
 
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert false;
         } catch (InvalidPacketException e) {
             assert true;
         }
+
+        assertNull(buildData);
     }
 
     /**
@@ -2796,13 +3729,17 @@ class InternalModelMirkoTest {
         MirkoW1.setPosition(startPosition);
 
         PacketBuild packetBuild = new PacketBuild(Mirko.getNickname(),MirkoW1.getID(),builds,orderBuilds);
-
+        BuildData buildData = null;
         try{
-            BuildData buildData = model.packetBuildToBuildData(packetBuild);
+            buildData = model.packetBuildToBuildData(packetBuild);
             assert true;
         } catch (InvalidPacketException e) {
             assert false;
         }
+
+        assertNotNull(buildData);
+        assertEquals(buildData.getData(), builds);
+        assertEquals(buildData.getDataOrder(), orderBuilds);
 
     }
 

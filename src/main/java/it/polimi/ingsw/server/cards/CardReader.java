@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -165,7 +166,7 @@ class CardReader {
             throw new InvalidCardException("[CARD PARSER]Invalid numbers of players");
         }
 
-        if (possibleNumbersOfPlayers.isEmpty() || possibleNumbersOfPlayers.stream().anyMatch(n -> n <= 1 || n > 4)){
+        if (possibleNumbersOfPlayers.isEmpty() || possibleNumbersOfPlayers.stream().anyMatch(n -> n <= 1 || n > 4) || possibleNumbersOfPlayers.stream().anyMatch(i -> Collections.frequency(possibleNumbersOfPlayers, i) > 1)) {
             throw new InvalidCardException("[CARD PARSER]Invalid numbers of players");
         }
 

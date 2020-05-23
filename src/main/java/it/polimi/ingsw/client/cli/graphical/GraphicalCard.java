@@ -77,6 +77,10 @@ class GraphicalCard implements CharFigure {
         ForeColor descColor = ForeColor.ANSI_BLUE;
         for(String word : desc){
             if(currentSpace - (word.length() + 1) < 0){
+                if(nextLine == height - 1 || word.length() >= width){
+                    stream.addString(relX + width / 2, relY + nextLine + 1,"...", descColor, BackColor.ANSI_BRIGHT_BG_WHITE);
+                    return;
+                }
                 nextLine += 1;
                 currentSpace = width - 1;
             }

@@ -155,15 +155,15 @@ public class GraphicalMatchMenu implements CharFigure {
         int nextLine = 5;
         GraphicalPane playersBox = new GraphicalPane(stream, 35, 8, BackColor.ANSI_BG_BLUE);
         playersBox.draw(relX + 5 , relY + nextLine);
-        stream.addString(relX + 10, relY + nextLine + 1, "PLAYERS", BackColor.ANSI_BG_BLUE);
-        stream.addString(relX + 25, relY + + nextLine + 1, "GODCARD", BackColor.ANSI_BG_BLUE);
+        stream.addString(relX + 10, relY + nextLine + 1, "PLAYER", BackColor.ANSI_BG_BLUE);
+        stream.addString(relX + 25, relY + + nextLine + 1, "GOD CARD", BackColor.ANSI_BG_BLUE);
         nextLine += 3;
         for(String player : playersColor.keySet()){
 
             if(activePlayer != null && !activePlayer.equals(player)){
                 if(losers.contains(player)){
                     stream.addColor(relX + 7, relY + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
-                    stream.addColor(relX + 8, relY + + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
+                    stream.addColor(relX + 8, relY + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
                 }
                 else{
                     stream.addColor(relX + 7, relY + nextLine, BackColor.ANSI_BRIGHT_BG_YELLOW);
