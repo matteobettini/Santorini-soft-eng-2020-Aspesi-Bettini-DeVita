@@ -91,36 +91,6 @@ public class Board {
     }
 
     /**
-     * This method checks if there is a dome on the given position.
-     * @param p1 is the position of the Cell to check.
-     * @return true fif there is a dome, false otherwise.
-     */
-    public boolean thereIsDome(Point p1){
-        return getCell(p1).getBuildings().contains(BuildingType.DOME); //|| (getCell(p1).getLevel() - getCell(lastPosition).getLevel()) > 1;
-    }
-
-    /**
-     * This method checks if a given worker can move from his last position on the board.
-     * @param worker is the String containing the worker's id.
-     * @param lastPosition is the last position of the worker.
-     * @return true if the worker can move to some position, false otherwise.
-     */
-    public boolean canMove(String worker, Point lastPosition){
-        if(lastPosition == null) lastPosition = getWorkerPosition(worker);
-        List<Point> adjacentPoints = getAdjacentPoints(lastPosition);
-        return adjacentPoints.stream().anyMatch(p -> !thereIsDome(p));
-    }
-
-    /**
-     * This method checks if a given worker can move from his position on the board.
-     * @param worker is the String containing the worker's id.
-     * @return true if the worker can move to some position, false otherwise.
-     */
-    public boolean canMove(String worker){
-        return canMove(worker, null);
-    }
-
-    /**
      * This method returns an instance of Cell given its position on the board.
      * @param pos is the position of the Cell on the board.
      * @return an instance of Cell.

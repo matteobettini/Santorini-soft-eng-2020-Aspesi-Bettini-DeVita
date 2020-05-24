@@ -67,19 +67,15 @@ public class GraphicalBoard implements CharFigure {
 
         for(int i = 0; i <= rows * RATEOX; ++i){
             for(int j = 0; j <= columns * RATEOY; ++j){
-                //FIRST THE CONDITIONS FOR THE TOP'╠''╦'
                 if(i == 0 && j == 0) stream.addChar('╔', i + relX, j + relY, foreColor, backColor);
                 else if(i == 0  && j % RATEOY == 0 && j != columns * RATEOY) stream.addChar('╠', i + relX, j + relY, foreColor, backColor);
                 else if(i == 0 && j == columns * RATEOY) stream.addChar('╚', i + relX, j + relY, foreColor, backColor);
-                    //CONDITIONS FOR THE BOTTOM'╣''╩' '╗' '╚'
                 else if(i == rows * RATEOX && j == 0) stream.addChar('╗', i + relX, j + relY, foreColor, backColor);
                 else if(i == rows * RATEOX  && j % RATEOY == 0 && j != columns * RATEOY) stream.addChar('╣', i + relX, j + relY, foreColor, backColor);
                 else if(i == rows * RATEOX && j == columns * RATEOY) stream.addChar('╝', i + relX, j + relY, foreColor, backColor);
-                    //INTERMEDIATE'╦''╠'
                 else if(i % RATEOX == 0 && i != rows * RATEOX && j == 0) stream.addChar('╦', i + relX, j + relY, foreColor,backColor);
                 else if(i % RATEOX == 0 && i != rows * RATEOX && j == columns * RATEOY) stream.addChar('╩', i + relX, j + relY, foreColor, backColor);
                 else if(i % RATEOX == 0 && j % RATEOY == 0) stream.addChar('╬', i + relX, j + relY, foreColor, backColor);
-                    //STRAIGHT LINES'═''║'
                 else if(i % RATEOX == 0) stream.addChar('║', i + relX, j + relY, foreColor, backColor);
                 else if(j % RATEOY == 0) stream.addChar('═', i + relX, j + relY, foreColor, backColor);
                 else stream.addColor(i + relX, j + relY, foreColor, BackColor.ANSI_BG_GREEN);

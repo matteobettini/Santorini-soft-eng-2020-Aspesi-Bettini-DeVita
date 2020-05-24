@@ -8,6 +8,7 @@ import it.polimi.ingsw.client.cli.strategies.game_mode_strategy.HardcoreStrategy
 import it.polimi.ingsw.client.cli.strategies.game_mode_strategy.NormalStrategy;
 import it.polimi.ingsw.client.cli.utilities.CharStream;
 import it.polimi.ingsw.client.cli.utilities.InputUtilities;
+import it.polimi.ingsw.client.cli.utilities.OutputUtilities;
 import it.polimi.ingsw.client.communication.Client;
 import it.polimi.ingsw.common.enums.ActionType;
 
@@ -45,12 +46,7 @@ public class CLI {
         this.matchData = MatchData.getInstance();
         this.askConnectionParameters = true;
 
-        CharStream stream = new CharStream(GraphicalStartMenu.DEFAULT_WIDTH, GraphicalStartMenu.DEFAULT_HEIGHT);
-        GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream);
-
-        graphicalStartMenu.draw();
-        stream.print(System.out);
-        stream.reset();
+        OutputUtilities.printStartMenu();
     }
 
     /**

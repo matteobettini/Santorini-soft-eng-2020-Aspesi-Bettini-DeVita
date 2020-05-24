@@ -2,11 +2,8 @@ package it.polimi.ingsw.client.cli.utilities;
 
 import it.polimi.ingsw.client.cli.colors.BackColor;
 import it.polimi.ingsw.client.cli.colors.ForeColor;
+import it.polimi.ingsw.client.cli.graphical.*;
 import it.polimi.ingsw.client.cli.match_data.MatchData;
-import it.polimi.ingsw.client.cli.graphical.GraphicalBoard;
-import it.polimi.ingsw.client.cli.graphical.GraphicalCardsMenu;
-import it.polimi.ingsw.client.cli.graphical.GraphicalMatchMenu;
-import it.polimi.ingsw.client.cli.graphical.GraphicalOcean;
 import it.polimi.ingsw.common.enums.ActionType;
 import it.polimi.ingsw.common.utils.Pair;
 
@@ -134,6 +131,18 @@ public class OutputUtilities {
         CharStream stream = new CharStream(graphicalCardsMenu.getRequiredWidth(), graphicalCardsMenu.getRequiredHeight());
         graphicalCardsMenu.setStream(stream);
         graphicalCardsMenu.draw();
+        stream.print(System.out);
+        stream.reset();
+    }
+
+    /**
+     * This method prints the initial menu.
+     */
+    public static void printStartMenu(){
+        CharStream stream = new CharStream(GraphicalStartMenu.DEFAULT_WIDTH, GraphicalStartMenu.DEFAULT_HEIGHT);
+        GraphicalStartMenu graphicalStartMenu = new GraphicalStartMenu(stream);
+
+        graphicalStartMenu.draw();
         stream.print(System.out);
         stream.reset();
     }
