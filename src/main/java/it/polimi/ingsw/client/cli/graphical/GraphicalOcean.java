@@ -2,7 +2,7 @@ package it.polimi.ingsw.client.cli.graphical;
 
 import it.polimi.ingsw.client.cli.utilities.CharStream;
 import it.polimi.ingsw.client.cli.graphical.boats.BoatFactory;
-import it.polimi.ingsw.client.cli.colors.BackColor;
+import it.polimi.ingsw.client.cli.utilities.colors.BackColor;
 
 import java.awt.*;
 import java.util.ArrayList;

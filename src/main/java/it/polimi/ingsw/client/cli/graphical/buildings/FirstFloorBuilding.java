@@ -2,8 +2,8 @@ package it.polimi.ingsw.client.cli.graphical.buildings;
 
 import it.polimi.ingsw.client.cli.graphical.CharFigure;
 import it.polimi.ingsw.client.cli.utilities.CharStream;
-import it.polimi.ingsw.client.cli.colors.BackColor;
-import it.polimi.ingsw.client.cli.colors.ForeColor;
+import it.polimi.ingsw.client.cli.utilities.colors.BackColor;
+import it.polimi.ingsw.client.cli.utilities.colors.ForeColor;
 
 class FirstFloorBuilding implements CharFigure {
     private final CharStream stream;

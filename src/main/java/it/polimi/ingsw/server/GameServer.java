@@ -20,7 +20,7 @@ public class GameServer {
         int port = DEFAULT_PORT;
 
         if(args.length == 1 && HELP_ARGUMENT.equals(args[0])){
-           System.out.println("Insert a port number between " + MIN_PORT + " and " + MAX_PORT + " as argument or don't insert anything to start the server on the port " + DEFAULT_PORT + ".");
+           System.out.println("Insert a port number between " + MIN_PORT + " and " + MAX_PORT + " as argument or don't insert anything to start the server on port " + DEFAULT_PORT + ".");
            return;
         }
         else if(args.length == 1){

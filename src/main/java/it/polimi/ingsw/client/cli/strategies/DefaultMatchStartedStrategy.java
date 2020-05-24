@@ -1,9 +1,8 @@
 package it.polimi.ingsw.client.cli.strategies;
 
 import it.polimi.ingsw.client.cli.CLI;
-import it.polimi.ingsw.client.cli.colors.ForeColor;
+import it.polimi.ingsw.client.cli.utilities.colors.ForeColor;
 import it.polimi.ingsw.client.cli.match_data.MatchData;
-import it.polimi.ingsw.client.cli.utilities.CharStream;
 import it.polimi.ingsw.client.cli.utilities.OutputUtilities;
 import it.polimi.ingsw.common.packets.PacketMatchStarted;
 

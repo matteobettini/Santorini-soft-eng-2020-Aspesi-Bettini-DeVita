@@ -1,7 +1,7 @@
 package it.polimi.ingsw.client.cli.graphical;
 
 import it.polimi.ingsw.client.cli.utilities.CharStream;
-import it.polimi.ingsw.client.cli.colors.BackColor;
+import it.polimi.ingsw.client.cli.utilities.colors.BackColor;
 import it.polimi.ingsw.client.cli.utilities.OutputUtilities;
 
 import java.awt.*;

@@ -1,8 +1,7 @@
 package it.polimi.ingsw.client.cli.strategies;
 
 import it.polimi.ingsw.client.cli.CLI;
-import it.polimi.ingsw.client.cli.colors.ForeColor;
-import it.polimi.ingsw.client.cli.utilities.CharStream;
+import it.polimi.ingsw.client.cli.utilities.colors.ForeColor;
 import it.polimi.ingsw.client.cli.utilities.OutputUtilities;
 import it.polimi.ingsw.client.communication.enums.ConnectionState;
 import it.polimi.ingsw.client.communication.ConnectionStatus;
