@@ -105,8 +105,9 @@ public class GraphicalWorker {
         Point3D startPosition = currRealPosition;
         Point3D endPosition = currPosition.getWorkerPositionDelta(this);
 
-        if (startPosition.equals(endPosition))
-            return; //If nothing changes, just return
+        //if (startPosition.equals(endPosition))
+            //return; //If nothing changes, just return
+
         //Else begin movement
         if (currentTransition != null) //If is present a transition
             currentTransition.stop();

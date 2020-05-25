@@ -53,7 +53,7 @@
          <bottom>
             <VBox alignment="CENTER" prefHeight="128.0" prefWidth="1080.0" spacing="10.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button id="btnStart" defaultButton="true" layoutX="431.0" layoutY="47.0" mnemonicParsing="false" onMouseClicked="#onBtnSettingsClicked" text="Settings">
+                  <Button defaultButton="true" layoutX="431.0" layoutY="47.0" mnemonicParsing="false" onMouseClicked="#onBtnSettingsClicked" text="Settings">
                      <font>
                         <Font name="Calibri" size="30.0" />
                      </font>
@@ -65,7 +65,7 @@
                         <String fx:value="btn-yellow" />
                      </styleClass>
                   </Button>
-                      <Button id="btnStart" fx:id="btnStart" defaultButton="true" mnemonicParsing="false" onMouseClicked="#onBtnStartClicked" text="Start Game">
+                      <Button fx:id="btnStart" defaultButton="true" mnemonicParsing="false" onMouseClicked="#onBtnStartClicked" text="Start Game">
                           <padding>
                               <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
                           </padding>
