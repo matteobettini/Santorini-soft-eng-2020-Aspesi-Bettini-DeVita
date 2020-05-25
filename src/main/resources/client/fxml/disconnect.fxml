@@ -42,9 +42,9 @@
                 </Button>
             </bottom>
          <center>
-            <VBox alignment="CENTER" fillWidth="false" maxHeight="100.0" maxWidth="600.0" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <VBox alignment="CENTER" fillWidth="false" maxHeight="100.0" maxWidth="800.0" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="lblMessage" layoutX="393.0" layoutY="165.0" text="You've been disconnected" textFill="WHITE">
+                  <Label fx:id="lblMessage" layoutX="393.0" layoutY="165.0" maxWidth="700.0" text="You've been disconnected" textFill="WHITE" wrapText="true">
                      <font>
                         <Font name="Calibri" size="30.0" />
                      </font>
@@ -59,6 +59,6 @@
         </BorderPane>
     </children>
     <stylesheets>
-      <URL value="@/client/fxml/styles/global.css" />
+      <URL value="@styles/global.css" /> <!--Change in @/client/fxml/styles/global.css for the jar-->
     </stylesheets>
 </StackPane>

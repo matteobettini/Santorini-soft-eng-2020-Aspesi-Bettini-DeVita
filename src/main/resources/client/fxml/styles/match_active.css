@@ -1,0 +1,16 @@
+.left-pane{
+    -fx-background-radius: 0 20 20 0;
+}
+.controls-pane{
+    -fx-background-radius: 20 0 0 0;
+}
+.btn-confirm{
+    -fx-background-color:  #28a745;
+}
+.btn-restart{
+    -fx-background-color:  #ffc107;
+    -fx-text-fill: #000000;
+}
+.message-pane{
+    -fx-background-radius: 0 0 20 0;
+}

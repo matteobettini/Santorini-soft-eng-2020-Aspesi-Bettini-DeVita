@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.effect.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.gui.controllers.CardsController">
+    <children>
+      <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" styleClass="santorini-pane">
+         <padding>
+            <Insets bottom="50.0" left="100.0" right="100.0" top="50.0" />
+         </padding>
+         <bottom>
+            <Button fx:id="btnNext" mnemonicParsing="false" onMouseClicked="#onBtnNextClicked" text="Next" visible="false" BorderPane.alignment="CENTER">
+               <padding>
+                  <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+               </padding>
+               <font>
+                  <Font name="Calibri" size="30.0" />
+               </font>
+               <styleClass>
+                  <String fx:value="btn" />
+                  <String fx:value="btn-blue" />
+               </styleClass>
+            </Button>
+         </bottom>
+         <center>
+            <ScrollPane hbarPolicy="NEVER" maxWidth="800.0" BorderPane.alignment="CENTER">
+               <content>
+                  <TilePane fx:id="cardsPane" hgap="90.0" maxWidth="800.0" prefColumns="3" prefRows="3" vgap="30.0">
+                     <children>
+                        <ImageView fitHeight="280.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../textures/gods/artemis.png" />
+                           </image>
+                           <effect>
+                              <DropShadow color="#ff00b5" height="200.0" radius="99.5" spread="0.5" width="200.0" />
+                           </effect>
+                        </ImageView>
+                        <ImageView fitHeight="280.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../textures/gods/athena.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="280.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../textures/gods/demeter.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fitHeight="280.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../textures/gods/apollo.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="50.0" right="50.0" top="5.0" />
+                     </padding>
+                  </TilePane>
+               </content>
+               <styleClass>
+                  <String fx:value="back-4" />
+                  <String fx:value="back-rounded" />
+               </styleClass>
+               <BorderPane.margin>
+                  <Insets bottom="20.0" top="120.0" />
+               </BorderPane.margin>
+               <padding>
+                  <Insets bottom="15.0" top="5.0" />
+               </padding>
+            </ScrollPane>
+         </center>
+      </BorderPane>
+      <HBox fx:id="msgPane" alignment="CENTER" maxHeight="100.0" prefHeight="100.0" prefWidth="200.0" StackPane.alignment="TOP_CENTER">
+         <children>
+            <Label fx:id="lblMsg" alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" maxWidth="900.0" text="Message for the user" textFill="WHITE" wrapText="true">
+               <font>
+                  <Font name="Calibri" size="30.0" />
+               </font>
+            </Label>
+         </children>
+         <styleClass>
+            <String fx:value="back-4" />
+            <String fx:value="message-pane" />
+         </styleClass>
+      </HBox>
+      <VBox fx:id="descriptionPane" alignment="BOTTOM_CENTER" maxHeight="550.0" prefHeight="200.0" prefWidth="100.0" visible="false">
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <ImageView fx:id="descrImage" fitHeight="280.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../textures/gods/athena.png" />
+                     </image>
+                     <effect>
+                        <DropShadow color="#ff00b5" height="100.0" radius="49.5" spread="0.5" width="100.0" />
+                     </effect>
+                  </ImageView>
+                  <Label fx:id="lblDescr" maxWidth="500.0" text="Opponent’s Turn: If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn." textFill="WHITE" wrapText="true">
+                     <font>
+                        <Font name="Calibri" size="21.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets left="50.0" />
+                     </HBox.margin>
+                  </Label>
+               </children>
+            </HBox>
+            <Button alignment="BOTTOM_CENTER" defaultButton="true" mnemonicParsing="false" onMouseClicked="#onBtnHideClicked" styleClass="btn" text="Close">
+               <font>
+                  <Font name="Calibri" size="30.0" />
+               </font>
+               <padding>
+                  <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets bottom="50.0" top="30.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+         <styleClass>
+            <String fx:value="back-8" />
+            <String fx:value="back-rounded" />
+         </styleClass>
+         <StackPane.margin>
+            <Insets left="50.0" right="50.0" />
+         </StackPane.margin>
+      </VBox>
+      <HBox fx:id="waitPane" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="back-7" visible="false">
+            <children>
+                <VBox alignment="CENTER" prefHeight="500.0" prefWidth="900.0" spacing="20.0">
+                    <children>
+                        <Label fx:id="lblWait" alignment="CENTER" contentDisplay="CENTER" maxWidth="800.0" text="Please wait ..." textFill="WHITE" wrapText="true">
+                            <font>
+                                <Font name="Calibri" size="35.0" />
+                            </font>
+                        </Label>
+                        <ImageView fx:id="imgWait" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../textures/gear.gif" /> <!--Change in /client/textures/gear.gif for the jar-->
+                            </image>
+                        </ImageView>
+                        <Button fx:id="btnClose" alignment="BOTTOM_CENTER" mnemonicParsing="false" onMouseClicked="#onBtnCloseClicked" text="Close" visible="false">
+                            <font>
+                                <Font name="Calibri" size="30.0" />
+                            </font>
+                            <padding>
+                                <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+                            </padding>
+                            <styleClass>
+                                <String fx:value="btn" />
+                                <String fx:value="btn-blue" />
+                            </styleClass>
+                        </Button>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+    <stylesheets>
+      <URL value="@styles/global.css" />
+      <URL value="@styles/cards.css" />
+   </stylesheets>
+</StackPane>

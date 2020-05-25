@@ -1,5 +1,5 @@
 .santorini-pane{
-    -fx-background-image: url("/client/textures/santorini_board.png");
+    -fx-background-image: url("../../textures/santorini_board.png"); /* Change in /client/textures/santorini_board.png for the jar */
     -fx-background-size: stretch, auto;
     -fx-background-position: center;
 }
@@ -12,6 +12,13 @@
 .btn-blue{
     -fx-background-color:  #0288D1;
     -fx-text-fill: #FFFFFF;
+}
+.btn-yellow{
+    -fx-background-color:  #ffc107;
+    -fx-text-fill: #000000;
+}
+.back-1{
+    -fx-background-color: rgb(0,0,0,0.1);
 }
 .back-2{
     -fx-background-color: rgb(0,0,0,0.2);

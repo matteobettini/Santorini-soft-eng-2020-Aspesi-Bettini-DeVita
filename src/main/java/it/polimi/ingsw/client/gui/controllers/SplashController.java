@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.client.gui.enums.ControllerType;
 import it.polimi.ingsw.client.gui.match_data.MatchData;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -26,7 +27,7 @@ public class SplashController extends GUIController {
         External Handlers
      */
     public void handleConnectionFailed(){
-        showWait("Cannot connect to Game Server", true);
+        showWait("Cannot connect to Game Server at " + data.getIP() + ":" + data.getPort(), true);
         ensureActive(); //Let's activate if i am not
     }
 
@@ -41,6 +42,10 @@ public class SplashController extends GUIController {
     private void onBtnStartClicked(MouseEvent event) {
         showWait("Connecting to the Game Server ...", false);
         data.getClient().asyncStart(data.getIP(),data.getPort()); //Try connect
+    }
+    @FXML
+    private void onBtnSettingsClicked(MouseEvent event){
+        data.changeController(ControllerType.SETTINGS);
     }
 
     @FXML

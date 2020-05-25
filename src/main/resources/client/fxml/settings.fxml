@@ -9,26 +9,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.gui.controllers.SetupController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.gui.controllers.SettingsController">
     <children>
       <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" styleClass="santorini-pane">
          <padding>
-            <Insets bottom="50.0" left="100.0" right="100.0" top="50.0" />
+            <Insets left="100.0" right="100.0" top="50.0" />
          </padding>
-         <bottom>
-            <Button fx:id="btnNext" defaultButton="true" mnemonicParsing="false" onMouseClicked="#onBtnNextClicked" text="Next" BorderPane.alignment="CENTER">
-               <padding>
-                  <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
-               </padding>
-               <font>
-                  <Font name="Calibri" size="30.0" />
-               </font>
-               <styleClass>
-                    <String fx:value="btn" />
-                    <String fx:value="btn-blue" />
-                </styleClass>
-            </Button>
-         </bottom>
          <center>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                <styleClass>
@@ -38,32 +24,22 @@
                <children>
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Label alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" text="Choose a Nickname" textFill="WHITE">
+                        <Label alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" text="Choose an IP" textFill="WHITE">
                            <font>
                               <Font name="Calibri" size="30.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="txtUsername" alignment="CENTER" maxWidth="300.0" text="" />
+                        <TextField fx:id="txtIP" alignment="CENTER" maxWidth="300.0" text="" />
                      </children>
                   </VBox>
-                  <VBox fx:id="chooseNumPane" alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Label alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" text="Choose Numbers of Players" textFill="WHITE">
+                        <Label alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" text="Choose a Port" textFill="WHITE">
                            <font>
                               <Font name="Calibri" size="30.0" />
                            </font>
                         </Label>
-                        <ComboBox fx:id="cboPlayerNumber" prefWidth="200.0" />
-                     </children>
-                  </VBox>
-                  <VBox fx:id="chooseModePane" alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <Label alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" text="Choose Game Mode" textFill="WHITE">
-                           <font>
-                              <Font name="Calibri" size="30.0" />
-                           </font>
-                        </Label>
-                        <ComboBox fx:id="cboMode" prefWidth="200.0" />
+                        <TextField fx:id="txtPort" alignment="CENTER" maxWidth="300.0" text="" />
                      </children>
                   </VBox>
                </children>
@@ -75,6 +51,36 @@
                </padding>
             </VBox>
          </center>
+         <bottom>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="btnCancel" defaultButton="true" mnemonicParsing="false" onMouseClicked="#onBtnCancelClicked" text="Cancel">
+                     <padding>
+                        <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+                     </padding>
+                     <font>
+                        <Font name="Calibri" size="30.0" />
+                     </font>
+                     <styleClass>
+                          <String fx:value="btn" />
+                          <String fx:value="btn-yellow" />
+                      </styleClass>
+                  </Button>
+                  <Button fx:id="btnApply" defaultButton="true" layoutX="365.0" layoutY="33.0" mnemonicParsing="false" onMouseClicked="#onBtnApplyClicked" text="Apply">
+                     <font>
+                        <Font name="Calibri" size="30.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+                     </padding>
+                     <styleClass>
+                        <String fx:value="btn" />
+                        <String fx:value="btn-blue" />
+                     </styleClass>
+                  </Button>
+               </children>
+            </HBox>
+         </bottom>
       </BorderPane>
       <HBox fx:id="msgPane" alignment="CENTER" maxHeight="100.0" prefHeight="100.0" prefWidth="200.0" StackPane.alignment="TOP_CENTER">
          <children>

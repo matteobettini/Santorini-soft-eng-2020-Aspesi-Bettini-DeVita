@@ -1,19 +1,28 @@
 package it.polimi.ingsw.client.gui.controllers;
 
+import it.polimi.ingsw.client.gui.match_data.MatchData;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public abstract class GUIController {
     private Parent root;
+    private Stage stage;
     private Scene scene;
     private boolean isActive;
-    public void init(Parent root, Scene scene){
-        assert (root != null && scene != null);
+    private boolean isResizable = false;
+
+    public void init(Parent root, Stage stage, boolean isResizable){
+        assert (root != null && stage != null);
         this.root = root;
-        this.scene = scene;
+        this.stage = stage;
+        this.scene = new Scene(root);
+        this.isResizable = isResizable;
     }
     public void activate(){
-        scene.setRoot(root);
+        stage.setScene(scene);
+        stage.setResizable(isResizable);
         isActive = true;
     }
     public boolean isActive(){
@@ -24,6 +33,6 @@ public abstract class GUIController {
     }
     public void ensureActive(){
         if (!isActive)
-            activate();
+            MatchData.getInstance().changeController(this);
     }
 }

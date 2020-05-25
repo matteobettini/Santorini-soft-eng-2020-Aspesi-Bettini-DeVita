@@ -14,7 +14,7 @@
     <children>
         <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" styleClass="santorini-pane">
             <padding>
-                <Insets bottom="50.0" top="50.0" />
+                <Insets top="50.0" />
             </padding>
             <top>
                 <Label text="Santorini Board Game" textFill="WHITE" BorderPane.alignment="CENTER">
@@ -30,22 +30,8 @@
                </styleClass>
                 </Label>
             </top>
-            <bottom>
-                <Button id="btnStart" fx:id="btnStart" mnemonicParsing="false" onMouseClicked="#onBtnStartClicked" text="Start Game" BorderPane.alignment="CENTER">
-                    <padding>
-                        <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
-                    </padding>
-                    <font>
-                        <Font name="Calibri" size="30.0" />
-                    </font>
-               <styleClass>
-                  <String fx:value="btn" />
-                  <String fx:value="btn-blue" />
-               </styleClass>
-                </Button>
-            </bottom>
          <center>
-            <VBox alignment="CENTER" fillWidth="false" maxHeight="100.0" maxWidth="600.0" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <VBox alignment="CENTER" fillWidth="false" maxHeight="100.0" maxWidth="700.0" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                <children>
                   <Label text="A board game adapted by" textFill="WHITE">
                      <font>
@@ -64,19 +50,52 @@
                </styleClass>
             </VBox>
          </center>
+         <bottom>
+            <VBox alignment="CENTER" prefHeight="128.0" prefWidth="1080.0" spacing="10.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button id="btnStart" defaultButton="true" layoutX="431.0" layoutY="47.0" mnemonicParsing="false" onMouseClicked="#onBtnSettingsClicked" text="Settings">
+                     <font>
+                        <Font name="Calibri" size="30.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+                     </padding>
+                     <styleClass>
+                        <String fx:value="btn" />
+                        <String fx:value="btn-yellow" />
+                     </styleClass>
+                  </Button>
+                      <Button id="btnStart" fx:id="btnStart" defaultButton="true" mnemonicParsing="false" onMouseClicked="#onBtnStartClicked" text="Start Game">
+                          <padding>
+                              <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+                          </padding>
+                          <font>
+                              <Font name="Calibri" size="30.0" />
+                          </font>
+                     <styleClass>
+                        <String fx:value="btn" />
+                        <String fx:value="btn-blue" />
+                     </styleClass>
+                      </Button>
+               </children>
+               <padding>
+                  <Insets bottom="20.0" />
+               </padding>
+            </VBox>
+         </bottom>
         </BorderPane>
         <HBox fx:id="waitPane" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="back-7" visible="false">
             <children>
                 <VBox alignment="CENTER" prefHeight="500.0" prefWidth="900.0" spacing="20.0">
                     <children>
-                        <Label fx:id="lblWait" alignment="CENTER" contentDisplay="CENTER" prefHeight="41.0" prefWidth="646.0" text="Please wait ..." textFill="WHITE">
+                        <Label fx:id="lblWait" alignment="CENTER" contentDisplay="CENTER" maxWidth="800.0" text="Please wait ..." textFill="WHITE" wrapText="true">
                             <font>
                                 <Font name="Calibri" size="35.0" />
                             </font>
                         </Label>
                         <ImageView fx:id="imgWait" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="/client/textures/gear.gif" />
+                                <Image url="@../textures/gear.gif" /> <!--Change in /client/textures/gear.gif for the jar-->
                             </image>
                         </ImageView>
                         <Button fx:id="btnClose" alignment="BOTTOM_CENTER" mnemonicParsing="false" onMouseClicked="#onBtnCloseClicked" text="Close" visible="false">
@@ -97,6 +116,6 @@
         </HBox>
     </children>
     <stylesheets>
-      <URL value="@/client/fxml/styles/global.css" />
+      <URL value="@styles/global.css" /> <!--Change in @/client/fxml/styles/global.css for the jar-->
     </stylesheets>
 </StackPane>

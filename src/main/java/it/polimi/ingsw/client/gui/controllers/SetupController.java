@@ -17,11 +17,7 @@ import javafx.scene.layout.VBox;
 
 public class SetupController extends GUIController {
     @FXML
-    private HBox waitPane;
-    @FXML
     private TextField txtUsername;
-    @FXML
-    private Button btnClose;
     @FXML
     private VBox chooseModePane;
     @FXML
@@ -33,13 +29,17 @@ public class SetupController extends GUIController {
     @FXML
     private Label lblMsg;
     @FXML
+    private Label lblWait;
+    @FXML
     private ImageView imgWait;
+    @FXML
+    private Button btnClose;
+    @FXML
+    private HBox waitPane;
     @FXML
     private HBox msgPane;
     @FXML
     private ComboBox<Integer> cboPlayerNumber;
-    @FXML
-    private Label lblWait;
 
     ObservableList<String> gameModes = FXCollections.observableArrayList("Normal", "Hardcore");
     ObservableList<Integer> playersNums = FXCollections.observableArrayList(2, 3);
@@ -110,7 +110,7 @@ public class SetupController extends GUIController {
     private void answerGameSettings(){
         //Send game settings
         showWait("Matchmaking ...", false);
-        PacketNumOfPlayersAndGamemode packet = new PacketNumOfPlayersAndGamemode(cboPlayerNumber.getValue(),gameModes.indexOf(cboMode.getValue()) == 0);
+        PacketNumOfPlayersAndGamemode packet = new PacketNumOfPlayersAndGamemode(cboPlayerNumber.getValue(),gameModes.indexOf(cboMode.getValue()) == 1);
         data.getClient().send(packet);
     }
 
