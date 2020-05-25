@@ -327,8 +327,12 @@ public class MatchActiveController extends GUIController {
                 buildStrategy.handleBuildAction(packet.getTo(), isRetry);
                 break;
             case MOVE_BUILD:
-                isLastRetry = isRetry;
-                showChoosePane();
+                if (packet.getTo().equals(matchData.getUsername())){
+                    isLastRetry = isRetry;
+                    showChoosePane();
+                }else{
+                    showMessage(packet.getTo() + " is making his move/build");
+                }
                 break;
         }
     }
