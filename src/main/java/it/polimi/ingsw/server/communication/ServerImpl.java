@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.communication;
 
+import it.polimi.ingsw.server.ServerLogger;
 import it.polimi.ingsw.server.enums.ServerPhase;
 import it.polimi.ingsw.server.view.ConnectionToClient;
 
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ServerImpl implements Server {
@@ -32,6 +35,8 @@ public class ServerImpl implements Server {
 
     private ServerPhase serverPhase;
     private ConnectionToClient whoIAmCurrentlyWaiting;
+
+    private final Logger serverLogger = Logger.getLogger(ServerLogger.LOGGER_NAME);
 
     /**
      * The constructor initializes the variables
@@ -59,11 +64,10 @@ public class ServerImpl implements Server {
         try {
             serverSocket = new ServerSocket(port);
 
-            System.out.println("Server: server is ready");
+            serverLogger.info("Server is ready");
             while (true) {
-                System.out.println("=======================");
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Server: received connection");
+                serverLogger.info("Received connection from address: [" + clientSocket.getInetAddress().getHostAddress() + "]");
                 ConnectionToClient clientConnection = new ConnectionToClient(clientSocket);
 
                 clientConnection.setNickNameChosenHandler(this::handleNickChosen);
@@ -73,7 +77,7 @@ public class ServerImpl implements Server {
                 executor.submit(clientConnection);
             }
         } catch (IOException e) {
-            System.err.println("Sever: server socket has problems, message: " + e.getMessage());
+            serverLogger.log(Level.SEVERE, "Server socket has stopped working with an exception", e);
             if(serverSocket != null && !serverSocket.isClosed())
                 serverSocket.close();
         }
@@ -142,7 +146,6 @@ public class ServerImpl implements Server {
                 whoIAmCurrentlyWaiting = waitingClients.get(0);
                 whoIAmCurrentlyWaiting.askForDesiredPlayersAndGamemode();
             } else if (waitingClients.size() >= currMatchSize) {
-                System.out.println("Server: creating match ");
                 createMatch();
             } else{
                 serverPhase = ServerPhase.FILLING_LOBBY;
@@ -157,7 +160,7 @@ public class ServerImpl implements Server {
     private void createMatch() {
         lockLobby.lock();
         try {
-
+            serverLogger.info("Creating match with id [" + currMatchID + "], players : [" + waitingClients.subList(0, currMatchSize).stream().map(ConnectionToClient::getClientNickname).collect(Collectors.joining(", ")) + "]");
             Match match = new Match(waitingClients.subList(0, currMatchSize), currMatchHardcore, currMatchID);
             match.setClosureHandler(this::deregisterMatch);
 
@@ -198,6 +201,7 @@ public class ServerImpl implements Server {
         try {
             if (waitingClients.contains(connectionToClient)) {
                 waitingClients.remove(connectionToClient);
+                serverLogger.info("Client [" + connectionToClient.getClientNickname() + "] unregistered from lobby");
                 if(whoIAmCurrentlyWaiting == null || whoIAmCurrentlyWaiting.equals(connectionToClient))
                     setNextLobbyPhase();
             }
@@ -211,6 +215,7 @@ public class ServerImpl implements Server {
         try {
             assert activeMatches.contains(match);
             activeMatches.remove(match);
+            serverLogger.info("Deactivated match with ID: [" + match.getId() + "]");
         } finally {
             lockMatches.unlock();
         }

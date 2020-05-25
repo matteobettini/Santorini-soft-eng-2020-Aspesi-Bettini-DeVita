@@ -5,8 +5,8 @@ import it.polimi.ingsw.client.gui.GUI;
 
 public class GameClient {
 
-    private static final String CLI_ARGUMENT = "--cli";
-    private static final String HELP_ARGUMENT = "--help";
+    private static final String CLI_ARGUMENT = "-cli";
+    private static final String HELP_ARGUMENT = "-help";
 
     public static void main(String[] args){
         if (args.length == 0) GUI.main(args);

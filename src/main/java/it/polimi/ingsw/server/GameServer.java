@@ -7,10 +7,19 @@ import it.polimi.ingsw.server.communication.Server;
 import it.polimi.ingsw.server.communication.ServerImpl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class GameServer {
 
-    private static final String HELP_ARGUMENT = "--help";
+    private static final String VERBOSE_ARGUMENT = "-v";
+    private static final String LOGFILE_ARGUMENT = "-log";
+    private static final String PORT_ARGUMENT = "-port";
+    private static final String HELP_ARGUMENT = "-help";
     private static final int DEFAULT_PORT = 4567;
     private static final int MIN_PORT = 1024;
     private static final int MAX_PORT = 65535;
@@ -19,18 +28,34 @@ public class GameServer {
 
         int port = DEFAULT_PORT;
 
-        if(args.length == 1 && HELP_ARGUMENT.equals(args[0])){
-           System.out.println("Insert a port number between " + MIN_PORT + " and " + MAX_PORT + " as argument or don't insert anything to start the server on port " + DEFAULT_PORT + ".");
-           return;
-        }
-        else if(args.length == 1){
+        List<String> arguments = new ArrayList<>(Arrays.asList(args));
+
+        if(arguments.size() == 1 && arguments.contains(HELP_ARGUMENT)){
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("This is the server for Santorini table game, with no input the server will start on port " + DEFAULT_PORT + "\n\n");
+            sb.append("Here is a list of all the available commands:\n\n");
+            sb.append("-port: followed by the desired port number between " + MIN_PORT + " and " + MAX_PORT + " as argument\n");
+            sb.append("-v: to activate logging in the console.\n");
+            sb.append("-log: followed by a file name, to activate logging both in the console and in the chosen file\n");
+            sb.append("-help: to get help\n");
+            System.out.println(sb);
+            return;
+
+        } else if(arguments.contains(PORT_ARGUMENT)){
+            String proposedPortString = "";
+            try{
+                proposedPortString = arguments.get(arguments.indexOf(PORT_ARGUMENT)+1);
+            }catch (Exception ignored){ }
+
             boolean error = false;
 
             try{
-                int proposedPort = Integer.parseInt(args[0]);
+                int proposedPort = Integer.parseInt(proposedPortString);
                 if(proposedPort >= MIN_PORT && proposedPort <= MAX_PORT)
                     port = proposedPort;
-                else error = true;
+                else
+                    error = true;
             }catch (NumberFormatException ignored){
                 error = true;
             }
@@ -39,8 +64,27 @@ public class GameServer {
                 System.out.println("Invalid port number, insert " + HELP_ARGUMENT + " to see the available port numbers.");
                 return;
             }
+
+            arguments.remove(PORT_ARGUMENT);
+            arguments.remove(proposedPortString);
         }
-        else if(args.length > 1) {
+
+        ServerLogger.preliminarySetup();
+
+        if(arguments.size() == 1 && arguments.contains(VERBOSE_ARGUMENT))
+            ServerLogger.setupServerLogger();
+        else if(arguments.size() == 2 && arguments.contains(LOGFILE_ARGUMENT)) {
+            String proposedLogFile = null;
+            try {
+                proposedLogFile = arguments.get(arguments.indexOf(LOGFILE_ARGUMENT) + 1);
+            } catch (Exception ignored) { }
+
+            if (proposedLogFile == null){
+                System.out.println("Insert e file name after " + LOGFILE_ARGUMENT + ", insert " + HELP_ARGUMENT + " to see the available configuration options.");
+                return;
+            }
+            ServerLogger.setupServerLogger(proposedLogFile);
+        } else if(!arguments.isEmpty()){
             System.out.println("Too many arguments, insert " + HELP_ARGUMENT + " to see the available configuration options.");
             return;
         }
@@ -48,7 +92,7 @@ public class GameServer {
         try {
             CardFactory.getInstance();
         } catch (InvalidCardException e) {
-            System.err.println("[" + e.getClass().toString() + "]" + e.getMessage());
+            Logger.getLogger(ServerLogger.LOGGER_NAME).log(Level.SEVERE, "Error loading the cards", e);
             return; //Do not load the server if there are errors with the cards
         }
 

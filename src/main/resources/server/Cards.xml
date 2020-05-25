@@ -553,7 +553,7 @@
         <description>
             Opponent’s Turn: Opponent Workers cannot build on spaces neighboring your Workers, unless building a dome to create a Complete Tower.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="BUILD">
                 <statements>
@@ -585,7 +585,7 @@
         <description>
             Your Build: Your Worker may build one additional time, but this cannot be on a perimeter space.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="BUILD">
                 <statements>
@@ -646,7 +646,7 @@
         <description>
             Start of Opponent’s Turn: If one of your opponent’s Workers is higher than all of their others, it cannot move.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="MOVE">
                 <statements>
@@ -673,7 +673,7 @@
         <description>
             Your Build: Your Worker may build a block under itself.
         </description>
-        <players>2,3</players>
+        <players>2,3,4</players>
         <rules>
             <rule event="BUILD">
                 <statements>
