@@ -144,7 +144,7 @@ public class Board {
      * @param currentBuilds is a map of the already chosen buildings.
      * @return a map that associates adjacent positions to the worker with the possible buildings that can be built by it.
      */
-    public Map<Point, List<BuildingType>> getPossibleBuildings(String worker, Map<Point, List<BuildingType>> currentBuilds){
+    public Map<Point, List<BuildingType>> getPossibleBuildings(String worker, Map<Point, List<BuildingType>> currentBuilds, Map<BuildingType, Integer> buildingsCounter){
         List<Point> adjacentPoints = getAdjacentPoints(getWorkerPosition(worker), true);
 
         Map<Point, List<BuildingType>> possibleBuildings = new HashMap<>();
@@ -155,7 +155,7 @@ public class Board {
 
         for(Point pos : adjacentPoints){
             List<BuildingType> alreadyInserted = currentBuilds.get(pos) == null ? new ArrayList<>() : currentBuilds.get(pos);
-            List<BuildingType> buildingTypes = possibleBuildingsInCell.stream().filter(b -> (!getCell(pos).getBuildings().contains(b) && !alreadyInserted.contains(b))).collect(Collectors.toList());
+            List<BuildingType> buildingTypes = possibleBuildingsInCell.stream().filter(b -> (!getCell(pos).getBuildings().contains(b) && !alreadyInserted.contains(b) && buildingsCounter.get(b) > 0)).collect(Collectors.toList());
             if(!buildingTypes.isEmpty()) possibleBuildings.put(pos, buildingTypes);
         }
 

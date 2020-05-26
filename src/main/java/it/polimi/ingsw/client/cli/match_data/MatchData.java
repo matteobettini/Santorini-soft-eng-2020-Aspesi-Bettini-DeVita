@@ -27,6 +27,7 @@ public class MatchData {
     private List<String> losers;
     private Board board;
     private Map<BuildingType, Integer> buildingsCounter;
+    private Map<BuildingType, Integer> buildingsTempCounter;
     private static final int DEFAULT_MATCH_WIDTH = 159;
     private static final int DEFAULT_MATCH_HEIGHT = 50;
     public static String DEFAULT_ADDRESS = "127.0.0.1";
@@ -78,6 +79,12 @@ public class MatchData {
 
             }
         }
+
+        //RESTORE TEMPORARY BUILDINGS
+        buildingsTempCounter.clear();
+        for(BuildingType buildingType : buildingsCounter.keySet()){
+            this.buildingsTempCounter.put(buildingType, buildingsCounter.get(buildingType));
+        }
     }
 
     /**
@@ -89,6 +96,7 @@ public class MatchData {
         this.stream = new CharStream(DEFAULT_MATCH_WIDTH, DEFAULT_MATCH_HEIGHT);
         this.graphicalBoard = new GraphicalBoard(stream);
         this.buildingsCounter = new HashMap<>();
+        this.buildingsTempCounter = new HashMap<>();
         this.losers = new ArrayList<>();
         this.winner = null;
     }
@@ -101,6 +109,11 @@ public class MatchData {
     public void decrementCounter(BuildingType building,int howMany){
         int count = buildingsCounter.get(building);
         buildingsCounter.put(building, count - howMany);
+    }
+
+    public void decrementTempCounter(BuildingType building, int howMany){
+        int count = buildingsTempCounter.get(building);
+        buildingsTempCounter.put(building, count - howMany);
     }
 
     /**
@@ -118,6 +131,8 @@ public class MatchData {
     public Map<BuildingType, Integer> getBuildingsCounter() {
         return buildingsCounter;
     }
+
+    public Map<BuildingType, Integer> getBuildingsTempCounter() { return buildingsTempCounter; }
 
     /**
      * This method returns the Graphical Board instance.
@@ -246,6 +261,9 @@ public class MatchData {
      */
     public void setCounter(Map<BuildingType, Integer> buildingsCounter){
         this.buildingsCounter = buildingsCounter;
+        for(BuildingType buildingType : buildingsCounter.keySet()){
+            this.buildingsTempCounter.put(buildingType, buildingsCounter.get(buildingType));
+        }
     }
 
     /**

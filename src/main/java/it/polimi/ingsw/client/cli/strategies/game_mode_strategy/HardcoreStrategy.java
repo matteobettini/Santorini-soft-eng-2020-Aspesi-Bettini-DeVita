@@ -193,7 +193,7 @@ public class HardcoreStrategy implements GameModeStrategy{
 
         do {
 
-            Map<Point, List<BuildingType>> possibleBuildingsInPoints = board.getPossibleBuildings(lastUsedWorker, currentBuilds);
+            Map<Point, List<BuildingType>> possibleBuildingsInPoints = board.getPossibleBuildings(lastUsedWorker, currentBuilds, matchData.getBuildingsTempCounter());
 
             OutputUtilities.printMatch();
 

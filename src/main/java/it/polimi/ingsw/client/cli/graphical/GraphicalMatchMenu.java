@@ -121,7 +121,7 @@ public class GraphicalMatchMenu implements CharFigure {
      */
     private void printAvailableBuildings(int relX, int relY){
         MatchData matchData = MatchData.getInstance();
-        Map<BuildingType, Integer>  buildingsCounter = matchData.getBuildingsCounter();
+        Map<BuildingType, Integer>  buildingsCounter = matchData.getBuildingsTempCounter();
 
         GraphicalPane buildingsBox = new GraphicalPane(stream, 35, 25, BackColor.ANSI_BG_RED);
         buildingsBox.draw(relX + 5, relY + 18);

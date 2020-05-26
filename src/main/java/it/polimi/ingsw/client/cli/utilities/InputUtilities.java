@@ -368,6 +368,7 @@ public class InputUtilities {
         currentBuilds.put(chosenPosition, helper);
         currentDataOrder.add(chosenPosition);
 
+        matchData.decrementTempCounter(chosenBuilding, 1);
         return true;
     }
 
