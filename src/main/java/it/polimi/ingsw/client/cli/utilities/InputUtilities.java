@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.cli.utilities;
 
+import it.polimi.ingsw.client.cli.graphical.GraphicalBoard;
 import it.polimi.ingsw.client.cli.match_data.Board;
 import it.polimi.ingsw.client.cli.match_data.MatchData;
 import it.polimi.ingsw.common.enums.BuildingType;
@@ -9,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -367,6 +369,50 @@ public class InputUtilities {
         currentDataOrder.add(chosenPosition);
 
         return true;
+    }
+
+    public static Map<String, Point> getInitialPositions(){
+
+        MatchData matchData = MatchData.getInstance();
+        List<String> workersID = matchData.getIds().get(matchData.getPlayerName());
+
+        Map<String, Point> positions = new HashMap<>();
+
+        for(int i = 0; i < workersID.size(); ++i){
+            String choice;
+            Point position = null;
+            boolean error = false;
+            do{
+                if(error) System.out.println("Invalid position for worker " + (i + 1) + ", retry");
+
+                do{
+                    if(i > 0) System.out.print("Choose your worker" + (i + 1) + "'s position or enter r to restart the selection: ");
+                    else System.out.print("Choose your worker" + (i + 1) + "'s position (ex A1, B2, ...): ");
+                    choice = InputUtilities.getLine();
+                    if(choice == null) return null;
+                }while(!InputUtilities.POSITION_PATTERN.matcher(choice).matches() && !choice.equals("r"));
+
+                if(!choice.equals("r")){
+                    position = InputUtilities.getPoint(choice);
+                    error = position == null || positions.containsValue(position);
+                }
+
+            }while(error);
+
+            if(!choice.equals("r")){
+                matchData.getGraphicalBoard().getCell(position).setWorker(workersID.get(i));
+                if(i != workersID.size() - 1) OutputUtilities.printMatch();
+                positions.put(workersID.get(i), position);
+            }
+            else{
+                positions.clear();
+                i = -1;
+                matchData.makeGraphicalBoardEqualToBoard();
+                OutputUtilities.printMatch();
+            }
+        }
+
+        return positions;
     }
 
     /**

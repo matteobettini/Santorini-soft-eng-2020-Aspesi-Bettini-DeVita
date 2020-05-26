@@ -16,8 +16,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>13</maven.compiler.target>
         <javafx.version>14</javafx.version>
-        <project.outputName>GameServer</project.outputName>
-        <project.mainClass>it.polimi.ingsw.server.GameServer</project.mainClass>
+        <project.outputName>GameClient</project.outputName>
+        <project.mainClass>it.polimi.ingsw.client.GameClient</project.mainClass>
     </properties>
 
     <dependencies>

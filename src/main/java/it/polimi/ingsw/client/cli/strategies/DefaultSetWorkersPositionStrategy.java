@@ -32,29 +32,17 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
 
         Board board = matchData.getBoard();
 
-        if(board.getNumberOfWorkers() == 0) OutputUtilities.printMatch();
+        if(board.getNumberOfWorkers() == 0 || isRetry) {
+            matchData.makeGraphicalBoardEqualToBoard();
+            OutputUtilities.printMatch();
+        }
 
         if(isRetry) System.out.println("\nOne or more positions have been already occupied, try again.");
 
-        Map<String, Point> positions = new HashMap<>();
-        List<String> workersID = matchData.getIds().get(matchData.getPlayerName());
-        for(int i = 0; i < workersID.size(); ++i){
-            String point;
-            Point helper;
-            boolean error = false;
-            do{
-                if(error) System.out.println("Invalid position for worker " + (i + 1) + ", retry");
-                do{
-                    if(i > 0) System.out.print("Choose your worker" + (i + 1) + "'s position: ");
-                    else System.out.print("Choose your worker" + (i + 1) + "'s position (ex A1, B2, ...): ");
-                    point = InputUtilities.getLine();
-                    if(point == null) return;
-                }while(!InputUtilities.POSITION_PATTERN.matcher(point).matches());
-                helper = InputUtilities.getPoint(point);
-                error = board.getCell(helper) == null || positions.containsValue(helper);
-            }while(error);
-            positions.put(workersID.get(i), helper);
-        }
+        Map<String, Point> positions = InputUtilities.getInitialPositions();
+
+        if(positions == null) return;
+
 
         PacketWorkersPositions packetWorkersPositions = new PacketWorkersPositions(positions);
         matchData.getClient().send(packetWorkersPositions);
