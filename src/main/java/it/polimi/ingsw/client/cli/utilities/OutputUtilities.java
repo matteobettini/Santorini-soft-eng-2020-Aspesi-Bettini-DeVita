@@ -82,6 +82,17 @@ public class OutputUtilities {
     }
 
     /**
+     * This method prints the GraphicalMatchMenu and the GraphicalBoard to the user with possible actions highlighted.
+     */
+    public static void printMatchAndActions(List<Point> possibleActions){
+        MatchData matchData = MatchData.getInstance();
+        GraphicalBoard graphicalBoard = matchData.getGraphicalBoard();
+        graphicalBoard.setPossibleActions(possibleActions);
+        printMatch(false, false);
+        graphicalBoard.resetPossibleActions();
+    }
+
+    /**
      * This method prints the GraphicalMatchMenu and the GraphicalBoard to the user (without game over or you win boxes).
      */
     public static void printMatch(){

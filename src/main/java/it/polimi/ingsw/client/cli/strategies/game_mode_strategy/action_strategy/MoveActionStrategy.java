@@ -75,13 +75,9 @@ public class MoveActionStrategy implements ActionStrategy{
         //POSSIBLE POSITIONS CONTAINS THE POSITIONS THAT THE PLAYER CAN CHOOSE AT THIS TIME DURING THE MOVE
         List<Point> possiblePositions = new ArrayList<>(packetPossibleMoves.getPossibleMoves().get(lastUsedWorker));
 
-        graphicalBoard.setPossibleActions(possiblePositions);
-
-        OutputUtilities.printMatch();
+        OutputUtilities.printMatchAndActions(possiblePositions);
 
         if(currentPositions.isEmpty()) System.out.println("Make your move!");
-
-        graphicalBoard.resetPossibleActions();
 
         //IF THERE ARE NO POSSIBLE POSITIONS THE PLAYER CAN'T MAKE A CHOICE
         if(possiblePositions.isEmpty()) makeChoiceForbidden = true;

@@ -198,10 +198,10 @@ public class CharStream {
                 List<String> charRows = GraphicalLetter.getLetter(message.charAt(i));
 
                 int count = 0;
-                int maxLenghtRow = 0;
+                int maxLengthRow = 0;
                 for(String row : charRows){
                     addString(x + space, y + count, row, foreColor, backColor);
-                    if(row.length() > maxLenghtRow) maxLenghtRow = row.length();
+                    if(row.length() > maxLengthRow) maxLengthRow = row.length();
                     count++;
                 }
                 List<String> lettCol = GraphicalLetter.getColorLetter(message.charAt(i));
@@ -212,7 +212,7 @@ public class CharStream {
                     }
                     ++count;
                 }
-                space += maxLenghtRow + 1;
+                space += maxLengthRow + 1;
             }
             else space += 3;
 
@@ -233,7 +233,7 @@ public class CharStream {
 
 
     /**
-     * This method resets the content ot the stream and its colors.
+     * This method resets the content of the stream and its colors.
      */
     public void reset(){
         for(int i = 0; i < width; ++i){
@@ -246,7 +246,7 @@ public class CharStream {
 
 
     /**
-     * This method prints the content ot the stream and its colors.
+     * This method prints the content of the stream and its colors.
      */
     public void print(PrintStream stream){
         stream.println();

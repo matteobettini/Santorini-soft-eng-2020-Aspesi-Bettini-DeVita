@@ -90,13 +90,9 @@ public class BuildActionStrategy implements ActionStrategy{
         //POSSIBLE POSITIONS CONTAINS THE POSITIONS THAT THE PLAYER CAN CHOOSE AT THIS TIME DURING THE BUILD
         Map<Point, List<BuildingType>> possibleBuildingsInPositions = packetPossibleBuilds.getPossibleBuilds().get(lastUsedWorker);
 
-        graphicalBoard.setPossibleActions(new ArrayList<>(possibleBuildingsInPositions.keySet()));
-
-        OutputUtilities.printMatch();
+        OutputUtilities.printMatchAndActions(new ArrayList<>(possibleBuildingsInPositions.keySet()));
 
         if(currentDataOrder.isEmpty())  System.out.println("Make your build!");
-
-        graphicalBoard.resetPossibleActions();
 
         //IF THERE ARE NO POSSIBLE POSITIONS THE PLAYER CAN'T MAKE A CHOICE
         if(possibleBuildingsInPositions.isEmpty()) makeChoiceForbidden = true;
