@@ -30,8 +30,6 @@ public class HardcoreMoveStrategy implements MakeMoveStrategy {
             if (isRetry){
                 controller.adjustModel(); //Undo changes
                 controller.showWait("Your last action was invalid, redo", true);
-                assert selected != null;
-                selected.setSelected(false);
             }
             moves = new LinkedList<>();
             selected = null;

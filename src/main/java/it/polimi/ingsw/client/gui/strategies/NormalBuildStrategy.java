@@ -31,6 +31,7 @@ public class NormalBuildStrategy implements MakeBuildStrategy {
 
     private List<String> possibleWorkers;
     private GraphicalCell lastClicked;
+    private boolean wasWorkerChoicePossible;
 
     public NormalBuildStrategy(List<GraphicalWorker> workers, GraphicalBoard graphicalBoard, MatchActiveController controller) {
         this.graphicalBoard = graphicalBoard;
@@ -48,6 +49,7 @@ public class NormalBuildStrategy implements MakeBuildStrategy {
             lastClicked = null;
             selected = null;
             isEnabled = true;
+            wasWorkerChoicePossible = false;
             //Retrieve move info
             controller.showWait("Asking builds to Game Server ...", false);
             matchData.getClient().send(new PacketBuild(activePlayer));
@@ -80,8 +82,10 @@ public class NormalBuildStrategy implements MakeBuildStrategy {
                 selected = workers.stream().filter(w->w.getWorkerID().equals(possibleWorkers.get(0))).findFirst().orElse(null);
                 assert selected != null;
                 selected.setSelected(true);
-            }else
+            }else {
+                wasWorkerChoicePossible = true;
                 controller.showMessage("Select a worker by clicking on it");
+            }
         }
 
         if (selected != null){
@@ -162,7 +166,7 @@ public class NormalBuildStrategy implements MakeBuildStrategy {
             worker.setSelected(true);
             graphicalBoard.selectCells(possibleBuilds.get(worker.getWorkerID()).keySet()); //Update selection
             controller.showMessage("Select an adjacent cell to build there");
-        }else if (possibleWorkers.size() > 0){
+        }else if (wasWorkerChoicePossible){
             controller.showWait("Worker already selected, click Revert to change selection", true);
         }else{
             controller.showWait("You cannot change worker selection at this point", true);

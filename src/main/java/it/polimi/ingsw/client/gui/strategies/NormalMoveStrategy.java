@@ -25,6 +25,7 @@ public class NormalMoveStrategy implements MakeMoveStrategy {
     private boolean isEnabled = false;
 
     private List<String> possibleWorkers;
+    private boolean wasWorkerChoicePossible;
 
     public NormalMoveStrategy(List<GraphicalWorker> workers, GraphicalBoard graphicalBoard, MatchActiveController controller) {
         this.workers = workers;
@@ -40,6 +41,7 @@ public class NormalMoveStrategy implements MakeMoveStrategy {
             possibleWorkers = new LinkedList<>();
             selected = null;
             isEnabled = true;
+            wasWorkerChoicePossible = false;
             //Retrieve move info
             controller.showWait("Asking moves to Game Server ...", false);
             matchData.getClient().send(new PacketMove(activePlayer));
@@ -72,8 +74,10 @@ public class NormalMoveStrategy implements MakeMoveStrategy {
                 selected = workers.stream().filter(w->w.getWorkerID().equals(possibleWorkers.get(0))).findFirst().orElse(null);
                 assert selected != null;
                 selected.setSelected(true);
-            }else
+            }else {
+                wasWorkerChoicePossible = true;
                 controller.showMessage("Select a worker by clicking on it");
+            }
         }
 
         if (selected != null){
@@ -118,7 +122,7 @@ public class NormalMoveStrategy implements MakeMoveStrategy {
             worker.setSelected(true);
             graphicalBoard.selectCells(possibleMoves.get(worker.getWorkerID())); //Update selection
             controller.showMessage("Select an adjacent cell to move there");
-        }else if (possibleWorkers.size() > 0){
+        }else if (wasWorkerChoicePossible){
             controller.showWait("Worker already selected, click Revert to change selection", true);
         }else{
             controller.showWait("You cannot change worker selection at this point", true);

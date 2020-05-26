@@ -36,8 +36,6 @@ public class HardcoreBuildStrategy implements MakeBuildStrategy {
             if (isRetry){
                 controller.adjustModel(); //Undo changes
                 controller.showWait("Your last action was invalid, redo", true);
-                assert selected != null;
-                selected.setSelected(false);
             }
             builds = new HashMap<>();
             buildOrder = new LinkedList<>();
