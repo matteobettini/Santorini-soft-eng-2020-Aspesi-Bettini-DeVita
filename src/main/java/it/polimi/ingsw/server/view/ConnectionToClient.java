@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.view;
 import it.polimi.ingsw.common.utils.observe.Observer;
 import it.polimi.ingsw.common.packets.*;
 import it.polimi.ingsw.common.utils.observe.Observable;
+import it.polimi.ingsw.server.ServerLogger;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,6 +12,8 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class ConnectionToClient extends Observable<Object> implements Runnable{
@@ -45,6 +48,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private Thread timer;
     private final Thread pinger;
 
+    private final Logger serverLogger = Logger.getLogger(ServerLogger.LOGGER_NAME);
+
     /**
      * The constructor of the connection
      * saves the client socket in a local variable
@@ -75,11 +80,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
     private void startTimer(int milliseconds){
-        System.out.println("Connection [" + getClientNickname() + "]: timer is started");
         timer = new Thread(() -> {
             try {
                 Thread.sleep(milliseconds);
-                System.out.println("Connection [" + getClientNickname() + "]: timer is ended");
+                serverLogger.info("[" + (getClientNickname() != null ? getClientNickname() : socket.getInetAddress().getHostAddress()) + "]: timer is ended");
                 closeRoutine(true);
             } catch (InterruptedException ignored) { }
         });
@@ -103,7 +107,6 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
                 os.writeObject(packet);
                 os.flush();
             } catch (IOException e) {
-                System.err.println("Connection [" + getClientNickname() + "]: error in send");
                 throw e;
             }
         }finally {
@@ -136,14 +139,13 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     public void askForDesiredPlayersAndGamemode(){
 
         try {
-            System.out.println("Connection [" + getClientNickname() + "]: asking num of players and gamemode");
+           serverLogger.info("[" + getClientNickname() + "]: asking num of players and gamemode");
 
             desiresAsked = true;
             internalSend(ConnectionMessages.INSERT_NUMBER_OF_PLAYERS_AND_GAMEMODE);
             startTimerShorter();
 
         } catch (IOException e){
-            System.err.println("Connection [" + getClientNickname() + "]: error in ask desires");
             closeRoutineFull();
         }
 
@@ -154,16 +156,13 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      * Upon failure retrieving the information, closes the connection
      */
     private void askNickname() throws IOException{
-        try {
-            System.out.println("Connection: asking nickname");
 
-            nickAsked = true;
-            internalSend(ConnectionMessages.INSERT_NICKNAME);
-            startTimerShorter();
-        } catch (IOException e){
-            System.err.println("Connection [" + getClientNickname() + "]: error in ask nick");
-            throw e;
-        }
+        serverLogger.info("[" + socket.getInetAddress().getHostAddress() + "]: asking nickname");
+
+        nickAsked = true;
+        internalSend(ConnectionMessages.INSERT_NICKNAME);
+        startTimerShorter();
+
     }
 
     /**
@@ -173,13 +172,12 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      */
     public void askNicknameAgain(){
         try{
-            System.out.println("Connection: asking nickname again");
+            serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: asking nickname");
 
             nickAsked = true;
             internalSend(ConnectionMessages.TAKEN_NICKNAME);
             startTimerShorter();
         } catch (IOException e){
-            System.err.println("Connection [" + getClientNickname() + "]: error in ask nick again");
             closeRoutineFull();
         }
     }
@@ -188,9 +186,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      * This is the run method used by the server to start the client
      * After creating the object streams to the client,
      * it asks the desired nickname
-     * Then it calls the lobby method to put the client in the waiting list (lobby) on the server
-     * If the client is inserted successfully and/or a match is created
-     * it loops continuing to listen for incoming objects from the connection
+     * It loops continuing to listen for incoming objects from the connection
+     * and notifies the handlers according to the objects received
      * Upon failure of any kind it closes the connection
      */
     @Override
@@ -208,9 +205,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             askNickname();
 
             while(active.get()){
-                System.out.println("Connection [" + getClientNickname() + "]: I'M WAITING FOR AN OBJECT");
+
                 Object packetFromClient = is.readObject();
-                System.out.println("Connection [" + getClientNickname() + "]: OBJECT RECEIVED");
 
                 if(!(packetFromClient == ConnectionMessages.PING)) {
                     if (inMatch)
@@ -219,10 +215,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
                         handlePacketInSetup(packetFromClient);
                 }
             }
-            System.err.println("Connection [" + getClientNickname() + "]: error i'm inactive");
+
 
         }catch (IOException | ClassNotFoundException e){
-            System.out.println("Connection [" + getClientNickname() + "]: exception in run {" + e.getMessage() + "}");
+            serverLogger.log(Level.INFO, "[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: connection channel deactivated", e.getCause());
         }finally {
             closeRoutineFull();
         }
@@ -232,9 +228,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
         if (packetFromClient instanceof PacketNickname && nickAsked) {
             stopTimer();
-            System.out.println("Connection [" + getClientNickname() + "]: received nick");
+            serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: received nick");
             PacketNickname packetNickname = (PacketNickname) packetFromClient;
             if (!isNickValid(packetNickname.getNickname())){
+                serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: invalid nickname");
                 internalSend(ConnectionMessages.INVALID_NICKNAME);
                 startTimerShorter();
             } else {
@@ -244,9 +241,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             }
         } else if (packetFromClient instanceof PacketNumOfPlayersAndGamemode && desiresAsked) {
             stopTimer();
-            System.out.println("Connection [" + getClientNickname() + "]: received desires");
+            serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: received game desires");
             PacketNumOfPlayersAndGamemode packetNumOfPlayersAndGamemode = (PacketNumOfPlayersAndGamemode) packetFromClient;
             if(packetNumOfPlayersAndGamemode.getDesiredNumOfPlayers() != 2 && packetNumOfPlayersAndGamemode.getDesiredNumOfPlayers() != 3) {
+                serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: invalid game desires");
                 internalSend(ConnectionMessages.INVALID_PACKET);
                 startTimerShorter();
             } else{
@@ -265,12 +263,11 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     /**
      * This method calls the closeRoutine method,
-     * additionally it calls the deregister method on the server
-     * which handles the full de-registration of the connection according to its state
+     * additionally handles the full de-registration of the connection according to its state
      */
     public synchronized void closeRoutineFull(){
 
-        System.err.println("Connection [" + getClientNickname() + "]: closing socket");
+        serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: socket is closing");
         stopTimer();
         active.set(false);
         closureHandler.update(this);

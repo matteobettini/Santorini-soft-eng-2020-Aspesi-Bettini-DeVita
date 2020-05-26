@@ -1,11 +1,13 @@
 package it.polimi.ingsw.server.view;
 
+import it.polimi.ingsw.server.ServerLogger;
 import it.polimi.ingsw.server.model.ObservableModel;
 import it.polimi.ingsw.common.utils.observe.Observer;
 import it.polimi.ingsw.common.packets.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 public class VirtualView implements Observer<Object> {
@@ -17,6 +19,8 @@ public class VirtualView implements Observer<Object> {
     private final List<Observer<PacketCardsFromClient>> packetCardsFromClientObservers;
     private final List<Observer<PacketStartPlayer>> packetStartPlayerObservers;
     private final List<Observer<PacketWorkersPositions>> packetWorkersPositionsObservers;
+
+    private final Logger serverLogger = Logger.getLogger(ServerLogger.LOGGER_NAME);
 
 
     /**
@@ -40,29 +44,43 @@ public class VirtualView implements Observer<Object> {
 
         model.addPacketCardsFromServerObserver((packetCardsFromServer) -> {
             boolean withTimer = false;
-            if(packetCardsFromServer.getTo().equals(connectionToClient.getClientNickname()))
+            if(packetCardsFromServer.getTo().equals(connectionToClient.getClientNickname())) {
                 withTimer = true;
+                serverLogger.info("[" + connectionToClient.getClientNickname() + "]: sending cards to choose");
+            }
             connectionToClient.send(packetCardsFromServer, withTimer);
 
         });
         model.addPacketDoActionObserver((packetDoAction) -> {
             boolean withTimer = false;
-            if(packetDoAction.getTo().equals(connectionToClient.getClientNickname()))
+            if(packetDoAction.getTo().equals(connectionToClient.getClientNickname())) {
                 withTimer = true;
+                serverLogger.info("[" + connectionToClient.getClientNickname() + "]: sending do action request");
+            }
             connectionToClient.send(packetDoAction, withTimer);
 
         });
         model.addPacketPossibleBuildsObserver((packetPossibleBuilds)-> {
             if (packetPossibleBuilds.getTo().equals(connectionToClient.getClientNickname())) {
+                serverLogger.info("[" + connectionToClient.getClientNickname() + "]: sending possible builds");
                 connectionToClient.send(packetPossibleBuilds, false);
             }
         });
         model.addPacketPossibleMovesObserver((packetPossibleMoves)-> {
-            if (packetPossibleMoves.getTo().equals(connectionToClient.getClientNickname()))
+            if (packetPossibleMoves.getTo().equals(connectionToClient.getClientNickname())) {
+                serverLogger.info("[" + connectionToClient.getClientNickname() + "]: sending possible moves");
                 connectionToClient.send(packetPossibleMoves, false);
+            }
         });
-        model.addPacketSetupObserver(packetSetup -> connectionToClient.send(packetSetup, false));
-        model.addPacketUpdateBoardObserver(packetUpdateBoard -> connectionToClient.send(packetUpdateBoard, false));
+        model.addPacketSetupObserver(packetSetup -> {
+
+            serverLogger.info("[" + connectionToClient.getClientNickname() + "]: sending setup packet");
+            connectionToClient.send(packetSetup, false);
+        });
+        model.addPacketUpdateBoardObserver(packetUpdateBoard -> {
+            serverLogger.info("[" + connectionToClient.getClientNickname() + "]: sending an update of the board ");
+            connectionToClient.send(packetUpdateBoard, false);
+        });
 
     }
 
@@ -76,20 +94,25 @@ public class VirtualView implements Observer<Object> {
             PacketMove packetMove = (PacketMove) packetFromClient;
             if(!packetMove.isSimulate())
                 connectionToClient.stopTimer();
+            serverLogger.info("[" + connectionToClient.getClientNickname() + "]: received Packet Move");
             notifyPacketMoveObservers(packetMove);
         }else if(packetFromClient instanceof PacketBuild) {
             PacketBuild packetBuild = (PacketBuild) packetFromClient;
             if(!packetBuild.isSimulate())
                 connectionToClient.stopTimer();
+            serverLogger.info("[" + connectionToClient.getClientNickname() + "]: received Packet Build");
             notifyPacketBuildObservers(packetBuild);
         }else if(packetFromClient instanceof PacketStartPlayer) {
             connectionToClient.stopTimer();
+            serverLogger.info("[" + connectionToClient.getClientNickname() + "]: received chosen starting player");
             notifyPacketStartPlayerObservers((PacketStartPlayer) packetFromClient);
         }else if(packetFromClient instanceof PacketCardsFromClient) {
             connectionToClient.stopTimer();
+            serverLogger.info("[" + connectionToClient.getClientNickname() + "]: received chosen cards");
             notifyPacketCardsFromClientObservers((PacketCardsFromClient) packetFromClient);
         }else if(packetFromClient instanceof PacketWorkersPositions){
             connectionToClient.stopTimer();
+            serverLogger.info("[" + connectionToClient.getClientNickname() + "]: received Workers' positions");
             notifyPacketWorkersPositionsObservers((PacketWorkersPositions) packetFromClient);
         }else{
             assert false;
@@ -101,6 +124,7 @@ public class VirtualView implements Observer<Object> {
      * This method sends an invalid packet answer to the client
      */
     public void sendInvalidPacketMessage(){
+        serverLogger.info("[" + connectionToClient.getClientNickname() + "]: sending invalid packet message");
         connectionToClient.send(ConnectionMessages.INVALID_PACKET, true);
     }
 

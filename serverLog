@@ -1,0 +1,40 @@
+mag 26, 2020 9:38:21 AM it.polimi.ingsw.server.communication.ServerImpl startServer
+INFO: Server is ready
+mag 26, 2020 9:38:28 AM it.polimi.ingsw.server.communication.ServerImpl startServer
+INFO: Received connection from address: [127.0.0.1]
+mag 26, 2020 9:38:28 AM it.polimi.ingsw.server.view.ConnectionToClient askNickname
+INFO: [127.0.0.1]: asking nickname
+mag 26, 2020 9:38:29 AM it.polimi.ingsw.server.view.ConnectionToClient handlePacketInSetup
+INFO: [127.0.0.1]: received nick
+mag 26, 2020 9:38:29 AM it.polimi.ingsw.server.view.ConnectionToClient askForDesiredPlayersAndGamemode
+INFO: [a]: asking num of players and gamemode
+mag 26, 2020 9:38:31 AM it.polimi.ingsw.server.view.ConnectionToClient handlePacketInSetup
+INFO: [a]: received game desires
+mag 26, 2020 9:38:38 AM it.polimi.ingsw.server.communication.ServerImpl startServer
+INFO: Received connection from address: [127.0.0.1]
+mag 26, 2020 9:38:38 AM it.polimi.ingsw.server.view.ConnectionToClient askNickname
+INFO: [127.0.0.1]: asking nickname
+mag 26, 2020 9:38:39 AM it.polimi.ingsw.server.view.ConnectionToClient handlePacketInSetup
+INFO: [127.0.0.1]: received nick
+mag 26, 2020 9:38:39 AM it.polimi.ingsw.server.communication.ServerImpl createMatch
+INFO: Creating match with id [1], players : [a, b]
+mag 26, 2020 9:38:39 AM it.polimi.ingsw.server.communication.Match start
+INFO: [a]: sending info on started match, MATCH ID: [1]
+mag 26, 2020 9:38:39 AM it.polimi.ingsw.server.communication.Match start
+INFO: [b]: sending info on started match, MATCH ID: [1]
+mag 26, 2020 9:38:39 AM it.polimi.ingsw.server.view.VirtualView lambda$new$0
+INFO: [b]: sending cards to choose
+mag 26, 2020 9:38:44 AM it.polimi.ingsw.server.view.ConnectionToClient run
+INFO: [a]: connection channel deactivated
+mag 26, 2020 9:38:44 AM it.polimi.ingsw.server.view.ConnectionToClient closeRoutineFull
+INFO: [a]: socket is closing
+mag 26, 2020 9:38:44 AM it.polimi.ingsw.server.communication.Match lambda$new$1
+INFO: [a]: deregistering from match
+mag 26, 2020 9:38:44 AM it.polimi.ingsw.server.communication.Match notifyBrutalEnd
+INFO: [b]: sending info of interruption of match, MATCH ID: [1]
+mag 26, 2020 9:38:44 AM it.polimi.ingsw.server.view.ConnectionToClient run
+INFO: [b]: connection channel deactivated
+mag 26, 2020 9:38:44 AM it.polimi.ingsw.server.communication.ServerImpl deregisterMatch
+INFO: Deactivated match with ID: [1]
+mag 26, 2020 9:38:44 AM it.polimi.ingsw.server.view.ConnectionToClient closeRoutineFull
+INFO: [b]: socket is closing

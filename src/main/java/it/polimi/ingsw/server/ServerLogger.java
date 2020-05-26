@@ -46,7 +46,7 @@ public class ServerLogger {
 
             internalSetupServerLogger();
             try {
-                FileHandler fh = new FileHandler("logs/" + logFileName);
+                FileHandler fh = new FileHandler(logFileName);
                 fh.setLevel(LEVEL_FOR_FILE_LOGGING);
                 fh.setFormatter(new SimpleFormatter());
                 myLogger.addHandler(fh);

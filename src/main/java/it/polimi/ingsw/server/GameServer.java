@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class GameServer {
@@ -32,14 +31,13 @@ public class GameServer {
 
         if(arguments.size() == 1 && arguments.contains(HELP_ARGUMENT)){
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("This is the server for Santorini table game, with no input the server will start on port " + DEFAULT_PORT + "\n\n");
-            sb.append("Here is a list of all the available commands:\n\n");
-            sb.append("-port: followed by the desired port number between " + MIN_PORT + " and " + MAX_PORT + " as argument\n");
-            sb.append("-v: to activate logging in the console.\n");
-            sb.append("-log: followed by a file name, to activate logging both in the console and in the chosen file\n");
-            sb.append("-help: to get help\n");
-            System.out.println(sb);
+            String s = "This is the server for Santorini table game, with no input the server will start on port " + DEFAULT_PORT + "\n\n" +
+                    "Here is a list of all the available commands:\n\n" +
+                    "-port: followed by the desired port number between " + MIN_PORT + " and " + MAX_PORT + " as argument\n" +
+                    "-v: to activate logging in the console.\n" +
+                    "-log: followed by a file name, to activate logging both in the console and in the chosen file\n" +
+                    "-help: to get help\n";
+            System.out.println(s);
             return;
 
         } else if(arguments.contains(PORT_ARGUMENT)){
@@ -92,7 +90,7 @@ public class GameServer {
         try {
             CardFactory.getInstance();
         } catch (InvalidCardException e) {
-            Logger.getLogger(ServerLogger.LOGGER_NAME).log(Level.SEVERE, "Error loading the cards", e);
+            Logger.getLogger(ServerLogger.LOGGER_NAME).log(Level.SEVERE, "Error loading the cards", e.getMessage());
             return; //Do not load the server if there are errors with the cards
         }
 
