@@ -33,7 +33,7 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
             for(Point pos : newBuildings.keySet()){
                 for(BuildingType building : newBuildings.get(pos)){
                     board.getCell(pos).addBuilding(building);
-                    matchData.decrementCounter(building, 1);
+                    matchData.decrementCounter(building);
                 }
             }
 
@@ -83,7 +83,7 @@ public class DefaultUpdateBoardStrategy implements UpdateBoardStrategy {
         if(playersStillInGame != 1 || winner != null) OutputUtilities.printMatch(youWin, gameOver);
 
         if(matchData.getPlayerName().equals(loser)) System.out.println("You have lost!");
-        else if(loser != null) System.out.println("\n"+ OutputUtilities.fromColorToBackColor(matchData.getPlayersColor().get(loser)).getCode() +loser + " has lost!" + OutputUtilities.ANSI_RESET);
+        else if(loser != null) System.out.println("\n"+ OutputUtilities.fromColorToBackColor(matchData.getPlayersColor().get(loser)).getCode() + loser + " has lost!" + OutputUtilities.ANSI_RESET);
 
         if(matchData.getPlayerName().equals(winner)) System.out.println("You have won!");
         else if(winner != null)System.out.println("\n"+ OutputUtilities.fromColorToBackColor(matchData.getPlayersColor().get(winner)).getCode() + winner + " has won!" + OutputUtilities.ANSI_RESET);

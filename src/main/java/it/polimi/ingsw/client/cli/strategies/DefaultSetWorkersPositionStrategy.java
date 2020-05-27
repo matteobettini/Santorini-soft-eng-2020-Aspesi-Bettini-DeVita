@@ -37,7 +37,7 @@ public class DefaultSetWorkersPositionStrategy implements SetWorkersPositionStra
             OutputUtilities.printMatch();
         }
 
-        if(isRetry) System.out.println("\nOne or more positions have been already occupied, try again.");
+        if(isRetry) System.out.println("\nOne or more positions have been already occupied, try again...\n");
 
         Map<String, Point> positions = InputUtilities.getInitialPositions();
 

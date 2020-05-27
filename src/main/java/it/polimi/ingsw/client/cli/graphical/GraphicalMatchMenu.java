@@ -180,12 +180,14 @@ public class GraphicalMatchMenu implements CharFigure {
                 godCard = godCard.concat("...");
             }
             stream.addString(relX + 25, relY + nextLine, godCard, BackColor.ANSI_BG_BLUE);
+
+            BackColor col = OutputUtilities.fromColorToBackColor(playersColor.get(player));
+
             if(player.length() >= 15){
                 player = player.substring(0, 12);
                 player = player.concat("...");
             }
 
-            BackColor col = OutputUtilities.fromColorToBackColor(playersColor.get(player));
             stream.addString(relX + 10, relY + nextLine, player, col);
             nextLine += 2;
         }

@@ -28,7 +28,7 @@ public class DefaultChooseStarterStrategy implements ChooseStarterStrategy {
 
         String startPlayer;
         if(!isRetry){
-            System.out.print("\n" + "Choose the starting player by writing his name (");
+            System.out.print("\n" + "Choose the starting player by typing his name (");
             Set<String> players = matchData.getIds().keySet();
             int size = players.size();
             int count = 1;

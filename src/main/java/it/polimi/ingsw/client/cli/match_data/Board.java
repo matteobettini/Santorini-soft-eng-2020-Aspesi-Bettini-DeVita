@@ -139,7 +139,7 @@ public class Board {
     }
 
     /**
-     * This method returns a map of possible buildings to build by the given worker and also excludes the ones that are already build.
+     * This method returns a map of possible buildings to build by the given worker and also excludes the ones that have been already built or the ones who have their counter set to zero.
      * @param worker is the String containing the workerID to check.
      * @param currentBuilds is a map of the already chosen buildings.
      * @return a map that associates adjacent positions to the worker with the possible buildings that can be built by it.

@@ -20,9 +20,7 @@ public class DefaultMatchStartedStrategy implements MatchStartedStrategy {
         MatchData matchData = MatchData.getInstance();
         System.out.println("\n" + "The match has started!");
         System.out.println("Players in game: ");
-        for(String player : packetMatchStarted.getPlayers()){
-            System.out.println("- " + player);
-        }
+        for(String player : packetMatchStarted.getPlayers()) System.out.println("- " + player);
         System.out.print("Selected mode: ");
         if(packetMatchStarted.isHardcore()) System.out.println(ForeColor.ANSI_BRIGHT_RED.getCode() + "Hardcore" + OutputUtilities.ANSI_RESET);
         else System.out.println(ForeColor.ANSI_BRIGHT_GREEN.getCode() + "Normal"+ OutputUtilities.ANSI_RESET);

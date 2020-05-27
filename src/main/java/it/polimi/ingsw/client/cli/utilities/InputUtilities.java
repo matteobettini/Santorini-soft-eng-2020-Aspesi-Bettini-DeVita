@@ -344,11 +344,11 @@ public class InputUtilities {
         boolean error = false;
         boolean suggestion = true;
         do{
-            if(error) System.out.println("Invalid buildings for worker" + (workerNumber) + ", retry");
+            if(error) System.out.println("Invalid building for worker" + (workerNumber) + ", retry");
 
             do{
-                if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s buildings (ex A1 1, B2 4...): ");
-                else System.out.print("Choose your next worker" + (workerNumber) + "'s buildings: ");
+                if(suggestion) System.out.print("Choose your next worker" + (workerNumber) + "'s building (ex A1 1, B2 4...): ");
+                else System.out.print("Choose your next worker" + (workerNumber) + "'s building: ");
                 suggestion = false;
                 point = InputUtilities.getLine();
                 if(point == null) return false;
@@ -368,10 +368,14 @@ public class InputUtilities {
         currentBuilds.put(chosenPosition, helper);
         currentDataOrder.add(chosenPosition);
 
-        matchData.decrementTempCounter(chosenBuilding, 1);
+        matchData.decrementTempCounter(chosenBuilding);
         return true;
     }
 
+    /**
+     * This method makes the player choose his initial workers' positions.
+     * @return a Map that associates workers' ids to their new position on the board.
+     */
     public static Map<String, Point> getInitialPositions(){
 
         MatchData matchData = MatchData.getInstance();
@@ -436,6 +440,7 @@ public class InputUtilities {
                 return 4;
         }
 
+        assert false;
         return 0;
     }
 
@@ -445,7 +450,6 @@ public class InputUtilities {
      * @return a BuildingType enum associated with the given integer.
      */
     public static BuildingType fromIntToBuildingType(int level){
-
         switch(level){
             case 1:
                 return BuildingType.FIRST_FLOOR;
@@ -453,7 +457,11 @@ public class InputUtilities {
                 return BuildingType.SECOND_FLOOR;
             case 3:
                 return BuildingType.THIRD_FLOOR;
+            case 4:
+                return BuildingType.DOME;
         }
+
+        assert false;
         return BuildingType.DOME;
     }
 }

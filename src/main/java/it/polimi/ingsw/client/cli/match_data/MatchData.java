@@ -62,6 +62,7 @@ public class MatchData {
     /**
      * This method makes the GraphicalBoard equal to the board by updating
      * workers' positions and buildings.
+     * Also temporary buildings counter is restored to the last backup.
      */
     public void makeGraphicalBoardEqualToBoard(){
         graphicalBoard = new GraphicalBoard(stream);
@@ -111,9 +112,30 @@ public class MatchData {
         buildingsCounter.put(building, count - howMany);
     }
 
+    /**
+     * This method decrements by one the building counter given and its BuildingType.
+     * @param building is the given BuildingType.
+     */
+    public void decrementCounter(BuildingType building){
+        decrementCounter(building, 1);
+    }
+
+    /**
+     * This method decrements the temporary building counter given the quantity and its BuildingType.
+     * @param building is the given BuildingType.
+     * @param howMany is the given quantity to decrement.
+     */
     public void decrementTempCounter(BuildingType building, int howMany){
         int count = buildingsTempCounter.get(building);
         buildingsTempCounter.put(building, count - howMany);
+    }
+
+    /**
+     * This method decrements by one the temporary building counter given its BuildingType.
+     * @param building is the given BuildingType.
+     */
+    public void decrementTempCounter(BuildingType building){
+       decrementTempCounter(building, 1);
     }
 
     /**
@@ -132,6 +154,10 @@ public class MatchData {
         return buildingsCounter;
     }
 
+    /**
+     * Getter for the temporary buildings counter.
+     * @return a map that associates BuildingType to the current available number (not the confirmed number after the board updating).
+     */
     public Map<BuildingType, Integer> getBuildingsTempCounter() { return buildingsTempCounter; }
 
     /**

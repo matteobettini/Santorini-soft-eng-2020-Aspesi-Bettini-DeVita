@@ -81,13 +81,11 @@ public class HardcoreStrategy implements GameModeStrategy{
         boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE MOVES
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
-        if (isRetry){
-            OutputUtilities.printMatch();
-            System.out.println("Not a valid move! Try again...");
-        }
+        OutputUtilities.printMatch();
+
+        if (isRetry) System.out.println("Not a valid move! Try again...");
         else System.out.println("Make your move!");
 
-        //List<String> possibleWorkers = workersID.stream().filter(board::canMove).collect(Collectors.toList());
 
         String lastUsedWorker = InputUtilities.getWorkerChoice(workersID);
 
@@ -100,8 +98,6 @@ public class HardcoreStrategy implements GameModeStrategy{
         do {
 
             Point lastWorkerPosition = currentChosenPositions.isEmpty() ? board.getWorkerPosition(lastUsedWorker) : currentChosenPositions.get(currentChosenPositions.size() - 1);
-
-            //List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition).stream().filter(p -> board.canMove(lastUsedWorker, lastWorkerPosition)).collect(Collectors.toList());
 
             List<Point> availablePositions = board.getAdjacentPoints(lastWorkerPosition);
 
@@ -178,10 +174,9 @@ public class HardcoreStrategy implements GameModeStrategy{
         boolean makeChoiceForbidden = false; //TRUE IF THE PLAYER CAN'T MAKE A CHOICE BECAUSE THERE ARE NO POSSIBLE BUILDS
         boolean confirmActionForbidden; //TRUE IF THE PLAYER CAN'T CONFIRM THE ACTION SINCE HE HAS NOT CHOSEN A WORKER
 
-        if (isRetry){
-            OutputUtilities.printMatch();
-            System.out.println("Not a valid build! Try again...");
-        }
+        OutputUtilities.printMatch();
+
+        if (isRetry) System.out.println("Not a valid build! Try again...");
         else System.out.println("Make your build!");
 
         String lastUsedWorker = InputUtilities.getWorkerChoice(workersID);

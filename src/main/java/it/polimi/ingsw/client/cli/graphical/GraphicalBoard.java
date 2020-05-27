@@ -119,7 +119,7 @@ public class GraphicalBoard implements CharFigure {
     }
 
     /**
-     * This method highlight the set possible positions on the GraphicalBoard in order to display
+     * This method highlights the set possible positions on the GraphicalBoard in order to display
      * possible actions to the user.
      * @param positions is the list of positions to highlight.
      * @param relX is the X coordinate of the GraphicalBoard.

@@ -21,10 +21,10 @@ public class ConnectionInGameStrategy implements ConnectionStrategy {
 
         assert connectionState != ConnectionState.CONNECTED && connectionState !=  ConnectionState.UNABLE_TO_CONNECT;
 
-        System.out.println("\n\n" + connectionStatus.getReasonOfClosure());
+        System.out.println("\n\n" + connectionStatus.getReasonOfClosure() + "\n");
         String choice;
         do{
-            System.out.print("\nDo you want to reconnect? (y | n) ");
+            System.out.print("Do you want to reconnect? (y | n) ");
             choice = InputUtilities.getLine();
             if(choice == null) return;
         }while(!(choice.toLowerCase().equals("y") || choice.toLowerCase().equals("n")));
@@ -34,7 +34,7 @@ public class ConnectionInGameStrategy implements ConnectionStrategy {
             cli.run();
         }
         else{
-            System.out.println("Thank you for playing Santorini, see you next time!");
+            System.out.println("\nThank you for playing Santorini, see you next time!");
         }
 
     }
