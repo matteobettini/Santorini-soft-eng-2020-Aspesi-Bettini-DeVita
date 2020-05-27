@@ -33,8 +33,8 @@ public class ServerImpl implements Server {
     private boolean currMatchHardcore;
     private int currMatchID;
 
-    private ServerPhase serverPhase;
-    private ConnectionToClient whoIAmCurrentlyWaiting;
+    private volatile ServerPhase serverPhase;
+    private volatile ConnectionToClient whoIAmCurrentlyWaiting;
 
     private final Logger serverLogger = Logger.getLogger(ServerLogger.LOGGER_NAME);
 
@@ -215,7 +215,7 @@ public class ServerImpl implements Server {
         try {
             assert activeMatches.contains(match);
             activeMatches.remove(match);
-            serverLogger.info("Deactivated match with ID: [" + match.getId() + "]");
+            serverLogger.info("Deregistered match with ID: [" + match.getId() + "]");
         } finally {
             lockMatches.unlock();
         }

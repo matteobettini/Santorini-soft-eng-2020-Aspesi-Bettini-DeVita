@@ -6,6 +6,9 @@ import java.util.logging.*;
 
 public class ServerLogger {
 
+    /**
+     * The name of the server logger
+     */
     public static final String LOGGER_NAME = "ServerLogger";
 
     private static final Level LEVEL_FOR_CONSOLE_LOGGING = Level.ALL;
@@ -31,16 +34,30 @@ public class ServerLogger {
         Logger.getLogger(LOGGER_NAME).setLevel(Level.ALL);
     }
 
+    /**
+     * This method is called to preliminary setup the logger,
+     * it removes any default handlers associated to it
+     */
     public static void preliminarySetup(){
         if(!setupDone.get())
             internalPreliminarySetup();
     }
 
+    /**
+     * This method is called to setup the server logger
+     * only associating it to the console
+     */
     public static void setupServerLogger(){
         if(setupDone.compareAndSet(false, true))
             internalSetupServerLogger();
     }
 
+    /**
+     * This method sets up the server logger
+     * using as output both the console and a chosen file.
+     * If the method fails to open the file it sends a warning message
+     * @param logFileName the name of the file for the logging
+     */
     public static void setupServerLogger(String logFileName){
         if(setupDone.compareAndSet(false, true)) {
 

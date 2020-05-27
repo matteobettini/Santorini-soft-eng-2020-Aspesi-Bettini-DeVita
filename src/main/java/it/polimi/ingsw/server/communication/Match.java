@@ -71,7 +71,7 @@ class Match {
             c.setInMatch(true);
             c.setClosureHandler((connection) -> {
                 if(isClosing.compareAndSet(false, true)) {
-                    serverLogger.info("[" + connection.getClientNickname() + "]: deregistering from match");
+                    serverLogger.info("[" + connection.getClientNickname() + "]: deregistering from match, MATCH ID [" + id + "]");
                     notifyBrutalEnd(connection);
                     closureHandler.update(this);
                 }

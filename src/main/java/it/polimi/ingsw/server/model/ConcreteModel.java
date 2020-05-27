@@ -67,45 +67,45 @@ public class ConcreteModel implements ObservableModel, Model {
     }
 
     @Override
-    public void makeMove(String senderID, PacketMove packetMove) throws InvalidPacketException {
+    public synchronized void makeMove(String senderID, PacketMove packetMove) throws InvalidPacketException {
         assert (!packetMove.isSimulate());
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
             turnLogic.consumePacketMove(senderID,packetMove);
     }
 
     @Override
-    public void makeBuild(String senderID, PacketBuild packetBuild) throws InvalidPacketException {
+    public synchronized void makeBuild(String senderID, PacketBuild packetBuild) throws InvalidPacketException {
         assert (!packetBuild.isSimulate());
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
             turnLogic.consumePacketBuild(senderID, packetBuild);
     }
 
     @Override
-    public void getPossibeMoves(String senderID, PacketMove packetMove) {
+    public synchronized void getPossibeMoves(String senderID, PacketMove packetMove) {
         assert (packetMove.isSimulate());
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
             turnLogic.getPossibleMoves(senderID,packetMove);
     }
 
     @Override
-    public void getPossibleBuilds(String senderID, PacketBuild packetBuild) {
+    public synchronized void getPossibleBuilds(String senderID, PacketBuild packetBuild) {
         assert (packetBuild.isSimulate());
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
             turnLogic.getPossibleBuilds(senderID,packetBuild);
     }
 
     @Override
-    public void setSelectedCards(String senderID, List<String> selectedCards) throws InvalidPacketException {
+    public synchronized void setSelectedCards(String senderID, List<String> selectedCards) throws InvalidPacketException {
         setupManager.setSelectedCards(senderID,selectedCards);
     }
 
     @Override
-    public void setStartPlayer(String senderID, String startPlayer) throws InvalidPacketException {
+    public synchronized void setStartPlayer(String senderID, String startPlayer) throws InvalidPacketException {
         setupManager.setStartPlayer(senderID,startPlayer);
     }
 
     @Override
-    public void setWorkersPositions(String senderID, Map<String, Point> workersPositions) throws InvalidPacketException {
+    public synchronized void setWorkersPositions(String senderID, Map<String, Point> workersPositions) throws InvalidPacketException {
         setupManager.setWorkersPositions(senderID,workersPositions);
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED) turnLogic.start();
     }

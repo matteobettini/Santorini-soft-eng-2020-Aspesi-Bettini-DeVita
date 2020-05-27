@@ -172,7 +172,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      */
     public void askNicknameAgain(){
         try{
-            serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: asking nickname");
+            serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: chosen nick already exists, reasking");
 
             nickAsked = true;
             internalSend(ConnectionMessages.TAKEN_NICKNAME);
