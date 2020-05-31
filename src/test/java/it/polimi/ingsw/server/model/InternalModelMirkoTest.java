@@ -59,6 +59,9 @@ class InternalModelMirkoTest {
         AndreaW2 = Andrea.getWorkers().get(1);
     }
 
+    /**
+     * Test if after a player loses the CardStrategy is recompiled so that loser's deny effects are removed for the opponents.
+     */
     @Test
     void testRecompiledCardStrategy(){
           /*
@@ -70,7 +73,7 @@ class InternalModelMirkoTest {
                 | FF |M1  |    | M2 |    |
                 +----+----+----+----+----+
             2   | A1 |    |    |    |    |
-                |    |    | B1 |FF  |    |
+                | FF |    | B1 |FF  |    |
                 +----+----+----+----+----+
             3   |    |    |    |  B2|    |
                 +----+----+----+----+----+
@@ -95,7 +98,7 @@ class InternalModelMirkoTest {
         Point startHypnus = new Point(2, 2);
         Point endHypnus = new Point(3, 2);
         Point start3rdPlayer = new Point(0,2);
-        Point end3rdPlayer = new Point(0,3);
+        Point end3rdPlayer = new Point(1,2);
 
         board.getCell(endAthena).addBuilding(BuildingType.FIRST_FLOOR);
         board.getCell(endHypnus).addBuilding(BuildingType.FIRST_FLOOR);
@@ -119,6 +122,24 @@ class InternalModelMirkoTest {
         board.getCell(new Point(2, 4)).setWorker(AndreaW2.getID());
         AndreaW2.setPosition(new Point(2, 4));
 
+         /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   | M1 | <- |    |    |    |
+                | FF |    |    | M2 |    |
+                +----+----+----+----+----+
+            2   | A1 |    |    |    |    |
+                | FF |    | B1 |FF  |    |
+                +----+----+----+----+----+
+            3   |    |    |    |  B2|    |
+                +----+----+----+----+----+
+            4   |    |    | A2 |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
         //FIRST ATHENA MOVES UP
         List<Point> points = new LinkedList<>();
         points.add(endAthena);
@@ -138,6 +159,24 @@ class InternalModelMirkoTest {
         assertEquals(MirkoW1.getPosition(), endAthena);
         assertEquals(board.getCell(endAthena).getWorkerID(), MirkoW1.getID());
 
+          /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   | M1 |    |    |    |    |
+                | FF |    |    | M2 |    |
+                +----+----+----+----+----+
+            2   | A1 |    | -> |B1  |    |
+                | FF |    |    |FF  |    |
+                +----+----+----+----+----+
+            3   |    |    |    |  B2|    |
+                +----+----+----+----+----+
+            4   |    |    | A2 |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
         //HYPNUS LOSES BECAUSE HE MOVES UP
 
         points = new LinkedList<>();
@@ -154,7 +193,28 @@ class InternalModelMirkoTest {
             assert true;
         }
 
-        //HYPNUS LOSES BECAUSE HE MOVES UP
+        model.addLoser(Matteo);
+        assertTrue(model.getLosers().contains(Matteo));
+
+          /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   | M1 |    |    |    |    |
+                | FF |    |    | M2 |    |
+                +----+----+----+----+----+
+            2   | -> |    |    |B1  |    |
+                | FF |A1  |    |FF  |    |
+                +----+----+----+----+----+
+            3   |    |    |    |  B2|    |
+                +----+----+----+----+----+
+            4   |    |    | A2 |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        //3RD PLAYER MOVES IS HIGHEST WORKER, SINCE HYPNUS HAS LOST HE SHOULD BE ABLE TO COMPLETE HIS ACTION
 
         points = new LinkedList<>();
         points.add(end3rdPlayer);
