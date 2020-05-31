@@ -66,7 +66,7 @@ public class NormalMoveStrategy implements MakeMoveStrategy {
                 possibleWorkers.add(wID);
         }
 
-        //graphicalBoard.selectCells(allPossible);
+        graphicalBoard.selectCells(allPossible);
 
         if (selected == null) {
             assert possibleWorkers.size() > 0;
