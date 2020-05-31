@@ -15,6 +15,7 @@ import it.polimi.ingsw.common.packets.PacketMove;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This class contains all the actual instances of the Model data.
@@ -133,10 +134,13 @@ class InternalModel {
         assert !losers.contains(loser);
         assert players.contains(loser);
         losers.add(loser);
+        //Clear loser workers
         for (Worker worker : loser.getWorkers()){
             board.getCell(worker.getPosition()).removeWorker();
             worker.removeFromBoard();
         }
+        //Rebuild rules excluding losers' God Powers
+        compileCardStrategy();
     }
 
     /**
@@ -251,13 +255,16 @@ class InternalModel {
         denyBuildRules = new ArrayList<>();
         winBuildRules = new ArrayList<>();
 
+        //Get players still in game
+        List<Player> stillInGame = players.stream().filter(p->!losers.contains(p)).collect(Collectors.toList());
+
         //Adding default rules
         CardFile defaultStrategy = cardFactory.getDefaultStrategy();
         for(CardRule rule : defaultStrategy.getRules()){
             compileAndAddRule(rule,null);
         }
         //Adding card rules
-        for(Player player : players){
+        for(Player player : stillInGame){
             //assert(player.getCard() != null);
             if(player.getCard() != null){
                 for(CardRule rule : player.getCard().getRules()){
@@ -267,7 +274,7 @@ class InternalModel {
 
         }
         //Compile state info for players
-        MapCompiler.compileMap(players,cardFactory.getDefaultStrategy());
+        MapCompiler.compileMap(stillInGame,cardFactory.getDefaultStrategy());
     }
 
     private void compileAndAddRule(CardRule rule, Player owner){
@@ -449,7 +456,7 @@ class InternalModel {
     }
 
     /**
-     * Tests if at least one of the workers owned by the specified playercan build at least once, in any direction.
+     * Tests if at least one of the workers owned by the specified player can build at least once, in any direction.
      * This will be checked according to his specific rules (abilities), not just using default builds rules.
      * @param player Player instance
      * @return True, if exists one possible build for at least one of his workers worker, False otherwise

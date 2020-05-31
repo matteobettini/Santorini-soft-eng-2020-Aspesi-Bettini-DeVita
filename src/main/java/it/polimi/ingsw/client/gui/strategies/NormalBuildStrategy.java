@@ -74,7 +74,7 @@ public class NormalBuildStrategy implements MakeBuildStrategy {
                 possibleWorkers.add(wID);
         }
 
-        graphicalBoard.selectCells(allPossible);
+        //graphicalBoard.selectCells(allPossible);
 
         if (selected == null) {
             assert possibleWorkers.size() > 0;
