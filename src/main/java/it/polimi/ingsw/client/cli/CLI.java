@@ -152,7 +152,7 @@ public class CLI {
 
         boolean firstLoop = true;
         do{
-            if(firstLoop) System.out.print("Enter the server's IP address: ");
+            if(firstLoop) System.out.print("Enter the server's IP address or d (default configuration): ");
             else  System.out.print("IP address not valid, enter the server's IP address: ");
             address = InputUtilities.getLine();
             assert address != null;

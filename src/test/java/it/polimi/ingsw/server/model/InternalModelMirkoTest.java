@@ -59,6 +59,124 @@ class InternalModelMirkoTest {
         AndreaW2 = Andrea.getWorkers().get(1);
     }
 
+    @Test
+    void testRecompiledCardStrategy(){
+          /*
+                  0    1     2    3    4   X
+                +----+----+----+----+----+
+            0   |    |    |    |    |    |
+                +----+----+----+----+----+
+            1   |    |    |    |    |    |
+                | FF |M1  |    | M2 |    |
+                +----+----+----+----+----+
+            2   | A1 |    |    |    |    |
+                |    |    | B1 |FF  |    |
+                +----+----+----+----+----+
+            3   |    |    |    |  B2|    |
+                +----+----+----+----+----+
+            4   |    |    | A2 |    |    |
+                +----+----+----+----+----+
+            Y
+        */
+
+        CardFile athena = cardFactory.getCards().stream().filter(c->c.getName().equals("Athena")).findAny().orElse(null);
+        CardFile hephaestus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hephaestus")).findAny().orElse(null);
+        CardFile hypnus = cardFactory.getCards().stream().filter(c->c.getName().equals("Hypnus")).findAny().orElse(null);
+
+        Mirko.setCard(athena);
+        Andrea.setCard(hephaestus);
+        Matteo.setCard(hypnus);
+        model.compileCardStrategy();
+
+        Board board = model.getBoard();
+
+        Point startAthena = new Point(1,1);
+        Point endAthena = new Point(0,1);
+        Point startHypnus = new Point(2, 2);
+        Point endHypnus = new Point(3, 2);
+        Point start3rdPlayer = new Point(0,2);
+        Point end3rdPlayer = new Point(0,3);
+
+        board.getCell(endAthena).addBuilding(BuildingType.FIRST_FLOOR);
+        board.getCell(endHypnus).addBuilding(BuildingType.FIRST_FLOOR);
+        board.getCell(start3rdPlayer).addBuilding(BuildingType.FIRST_FLOOR);
+
+        //SET ATHENA'S POSITIONS
+        board.getCell(startAthena).setWorker(MirkoW1.getID());
+        MirkoW1.setPosition(startAthena);
+        board.getCell(new Point(3, 1)).setWorker(MirkoW2.getID());
+        MirkoW2.setPosition(new Point(3, 1));
+
+        //SET HYPNUS POSITIONS
+        board.getCell(startHypnus).setWorker(MatteoW1.getID());
+        MatteoW1.setPosition(startHypnus);
+        board.getCell(new Point(3, 3)).setWorker(MatteoW2.getID());
+        MatteoW2.setPosition(new Point(3, 3));
+
+        //SET 3RD PLAYER'S POSITIONS
+        board.getCell(start3rdPlayer).setWorker(AndreaW1.getID());
+        AndreaW1.setPosition(start3rdPlayer);
+        board.getCell(new Point(2, 4)).setWorker(AndreaW2.getID());
+        AndreaW2.setPosition(new Point(2, 4));
+
+        //FIRST ATHENA MOVES UP
+        List<Point> points = new LinkedList<>();
+        points.add(endAthena);
+
+        PacketMove packetMove = new PacketMove(Mirko.getNickname(),MirkoW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Mirko.getState(),PlayerState.MOVED);
+        assertEquals(MirkoW1.getPosition(), endAthena);
+        assertEquals(board.getCell(endAthena).getWorkerID(), MirkoW1.getID());
+
+        //HYPNUS LOSES BECAUSE HE MOVES UP
+
+        points = new LinkedList<>();
+        points.add(endHypnus);
+
+        packetMove = new PacketMove(Matteo.getNickname(),MatteoW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertFalse(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert true;
+        }
+
+        //HYPNUS LOSES BECAUSE HE MOVES UP
+
+        points = new LinkedList<>();
+        points.add(end3rdPlayer);
+
+        packetMove = new PacketMove(Andrea.getNickname(),AndreaW1.getID(), false, points);
+
+        assertNotNull(packetMove);
+
+        try{
+            MoveData moveData = model.packetMoveToMoveData(packetMove);
+            assertTrue(model.makeMove(moveData));
+        } catch (PlayerWonSignal | PlayerLostSignal | InvalidPacketException e) {
+            assert false;
+        }
+
+        assertEquals(Andrea.getState(),PlayerState.MOVED);
+        assertEquals(AndreaW1.getPosition(), end3rdPlayer);
+        assertEquals(board.getCell(end3rdPlayer).getWorkerID(), AndreaW1.getID());
+
+
+    }
+
     /**
      * Test if Aphrodite correctly forbids possible positions to opponents and makes them lose.
      */

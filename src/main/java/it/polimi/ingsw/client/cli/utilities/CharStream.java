@@ -233,7 +233,7 @@ public class CharStream {
 
 
     /**
-     * This method resets the content of the stream and its colors.
+     * This method resets the stream's content and its colors.
      */
     public void reset(){
         for(int i = 0; i < width; ++i){
@@ -246,7 +246,7 @@ public class CharStream {
 
 
     /**
-     * This method prints the content of the stream and its colors.
+     * This method prints the stream's content and its colors.
      */
     public void print(PrintStream stream){
         stream.println();

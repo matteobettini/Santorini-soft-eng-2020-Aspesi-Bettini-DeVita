@@ -14,23 +14,23 @@ public class GraphicalCell implements CharFigure {
     private final List<CharFigure> buildings;
     private GraphicalWorker worker;
     private final Point position;
-    private final int RATEOX;
-    private final int RATEOY;
+    private final int RATIO_X;
+    private final int RATIO_Y;
 
     /**
      * This constructor initializes the GraphicalCell'stream used to print itself, its position
      * on the GraphicalBoard, its lengths on the X/Y axis.
      * @param position is the position on th GraphicalBoard.
      * @param stream is the CharStream used to print itself.
-     * @param RATEOX is the length on the X axis.
-     * @param RATEOY is the length on the Y axis.
+     * @param RATIO_X is the length on the X axis.
+     * @param RATIO_Y is the length on the Y axis.
      */
-    public GraphicalCell(Point position, CharStream stream, int RATEOX, int RATEOY){
+    public GraphicalCell(Point position, CharStream stream, int RATIO_X, int RATIO_Y){
         this.stream = stream;
         this.buildings = new ArrayList<>();
         this.position = position;
-        this.RATEOX = RATEOX;
-        this.RATEOY= RATEOY;
+        this.RATIO_X = RATIO_X;
+        this.RATIO_Y = RATIO_Y;
     }
 
     /**
@@ -49,7 +49,7 @@ public class GraphicalCell implements CharFigure {
                 playerName = player;
                 workerNumber = matchData.getWorkerNumber(workerID);
                 Color color = matchData.getPlayersColor().get(playerName);
-                if(playerName != null) this.worker = new GraphicalWorker(stream, color,RATEOX / 4, RATEOY / 4, workerNumber, playerName);
+                if(playerName != null) this.worker = new GraphicalWorker(stream, color, RATIO_X / 4, RATIO_Y / 4, workerNumber, playerName);
             }
         }
     }
@@ -82,7 +82,7 @@ public class GraphicalCell implements CharFigure {
      * @param buildingType is the given BuildingType to add.
      */
     public void addBuilding(BuildingType buildingType){
-        buildings.add(BuildingFactory.getBuilding(stream, buildingType, RATEOX, RATEOY));
+        buildings.add(BuildingFactory.getBuilding(stream, buildingType, RATIO_X, RATIO_Y));
     }
 
     /**

@@ -395,16 +395,17 @@ public class InputUtilities {
                     else System.out.print("Choose your worker" + (i + 1) + "'s position (ex A1, B2, ...): ");
                     choice = InputUtilities.getLine();
                     if(choice == null) return null;
-                }while(!InputUtilities.POSITION_PATTERN.matcher(choice).matches() && !choice.equals("r"));
+                }while(!InputUtilities.POSITION_PATTERN.matcher(choice).matches() && !choice.toLowerCase().equals("r"));
 
-                if(!choice.equals("r")){
+                if(!choice.toLowerCase().equals("r")){
                     position = InputUtilities.getPoint(choice);
                     error = position == null || positions.containsValue(position);
                 }
 
             }while(error);
 
-            if(!choice.equals("r")){
+            if(!choice.toLowerCase().equals("r")){
+                assert position != null;
                 matchData.getGraphicalBoard().getCell(position).setWorker(workersID.get(i));
                 if(i != workersID.size() - 1) OutputUtilities.printMatch();
                 positions.put(workersID.get(i), position);

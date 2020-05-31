@@ -10,8 +10,8 @@ class GraphicalWorker implements CharFigure {
 
     private final BackColor color;
     private final CharStream stream;
-    private final int RATEOX;
-    private final int RATEOY;
+    private final int RATIO_X;
+    private final int RATIO_Y;
     private final Integer number;
     private final String playerName;
 
@@ -20,16 +20,16 @@ class GraphicalWorker implements CharFigure {
      * the X and Y axes, its number and the associated playerID.
      * @param stream is the CharStream used to print.
      * @param color is the player color associated to it.
-     * @param RATEOX is the length on the X axis.
-     * @param RATEOY is the length on the Y axis.
+     * @param RATIO_X is the length on the X axis.
+     * @param RATIO_Y is the length on the Y axis.
      * @param number is the worker number.
      * @param playerName is the associated playerID.
      */
-    public GraphicalWorker(CharStream stream, Color color, int RATEOX, int RATEOY, Integer number, String playerName){
+    public GraphicalWorker(CharStream stream, Color color, int RATIO_X, int RATIO_Y, Integer number, String playerName){
         this.stream = stream;
         this.color = OutputUtilities.fromColorToBackColor(color);
-        this.RATEOX = RATEOX;
-        this.RATEOY = RATEOY;
+        this.RATIO_X = RATIO_X;
+        this.RATIO_Y = RATIO_Y;
         this.number = number;
         this.playerName = playerName;
     }
@@ -67,8 +67,8 @@ class GraphicalWorker implements CharFigure {
     public void draw(int relX, int relY) {
         relX += 8;
         relY += 3;
-        for(int i = 0; i <= RATEOX; ++i){
-            for(int j = 0; j <= RATEOY; ++j){
+        for(int i = 0; i <= RATIO_X; ++i){
+            for(int j = 0; j <= RATIO_Y; ++j){
                 if(i == 1 && j == 1) stream.addChar('*', i + relX, j + relY, color);
                 if(i == 2 && j == 1) stream.addChar(playerName.charAt(0), i + relX, j + relY, color);
                 if(i == 3 && j == 1) stream.addChar((char)(number + '0'), i + relX, j + relY, color);

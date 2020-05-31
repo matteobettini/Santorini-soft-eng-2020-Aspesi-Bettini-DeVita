@@ -7,19 +7,19 @@ import it.polimi.ingsw.client.cli.utilities.colors.ForeColor;
 
 class ThirdFloorBuilding implements CharFigure {
     private final CharStream stream;
-    private final int RATEOX;
-    private final int RATEOY;
+    private final int RATIO_X;
+    private final int RATIO_Y;
 
     /**
      * /**
      * This method is the constructor for the graphical third floor that implements the CharFigure interface.
      * @param stream is the object used by the graphical third floor in order to display itself.
-     * @param RATEOX is the length on the X axis.
-     * @param RATEOY is the length on the Y axis.
+     * @param RATIO_X is the length on the X axis.
+     * @param RATIO_Y is the length on the Y axis.
      */
-    public ThirdFloorBuilding(CharStream stream, int RATEOX, int RATEOY){
-        this.RATEOX = RATEOX;
-        this.RATEOY = RATEOY;
+    public ThirdFloorBuilding(CharStream stream, int RATIO_X, int RATIO_Y){
+        this.RATIO_X = RATIO_X;
+        this.RATIO_Y = RATIO_Y;
         this.stream = stream;
     }
 
@@ -42,16 +42,16 @@ class ThirdFloorBuilding implements CharFigure {
         relY+= 3;
         BackColor backColor = BackColor.ANSI_BG_WHITE;
         ForeColor foreColor = ForeColor.ANSI_BLACK;
-        for(int i = 0; i <= RATEOX; ++i){
-            for(int j = 0; j <= RATEOY; ++j){
+        for(int i = 0; i <= RATIO_X; ++i){
+            for(int j = 0; j <= RATIO_Y; ++j){
                 if(i == 0 && j == 0) stream.addChar('╔', i + relX, j + relY, foreColor, backColor);
-                else if(i == 0 && j ==  RATEOY) stream.addChar('╚', i + relX, j + relY, foreColor, backColor);
-                else if(i == RATEOX && j == 0) stream.addChar('╗', i + relX, j + relY, foreColor, backColor);
-                else if(i == RATEOX && j == RATEOY) stream.addChar('╝', i + relX, j + relY, foreColor, backColor);
-                else if(i > 0 && i < RATEOX && j == 0) stream.addChar('═', i + relX, j + relY, foreColor, backColor);
-                else if(i > 0 && i < RATEOX && j == RATEOY) stream.addChar('═', i +relX, j + relY, foreColor, backColor);
+                else if(i == 0 && j == RATIO_Y) stream.addChar('╚', i + relX, j + relY, foreColor, backColor);
+                else if(i == RATIO_X && j == 0) stream.addChar('╗', i + relX, j + relY, foreColor, backColor);
+                else if(i == RATIO_X && j == RATIO_Y) stream.addChar('╝', i + relX, j + relY, foreColor, backColor);
+                else if(i > 0 && i < RATIO_X && j == 0) stream.addChar('═', i + relX, j + relY, foreColor, backColor);
+                else if(i > 0 && i < RATIO_X && j == RATIO_Y) stream.addChar('═', i +relX, j + relY, foreColor, backColor);
                 else if(i == 0) stream.addChar('║', i + relX, j + relY, foreColor, backColor);
-                else if(i == RATEOX) stream.addChar('║', i + relX, j + relY, foreColor, backColor);
+                else if(i == RATIO_X) stream.addChar('║', i + relX, j + relY, foreColor, backColor);
                 else stream.addColor(i + relX, j + relY, null , backColor);
             }
         }

@@ -15,6 +15,7 @@ public class GraphicalOcean implements CharFigure {
     private final int height;
     private final int defaultX = 0;
     private final int defaultY = 0;
+    private final int numberOfBoats = 7;
 
     /**
      * This constructor initializes the stream used by the GraphicalOcean to print itself, its width and height.
@@ -53,7 +54,7 @@ public class GraphicalOcean implements CharFigure {
         List<Point> boatsPositions = possibleBoatsPositions();
         List<Point> alreadyDrawn = new ArrayList<>();
 
-        for(int i = 0; i <= 6; ++i){
+        for(int i = 0; i < numberOfBoats; ++i){
             Random random = new Random();
             int boatIndex = random.nextInt(possibleBoatsPositions().size());
             Point chosenBoat = possibleBoatsPositions().get(boatIndex);
@@ -92,7 +93,7 @@ public class GraphicalOcean implements CharFigure {
      */
     private void drawBoat(int relX, int relY){
         Random random = new Random();
-        int boatType = random.nextInt(4);
+        int boatType = random.nextInt(BoatFactory.numberOfTypes);
         CharFigure boat = BoatFactory.getBoat(stream, boatType);
         if(boat != null) boat.draw(relX, relY);
 
