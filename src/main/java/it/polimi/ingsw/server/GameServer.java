@@ -71,7 +71,7 @@ public class GameServer {
 
         if(arguments.size() == 1 && arguments.contains(VERBOSE_ARGUMENT))
             ServerLogger.setupServerLogger();
-        else if(arguments.size() == 2 && arguments.contains(LOGFILE_ARGUMENT)) {
+        else if((arguments.size() == 1 || arguments.size() == 2) && arguments.contains(LOGFILE_ARGUMENT)) {
             String proposedLogFile = null;
             try {
                 proposedLogFile = arguments.get(arguments.indexOf(LOGFILE_ARGUMENT) + 1);
