@@ -110,7 +110,7 @@ class InternalModelMirkoTest {
         board.getCell(new Point(3, 1)).setWorker(MirkoW2.getID());
         MirkoW2.setPosition(new Point(3, 1));
 
-        //SET HYPNUS POSITIONS
+        //SET HYPNUS' POSITIONS
         board.getCell(startHypnus).setWorker(MatteoW1.getID());
         MatteoW1.setPosition(startHypnus);
         board.getCell(new Point(3, 3)).setWorker(MatteoW2.getID());
@@ -214,7 +214,7 @@ class InternalModelMirkoTest {
             Y
         */
 
-        //3RD PLAYER MOVES IS HIGHEST WORKER, SINCE HYPNUS HAS LOST HE SHOULD BE ABLE TO COMPLETE HIS ACTION
+        //3RD PLAYER MOVES HIS HIGHEST WORKER, SINCE HYPNUS HAS LOST HE SHOULD BE ABLE TO COMPLETE HIS ACTION
 
         points = new LinkedList<>();
         points.add(end3rdPlayer);

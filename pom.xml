@@ -12,13 +12,29 @@
 
     <name>AM09</name>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>13</maven.compiler.target>
-        <javafx.version>14</javafx.version>
-        <project.outputName>GameClient</project.outputName>
-        <project.mainClass>it.polimi.ingsw.client.GameClient</project.mainClass>
-    </properties>
+    <profiles>
+        <profile>
+            <id>Server</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <maven.compiler.target>13</maven.compiler.target>
+                <javafx.version>14</javafx.version>
+                <project.outputName>GameServer</project.outputName>
+                <project.mainClass>it.polimi.ingsw.server.GameServer</project.mainClass>
+            </properties>
+        </profile>
+        <profile>
+            <id>Client</id>
+            <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <maven.compiler.target>13</maven.compiler.target>
+                <javafx.version>14</javafx.version>
+                <project.outputName>GameClient</project.outputName>
+                <project.mainClass>it.polimi.ingsw.client.GameClient</project.mainClass>
+            </properties>
+        </profile>
+
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -36,27 +52,40 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>${javafx.version}</version>
+            <version>14</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
+            <version>14</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>${javafx.version}</version>
+            <version>14</version>
         </dependency>
         <dependency>
             <groupId>com.interactivemesh.jfx</groupId>
             <artifactId>stl-importer</artifactId>
             <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>14</version>
+            <classifier>win</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>14</version>
+            <classifier>linux</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>14</version>
+            <classifier>mac</classifier>
         </dependency>
     </dependencies>
 

@@ -30,7 +30,7 @@ public class Controller {
             virtualView.addPacketMoveObserver((packetMove) ->{
                 try{
                     if(packetMove.isSimulate())
-                        this.model.getPossibeMoves(virtualView.getClientNickname(), packetMove);
+                        this.model.getPossibleMoves(virtualView.getClientNickname(), packetMove);
                     else
                         this.model.makeMove(virtualView.getClientNickname(), packetMove);
                 } catch (InvalidPacketException invalidPacketException){

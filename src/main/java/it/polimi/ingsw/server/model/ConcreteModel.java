@@ -81,7 +81,7 @@ public class ConcreteModel implements ObservableModel, Model {
     }
 
     @Override
-    public synchronized void getPossibeMoves(String senderID, PacketMove packetMove) {
+    public synchronized void getPossibleMoves(String senderID, PacketMove packetMove) {
         assert (packetMove.isSimulate());
         if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED)
             turnLogic.getPossibleMoves(senderID,packetMove);

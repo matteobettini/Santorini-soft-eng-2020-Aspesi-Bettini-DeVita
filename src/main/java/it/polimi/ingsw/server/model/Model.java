@@ -17,7 +17,7 @@ public interface Model{
 
     void makeBuild(String senderID, PacketBuild packetBuild) throws InvalidPacketException;
 
-    void getPossibeMoves(String senderID, PacketMove packetMove);
+    void getPossibleMoves(String senderID, PacketMove packetMove);
 
     void getPossibleBuilds(String senderID, PacketBuild packetBuild);
 
