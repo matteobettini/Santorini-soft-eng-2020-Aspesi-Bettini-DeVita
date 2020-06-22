@@ -295,13 +295,8 @@ class SetupManagerTest {
             assertEquals(availableCards,selectedCards);
             assertEquals(availableCards.size(),3);
             assertEquals(packet.getNumberToChoose(),1);
-            for(String card : packet.getAllCards().keySet()){
-                boolean found = false;
-                for(CardFile cardFile : cardFiles){
-                    if(cardFile.getName().equals(card) && cardFile.getDescription().equals(packet.getAllCards().get(card))) found = true;
-                }
-                assert found;
-            }
+            for(CardFile card : cardFiles)
+                assertTrue(packet.getAllCards().containsKey(card.getName()) && packet.getAllCards().containsValue(card.getDescription()));
             assertEquals(packet.getAllCards().size(),3);
             setupManager.setSelectedCards(next, availableCards.subList(0,1));
             helperCards = new Pair<>(availableCards.get(0),packet.getAllCards().get(availableCards.get(0)));

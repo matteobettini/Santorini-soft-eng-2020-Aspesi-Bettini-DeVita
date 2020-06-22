@@ -111,6 +111,7 @@ class SetupManager{
         } else{ //IF I DID RECEIVE THEM FROM THE CHALLENGER I SET THE NEXT CARDS TO CHOOSE TO 1 AND UPDATE THE AVAILABLE CARDS
             numberOfCardsToChoose = 1;
             availableCards = availableCards.stream().filter(chosenCards::contains).collect(Collectors.toList());
+            allCards.entrySet().removeIf(entry -> !chosenCards.contains(entry.getKey()));
         }
         //INCREMENT THE PLAYER INDEX
         incrementActivePlayerIndex();
