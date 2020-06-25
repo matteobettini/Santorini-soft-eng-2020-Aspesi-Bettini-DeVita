@@ -200,7 +200,7 @@ class CardReader {
             }catch (IllegalArgumentException ex){
                 throw  new InvalidCardException("[RULE PARSER]Event type '" + ruleNode.getAttributes().getNamedItem("event").getNodeValue() + "' not supported");
             }catch (NullPointerException ex){
-                throw new InvalidCardException("[RULE PARSER]Cannot read tag event");
+                throw new InvalidCardException("[RULE PARSER]Cannot read \"event\" attribute");
             }
             if (ruleNode.getNodeType() != Node.ELEMENT_NODE){
                 throw new InvalidCardException("[RULE PARSER]Missing rule attributes");

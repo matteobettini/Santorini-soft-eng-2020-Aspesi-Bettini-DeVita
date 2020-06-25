@@ -1,6 +1,8 @@
 package it.polimi.ingsw.server;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.*;
 
@@ -10,6 +12,7 @@ public class ServerLogger {
      * The name of the server logger
      */
     public static final String LOGGER_NAME = "ServerLogger";
+    public static final List<String> ACCEPTED_EXTENSIONS = Arrays.asList("txt", "log");
 
     private static final Level LEVEL_FOR_CONSOLE_LOGGING = Level.ALL;
     private static final Level LEVEL_FOR_FILE_LOGGING = Level.ALL;
@@ -63,6 +66,13 @@ public class ServerLogger {
 
             internalSetupServerLogger();
             try {
+                String extension = getExtension(logFileName);
+                if(extension != null && !extensionIsValid(extension)) {
+                    myLogger.warning("Unsupported extension for file: \"" + logFileName + "\", unable to log in the file");
+                    return;
+                }
+                if(extension == null)
+                    logFileName += ".log";
                 FileHandler fh = new FileHandler(logFileName);
                 fh.setLevel(LEVEL_FOR_FILE_LOGGING);
                 fh.setFormatter(new SimpleFormatter());
@@ -73,5 +83,15 @@ public class ServerLogger {
         }
     }
 
+    private static String getExtension(String fileName){
+        int lastPointIndex = fileName.lastIndexOf(".");
+        if(lastPointIndex == -1)
+            return null;
+        return fileName.substring(lastPointIndex + 1);
+    }
+
+    private static boolean extensionIsValid(String extension){
+        return ACCEPTED_EXTENSIONS.contains(extension);
+    }
 
 }
