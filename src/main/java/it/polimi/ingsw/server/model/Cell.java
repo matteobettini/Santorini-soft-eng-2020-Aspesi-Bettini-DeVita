@@ -12,9 +12,7 @@ import java.util.Objects;
  * This class represents a Cell of the Board.
  * It contains the Buildings and it may contain a Worker.
  * It is uniquely identified by its position on the Board.
- * @version 1.0
  */
-
 class Cell{
 
     public static final int FULL_TOWER_HEIGHT = 4;

@@ -13,7 +13,7 @@ class Worker {
      * This is the ID of the Worker which is the concatenation of the Player nickname + "." + the number starting from 1.
      */
     private final String ID;
-    private String playerID;
+    private final String playerID;
     private Point position;
 
 
@@ -34,7 +34,6 @@ class Worker {
      * set worker's position to null
      */
     public void removeFromBoard(){
-        assert (this.position != null);
         this.position = null;
     }
 
@@ -44,10 +43,8 @@ class Worker {
      */
     public void setPosition(Point position){
         assert position != null;
-        if(position.x >= 0 && position.x < Board.ROWS && position.y >= 0 && position.y < Board.COLUMNS){
+        if(position.x >= 0 && position.x < Board.ROWS && position.y >= 0 && position.y < Board.COLUMNS)
             this.position = new Point(position);
-        }
-        else assert false;
     }
 
     /**

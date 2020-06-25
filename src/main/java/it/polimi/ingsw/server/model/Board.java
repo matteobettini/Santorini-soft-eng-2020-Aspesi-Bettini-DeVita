@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class represents the Board used during a Match. It is instantiated through a constructor
- * that has as parameters the number of row and columns. It contains rows * columns Cells and the number of available
+ * This class represents the Board used during a Match.
+ * It contains rows * columns Cells and the number of available
  * buildings that can be used by the Players in order to build on the Cells.
  */
 class Board {
@@ -118,6 +118,40 @@ class Board {
     }
 
     /**
+     * This method restocks entirely the available buildings of the given BuildingType.
+     * @param b is the BuildingType to restock.
+     */
+    public void restockBuilding(BuildingType b){
+        assert b != null;
+        switch(b){
+            case FIRST_FLOOR:
+                buildingsCounter.put(BuildingType.FIRST_FLOOR, NUM_OF_FIRST_FLOOR);
+                break;
+            case SECOND_FLOOR:
+                buildingsCounter.put(BuildingType.SECOND_FLOOR, NUM_OF_SECOND_FLOOR);
+                break;
+            case THIRD_FLOOR:
+                buildingsCounter.put(BuildingType.THIRD_FLOOR, NUM_OF_THIRD_FLOOR);
+                break;
+            case DOME:
+                buildingsCounter.put(BuildingType.DOME, NUM_OF_DOME);
+                break;
+        }
+    }
+
+    /**
+     * This method restocks entirely the available buildings for all the building types.
+     */
+    public void restockBuildings(){
+
+        buildingsCounter.put(BuildingType.FIRST_FLOOR, NUM_OF_FIRST_FLOOR);
+        buildingsCounter.put(BuildingType.SECOND_FLOOR, NUM_OF_SECOND_FLOOR);
+        buildingsCounter.put(BuildingType.THIRD_FLOOR, NUM_OF_THIRD_FLOOR);
+        buildingsCounter.put(BuildingType.DOME, NUM_OF_DOME);
+
+    }
+
+    /**
      *  It's true if the two points are adjacent
      *
      * @param p1 point 1
@@ -175,7 +209,8 @@ class Board {
     public Map<BuildingType, Integer> getBuildingsCounter() {
         Map<BuildingType, Integer> helper = new HashMap<>();
         for(BuildingType buildingType : buildingsCounter.keySet()){
-            helper.put(buildingType, buildingsCounter.get(buildingType));
+            int newInt = buildingsCounter.get(buildingType);
+            helper.put(buildingType, newInt);
         }
         return helper;
     }

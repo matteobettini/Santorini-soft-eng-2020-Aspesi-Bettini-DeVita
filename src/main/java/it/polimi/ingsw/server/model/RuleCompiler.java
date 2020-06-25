@@ -15,7 +15,7 @@ class RuleCompiler {
 
     /**
      * Compiles the CardRule using the StatementCompiler and EffectCompiler
-     * @param internalModel the internal model is needed to incapsulate it in the lambdas
+     * @param internalModel the internal model is needed to encapsulate it in the lambdas
      * @param cardRule the rule to be compiled
      * @param owner the owner of the rule to be compiled
      * @return the compiled rule

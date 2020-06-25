@@ -190,7 +190,9 @@ class BoardTest {
         assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
         assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME);
 
-
+        for(BuildingType b : BuildingType.values())
+            boardT.restockBuilding(b);
+        boardT.restockBuildings();
     }
 
     /**
