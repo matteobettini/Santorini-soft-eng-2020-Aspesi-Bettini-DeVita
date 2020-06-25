@@ -190,9 +190,110 @@ class BoardTest {
         assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
         assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME);
 
-        for(BuildingType b : BuildingType.values())
-            boardT.restockBuilding(b);
+        //clean the available buildings again
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        for(int i = 1; i <= Board.NUM_OF_FIRST_FLOOR; ++i){
+            assertTrue(boardT.canUseBuilding(BuildingType.FIRST_FLOOR));
+            assertTrue(boardT.useBuilding(BuildingType.FIRST_FLOOR));
+            assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR - i);
+        }
+
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
+        for(int i = 1; i <= Board.NUM_OF_SECOND_FLOOR; ++i){
+            assertTrue(boardT.canUseBuilding(BuildingType.SECOND_FLOOR));
+            assertTrue(boardT.useBuilding(BuildingType.SECOND_FLOOR));
+            assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR - i);
+        }
+
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
+        for(int i = 1; i <= Board.NUM_OF_THIRD_FLOOR; ++i){
+            assertTrue(boardT.canUseBuilding(BuildingType.THIRD_FLOOR));
+            assertTrue(boardT.useBuilding(BuildingType.THIRD_FLOOR));
+            assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR - i);
+        }
+
+        assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME);
+        for(int i = 1; i <= Board.NUM_OF_DOME; ++i){
+            assertTrue(boardT.canUseBuilding(BuildingType.DOME));
+            assertTrue(boardT.useBuilding(BuildingType.DOME));
+            assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME - i);
+        }
+
+        //Checks if the restock method works and only restocks the given building type.
+        boardT.restockBuilding(BuildingType.FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR), Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),0);
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),0);
+        assertEquals(boardT.availableBuildings(BuildingType.DOME),0);
+
+        boardT.restockBuilding(BuildingType.SECOND_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),0);
+        assertEquals(boardT.availableBuildings(BuildingType.DOME),0);
+
+        boardT.restockBuilding(BuildingType.THIRD_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.DOME),0);
+
+        boardT.restockBuilding(BuildingType.DOME);
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME);
+
+        //clean the available buildings again
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        for(int i = 1; i <= Board.NUM_OF_FIRST_FLOOR; ++i){
+            assertTrue(boardT.canUseBuilding(BuildingType.FIRST_FLOOR));
+            assertTrue(boardT.useBuilding(BuildingType.FIRST_FLOOR));
+            assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR - i);
+        }
+
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
+        for(int i = 1; i <= Board.NUM_OF_SECOND_FLOOR; ++i){
+            assertTrue(boardT.canUseBuilding(BuildingType.SECOND_FLOOR));
+            assertTrue(boardT.useBuilding(BuildingType.SECOND_FLOOR));
+            assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR - i);
+        }
+
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
+        for(int i = 1; i <= Board.NUM_OF_THIRD_FLOOR; ++i){
+            assertTrue(boardT.canUseBuilding(BuildingType.THIRD_FLOOR));
+            assertTrue(boardT.useBuilding(BuildingType.THIRD_FLOOR));
+            assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR - i);
+        }
+
+        assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME);
+        for(int i = 1; i <= Board.NUM_OF_DOME; ++i){
+            assertTrue(boardT.canUseBuilding(BuildingType.DOME));
+            assertTrue(boardT.useBuilding(BuildingType.DOME));
+            assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME - i);
+        }
+
         boardT.restockBuildings();
+        assertEquals(boardT.availableBuildings(BuildingType.FIRST_FLOOR),Board.NUM_OF_FIRST_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.SECOND_FLOOR),Board.NUM_OF_SECOND_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.THIRD_FLOOR),Board.NUM_OF_THIRD_FLOOR);
+        assertEquals(boardT.availableBuildings(BuildingType.DOME),Board.NUM_OF_DOME);
+    }
+
+    /**
+     * Tests the is on perimeter function
+     */
+    @Test
+    void testIsOnPerimeter(){
+
+        for(int i = -3; i < Board.ROWS + 6; i++)
+            for(int j = -6; j < Board.COLUMNS +4; j++){
+                if(((i == 0 || i == Board.ROWS - 1 ) && (j >= 0 && j < Board.COLUMNS)) || ((j == 0 || j == Board.COLUMNS - 1) && (i >= 0 && i < Board.ROWS)))
+                    assertTrue(Board.isOnPerimeter(new Point(i, j)));
+                else
+                    assertFalse(Board.isOnPerimeter(new Point(i, j)));
+            }
+
     }
 
     /**
