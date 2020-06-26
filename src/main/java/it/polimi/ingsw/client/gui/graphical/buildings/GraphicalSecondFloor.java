@@ -4,6 +4,9 @@ import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 
+/**
+ * Represents a 3D second floor
+ */
 class GraphicalSecondFloor extends GraphicalBuildingImpl implements GraphicalBuilding {
 
     private static final String MESH_PATH = "/client/mesh/second_floor.stl";

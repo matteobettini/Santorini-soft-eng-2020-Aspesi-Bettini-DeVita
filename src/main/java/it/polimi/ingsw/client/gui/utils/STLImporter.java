@@ -10,6 +10,9 @@ import javafx.scene.shape.MeshView;
 
 import java.net.URL;
 
+/**
+ * Helper class to import 3D Mesh from resources
+ */
 public class STLImporter {
 
     private static STLImporter importer;
@@ -25,6 +28,13 @@ public class STLImporter {
         return importer;
     }
 
+    /**
+     * Import a 3D mesh from resource
+     * @param resourcePath Mesh relative path
+     * @param texturePath Mesh texture path
+     * @param importInfo Mesh import info
+     * @return Mesh
+     */
     public MeshView importMesh(String resourcePath, String texturePath, STLImportInfo importInfo){
         assert texturePath != null;
         //Load mesh
@@ -37,6 +47,14 @@ public class STLImporter {
         meshView.setMaterial(material);
         return meshView;
     }
+
+    /**
+     * Import a 3D mesh from resource
+     * @param resourcePath Mesh relative path
+     * @param color Mesh color
+     * @param importInfo Mesh import info
+     * @return Mesh
+     */
     public MeshView importMesh(String resourcePath, Color color, STLImportInfo importInfo){
         assert color != null;
         //Load mesh
@@ -47,6 +65,14 @@ public class STLImporter {
         meshView.setMaterial(material);
         return meshView;
     }
+
+    /**
+     * Import a 3D mesh from resource
+     * @param resourcePath Mesh relative path
+     * @param material Mesh material
+     * @param importInfo Mesh import info
+     * @return Mesh
+     */
     public MeshView importMesh(String resourcePath, PhongMaterial material, STLImportInfo importInfo){
         assert material != null;
         //Load mesh
@@ -55,6 +81,13 @@ public class STLImporter {
         meshView.setMaterial(material);
         return meshView;
     }
+
+    /**
+     * Actual importer for a STL mesh
+     * @param resourcePath STL relative path
+     * @param importInfo Mesh import info
+     * @return Mesh
+     */
     private MeshView internalImport(String resourcePath, STLImportInfo importInfo){
         assert resourcePath != null && importInfo != null;
         URL path = scanner.getResourcePath(resourcePath);

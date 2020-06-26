@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public interface Client {
 
-    void asyncStart(String address, int port);
+    void asyncStart(String address, int port, boolean asDemon);
     void start(String address, int port);
 
     void send(Serializable packet);

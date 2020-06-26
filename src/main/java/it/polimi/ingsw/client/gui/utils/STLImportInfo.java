@@ -2,6 +2,10 @@ package it.polimi.ingsw.client.gui.utils;
 
 import javafx.geometry.Point3D;
 
+/**
+ * Mesh import info, containing positioning and scale information
+ * to be applied to an imported mesh
+ */
 public class STLImportInfo {
     private final double x;
     private final double y;

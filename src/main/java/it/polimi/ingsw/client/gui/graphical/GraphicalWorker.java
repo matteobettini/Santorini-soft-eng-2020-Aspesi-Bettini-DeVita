@@ -16,7 +16,7 @@ import javafx.util.Duration;
 
 import java.awt.*;
 
-public class GraphicalWorker {
+public class GraphicalWorker implements Positionable {
 
     public static final double WORKER_BASE_SIZE = 5;
     private static final double TRANSITION_MS = 1000;
@@ -43,7 +43,7 @@ public class GraphicalWorker {
         this.currPosition = board.getCell(currentPosition);
         this.clickHandler = null;
         assert this.currPosition != null;
-        this.currRealPosition = currPosition.getRealPosition();
+        this.currRealPosition = currPosition.getTopPosition();
         this.board = board;
         initGraphics();
     }
@@ -66,12 +66,17 @@ public class GraphicalWorker {
         myGraphics.setMaterial(material);
     }
 
+    public Point getPosition(){
+        return currPosition.getPosition();
+    }
+
     public void remove(){
         currPosition.removeWorker(this); //Remove from model
         board.getBoardGroup().getChildren().remove(myGraphics); //Remove graphics
     }
 
-    public String getWorkerID() {
+    @Override
+    public String getID() {
         return workerID;
     }
 
@@ -82,6 +87,7 @@ public class GraphicalWorker {
             setColor(color); //Restore original color
     }
 
+    @Override
     public void move(Point destination){
         assert destination != null;
 
@@ -101,17 +107,16 @@ public class GraphicalWorker {
      * Invoked by cells when a worker moves
      */
     TranslateTransition currentTransition = null;
-    public void updatePosition(){
+    @Override
+    public void updatePosition(Point3D endPosition){
         Point3D startPosition = currRealPosition;
-        Point3D endPosition = currPosition.getWorkerPositionDelta(this);
 
-        //if (startPosition.equals(endPosition))
-            //return; //If nothing changes, just return
-
-        //Else begin movement
-        if (currentTransition != null) //If is present a transition
+        if (currentTransition != null){
+            //If is present a transition, stop it
             currentTransition.stop();
+        }
 
+        //Start a new one
         currentTransition = new TranslateTransition(Duration.millis(TRANSITION_MS), myGraphics);
         currentTransition.setFromX(startPosition.getX());
         currentTransition.setFromY(startPosition.getY());
@@ -121,9 +126,9 @@ public class GraphicalWorker {
         currentTransition.setToZ(endPosition.getZ());
         currentTransition.setOnFinished(e->{
             currentTransition = null; //Clear on finished
+            currRealPosition = endPosition; //Finally save end position
         });
         currentTransition.playFromStart();
-        currRealPosition = endPosition; //Finally save end position
     }
 
     public void setOnClickedHandler(ClickedHandler<GraphicalWorker> handler){

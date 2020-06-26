@@ -76,12 +76,12 @@ public class ClientImpl implements Client {
         });
     }
     @Override
-    public void asyncStart(String address, int port){
+    public void asyncStart(String address, int port, boolean asDemon){
         if(!started.get()) {
             Thread thread = new Thread(()->start(address, port));
             pinger.setDaemon(true);
-            packetReceiver.setDaemon(true);
-            thread.setDaemon(true);
+            packetReceiver.setDaemon(asDemon);
+            thread.setDaemon(asDemon);
             thread.start();
         }
     }
@@ -213,6 +213,7 @@ public class ClientImpl implements Client {
                 try {
                     os.writeObject(packet);
                     os.flush();
+                    os.reset();
                 } catch (IOException e) {
                     closeRoutine();
                 }

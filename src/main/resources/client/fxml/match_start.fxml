@@ -17,50 +17,59 @@
                 <Insets bottom="50.0" left="100.0" right="100.0" top="50.0" />
             </padding>
          <center>
-            <HBox fx:id="playersPane" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0" BorderPane.alignment="CENTER">
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="50.0" BorderPane.alignment="CENTER">
                <children>
-                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                  <HBox fx:id="playersPane" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0" styleClass="back-rounded">
                      <children>
-                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../textures/icon_player.png" /> <!--Change in /client/textures/icon_player.png for jar-->
-                           </image>
-                        </ImageView>
-                        <Label text="Test" textFill="WHITE">
-                           <font>
-                              <Font name="Calibri" size="30.0" />
-                           </font>
-                        </Label>
+                        <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../textures/icon_player.png" /> <!--Change in /client/textures/icon_player.png for jar-->
+                                 </image>
+                              </ImageView>
+                              <Label text="Test" textFill="WHITE">
+                                 <font>
+                                    <Font name="Calibri" size="30.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" layoutX="372.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../textures/icon_player.png" /> <!--Change in /client/textures/icon_player.png for jar-->
+                                 </image>
+                              </ImageView>
+                              <Label text="Test" textFill="WHITE">
+                                 <font>
+                                    <Font name="Calibri" size="30.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" layoutX="475.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../textures/icon_player.png" /> <!--Change in /client/textures/icon_player.png for jar-->
+                                 </image>
+                              </ImageView>
+                              <Label text="Test" textFill="WHITE">
+                                 <font>
+                                    <Font name="Calibri" size="30.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
                      </children>
-                  </VBox>
-                  <VBox alignment="CENTER" layoutX="372.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../textures/icon_player.png" /> <!--Change in /client/textures/icon_player.png for jar-->
-                           </image>
-                        </ImageView>
-                        <Label text="Test" textFill="WHITE">
-                           <font>
-                              <Font name="Calibri" size="30.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" layoutX="475.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../textures/icon_player.png" /> <!--Change in /client/textures/icon_player.png for jar-->
-                           </image>
-                        </ImageView>
-                        <Label text="Test" textFill="WHITE">
-                           <font>
-                              <Font name="Calibri" size="30.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
+                  </HBox>
+                  <Label fx:id="lblGameMode" text="Game Mode: Normal" textFill="WHITE">
+                     <font>
+                        <Font name="Calibri" size="32.0" />
+                     </font>
+                  </Label>
                </children>
                <styleClass>
                   <String fx:value="back-4" />
@@ -69,7 +78,7 @@
                <BorderPane.margin>
                   <Insets top="100.0" />
                </BorderPane.margin>
-            </HBox>
+            </VBox>
          </center>
         </BorderPane>
          <HBox fx:id="msgPane" alignment="CENTER" maxHeight="100.0" prefHeight="100.0" prefWidth="200.0" StackPane.alignment="TOP_CENTER">

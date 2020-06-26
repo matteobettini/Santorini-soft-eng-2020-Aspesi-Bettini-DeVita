@@ -20,6 +20,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This object manages 3D board and linked cells.
+ * It's fixed to 5x5 cells, but can be changed according to server-side Board
+ */
 public class GraphicalBoard {
 
     private static final int ROWS = 5;
@@ -30,51 +34,54 @@ public class GraphicalBoard {
     private static final double OCEAN_RADIUS = 100;
     private static final double OCEAN_OFFSET = 12;
 
-    private static final String meshPath = "/client/mesh/cliff.stl";
-    private static final String oceanTexturePath = "/client/textures/board/water.png";
+    private static final String MESH_PATH = "/client/mesh/cliff.stl";
+    private static final String OCEAN_TEXTURE_PATH = "/client/textures/board/water.png";
 
     private GraphicalCell[][] cells;
 
-    private final Group boardGroup;
+    private final Group boardGroup; //Contains all Board/Cells graphics
 
     private final List<Point> selectedCells;
 
     private STLImporter stlImporter = STLImporter.getImporter();
     private ResourceScanner scanner = ResourceScanner.getInstance();
 
-    private MeshView myCliff;
-    private Shape3D myBoard;
-    private Shape3D myWater;
-
+    /**
+     * Create a Graphical Board and start rendering it inside container
+     * @param container Where to add 3D graphics
+     */
     public GraphicalBoard(Group container) {
         this.cells = new GraphicalCell[ROWS][COLS];
         this.selectedCells = new LinkedList<>();
         this.boardGroup = new Group();
         for(int x=0;x<ROWS;x++){
             for(int y=0;y<COLS;y++){
-                this.cells[x][y] = new GraphicalCell(new Point(x,y), boardGroup);
+                this.cells[x][y] = new GraphicalCell(new Point(x,y), boardGroup); //Instantiate new Graphical Cell
             }
         }
         initGraphics();
         container.getChildren().add(boardGroup);
     }
 
+    /**
+     * Load 3D graphics of board
+     */
     private void initGraphics(){
         //Load mesh
         STLImportInfo importInfo = new STLImportInfo(0,0,0);
-        myCliff = stlImporter.importMesh(meshPath,BOARD_COLOR,importInfo);
+        MeshView myCliff = stlImporter.importMesh(MESH_PATH, BOARD_COLOR, importInfo);
         assert myCliff != null;
         //Create board
         double cellLength = GraphicalCell.CELL_SIZE + GraphicalCell.CELL_BORDER_SIZE;
-        myBoard = new Box(cellLength*ROWS,cellLength*COLS,BOARD_HEIGHT);
+        Shape3D myBoard = new Box(cellLength * ROWS, cellLength * COLS, BOARD_HEIGHT);
         myBoard.setTranslateZ(BOARD_OFFSET_Z);
         PhongMaterial material = new PhongMaterial();
         material.setDiffuseColor(BOARD_COLOR);
         myBoard.setMaterial(material);
         //Create water
-        URL waterTexture = scanner.getResourcePath(oceanTexturePath);
+        URL waterTexture = scanner.getResourcePath(OCEAN_TEXTURE_PATH);
         assert waterTexture != null;
-        myWater = new Cylinder(OCEAN_RADIUS,BOARD_HEIGHT);
+        Shape3D myWater = new Cylinder(OCEAN_RADIUS, BOARD_HEIGHT);
         PhongMaterial water = new PhongMaterial();
         water.setDiffuseMap(new Image(waterTexture.toString()));
         myWater.setMaterial(water);
@@ -86,6 +93,12 @@ public class GraphicalBoard {
         boardGroup.getChildren().add(myWater);
     }
 
+    /**
+     * Gets the Graphical Cell at a given point
+     * @param x x point
+     * @param y y point
+     * @return GraphicalCell if coords are inside board, null otherwise
+     */
     public GraphicalCell getCell(int x, int y){
         if (x >= 0 && x < ROWS && y>=0 && y< COLS)
             return cells[x][y];
@@ -94,10 +107,15 @@ public class GraphicalBoard {
     public GraphicalCell getCell(Point point){
         return getCell(point.x,point.y);
     }
+
     public Group getBoardGroup(){
         return boardGroup;
     }
 
+    /**
+     * Select cells on the board
+     * @param selectedCells Set of cells to be selected
+     */
     public void selectCells(Set<Point> selectedCells){
         assert selectedCells != null;
         clearSelected();
@@ -109,6 +127,10 @@ public class GraphicalBoard {
             this.selectedCells.add(new Point(p));
         }
     }
+
+    /**
+     * Deselect previous selected cells
+     */
     public void clearSelected(){
         //Deselect previous selected cells
         for(Point p : this.selectedCells){
@@ -117,6 +139,10 @@ public class GraphicalBoard {
         this.selectedCells.clear();
     }
 
+    /**
+     * Adjust Cells' buildings according to consistent model supplied
+     * @param board Consistent model instance
+     */
     public void adjustWithRealModel(Board board){
         for(int x=0;x<ROWS;x++){
             for(int y=0;y<COLS;y++){
@@ -127,6 +153,11 @@ public class GraphicalBoard {
         }
     }
 
+    /**
+     * Add Cell click handler to all cells.
+     * Pass null to remove the handler (if any)
+     * @param handler Handler for cell clicked
+     */
     public void setOnCellClickHandler(ClickedHandler<GraphicalCell> handler){
         for(int x=0;x<ROWS;x++){
             for(int y=0;y<COLS;y++){
@@ -134,10 +165,4 @@ public class GraphicalBoard {
             }
         }
     }
-
-    /*public static Point3D getRealPosition(int cellX, int cellY, int level){
-        double ZeroX = -(GraphicalCell.CELL_SIZE+CELL_BORDER_SIZE) * 2;
-        double ZeroY = -(GraphicalCell.CELL_SIZE+CELL_BORDER_SIZE) * 2;
-        return new Point3D(ZeroX + (GraphicalCell.CELL_SIZE+CELL_BORDER_SIZE) * cellX, ZeroY + (GraphicalCell.CELL_SIZE+CELL_BORDER_SIZE)*cellY,  - 60*level);
-    }*/
 }

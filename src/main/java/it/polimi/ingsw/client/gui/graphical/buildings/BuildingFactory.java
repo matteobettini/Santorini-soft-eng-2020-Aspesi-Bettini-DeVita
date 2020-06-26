@@ -4,6 +4,9 @@ import it.polimi.ingsw.common.enums.BuildingType;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 
+/**
+ * Creates an instance of a 3D building using the given properties
+ */
 public class BuildingFactory {
     public static GraphicalBuilding getBuilding(BuildingType buildingType, Group container, Point3D position){
         switch (buildingType){

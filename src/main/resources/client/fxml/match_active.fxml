@@ -22,7 +22,7 @@
       </SubScene>
       <BorderPane pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
          <top>
-            <HBox fx:id="msgPane" alignment="CENTER" maxHeight="100.0" prefHeight="100.0" prefWidth="200.0" StackPane.alignment="TOP_CENTER">
+            <HBox fx:id="msgPane" alignment="CENTER" maxHeight="100.0" prefHeight="100.0" prefWidth="200.0" styleClass="back-4" StackPane.alignment="TOP_CENTER">
                 <children>
                     <Label fx:id="lblMsg" alignment="CENTER" contentDisplay="CENTER" lineSpacing="1.0" maxWidth="900.0" text="Message for the user" textFill="WHITE" wrapText="true">
                     <font>
@@ -30,55 +30,8 @@
                     </font>
                     </Label>
                 </children>
-                <styleClass>
-                    <String fx:value="back-4" />
-                    <String fx:value="message-pane" />
-                </styleClass>
             </HBox>
          </top>
-         <right>
-            <VBox fx:id="controlPane" alignment="CENTER" maxHeight="120.0" prefHeight="120.0" prefWidth="139.0" BorderPane.alignment="BOTTOM_RIGHT">
-               <children>
-                  <Button fx:id="btnConfirm" alignment="CENTER_RIGHT" mnemonicParsing="false" onMouseClicked="#onConfirmClicked" text="Confirm">
-                     <font>
-                        <Font name="Calibri" size="30.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                     </padding>
-                     <VBox.margin>
-                        <Insets bottom="10.0" />
-                     </VBox.margin>
-                     <styleClass>
-                        <String fx:value="btn" />
-                        <String fx:value="btn-confirm" />
-                     </styleClass>
-                  </Button>
-                  <Button fx:id="btnRestart" alignment="CENTER_RIGHT" mnemonicParsing="false" onMouseClicked="#onRestartClicked" text="Restart">
-                     <font>
-                        <Font name="Calibri" size="30.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                     </padding>
-                     <styleClass>
-                        <String fx:value="btn" />
-                        <String fx:value="btn-restart" />
-                     </styleClass>
-                  </Button>
-               </children>
-               <styleClass>
-                  <String fx:value="back-2" />
-                  <String fx:value="controls-pane" />
-               </styleClass>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-               <effect>
-                  <DropShadow />
-               </effect>
-            </VBox>
-         </right>
          <left>
             <StackPane pickOnBounds="false" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
@@ -99,8 +52,10 @@
                                     <Image url="@../textures/buildings/Dome.png" />
                                  </image>
                               </ImageView>
-                              <Label fx:id="numDome" layoutX="-8.0" layoutY="29.0" text="20" textFill="WHITE" />
                            </children>
+                           <effect>
+                              <DropShadow />
+                           </effect>
                         </Pane>
                         <Pane fx:id="thirdPane" layoutX="60.0" layoutY="391.0" onMouseClicked="#onThirdFloorClicked" prefHeight="86.0" prefWidth="200.0">
                            <children>
@@ -109,8 +64,10 @@
                                     <Image url="@../textures/buildings/ThirdFloor.png" />
                                  </image>
                               </ImageView>
-                              <Label fx:id="numThird" layoutX="-8.0" layoutY="35.0" text="20" textFill="WHITE" />
                            </children>
+                           <effect>
+                              <DropShadow />
+                           </effect>
                         </Pane>
                         <Pane fx:id="secondPane" layoutX="60.0" layoutY="377.0" onMouseClicked="#onSecondFloorClicked" prefHeight="92.0" prefWidth="200.0">
                            <children>
@@ -118,8 +75,10 @@
                                  <image>
                                     <Image url="@../textures/buildings/SecondFloor.png" />
                                  </image>
+                                 <effect>
+                                    <DropShadow />
+                                 </effect>
                               </ImageView>
-                              <Label fx:id="numSecond" layoutX="-8.0" layoutY="37.0" text="20" textFill="WHITE" />
                            </children>
                         </Pane>
                         <Pane fx:id="firstPane" layoutX="60.0" layoutY="363.0" onMouseClicked="#onFirstFloorClicked" prefHeight="99.0" prefWidth="200.0">
@@ -129,8 +88,13 @@
                                     <Image url="@../textures/buildings/FirstFloor.png" />
                                  </image>
                               </ImageView>
-                              <Label fx:id="numFirst" layoutX="-8.0" layoutY="39.0" text="20" textFill="WHITE" />
                            </children>
+                           <VBox.margin>
+                              <Insets top="3.0" />
+                           </VBox.margin>
+                           <effect>
+                              <DropShadow />
+                           </effect>
                         </Pane>
                      </children>
                      <styleClass>
@@ -140,9 +104,6 @@
                      <padding>
                         <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
                      </padding>
-                     <effect>
-                        <DropShadow />
-                     </effect>
                   </VBox>
                   <VBox fx:id="playersPane" alignment="TOP_CENTER" maxWidth="100.0" mouseTransparent="true" prefHeight="200.0" prefWidth="100.0" spacing="5.0" styleClass="back-1" StackPane.alignment="TOP_LEFT">
                      <children>
@@ -172,6 +133,101 @@
                </children>
             </StackPane>
          </left>
+         <right>
+            <StackPane pickOnBounds="false" prefHeight="500.0" prefWidth="160.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER" maxHeight="220.0" maxWidth="100.0" mouseTransparent="true" pickOnBounds="false" StackPane.alignment="TOP_RIGHT">
+                     <children>
+                        <Pane>
+                           <children>
+                              <ImageView fitHeight="55.0" fitWidth="83.0" layoutX="9.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../textures/buildings/Dome.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="numDome" layoutX="42.0" layoutY="12.0" text="20" textFill="WHITE" />
+                           </children>
+                        </Pane>
+                        <Pane>
+                           <children>
+                              <ImageView fitHeight="55.0" fitWidth="83.0" layoutX="9.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../textures/buildings/ThirdFloor.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="numThird" layoutX="42.0" layoutY="30.0" text="20" textFill="WHITE" />
+                           </children>
+                        </Pane>
+                        <Pane>
+                           <children>
+                              <ImageView fitHeight="55.0" fitWidth="83.0" layoutX="9.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../textures/buildings/SecondFloor.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="numSecond" layoutX="42.0" layoutY="26.0" text="20" textFill="WHITE" />
+                           </children>
+                        </Pane>
+                        <Pane>
+                           <children>
+                              <ImageView fitHeight="55.0" fitWidth="83.0" layoutX="9.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../textures/buildings/FirstFloor.png" />
+                                 </image>
+                              </ImageView>
+                              <Label fx:id="numFirst" layoutX="42.0" layoutY="27.0" text="20" textFill="WHITE" />
+                           </children>
+                        </Pane>
+                     </children>
+                     <styleClass>
+                        <String fx:value="back-1" />
+                        <String fx:value="buildings-pane" />
+                     </styleClass>
+                  </VBox>
+                  <VBox fx:id="controlPane" alignment="CENTER" maxHeight="120.0" prefHeight="120.0" prefWidth="159.0" visible="false" StackPane.alignment="BOTTOM_RIGHT">
+                     <children>
+                        <Button fx:id="btnConfirm" alignment="CENTER_RIGHT" mnemonicParsing="false" onMouseClicked="#onConfirmClicked" text="Confirm">
+                           <font>
+                              <Font name="Calibri" size="30.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                           </padding>
+                           <VBox.margin>
+                              <Insets bottom="10.0" />
+                           </VBox.margin>
+                           <styleClass>
+                              <String fx:value="btn" />
+                              <String fx:value="btn-confirm" />
+                           </styleClass>
+                        </Button>
+                        <Button fx:id="btnRestart" alignment="CENTER_RIGHT" mnemonicParsing="false" onMouseClicked="#onRestartClicked" text="Restart">
+                           <font>
+                              <Font name="Calibri" size="30.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                           </padding>
+                           <styleClass>
+                              <String fx:value="btn" />
+                              <String fx:value="btn-restart" />
+                           </styleClass>
+                        </Button>
+                     </children>
+                     <styleClass>
+                        <String fx:value="back-2" />
+                        <String fx:value="controls-pane" />
+                     </styleClass>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                  </VBox>
+               </children>
+            </StackPane>
+         </right>
       </BorderPane>
         <HBox fx:id="waitPane" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="back-7" visible="false">
             <children>

@@ -62,46 +62,44 @@ public class CLI {
      * and finally asks the server's address and port to the user.
      */
     public void run(){
-        new Thread(()->{
-            setInitialStrategies();
+        setInitialStrategies();
 
-            matchData.reset();
+        matchData.reset();
 
-            matchData.setNewClient();
+        matchData.setNewClient();
 
-            Client client = matchData.getClient();
+        Client client = matchData.getClient();
 
-            client.addConnectionStatusObserver( connectionStatus -> connectionStrategy.handleConnection(connectionStatus, this));
+        client.addConnectionStatusObserver( connectionStatus -> connectionStrategy.handleConnection(connectionStatus, this));
 
-            client.addInsertNickRequestObserver( (message, isRetry) -> nicknameStrategy.handleNickname(message));
+        client.addInsertNickRequestObserver( (message, isRetry) -> nicknameStrategy.handleNickname(message));
 
-            client.addInsertNumOfPlayersAndGamemodeRequestObserver( ((message, isRetry) -> requestNumberOfPlayersGameModeStrategy.handleRequestNumberOfPlayerGameMode(message, isRetry)));
+        client.addInsertNumOfPlayersAndGamemodeRequestObserver( ((message, isRetry) -> requestNumberOfPlayersGameModeStrategy.handleRequestNumberOfPlayerGameMode(message, isRetry)));
 
-            client.addPacketMatchStartedObserver( packetMatchStarted -> matchStartedStrategy.handleMatchStarted(packetMatchStarted, this));
+        client.addPacketMatchStartedObserver( packetMatchStarted -> matchStartedStrategy.handleMatchStarted(packetMatchStarted, this));
 
-            client.addPacketCardsFromServerObserver( (packetCardsFromServer, isRetry) -> selectCardStrategy.handleCardStrategy(packetCardsFromServer, isRetry));
+        client.addPacketCardsFromServerObserver( (packetCardsFromServer, isRetry) -> selectCardStrategy.handleCardStrategy(packetCardsFromServer, isRetry));
 
-            client.addPacketSetupObserver( packetSetup -> setupStrategy.handleSetup(packetSetup));
+        client.addPacketSetupObserver( packetSetup -> setupStrategy.handleSetup(packetSetup));
 
-            client.addPacketDoActionObserver( (packetDoAction, isRetry) -> {
-                String activePlayer = packetDoAction.getTo();
-                matchData.setCurrentActivePlayer(activePlayer);
-                ActionType actionType = packetDoAction.getActionType();
+        client.addPacketDoActionObserver( (packetDoAction, isRetry) -> {
+            String activePlayer = packetDoAction.getTo();
+            matchData.setCurrentActivePlayer(activePlayer);
+            ActionType actionType = packetDoAction.getActionType();
 
-                if(actionType == ActionType.CHOOSE_START_PLAYER) chooseStarterStrategy.handleChooseStartPlayer(activePlayer,isRetry);
-                else if (actionType == ActionType.SET_WORKERS_POSITION) setWorkersPositionStrategy.handleSetWorkersPosition(activePlayer, isRetry);
-                else gameModeStrategy.handleAction(packetDoAction, isRetry);
-            });
+            if(actionType == ActionType.CHOOSE_START_PLAYER) chooseStarterStrategy.handleChooseStartPlayer(activePlayer,isRetry);
+            else if (actionType == ActionType.SET_WORKERS_POSITION) setWorkersPositionStrategy.handleSetWorkersPosition(activePlayer, isRetry);
+            else gameModeStrategy.handleAction(packetDoAction, isRetry);
+        });
 
-            client.addPacketUpdateBoardObserver( packetUpdateBoard -> updateBoardStrategy.handleUpdateBoard(packetUpdateBoard));
+        client.addPacketUpdateBoardObserver( packetUpdateBoard -> updateBoardStrategy.handleUpdateBoard(packetUpdateBoard));
 
-            client.addPacketPossibleMovesObserver( packetPossibleMoves -> gameModeStrategy.handlePossibleMoves(packetPossibleMoves));
+        client.addPacketPossibleMovesObserver( packetPossibleMoves -> gameModeStrategy.handlePossibleMoves(packetPossibleMoves));
 
-            client.addPacketPossibleBuildsObserver( packetPossibleBuilds -> gameModeStrategy.handlePossibleBuilds(packetPossibleBuilds));
+        client.addPacketPossibleBuildsObserver( packetPossibleBuilds -> gameModeStrategy.handlePossibleBuilds(packetPossibleBuilds));
 
-            if(askConnectionParameters) setConnectionParameters();
-            client.start(address, port);
-        }).start();
+        if(askConnectionParameters) setConnectionParameters();
+        client.asyncStart(address, port,false);
     }
 
     /**

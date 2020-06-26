@@ -22,7 +22,17 @@ import javafx.scene.text.Font;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * This controller is responsible for showing initial info about the match,
+ * and eventually making challenger choose start player.
+ * It also shows status of match setup, with other player's actions
+ */
 public class MatchStartController extends GUIController {
+    /*
+     -----------------------
+       Graphical bindings
+     -----------------------
+   */
     @FXML
     private HBox waitPane;
     @FXML
@@ -37,31 +47,83 @@ public class MatchStartController extends GUIController {
     private HBox msgPane;
     @FXML
     private Label lblWait;
+    @FXML
+    private Label lblGameMode;
 
-    private static final String avatarPath = "/client/textures/icon_player.png";
+    /*
+      ------------
+        Constants
+      ------------
+     */
+    private static final String AVATAR_PATH = "/client/textures/icon_player.png";
+    private static final Font AVATAR_NAME_FONT = new Font("Calibri",30);
 
+
+    /*
+      -----------------------
+        Private attributes
+      -----------------------
+     */
     private MatchData matchData = MatchData.getInstance();
     private ResourceScanner scanner = ResourceScanner.getInstance();
-
     private boolean isSelectActive = false;
 
     /*
+      -----------------------
         External Handlers
+      -----------------------
+      Description: invoked from external when a correspondent packet arrives
+     */
+
+    /**
+     * Called when a match is created
+     * @param packet Data from server
      */
     public void handleMatchStart(PacketMatchStarted packet){
         assert (packet.getPlayers() != null);
+        //Init graphics
         closeWait();
+        //Save data
         matchData.setMatchPlayers(new ArrayList<>(packet.getPlayers()));
         matchData.setMatchHardcore(packet.isHardcore());
-        populateWithPlayers(); //Complete graphics
-        showMessage("The match was started with " + matchData.getMatchPlayers().size() + " players in " + (matchData.isMatchHardcore() ? "hardcore" : "normal") + " mode");
+        populateWithPlayers(); //Populate avatars
+        lblGameMode.setText("Game Mode: " + (packet.isHardcore() ? "Hardcore" : "Normal")); //Display game mode
         //ensureActive();
     }
+
+    /**
+     * Called when another player is choosing cards
+     * @param packet Other player cards data
+     */
     public void handleOthersCardChoice(PacketCardsFromServer packet){
         closeWait();
         showMessage(packet.getTo() + " is choosing the card" + (packet.getNumberToChoose() > 1 ? "s" : ""));
         ensureActive();
     }
+
+    /**
+     * Called when a start player is needed
+     * @param to User who must select a start player
+     * @param isRetry True if first selection was invalid
+     */
+    public void handleStartPlayer(String to, boolean isRetry){
+        assert !isRetry; //Should not happen
+        closeWait();
+        if (matchData.getUsername().equals(to)){ //If i am the addressee
+            //Enable select
+            isSelectActive = true;
+            showMessage("Select a start player, by clicking on his avatar");
+        }else{
+            isSelectActive = false;
+            showMessage(to + " is selecting the start player");
+        }
+        ensureActive();
+    }
+
+    /**
+     * Called when the match is fully setup
+     * @param packet Data from server
+     */
     public void handleSetupInfo(PacketSetup packet){
         matchData.setIds(packet.getIds());
         //Convert Colors
@@ -69,27 +131,24 @@ public class MatchStartController extends GUIController {
         for(String playerID : packet.getColors().keySet()){
             colorData.put(playerID, convertColor(packet.getColors().get(playerID)));
         }
+        //Save data
         matchData.setPlayersColor(colorData);
         matchData.setPlayersCards(packet.getCards());
         matchData.setBuildings(packet.getBuildingsCounter());
     }
-    public void handleStartPlayer(String to, boolean isRetry){
-        assert !isRetry;
-        closeWait();
-        if (matchData.getUsername().equals(to)){
-            //Enable select
-            isSelectActive = true;
-            showMessage("Select the start player, clicking on it");
-        }else{
-            showMessage(to + " is selecting the start player");
-        }
-        ensureActive();
-    }
 
     /*
-        Auxiliary Graphic functions
+      ---------------------------------
+        Auxiliary Graphical functions
+      ---------------------------------
+      Description: used to populate GUI with graphical elements from data
      */
-    DropShadow dropShadow = new DropShadow(BlurType.GAUSSIAN, Color.web("#ff00b5"), 100.0, 0.5,0,0);
+
+    DropShadow dropShadow = new DropShadow(BlurType.GAUSSIAN, Color.web("#ff00b5"), 100.0, 0.5,0,0); //Selected effect
+
+    /**
+     * Populate players avatars in view
+     */
     private void populateWithPlayers(){
         playersPane.getChildren().clear();
         for(String nick : matchData.getMatchPlayers()){
@@ -100,7 +159,7 @@ public class MatchStartController extends GUIController {
         //Load graphic resource
         ImageView avatar = null;
         try {
-            URL imagePath = scanner.getResourcePath(avatarPath);
+            URL imagePath = scanner.getResourcePath(AVATAR_PATH);
             avatar = new ImageView(imagePath.toString());
             avatar.setPickOnBounds(true);
             avatar.setPreserveRatio(true);
@@ -111,7 +170,7 @@ public class MatchStartController extends GUIController {
         }
         //Create label for name
         Label lblName = new Label();
-        lblName.setFont(new Font("Calibri",30));
+        lblName.setFont(AVATAR_NAME_FONT);
         lblName.setText(nick);
         lblName.setTextFill(Color.WHITE);
         //Create Avatar container
@@ -132,18 +191,27 @@ public class MatchStartController extends GUIController {
             if (isSelectActive){
                 isSelectActive = false;
                 showWait("Sending player to Server ...",false);
-                PacketStartPlayer packet = new PacketStartPlayer(nick);
+                PacketStartPlayer packet = new PacketStartPlayer(nick); //Send choice
                 matchData.getClient().send(packet);
             }
         });
-        playersPane.getChildren().add(vBox);
+        playersPane.getChildren().add(vBox); //Add avatar to pane
     }
+
+    /**
+     * Convert AWT color to JavaFX color
+     * @param color AWT color
+     * @return JavaFX color
+     */
     private Color convertColor(java.awt.Color color){
         return Color.color((double)color.getRed()/255,(double)color.getBlue()/255,(double)color.getGreen()/255);
     }
 
     /*
-        Graphic Events
+      ---------------------
+        Graphical Events
+      ---------------------
+      Description: invoked from JavaFX runtime when the user interacts with the GUI
      */
     @FXML
     private void onBtnCloseClicked(MouseEvent event) {
@@ -151,7 +219,16 @@ public class MatchStartController extends GUIController {
     }
 
     /*
-        Graphic manipulation
+      ---------------------------------
+         Graphic manipulation
+      ---------------------------------
+      Description: functions to change interaction mode with user
+     */
+
+    /**
+     * Shows a full-scene message, that can be closed or not by the user
+     * @param message Message to be displayed
+     * @param closeable True if the message can be closed by the user
      */
     private void showWait(String message, boolean closeable){
         lblWait.setText(message);
@@ -159,9 +236,18 @@ public class MatchStartController extends GUIController {
         imgWait.setVisible(!closeable);
         waitPane.setVisible(true);
     }
+
+    /**
+     * Close a full-scene message
+     */
     private void closeWait(){
         waitPane.setVisible(false);
     }
+
+    /**
+     * Show a top-center permanent message on the scene
+     * @param message Message string
+     */
     private void showMessage(String message){
         lblMsg.setText(message);
     }
