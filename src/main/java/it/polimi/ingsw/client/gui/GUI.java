@@ -143,7 +143,7 @@ public class GUI extends Application {
         });
         client.addInsertNickRequestObserver((message, isRetry) -> {
             Platform.runLater(()->{
-                switcher.getSetupController().handleUsernameRequested(isRetry);
+                switcher.getSetupController().handleUsernameRequested(message, isRetry);
             });
         });
         client.addInsertNumOfPlayersAndGamemodeRequestObserver((message, isRetry) -> {

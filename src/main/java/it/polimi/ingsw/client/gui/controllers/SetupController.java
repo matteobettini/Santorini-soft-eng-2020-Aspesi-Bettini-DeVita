@@ -84,13 +84,14 @@ public class SetupController extends GUIController {
 
     /**
      * Called when packet choose nickname arrives
+     * @param message Message of failure
      * @param isRetry True if first nickname was not available
      */
-    public void handleUsernameRequested(boolean isRetry){
+    public void handleUsernameRequested(String message, boolean isRetry){
         if (!isRetry)
             showMessage("Select a username, then click Next");
         else
-            showWait("Invalid username, choose another", true);
+            showMessage(message);
         //Init graphics
         txtUsername.setDisable(false);
         displaySettings(false); //Hide game settings
