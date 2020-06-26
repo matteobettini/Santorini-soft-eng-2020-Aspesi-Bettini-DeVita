@@ -94,6 +94,9 @@ class CardReader {
         List<CardFile> cardFiles = new LinkedList<>();
         //Check root node
         Element root = xml.getDocumentElement();
+        if (root == null){
+            throw new InvalidCardException("[CARDS PARSER]Root tag not found");
+        }
         if (!root.getNodeName().equals("Cards")){
             throw new InvalidCardException("[CARDS PARSER]Wrong root tag");
         }
