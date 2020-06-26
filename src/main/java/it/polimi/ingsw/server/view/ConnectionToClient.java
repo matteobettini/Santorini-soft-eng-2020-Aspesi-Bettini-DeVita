@@ -20,10 +20,11 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     private static final String NICKNAME_REGEXP = "^([a-zA-Z0-9._\\-]{1,20})$";
     private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEXP);
-    private static final int TIMER_SHORT = 30000;
-    private static final int TIMER_LONG = 200000;
-    public static final int PING_PERIOD = 1000;
-    public static final int CONNECTION_TIMEOUT = 3000;
+    private static final int TIMER_SHORT = 60000;
+    private static final int TIMER_LONG = 240000;
+    public static final int PING_PERIOD = 5000;
+    public static final int CONNECTION_TIMEOUT = 10000;
+    public static final int TIMEOUT_BEFORE_CLOSE = 5000;
 
     private Observer<ConnectionToClient> nickNameChosenHandler;
     private Observer<ConnectionToClient> gameDesiresHandler;
@@ -103,12 +104,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private void internalSend(Serializable packet) throws IOException{
         sendLock.lock();
         try {
-            try {
-                os.writeObject(packet);
-                os.flush();
-            } catch (IOException e) {
-                throw e;
-            }
+            os.writeObject(packet);
+            os.flush();
         }finally {
             sendLock.unlock();
         }
@@ -303,6 +300,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
             os.writeObject(ConnectionMessages.CONNECTION_CLOSED);
             os.flush();
         }catch (IOException ignored){}
+
+        try {
+            Thread.sleep(TIMEOUT_BEFORE_CLOSE);
+        } catch (InterruptedException ignored) { }
 
         try {
             is.close();

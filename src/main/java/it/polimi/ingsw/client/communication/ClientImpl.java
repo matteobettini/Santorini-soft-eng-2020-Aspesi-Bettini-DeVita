@@ -15,8 +15,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientImpl implements Client {
 
-    public static final int PING_PERIOD = 1000;
-    public static final int CONNECTION_TIMEOUT = 3000;
+    public static final int PING_PERIOD = 5000;
+    public static final int CONNECTION_TIMEOUT = 10000;
     public static final int INVALID_IP_TIMEOUT = 2000;
 
     private final Queue<Observer<PacketSetup>> packetSetupObservers;
