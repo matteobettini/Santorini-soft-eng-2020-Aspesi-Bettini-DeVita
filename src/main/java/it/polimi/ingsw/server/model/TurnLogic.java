@@ -14,6 +14,9 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This class manages the turns of the game, manging the state changes in the model finite state machine
+ */
 class TurnLogic {
 
     private List<Player> stillInGamePlayers;
@@ -30,8 +33,11 @@ class TurnLogic {
 
     private Observer<String> gameFinishedHandler;
 
+    /**
+     * Constructs the component, initialising the internal values
+     * @param model the internal model
+     */
     TurnLogic(InternalModel model) {
-        super();
         this.model = model;
         this.currPossibleActions = new HashSet<>();
 
@@ -41,6 +47,10 @@ class TurnLogic {
         this.packetPossibleMovesObservers = new ArrayList<>();
     }
 
+    /**
+     * Method used by the concrete model to start the first turn of the game,
+     * Asks a packet to the starting player
+     */
     public void start() {
         stillInGamePlayers = new ArrayList<>(model.getPlayers());
         currPlayer = stillInGamePlayers.get(0);
@@ -49,6 +59,9 @@ class TurnLogic {
         askNextPacket();
     }
 
+    /**
+     * Private method used to set a new player in the game as active
+     */
     private void setNextPlayer() {
 
         if (stillInGamePlayers.size() == 0)
@@ -76,6 +89,10 @@ class TurnLogic {
         askNextPacket();
     }
 
+    /**
+     * Private method that gets the next possible actions of a player
+     * and asks him to perform one of them
+     */
     private void askNextPacket() {
 
         if (stillInGamePlayers.size() < 2) {
@@ -120,12 +137,20 @@ class TurnLogic {
                 setNextPlayer();
                 return;
         }
-        //System.out.println("Sending do action to " + currPlayer.getNickname());
+
         PacketDoAction packetDoAction = new PacketDoAction(currPlayer.getNickname(), nextPossibleAction);
         notifyPacketDoActionObservers(packetDoAction);
 
     }
 
+    /**
+     * This method is called by the concrete model when a player wants to make a move,
+     * it checks that everything is right and applies the move to the model,
+     * this could result in a win, a loss (depending on the game mode) or in a request of the next move to the player
+     * @param senderID the player that wants to move
+     * @param packetMove the move
+     * @throws InvalidPacketException thrown when the sender is right but the move is invalid or against the rules
+     */
     public void consumePacketMove(String senderID, PacketMove packetMove) throws InvalidPacketException {
 
         if (!senderID.equals(currPlayer.getNickname()))
@@ -186,6 +211,15 @@ class TurnLogic {
             askNextPacket();
     }
 
+
+    /**
+     * This method is called by the concrete model when a player wants to make a build,
+     * it checks that everything is right and applies the build to the model,
+     * this could result in a win, a loss (depending on the game mode) or in a request of the next move to the player
+     * @param senderID the player that wants to build
+     * @param packetBuild the proposed builds
+     * @throws InvalidPacketException thrown when the sender is right but the build is invalid or against the rules
+     */
     public void consumePacketBuild(String senderID, PacketBuild packetBuild) throws InvalidPacketException {
 
         if (!senderID.equals(currPlayer.getNickname()))
@@ -239,6 +273,14 @@ class TurnLogic {
             askNextPacket();
     }
 
+
+    /**
+     * This method is used for the normal game mode,
+     * a client always asks for the possible moves to make the player choose from them only.
+     * If the request is correct and valid the server answers with the requested possible moves
+     * @param senderID the asking client
+     * @param packetMove the context of the request
+     */
     public void getPossibleMoves(String senderID, PacketMove packetMove) {
         assert (packetMove.isSimulate());
 
@@ -307,6 +349,14 @@ class TurnLogic {
         sendPossibleMoves(currPlayer.getNickname(), possibleMoves);
     }
 
+
+    /**
+     * This method is used for the normal game mode,
+     * a client always asks for the possible builds to make the player choose from them only.
+     * If the request is correct and valid the server answers with the requested possible builds
+     * @param senderID the asking client
+     * @param packetBuild the context of the request
+     */
     public void getPossibleBuilds(String senderID, PacketBuild packetBuild) {
         assert (packetBuild.isSimulate());
 
@@ -373,16 +423,29 @@ class TurnLogic {
         sendPossibleBuilds(currPlayer.getNickname(), possibleBuilds);
     }
 
+    /**
+     * Private method used to send the possible builds
+     * @param to the recipient
+     * @param possibleBuilds the possible builds
+     */
     private void sendPossibleBuilds(String to, Map<String, Map<Point, List<BuildingType>>> possibleBuilds) {
         PacketPossibleBuilds packetPossibleBuilds = new PacketPossibleBuilds(to, possibleBuilds);
         notifyPacketPossibleBuildsObservers(packetPossibleBuilds);
     }
 
+    /**
+     * Private method used to send the possible moves
+     * @param to the recipient
+     * @param possibleMoves the possible moves
+     */
     private void sendPossibleMoves(String to, Map<String, Set<Point>> possibleMoves) {
         PacketPossibleMoves packetPossibleMoves = new PacketPossibleMoves(to, possibleMoves);
         notifyPacketPossibleMovesObservers(packetPossibleMoves);
     }
 
+    /**
+     * Increments the current player index
+     */
     private void incrementActivePlayerIndex() {
         if (activePlayerIndex >= stillInGamePlayers.size() - 1)
             activePlayerIndex = 0;
@@ -390,6 +453,9 @@ class TurnLogic {
             ++activePlayerIndex;
     }
 
+    /**
+     * Makes the current player loose and notifies everyone
+     */
     private void makePlayerLoose() {
 
         model.addLoser(currPlayer);
@@ -405,40 +471,55 @@ class TurnLogic {
         setNextPlayer();
     }
 
-
+    /**
+     * Used to add the observer
+     * @param o the observer
+     */
     public void addPacketDoActionObserver(Observer<PacketDoAction> o) {
         this.packetDoActionObservers.add(o);
     }
+    /**
+     * Used to add the observer
+     * @param o the observer
+     */
     public void addPacketUpdateBoardObserver(Observer<PacketUpdateBoard> o) {
         this.packetUpdateBoardObservers.add(o);
     }
+    /**
+     * Used to add the observer
+     * @param o the observer
+     */
     public void addPacketPossibleMovesObserver(Observer<PacketPossibleMoves> o) {
         this.packetPossibleMovesObservers.add(o);
     }
+    /**
+     * Used to add the observer
+     * @param o the observer
+     */
     public void addPacketPossibleBuildsObserver(Observer<PacketPossibleBuilds> o) {
         this.packetPossibleBuildsObservers.add(o);
     }
-    public void notifyPacketPossibleMovesObservers(PacketPossibleMoves p){
+
+    private void notifyPacketPossibleMovesObservers(PacketPossibleMoves p){
         for(Observer<PacketPossibleMoves> o : packetPossibleMovesObservers){
             o.update(p);
         }
     }
-    public void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
+    private void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
         for(Observer<PacketUpdateBoard> o : packetUpdateBoardObservers){
             o.update(p);
         }
     }
-    public void notifyPacketPossibleBuildsObservers(PacketPossibleBuilds p){
+    private void notifyPacketPossibleBuildsObservers(PacketPossibleBuilds p){
         for(Observer<PacketPossibleBuilds> o : packetPossibleBuildsObservers){
             o.update(p);
         }
     }
-    public void notifyPacketDoActionObservers(PacketDoAction p){
+    private void notifyPacketDoActionObservers(PacketDoAction p){
         for(Observer<PacketDoAction> o : packetDoActionObservers){
             o.update(p);
         }
     }
-
     public void setGameFinishedHandler(Observer<String> gameFinishedHandler) {
         this.gameFinishedHandler = gameFinishedHandler;
     }

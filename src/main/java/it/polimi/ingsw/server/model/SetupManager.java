@@ -12,6 +12,9 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This class manages the setup phase of a match
+ */
 class SetupManager{
 
     private List<Player> players;
@@ -31,10 +34,13 @@ class SetupManager{
     private final List<Observer<PacketDoAction>> packetDoActionObservers;
     private final List<Observer<PacketUpdateBoard>> packetUpdateBoardObservers;
 
-    
 
+    /**
+     * Class constructor, builds the setup manager
+     * @param model the internal model instance
+     * @param cards a list of all the possible card files
+     */
     SetupManager(InternalModel model, List<CardFile> cards) {
-        super();
         this.setupPhase = SetupPhase.STARTING;
         this.challenger = null;
         this.cardAssociations = new HashMap<>();
@@ -66,6 +72,10 @@ class SetupManager{
                 .collect(Collectors.toList());
     }
 
+    /**
+     * The method that starts the setup phase,
+     * choosing the challenger and asking him to choose the cards in game
+     */
     public void start(){
         assert(setupPhase == SetupPhase.STARTING);
 
@@ -78,6 +88,16 @@ class SetupManager{
         this.setupPhase = SetupPhase.WAIT_CARDS;
 
     }
+
+    /**
+     * This function is used when a client provides the server with some chosen cards,
+     * it checks that the server is indeed waiting for that choice and eventually saves the
+     * chosen cards and proceeds to ask the cards to the next player or ends the setup
+     * and asks the challenger to choose the starting player
+     * @param SenderID the client providing the cards
+     * @param chosenCards the chosen cards
+     * @throws InvalidPacketException if the sender is who I am waiting for, but makes some mistakes in the choice, I notify him by throwing this exception
+     */
     public void setSelectedCards(String SenderID, List<String> chosenCards) throws InvalidPacketException {
         if(setupPhase != SetupPhase.WAIT_CARDS)
             return;
@@ -169,6 +189,14 @@ class SetupManager{
         }
 
     }
+
+    /**
+     * This function is supposed to be called when the challenger provides the choice
+     * regarding the starting player, it checks the choice and eventually asks the chosen starting player to place his workers
+     * @param SenderID the client providing the choice
+     * @param startPlayer the chosen starting player nickname
+     * @throws InvalidPacketException if the sender is who I am waiting for, but makes some mistakes in the choice, I notify him by throwing this exception
+     */
     public void setStartPlayer(String SenderID, String startPlayer) throws InvalidPacketException{
 
         if(setupPhase != SetupPhase.WAIT_START_PLAYER)
@@ -203,6 +231,17 @@ class SetupManager{
         this.setupPhase = SetupPhase.WAIT_WORKERS_CHOICE;
 
     }
+
+    /**
+     * This function is supposed to be called when a player provides the chosen workers positions,
+     * it checks the choice and places the workers on the board,
+     * afterwards either asks the next player to place his workers and sends info of current workers' placements,
+     * or, if the setup is completed sets the relative phase and ends
+     *
+     * @param SenderID the client providing the choice
+     * @param myWorkersPositions the proposed workers positions
+     * @throws InvalidPacketException if the sender is who I am waiting for, but makes some mistakes in the choice, I notify him by throwing this exception
+     */
     public void setWorkersPositions(String SenderID, Map<String, Point> myWorkersPositions) throws InvalidPacketException{
         if(setupPhase != SetupPhase.WAIT_WORKERS_CHOICE)
             return;
@@ -259,7 +298,6 @@ class SetupManager{
         //IF THE NEXT PLAYER IS THE STARTING PLAYER WE HAVE FINISHED SETUP
         if(players.get(activePlayerIndex) == startingPlayer){
             this.setupPhase = SetupPhase.SETUP_FINISHED;
-            model.compileCardStrategy();
         }else{ // IF NOT WE ASK FOR OTHER WORKERS POSITIONING
             PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);
             notifyPacketDoActionObservers(packetDoAction);
@@ -267,50 +305,78 @@ class SetupManager{
 
     }
 
+    /**
+     * Returns the setup phase
+     * @return the setup phase
+     */
     public SetupPhase getSetupPhase() {
         return setupPhase;
     }
+
+    /**
+     * The function used to choose the starting player
+     */
     private void chooseChallenger(){
         //CHOOSING THE CHALLENGER
         Random random = new Random();
         activePlayerIndex = random.nextInt(players.size());
         this.challenger = players.get(activePlayerIndex);
     }
+
+    /**
+     * Sets the index of the next player
+     */
     private void incrementActivePlayerIndex(){
         activePlayerIndex ++;
         if(activePlayerIndex > (players.size() - 1 ))
             activePlayerIndex = 0;
     }
 
+    /**
+     * Used to add the observer
+     * @param o the observer
+     */
     public void addPacketSetupObserver(Observer<PacketSetup> o){
         this.packetSetupObservers.add(o);
     }
+    /**
+     * Used to add the observer
+     * @param o the observer
+     */
     public void addPacketDoActionObserver(Observer<PacketDoAction> o){
         this.packetDoActionObservers.add(o);
     }
+    /**
+     * Used to add the observer
+     * @param o the observer
+     */
     public void addPacketUpdateBoardObserver(Observer<PacketUpdateBoard> o){
         this.packetUpdateBoardObservers.add(o);
     }
+    /**
+     * Used to add the observer
+     * @param o the observer
+     */
     public void addPacketCardsFromServerObserver(Observer<PacketCardsFromServer> o){
         this.packetCardsFromServerObservers.add(o);
     }
 
-    public void notifyPacketSetupObservers(PacketSetup p){
+    private void notifyPacketSetupObservers(PacketSetup p){
         for(Observer<PacketSetup> o : packetSetupObservers){
             o.update(p);
         }
     }
-    public void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
+    private void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
         for(Observer<PacketUpdateBoard> o : packetUpdateBoardObservers){
             o.update(p);
         }
     }
-    public void notifyPacketCardsFromServerObservers(PacketCardsFromServer p){
+    private void notifyPacketCardsFromServerObservers(PacketCardsFromServer p){
         for(Observer<PacketCardsFromServer> o : packetCardsFromServerObservers){
             o.update(p);
         }
     }
-    public void notifyPacketDoActionObservers(PacketDoAction p){
+    private void notifyPacketDoActionObservers(PacketDoAction p){
         for(Observer<PacketDoAction> o : packetDoActionObservers){
             o.update(p);
         }

@@ -10,6 +10,10 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The concrete model used through interfaces as the interchange waypoint
+ * from the model classes to the virtual view, the controller and the match classes
+ */
 public class ConcreteModel implements ObservableModel, Model {
 
     private CardFactory factory;
@@ -17,6 +21,11 @@ public class ConcreteModel implements ObservableModel, Model {
     private final TurnLogic turnLogic;
     private final InternalModel internalModel;
 
+    /**
+     * Initializes the model and creates the setup manager, the internal model nad the turn logic components.
+     * @param players  the players in game
+     * @param isHardCore the game mode
+     */
     public ConcreteModel(List<String> players, boolean isHardCore){
         this.factory = null;
         try {
@@ -29,6 +38,9 @@ public class ConcreteModel implements ObservableModel, Model {
         this.turnLogic = new TurnLogic(internalModel);
     }
 
+    /**
+     * Used by the match class to start a game
+     */
     public void start(){
         if(setupManager.getSetupPhase() == SetupPhase.STARTING)
             setupManager.start();
@@ -107,7 +119,10 @@ public class ConcreteModel implements ObservableModel, Model {
     @Override
     public synchronized void setWorkersPositions(String senderID, Map<String, Point> workersPositions) throws InvalidPacketException {
         setupManager.setWorkersPositions(senderID,workersPositions);
-        if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED) turnLogic.start();
+        if(setupManager.getSetupPhase() == SetupPhase.SETUP_FINISHED) {
+            internalModel.compileCardStrategy();
+            turnLogic.start();
+        }
     }
 
     @Override

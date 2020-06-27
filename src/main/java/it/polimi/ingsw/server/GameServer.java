@@ -23,7 +23,7 @@ public class GameServer {
     private static final int MIN_PORT = 1024;
     private static final int MAX_PORT = 65535;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         int port = DEFAULT_PORT;
 

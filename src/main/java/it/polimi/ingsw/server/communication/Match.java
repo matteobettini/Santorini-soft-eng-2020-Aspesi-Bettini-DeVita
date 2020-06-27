@@ -110,7 +110,7 @@ class Match {
                 if(!c.equals(connectionToClient)) {
                     serverLogger.info("[" + c.getClientNickname() + "]: sending info of interruption of match, MATCH ID: [" + id + "]");
                     c.send(ConnectionMessages.MATCH_INTERRUPTED, false);
-                    c.closeRoutine();
+                    new Thread(c::closeRoutine).start();
                 }
             }
     }
@@ -120,7 +120,7 @@ class Match {
         for(ConnectionToClient c : clients.keySet()){
             serverLogger.info("[" + c.getClientNickname() + "]: sending info of finished match, MATCH ID: [" + id + "]");
             c.send(ConnectionMessages.MATCH_FINISHED, false);
-            c.closeRoutine();
+            new Thread(c::closeRoutine).start();
         }
     }
 

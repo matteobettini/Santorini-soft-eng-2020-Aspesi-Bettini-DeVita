@@ -57,10 +57,8 @@ public class ServerImpl implements Server {
      * This method creates a server socket
      * and then loops continuing to accept incoming connections
      * and assigning them to a thread in the thread pool
-     *
-     * @throws IOException when it occurs during server shutdown
      */
-    public void startServer() throws IOException {
+    public void startServer(){
         try {
             serverSocket = new ServerSocket(port);
 
@@ -78,8 +76,11 @@ public class ServerImpl implements Server {
             }
         } catch (IOException e) {
             serverLogger.log(Level.SEVERE, "Server socket has stopped working with an exception", e.getMessage());
-            if(serverSocket != null && !serverSocket.isClosed())
-                serverSocket.close();
+            if(serverSocket != null && !serverSocket.isClosed()) {
+                try {
+                    serverSocket.close();
+                } catch (IOException ignored) {}
+            }
         }
     }
 

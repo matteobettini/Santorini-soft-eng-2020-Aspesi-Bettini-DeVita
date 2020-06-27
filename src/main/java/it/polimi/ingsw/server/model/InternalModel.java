@@ -34,7 +34,7 @@ class InternalModel {
     private List<CompiledCardRule> allowBuildRules;
     private List<CompiledCardRule> denyBuildRules;
     private List<CompiledCardRule> winBuildRules;
-    private boolean isHardCore;
+    private final boolean isHardCore;
 
     /**
      * Create a data model instance, with the given settings
@@ -156,7 +156,7 @@ class InternalModel {
     /**
      * Reorders match players, from the given starting player.
      * The original list is shifted left to make the starting player the first of the list.
-     * @param player Player instance to make the first.
+     * @param player Player instance to be made first.
      */
     public void setStartPlayer(Player player){
         assert (player != null);
