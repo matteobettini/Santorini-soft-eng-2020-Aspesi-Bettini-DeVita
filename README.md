@@ -25,3 +25,49 @@
 [![YELLOW](https://placehold.it/15/ffdd00/ffdd00)](#)
 [![GREEN](https://placehold.it/15/44bb44/44bb44)](#)
 -->
+
+# Santorini
+
+![Santorini Logo](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/logo.png)
+
+##Setup
+
+- In the [deliveries](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/deliveries) folder there are two multi-platform jar files, one to set the Server up and the other one to start the Client.
+- The Server can be run with the following command:
+    ```shell
+    > java -jar GameServer.jar
+    ```
+  This command can be followed by these arguments:
+  - -port: followed by the desired port number between MIN_PORT and MAX_PORT as argument;
+  - -v: to activate logging on the console;
+  - -log: followed by a file name, to activate logging both in the console and in the chosen file;
+  - -help: to get help.
+  
+- The Client can be run with the following command:
+    ```shell
+    > java -jar GameClient.jar
+    ```
+  - This command sets the Client on Graphical User Interface(GUI) mode, but it can be followed by **-cli** if the Command Line Interface(CLI) is preferred.
+  - The Server's IP to connect to can be specified during the execution.
+  
+ ##Extra
+ 
+ Two game-modes are implemented:
+ - Normal: the Server sends the possible moves/builds to the Client so that they are displayed to the Player during his/her turn.
+ - Hardcore: in this mode there are no suggestions and the Player can lose if he/she does not obey to Gods' rules.
+ 
+ ##Testing and Documentation
+ 
+ The [model package](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/src/main/java/it/polimi/ingsw/server/model) is entirely tested, the tests' coverage report and the JavaDoc can be accessed [here](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/deliveries).
+ 
+ ##Tools
+ 
+ * [Draw.io](http://www.draw.io/) - UML Diagram
+ * [Maven](https://maven.apache.org/) - Dependency Management
+ * [IntelliJ](https://www.jetbrains.com/idea/) - IDE
+ * [JavaFX](https://openjfx.io) - Graphical Framework
+ 
+ ##License
+ 
+ This project is developed in collaboration with [Politecnico di Milano](https://www.polimi.it) and [Cranio Creations](http://www.craniocreations.it).
+ 
