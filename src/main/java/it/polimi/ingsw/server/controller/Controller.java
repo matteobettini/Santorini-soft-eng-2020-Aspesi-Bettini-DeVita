@@ -2,7 +2,7 @@ package it.polimi.ingsw.server.controller;
 
 import it.polimi.ingsw.server.model.Model;
 import it.polimi.ingsw.common.packets.InvalidPacketException;
-import it.polimi.ingsw.server.view.VirtualView;
+import it.polimi.ingsw.server.virtualView.VirtualView;
 
 import java.util.List;
 

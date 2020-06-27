@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.view;
+package it.polimi.ingsw.server.virtualView;
 
 import it.polimi.ingsw.server.ServerLogger;
 import it.polimi.ingsw.server.model.ObservableModel;

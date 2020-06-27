@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.view;
+package it.polimi.ingsw.server.virtualView;
 
 import it.polimi.ingsw.common.utils.observe.Observer;
 import it.polimi.ingsw.common.packets.*;
@@ -35,6 +35,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private ObjectInputStream is;
 
     private final AtomicBoolean active = new AtomicBoolean(false);
+    private final AtomicBoolean closed = new AtomicBoolean(false);
     private boolean inMatch;
 
     private boolean nickAsked;
@@ -74,7 +75,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
                 } catch (InterruptedException e) {
                     break;
                 } catch (IOException e){
-                    closeRoutine();
+                    closeRoutine(false);
                 }
             }
         });
@@ -269,51 +270,54 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         active.set(false);
         closureHandler.update(this);
 
-        closeRoutine();
+        closeRoutine(false);
 
     }
 
     /**
      * This method tries to send a connection ended message and
      * then tries to close the streams and the socket
-     * It is used from the timer and the match when full
-     * de-registration is not required
+     * It is used from the timer, the pinger and the match not coupled with close routine full as
+     * full de-registration is not required in these cases
      */
-    public synchronized void closeRoutine(){
-        closeRoutine(false);
+    public void asyncCloseRoutine(){
+        new Thread(() -> closeRoutine(false)).start();
     }
 
 
-    private synchronized void closeRoutine(boolean timerEnded) {
+    private void closeRoutine(boolean timerEnded) {
 
-        active.set(false);
-        stopTimer();
+        if(closed.compareAndSet(false, true)) {
 
-        if (timerEnded) {
+            active.set(false);
+            stopTimer();
+
+            if (timerEnded) {
+                try {
+                    os.writeObject(ConnectionMessages.TIMER_ENDED);
+                    os.flush();
+                } catch (IOException ignored) { }
+            }
+
             try {
-                os.writeObject(ConnectionMessages.TIMER_ENDED);
+                os.writeObject(ConnectionMessages.CONNECTION_CLOSED);
                 os.flush();
-            }catch(IOException ignored){}
+            } catch (IOException ignored) { }
+
+            try {
+                Thread.sleep(TIMEOUT_BEFORE_CLOSE);
+            } catch (InterruptedException ignored) { }
+
+            try {
+                is.close();
+            } catch (IOException ignored) { }
+            try {
+                os.close();
+            } catch (IOException ignored) { }
+            try {
+                socket.close();
+            } catch (IOException ignored) { }
         }
-
-        try{
-            os.writeObject(ConnectionMessages.CONNECTION_CLOSED);
-            os.flush();
-        }catch (IOException ignored){}
-
-        try {
-            Thread.sleep(TIMEOUT_BEFORE_CLOSE);
-        } catch (InterruptedException ignored) { }
-
-        try {
-            is.close();
-        }catch (IOException ignored){}
-        try {
-            os.close();
-        }catch (IOException ignored){}
-        try{
-            socket.close();
-        }catch (IOException ignored){ }
 
     }
 

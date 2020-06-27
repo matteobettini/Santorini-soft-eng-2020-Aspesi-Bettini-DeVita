@@ -2,7 +2,7 @@ package it.polimi.ingsw.server.communication;
 
 import it.polimi.ingsw.server.ServerLogger;
 import it.polimi.ingsw.server.enums.ServerPhase;
-import it.polimi.ingsw.server.view.ConnectionToClient;
+import it.polimi.ingsw.server.virtualView.ConnectionToClient;
 
 import java.io.IOException;
 import java.net.ServerSocket;

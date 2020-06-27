@@ -6,8 +6,8 @@ import it.polimi.ingsw.server.model.ConcreteModel;
 import it.polimi.ingsw.common.utils.observe.Observer;
 import it.polimi.ingsw.common.packets.ConnectionMessages;
 import it.polimi.ingsw.common.packets.PacketMatchStarted;
-import it.polimi.ingsw.server.view.ConnectionToClient;
-import it.polimi.ingsw.server.view.VirtualView;
+import it.polimi.ingsw.server.virtualView.ConnectionToClient;
+import it.polimi.ingsw.server.virtualView.VirtualView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -110,7 +110,7 @@ class Match {
                 if(!c.equals(connectionToClient)) {
                     serverLogger.info("[" + c.getClientNickname() + "]: sending info of interruption of match, MATCH ID: [" + id + "]");
                     c.send(ConnectionMessages.MATCH_INTERRUPTED, false);
-                    new Thread(c::closeRoutine).start();
+                    c.asyncCloseRoutine();
                 }
             }
     }
@@ -120,7 +120,7 @@ class Match {
         for(ConnectionToClient c : clients.keySet()){
             serverLogger.info("[" + c.getClientNickname() + "]: sending info of finished match, MATCH ID: [" + id + "]");
             c.send(ConnectionMessages.MATCH_FINISHED, false);
-            new Thread(c::closeRoutine).start();
+            c.asyncCloseRoutine();
         }
     }
 
