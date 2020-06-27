@@ -28,7 +28,7 @@
 
 # Santorini
 
-![Santorini Logo](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/logo.png)
+![Santorini Logo](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/blob/master/logo.png)
 
 ## Setup
 
@@ -56,7 +56,7 @@
  - Normal: the Server sends the possible moves/builds to the Client so that they are displayed to the Player during his/her turn.
  - Hardcore: in this mode there are no suggestions and the Player can lose if he/she does not obey to Gods' rules.
  
- ##Testing and Documentation
+ ## Testing and Documentation
  
  The [model package](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/src/main/java/it/polimi/ingsw/server/model) is entirely tested, the tests' coverage report and the JavaDoc can be accessed [here](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/deliveries).
  
