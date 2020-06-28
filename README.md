@@ -33,7 +33,7 @@
 ## Setup
 
 - In the [deliveries](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/deliveries) folder there are two multi-platform jar files, one to set the Server up and the other one to start the Client.
-- The Server can be run with the following command:
+- The Server can be run with the following command, as default it runs on port 4567:
     ```shell
     > java -jar GameServer.jar
     ```

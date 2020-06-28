@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.enums;
+package it.polimi.ingsw.server.communication.enums;
 
 public enum ServerPhase {
 

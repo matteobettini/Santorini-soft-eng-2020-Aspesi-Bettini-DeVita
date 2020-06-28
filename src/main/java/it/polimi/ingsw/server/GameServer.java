@@ -6,8 +6,6 @@ import it.polimi.ingsw.server.communication.Server;
 
 import it.polimi.ingsw.server.communication.ServerImpl;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,7 +25,7 @@ public class GameServer {
 
         int port = DEFAULT_PORT;
 
-        List<String> arguments = new ArrayList<>(Arrays.asList(args));
+        List<String> arguments = Arrays.asList(args);
 
         if(arguments.size() == 1 && arguments.contains(HELP_ARGUMENT)){
 

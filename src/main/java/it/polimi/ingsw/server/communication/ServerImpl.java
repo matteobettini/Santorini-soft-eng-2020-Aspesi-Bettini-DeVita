@@ -1,8 +1,7 @@
 package it.polimi.ingsw.server.communication;
 
 import it.polimi.ingsw.server.ServerLogger;
-import it.polimi.ingsw.server.enums.ServerPhase;
-import it.polimi.ingsw.server.virtualView.ConnectionToClient;
+import it.polimi.ingsw.server.communication.enums.ServerPhase;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -84,6 +83,13 @@ public class ServerImpl implements Server {
         }
     }
 
+    /**
+     * This method is called when a client provides a valid nickname,
+     * it checks that the server was actually waiting for that nick,
+     * and acts accordingly, by either requesting again the nick (if it is already chosen),
+     * or adding the client to the lobby
+     * @param connection the client providing the nick
+     */
     private void handleNickChosen(ConnectionToClient connection) {
 
         if (serverPhase == ServerPhase.WAITING_USERNAME_REINSERTION && whoIAmCurrentlyWaiting.equals(connection)) {
@@ -107,6 +113,12 @@ public class ServerImpl implements Server {
         }
     }
 
+    /**
+     * This method is called when a client provides valid desires for the match creation,
+     * it checks that the server was actually waiting for the desires from this client,
+     * and acts accordingly, setting the desires and the next lobby state
+     * @param connection the client providing the desires
+     */
     private void handleDesires(ConnectionToClient connection) {
         if (serverPhase == ServerPhase.WAITING_DESIRES && whoIAmCurrentlyWaiting.equals(connection)) {
             lockLobby.lock();
@@ -123,6 +135,11 @@ public class ServerImpl implements Server {
     }
 
 
+    /**
+     * Called when a wait situation has been resolved
+     * or when no waiting situation is present and a new client joins the lobby.
+     * It manages the next lobby phase
+     */
     private void setNextLobbyPhase() {
         lockLobby.lock();
         try {
@@ -157,7 +174,9 @@ public class ServerImpl implements Server {
         }
     }
 
-
+    /**
+     * Creates a match as the required lobby size as been reached
+     */
     private void createMatch() {
         lockLobby.lock();
         try {
@@ -190,17 +209,17 @@ public class ServerImpl implements Server {
 
     /**
      * This methods de-registers the selected client from the server
-     * First it looks in the existing matches if the client is present and if it is it sends the termination
-     * signal to that match and removes it from the active matches
-     * Then it looks if the client is in the lobby and, if it is,
-     * the client is removed from the lobby
+     * It looks if the client is in the lobby and, if it is,
+     * the client is removed from the lobby.
+     * Afterwards, if a waiting situation is resolved or no waiting situation was present
+     * it calls the setNextLobbyPhase method
      *
      * @param connectionToClient the client to be de-registered
      */
     private void deregister(ConnectionToClient connectionToClient) {
         lockLobby.lock();
         try {
-            if (waitingClients.contains(connectionToClient)) {
+            if(waitingClients.contains(connectionToClient)) {
                 waitingClients.remove(connectionToClient);
                 serverLogger.info("Client [" + connectionToClient.getClientNickname() + "] unregistered from lobby");
                 if(whoIAmCurrentlyWaiting == null || whoIAmCurrentlyWaiting.equals(connectionToClient))
@@ -211,6 +230,11 @@ public class ServerImpl implements Server {
         }
     }
 
+    /**
+     * This method is called when a match is closing,
+     * it removes the match from the current matches
+     * @param match the closing match
+     */
     private void deregisterMatch(Match match) {
         lockMatches.lock();
         try {
@@ -222,6 +246,11 @@ public class ServerImpl implements Server {
         }
     }
 
+    /**
+     * Checks if a provided nick is already taken by other players in the lobby
+     * @param connection the client to check
+     * @return is it taken
+     */
     private boolean alreadyTaken(ConnectionToClient connection) {
         lockLobby.lock();
         try {

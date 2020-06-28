@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.virtualView;
 
 import it.polimi.ingsw.server.ServerLogger;
+import it.polimi.ingsw.server.communication.ConnectionToClient;
 import it.polimi.ingsw.server.model.ObservableModel;
 import it.polimi.ingsw.common.utils.observe.Observer;
 import it.polimi.ingsw.common.packets.*;
@@ -9,7 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-
+/**
+ * Yhe virtual view, which acts as a bridge between the controller and the connection to the client
+ */
 public class VirtualView implements Observer<Object> {
 
     private final ConnectionToClient connectionToClient;
@@ -73,7 +76,6 @@ public class VirtualView implements Observer<Object> {
             }
         });
         model.addPacketSetupObserver(packetSetup -> {
-
             serverLogger.info("[" + connectionToClient.getClientNickname() + "]: sending setup packet");
             connectionToClient.send(packetSetup, false);
         });

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.virtualView;
+package it.polimi.ingsw.server.communication;
 
 import it.polimi.ingsw.common.utils.observe.Observer;
 import it.polimi.ingsw.common.packets.*;
@@ -16,12 +16,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+/**
+ * This class manages the connection to a client using a socket
+ */
 public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     private static final String NICKNAME_REGEXP = "^([a-zA-Z0-9._\\-]{1,20})$";
     private static final Pattern NICKNAME_PATTERN = Pattern.compile(NICKNAME_REGEXP);
-    private static final int TIMER_SHORT = 60000;
-    private static final int TIMER_LONG = 240000;
+    public static final int TIMER_SHORT = 60000;
+    public static final int TIMER_LONG = 240000;
     public static final int PING_PERIOD = 5000;
     public static final int CONNECTION_TIMEOUT = 10000;
     public static final int TIMEOUT_BEFORE_CLOSE = 5000;
@@ -54,7 +57,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     /**
      * The constructor of the connection
-     * saves the client socket in a local variable
+     * saves the client socket in a local variable,
      * saves also a reference to the server connection utils
      * @param socket the client socket it manages
      */
@@ -81,6 +84,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
         });
     }
 
+    /**
+     * Starts a timer which in case it ends closes the connection
+     * @param milliseconds the duration of the timer in milliseconds
+     */
     private void startTimer(int milliseconds){
         timer = new Thread(() -> {
             try {
@@ -95,18 +102,27 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     private void startTimerShorter(){ startTimer(TIMER_SHORT); }
     private void startTimerLonger(){ startTimer(TIMER_LONG); }
 
-    void stopTimer(){
+    /**
+     * Stops an eventually running timer
+     */
+    public void stopTimer(){
         if(timer != null && timer.isAlive()) {
             timer.interrupt();
             timer = null;
         }
     }
 
+    /**
+     * The function used to send serializable objects to the client
+     * @param packet the packet to send
+     * @throws IOException in case of errors throws this exception
+     */
     private void internalSend(Serializable packet) throws IOException{
         sendLock.lock();
         try {
             os.writeObject(packet);
             os.flush();
+            os.reset();
         }finally {
             sendLock.unlock();
         }
@@ -116,7 +132,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
      * Method for sending ONLY serialized objects to the client
      * Upon failure sending the information, closes the connection
      * @param packet the serialized object
-     * @param withTimer a flag to activate a timer that closes the connection if it doesn't receive an answer
+     * @param withTimer a flag to activate a longer timer that closes the connection if it doesn't receive an answer
      *                  within the prescribed time limit
      */
     public void send(Serializable packet, boolean withTimer){
@@ -131,7 +147,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     /**
      * Method use by the server to ask the client the desired number of players in a match
-     * and if it wants to play in hardcore mode or not
+     * and if it wants to play in hardcore mode or not, also starts a shorter timer
      * Upon failure retrieving the information, closes the connection
      */
     public void askForDesiredPlayersAndGamemode(){
@@ -151,7 +167,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     /**
      * Method used to ask the client his nickname
-     * Upon failure retrieving the information, closes the connection
+     * Upon failure retrieving the information, closes the connection, also starts a shorter timer
+     * @throws IOException in case of errors throws this exception
      */
     private void askNickname() throws IOException{
 
@@ -166,7 +183,8 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     /**
      * Method use by the server to ask the client his nickname again
      * because it has already been selected by another player
-     * Upon failure retrieving the information, closes the connection
+     * Upon failure retrieving the information, closes the connection,
+     * also starts a shorter timer
      */
     public void askNicknameAgain(){
         try{
@@ -261,11 +279,10 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
     /**
      * This method calls the closeRoutine method,
-     * additionally handles the full de-registration of the connection according to its state
+     * additionally handles the full de-registration of the connection according to its state (in lobby or in match)
      */
     public synchronized void closeRoutineFull(){
 
-        serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: socket is closing");
         stopTimer();
         active.set(false);
         closureHandler.update(this);
@@ -275,19 +292,23 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
     }
 
     /**
-     * This method tries to send a connection ended message and
-     * then tries to close the streams and the socket
-     * It is used from the timer, the pinger and the match not coupled with close routine full as
-     * full de-registration is not required in these cases
+     * This method starts the closeRoutine method on a new thread
      */
     public void asyncCloseRoutine(){
         new Thread(() -> closeRoutine(false)).start();
     }
 
-
-    private void closeRoutine(boolean timerEnded) {
+    /**
+     * This method tries to send a connection ended message and after waiting for a short time
+     * tries to close the streams and the socket.
+     * It is used from the timer, the pinger and the match not coupled with close routine full as
+     * full de-registration is not required in these cases
+     */
+    private synchronized void closeRoutine(boolean timerEnded) {
 
         if(closed.compareAndSet(false, true)) {
+
+            serverLogger.info("[" + (clientNickname != null ? clientNickname : socket.getInetAddress().getHostAddress()) + "]: socket is closing");
 
             active.set(false);
             stopTimer();
@@ -301,7 +322,7 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
             try {
                 os.writeObject(ConnectionMessages.CONNECTION_CLOSED);
-                os.flush();
+                os.flush();;
             } catch (IOException ignored) { }
 
             try {

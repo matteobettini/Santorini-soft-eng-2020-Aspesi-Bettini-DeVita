@@ -6,7 +6,9 @@ import it.polimi.ingsw.server.virtualView.VirtualView;
 
 import java.util.List;
 
-
+/**
+ * The controller which mediates between the external model and the virtual view
+ */
 public class Controller {
 
     private final List<VirtualView> virtualViews;

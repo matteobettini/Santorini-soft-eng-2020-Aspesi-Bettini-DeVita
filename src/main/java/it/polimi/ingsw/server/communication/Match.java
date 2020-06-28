@@ -6,7 +6,6 @@ import it.polimi.ingsw.server.model.ConcreteModel;
 import it.polimi.ingsw.common.utils.observe.Observer;
 import it.polimi.ingsw.common.packets.ConnectionMessages;
 import it.polimi.ingsw.common.packets.PacketMatchStarted;
-import it.polimi.ingsw.server.virtualView.ConnectionToClient;
 import it.polimi.ingsw.server.virtualView.VirtualView;
 
 import java.util.ArrayList;
@@ -17,6 +16,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+/**
+ * This class represents a match and its role is to orchestrate the match.
+ * That is: handling creation, handling unexpected closures of participating clients and handling normal match endings (wins, losses)
+ */
 class Match {
 
     private final int id;
@@ -30,7 +33,7 @@ class Match {
     private final List<String> players;
     private final boolean isHardcore;
 
-    private final AtomicBoolean isClosing = new AtomicBoolean();
+    private final AtomicBoolean isClosing = new AtomicBoolean(false);
 
     private final Logger serverLogger = Logger.getLogger(ServerLogger.LOGGER_NAME);
 
@@ -38,7 +41,7 @@ class Match {
      * This is the match constructor
      * Sets the handler for the end of the match and for
      * the disconnection of the clients.
-     * It creates the model, controller and virtual views involved in the match and keeps track of them
+     * It creates the model, controller and virtual views involved in the match.
      *
      * @param clientConnections the client connections in the match
      * @param isHardcore the match gamemode
@@ -47,7 +50,6 @@ class Match {
     Match(List<ConnectionToClient> clientConnections, boolean isHardcore, int id) {
         assert(clientConnections != null);
 
-        this.isClosing.set(false);
         this.id = id;
         this.clients = new HashMap<>();
         List<String> players = clientConnections.stream().map(ConnectionToClient::getClientNickname).collect(Collectors.toList());
@@ -115,7 +117,11 @@ class Match {
             }
     }
 
-
+    /**
+     * This method is used when a client wins the match
+     * The match sends a "match finished" message
+     * to all the clients and closes them.
+     */
     private void notifyEnd(){
         for(ConnectionToClient c : clients.keySet()){
             serverLogger.info("[" + c.getClientNickname() + "]: sending info of finished match, MATCH ID: [" + id + "]");
@@ -124,6 +130,10 @@ class Match {
         }
     }
 
+    /**
+     * Sets the handler to be called in case of match closure
+     * @param closureHandler the handler
+     */
     void setClosureHandler(Observer<Match> closureHandler) {
         this.closureHandler = closureHandler;
     }
