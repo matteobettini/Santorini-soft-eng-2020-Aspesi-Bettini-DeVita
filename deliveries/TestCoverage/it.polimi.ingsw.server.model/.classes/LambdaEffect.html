@@ -1,0 +1,70 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LambdaEffect</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LambdaEffect (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">LambdaEffect</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.model.exceptions.PlayerLostSignal;
+<i>5</i>&nbsp;import it.polimi.ingsw.server.model.exceptions.PlayerWonSignal;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/**
+<i>8</i>&nbsp; * Thi is a lmabda function that encapsulates the logic of the effect of a certain rule.
+<i>9</i>&nbsp; * It carries out the move on the board by setting new workers&#39; positions or adding buildings.
+<i>10</i>&nbsp; * It can be both the effect of a move rule or of a build rule.
+<i>11</i>&nbsp; */
+<i>12</i>&nbsp;@FunctionalInterface
+<i>13</i>&nbsp;interface LambdaEffect {
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;    /**
+<i>16</i>&nbsp;     * This method applies the effect to the internal model
+<i>17</i>&nbsp;     * @param moveData if it is a move effect, this parameter will contain the associated data otherwise it will be null
+<i>18</i>&nbsp;     * @param buildData if it is a build effect, this parameter will contain the associated data otherwise it will be null
+<i>19</i>&nbsp;     * @param simulate if true gives the possibility to simulate the effect without modifying the internal model
+<i>20</i>&nbsp;     * @return returns true if the effect is consistent and false if it violates board consistency
+<i>21</i>&nbsp;     */
+<i>22</i>&nbsp;    boolean apply(MoveData moveData, BuildData buildData, boolean simulate) throws PlayerWonSignal, PlayerLostSignal;
+<i>23</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

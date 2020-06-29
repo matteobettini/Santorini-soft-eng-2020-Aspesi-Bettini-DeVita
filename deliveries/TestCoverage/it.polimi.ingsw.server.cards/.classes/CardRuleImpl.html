@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CardRuleImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CardRuleImpl (it.polimi.ingsw.server.cards)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CardRuleImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (22/ 22)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.enums.TriggerType;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;import java.util.LinkedList;
+<i>6</i>&nbsp;import java.util.List;
+<i>7</i>&nbsp;import java.util.Objects;
+<i>8</i>&nbsp;
+<b class="fc"><i>9</i>&nbsp;class CardRuleImpl implements CardRule{</b>
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;    private final TriggerType trigger;
+<i>12</i>&nbsp;    private final List&lt;RuleStatementImpl&gt; statements;
+<i>13</i>&nbsp;    private final RuleEffectImpl effect;
+<i>14</i>&nbsp;
+<b class="fc"><i>15</i>&nbsp;    public CardRuleImpl(TriggerType trigger, List&lt;RuleStatementImpl&gt; statements, RuleEffectImpl effect) {</b>
+<b class="fc"><i>16</i>&nbsp;        assert (trigger != null &amp;&amp; statements != null &amp;&amp; effect != null);</b>
+<b class="fc"><i>17</i>&nbsp;        this.trigger = trigger;</b>
+<b class="fc"><i>18</i>&nbsp;        this.statements = statements;</b>
+<b class="fc"><i>19</i>&nbsp;        this.effect = effect;</b>
+<b class="fc"><i>20</i>&nbsp;    }</b>
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;    /**
+<i>23</i>&nbsp;     * Getter for the trigger of this rule
+<i>24</i>&nbsp;     * @return Enum value corresponding to the trigger of this rule
+<i>25</i>&nbsp;     */
+<i>26</i>&nbsp;    public TriggerType getTrigger(){
+<b class="fc"><i>27</i>&nbsp;        return this.trigger;</b>
+<i>28</i>&nbsp;    }
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    /**
+<i>31</i>&nbsp;     * Getter for this card rule statements
+<i>32</i>&nbsp;     * @return List of all the statements of the card
+<i>33</i>&nbsp;     */
+<i>34</i>&nbsp;    public List&lt;RuleStatement&gt; getStatements(){
+<b class="fc"><i>35</i>&nbsp;        return new LinkedList&lt;&gt;(this.statements);</b>
+<i>36</i>&nbsp;    }
+<i>37</i>&nbsp;    public List&lt;RuleStatementImpl&gt; getStatementsInternal(){
+<b class="fc"><i>38</i>&nbsp;        return new LinkedList&lt;&gt;(this.statements);</b>
+<i>39</i>&nbsp;    }
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    /**
+<i>42</i>&nbsp;     * Setter for adding a statement to this rule.
+<i>43</i>&nbsp;     * Useful for patching runtime the rule
+<i>44</i>&nbsp;     * @param stm Statement to add to this rule
+<i>45</i>&nbsp;     */
+<i>46</i>&nbsp;    public void addStatement(RuleStatement stm){
+<b class="fc"><i>47</i>&nbsp;        assert (stm != null);</b>
+<b class="fc"><i>48</i>&nbsp;        statements.add(new RuleStatementImpl(stm.getType(), stm.getSubject(), stm.getVerb(), stm.getObject()));</b>
+<b class="fc"><i>49</i>&nbsp;    }</b>
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    /**
+<i>52</i>&nbsp;     * Getter for the effect of this rule
+<i>53</i>&nbsp;     * @return Object RuleEffect containing effect data of this rule
+<i>54</i>&nbsp;     */
+<i>55</i>&nbsp;    public RuleEffect getEffect(){
+<b class="fc"><i>56</i>&nbsp;        return this.effect;</b>
+<i>57</i>&nbsp;    }
+<i>58</i>&nbsp;    public RuleEffectImpl getEffectInternal() {
+<b class="fc"><i>59</i>&nbsp;        return this.effect;</b>
+<i>60</i>&nbsp;    }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /**
+<i>63</i>&nbsp;     * Compares two CardRules, using the internal state instead of the memory location
+<i>64</i>&nbsp;     * @param o Object to compare to
+<i>65</i>&nbsp;     * @return True if the two objects contains the same information
+<i>66</i>&nbsp;     */
+<i>67</i>&nbsp;    @Override
+<i>68</i>&nbsp;    public boolean equals(Object o) {
+<b class="fc"><i>69</i>&nbsp;        if (this == o) return true;</b>
+<b class="fc"><i>70</i>&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+<b class="fc"><i>71</i>&nbsp;        CardRuleImpl cardRule = (CardRuleImpl) o;</b>
+<b class="fc"><i>72</i>&nbsp;        return trigger == cardRule.trigger &amp;&amp;</b>
+<b class="fc"><i>73</i>&nbsp;                statements.equals(cardRule.statements) &amp;&amp;</b>
+<b class="fc"><i>74</i>&nbsp;                effect.equals(cardRule.effect);</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /**
+<i>78</i>&nbsp;     * Return an hash code for this class, using the internal information
+<i>79</i>&nbsp;     * @return The generated hashcode
+<i>80</i>&nbsp;     */
+<i>81</i>&nbsp;    @Override
+<i>82</i>&nbsp;    public int hashCode() {
+<b class="fc"><i>83</i>&nbsp;        return Objects.hash(trigger, statements, effect);</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

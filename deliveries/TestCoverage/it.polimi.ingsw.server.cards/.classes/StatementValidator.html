@@ -1,0 +1,517 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StatementValidator</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StatementValidator (it.polimi.ingsw.server.cards)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StatementValidator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (19/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97,2%
+  </span>
+  <span class="absValue">
+    (172/ 177)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">StatementValidator$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (20/ 20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97,2%
+  </span>
+  <span class="absValue">
+    (173/ 178)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.exceptions.InvalidStatementObjectException;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.cards.exceptions.InvalidStatementSubjectException;
+<i>5</i>&nbsp;import it.polimi.ingsw.server.model.enums.LevelType;
+<i>6</i>&nbsp;import it.polimi.ingsw.server.model.enums.PlayerFlag;
+<i>7</i>&nbsp;import it.polimi.ingsw.server.model.enums.PlayerState;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;/**
+<i>10</i>&nbsp; * This class offers a method to validate card statement&#39;s semantic
+<i>11</i>&nbsp; */
+<b class="fc"><i>12</i>&nbsp;class StatementValidator {</b>
+<i>13</i>&nbsp;    /**
+<i>14</i>&nbsp;     * This method is used to validate RuleStatement semantic
+<i>15</i>&nbsp;     * @param stm RuleStatement to be validated
+<i>16</i>&nbsp;     * @throws InvalidStatementSubjectException If problems are found during the scan of statement&#39;s subject data
+<i>17</i>&nbsp;     * @throws InvalidStatementObjectException If problems are found during the scan of statement&#39;s object data
+<i>18</i>&nbsp;     */
+<i>19</i>&nbsp;    public static void checkRuleStatement(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>20</i>&nbsp;        switch (stm.getVerb()){</b>
+<i>21</i>&nbsp;            case STATE_EQUALS:
+<b class="fc"><i>22</i>&nbsp;                stateEqualsValidate(stm);</b>
+<b class="fc"><i>23</i>&nbsp;                break;</b>
+<i>24</i>&nbsp;            case PLAYER_EQUALS:
+<b class="fc"><i>25</i>&nbsp;                playerEqualsValidate(stm);</b>
+<b class="fc"><i>26</i>&nbsp;                break;</b>
+<i>27</i>&nbsp;            case POSITION_EQUALS:
+<b class="fc"><i>28</i>&nbsp;                positionEqualsValidate(stm);</b>
+<b class="fc"><i>29</i>&nbsp;                break;</b>
+<i>30</i>&nbsp;            case MOVE_LENGTH:
+<b class="fc"><i>31</i>&nbsp;                moveLengthValidate(stm);</b>
+<b class="fc"><i>32</i>&nbsp;                break;</b>
+<i>33</i>&nbsp;            case EXISTS_LEVEL_TYPE:
+<b class="fc"><i>34</i>&nbsp;                existsLevelTypeValidate(stm);</b>
+<b class="fc"><i>35</i>&nbsp;                break;</b>
+<i>36</i>&nbsp;            case BUILD_IN_SAME_SPOT:
+<b class="fc"><i>37</i>&nbsp;                buildInSameSpotValidate(stm);</b>
+<b class="fc"><i>38</i>&nbsp;                break;</b>
+<i>39</i>&nbsp;            case BUILD_NUM:
+<b class="fc"><i>40</i>&nbsp;                buildNumValidate(stm);</b>
+<b class="fc"><i>41</i>&nbsp;                break;</b>
+<i>42</i>&nbsp;            case BUILD_DOME_EXCEPT:
+<b class="fc"><i>43</i>&nbsp;                buildDomeExceptValidate(stm);</b>
+<b class="fc"><i>44</i>&nbsp;                break;</b>
+<i>45</i>&nbsp;            case EXISTS_DELTA_MORE:
+<b class="fc"><i>46</i>&nbsp;                existsDeltaMoreValidate(stm);</b>
+<b class="fc"><i>47</i>&nbsp;                break;</b>
+<i>48</i>&nbsp;            case HAS_FLAG:
+<b class="fc"><i>49</i>&nbsp;                hasFlagValidate(stm);</b>
+<b class="fc"><i>50</i>&nbsp;                break;</b>
+<i>51</i>&nbsp;            case BUILD_DOME:
+<b class="fc"><i>52</i>&nbsp;                buildDomeValidate(stm);</b>
+<b class="fc"><i>53</i>&nbsp;                break;</b>
+<i>54</i>&nbsp;            case INTERACTION_NUM:
+<b class="fc"><i>55</i>&nbsp;                interactionNumValidate(stm);</b>
+<b class="fc"><i>56</i>&nbsp;                break;</b>
+<i>57</i>&nbsp;            case EXISTS_DELTA_LESS:
+<b class="fc"><i>58</i>&nbsp;                existsDeltaLessValidate(stm);</b>
+<b class="fc"><i>59</i>&nbsp;                break;</b>
+<i>60</i>&nbsp;            case IS_NEAR:
+<b class="fc"><i>61</i>&nbsp;                isNearValidate(stm);</b>
+<b class="fc"><i>62</i>&nbsp;                break;</b>
+<i>63</i>&nbsp;            case ONLY_COMPLETE_TOWERS_NEAR:
+<b class="fc"><i>64</i>&nbsp;                onlyCompleteTowersNearValidate(stm);</b>
+<b class="fc"><i>65</i>&nbsp;                break;</b>
+<i>66</i>&nbsp;            case LAST_BUILD_ON:
+<b class="fc"><i>67</i>&nbsp;                lastBuildOnValidate(stm);</b>
+<b class="fc"><i>68</i>&nbsp;                break;</b>
+<i>69</i>&nbsp;            case IS_THE_HIGHEST:
+<b class="fc"><i>70</i>&nbsp;                isTheHighestValidate(stm);</b>
+<b class="fc"><i>71</i>&nbsp;                break;</b>
+<i>72</i>&nbsp;            default:
+<b class="nc"><i>73</i>&nbsp;                assert false;</b>
+<i>74</i>&nbsp;        }
+<b class="fc"><i>75</i>&nbsp;    }</b>
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    /**
+<i>78</i>&nbsp;     * Check PLAYER_EQUALS
+<i>79</i>&nbsp;     * @param stm PLAYER_EQUALS statement
+<i>80</i>&nbsp;     */
+<i>81</i>&nbsp;    private static void playerEqualsValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>82</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>83</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>84</i>&nbsp;                break;</b>
+<i>85</i>&nbsp;            default:
+<b class="fc"><i>86</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[PLAYER_EQUALS] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>87</i>&nbsp;        }
+<b class="fc"><i>88</i>&nbsp;        switch (stm.getObject()){</b>
+<i>89</i>&nbsp;            case &quot;CARD_OWNER&quot;:
+<b class="fc"><i>90</i>&nbsp;                break;</b>
+<i>91</i>&nbsp;            default:
+<b class="fc"><i>92</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[PLAYER_EQUALS] Object &#39;&quot; + stm.getObject() + &quot;&#39; not supported&quot; );</b>
+<i>93</i>&nbsp;        }
+<b class="fc"><i>94</i>&nbsp;    }</b>
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    /**
+<i>97</i>&nbsp;     * Check STATE_EQUALS
+<i>98</i>&nbsp;     * @param stm STATE_EQUALS statement
+<i>99</i>&nbsp;     */
+<i>100</i>&nbsp;    private static void stateEqualsValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>101</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>102</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>103</i>&nbsp;                break;</b>
+<i>104</i>&nbsp;            default:
+<b class="fc"><i>105</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[STATE_EQUALS] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>106</i>&nbsp;        }
+<i>107</i>&nbsp;        try{
+<b class="fc"><i>108</i>&nbsp;            PlayerState state = PlayerState.valueOf(stm.getObject());</b>
+<b class="fc"><i>109</i>&nbsp;        }catch (IllegalArgumentException ex){</b>
+<b class="fc"><i>110</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[STATE_EQUALS] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid PlayerState&quot;);</b>
+<b class="fc"><i>111</i>&nbsp;        }</b>
+<b class="fc"><i>112</i>&nbsp;    }</b>
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    /**
+<i>115</i>&nbsp;     * Check HAS_FLAG
+<i>116</i>&nbsp;     * @param stm HAS_FLAG statement
+<i>117</i>&nbsp;     */
+<i>118</i>&nbsp;    private static void hasFlagValidate(RuleStatement stm)  throws InvalidStatementSubjectException, InvalidStatementObjectException{
+<b class="fc"><i>119</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>120</i>&nbsp;            case &quot;YOU&quot;:
+<i>121</i>&nbsp;            case &quot;CARD_OWNER&quot;:
+<b class="fc"><i>122</i>&nbsp;                break;</b>
+<i>123</i>&nbsp;            default:
+<b class="fc"><i>124</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[HAS_FLAG] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>125</i>&nbsp;        }
+<i>126</i>&nbsp;        try{
+<b class="fc"><i>127</i>&nbsp;            PlayerFlag flag = PlayerFlag.valueOf(stm.getObject());</b>
+<b class="fc"><i>128</i>&nbsp;        }catch (IllegalArgumentException ex){</b>
+<b class="fc"><i>129</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[HAS_FLAG] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid PlayerFlag&quot;);</b>
+<b class="fc"><i>130</i>&nbsp;        }</b>
+<b class="fc"><i>131</i>&nbsp;    }</b>
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    /**
+<i>134</i>&nbsp;     * Check MOVE_LENGTH
+<i>135</i>&nbsp;     * @param stm MOVE_LENGTH statement
+<i>136</i>&nbsp;     */
+<i>137</i>&nbsp;    private static void moveLengthValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>138</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>139</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>140</i>&nbsp;                break;</b>
+<i>141</i>&nbsp;            default:
+<b class="fc"><i>142</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[MOVE_LENGTH] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot;);</b>
+<i>143</i>&nbsp;        }
+<i>144</i>&nbsp;        try{
+<b class="fc"><i>145</i>&nbsp;            int val = Integer.parseInt(stm.getObject());</b>
+<b class="fc"><i>146</i>&nbsp;            if (val &lt;= 0){</b>
+<b class="fc"><i>147</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[MOVE_LENGTH] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not &gt; 0&quot;);</b>
+<i>148</i>&nbsp;            }
+<b class="fc"><i>149</i>&nbsp;        }catch (NumberFormatException ex){</b>
+<b class="fc"><i>150</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[MOVE_LENGTH] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid number&quot;);</b>
+<b class="fc"><i>151</i>&nbsp;        }</b>
+<b class="fc"><i>152</i>&nbsp;    }</b>
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    /**
+<i>155</i>&nbsp;     * Check EXISTS_DELTA_MORE
+<i>156</i>&nbsp;     * @param stm EXISTS_DELTA_MORE statement
+<i>157</i>&nbsp;     */
+<i>158</i>&nbsp;    private static void existsDeltaMoreValidate(RuleStatement stm)  throws InvalidStatementSubjectException, InvalidStatementObjectException{
+<b class="fc"><i>159</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>160</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>161</i>&nbsp;                break;</b>
+<i>162</i>&nbsp;            default:
+<b class="fc"><i>163</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[EXISTS_DELTA_MORE] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot;);</b>
+<i>164</i>&nbsp;        }
+<i>165</i>&nbsp;        try{
+<b class="fc"><i>166</i>&nbsp;            Integer val = Integer.parseInt(stm.getObject());</b>
+<b class="fc"><i>167</i>&nbsp;        }catch (NumberFormatException ex){</b>
+<b class="fc"><i>168</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[EXISTS_DELTA_MORE] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid number&quot;);</b>
+<b class="fc"><i>169</i>&nbsp;        }</b>
+<b class="fc"><i>170</i>&nbsp;    }</b>
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;    /**
+<i>173</i>&nbsp;     * Check EXISTS_DELTA_LESS
+<i>174</i>&nbsp;     * @param stm EXISTS_DELTA_LESS statement
+<i>175</i>&nbsp;     */
+<i>176</i>&nbsp;    private static void existsDeltaLessValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>177</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>178</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>179</i>&nbsp;                break;</b>
+<i>180</i>&nbsp;            default:
+<b class="fc"><i>181</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[EXISTS_DELTA_LESS] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot;);</b>
+<i>182</i>&nbsp;        }
+<i>183</i>&nbsp;        try{
+<b class="fc"><i>184</i>&nbsp;            Integer val = Integer.parseInt(stm.getObject());</b>
+<b class="fc"><i>185</i>&nbsp;        }catch (NumberFormatException ex){</b>
+<b class="fc"><i>186</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[EXISTS_DELTA_LESS] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid number&quot;);</b>
+<b class="fc"><i>187</i>&nbsp;        }</b>
+<b class="fc"><i>188</i>&nbsp;    }</b>
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;    /**
+<i>191</i>&nbsp;     * Check EXISTS_LEVEL_TYPE
+<i>192</i>&nbsp;     * @param stm EXISTS_LEVEL_TYPE statement
+<i>193</i>&nbsp;     */
+<i>194</i>&nbsp;    private static void existsLevelTypeValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>195</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>196</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>197</i>&nbsp;                break;</b>
+<i>198</i>&nbsp;            default:
+<b class="fc"><i>199</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[EXISTS_LEVEL_TYPE] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>200</i>&nbsp;        }
+<i>201</i>&nbsp;        try{
+<b class="fc"><i>202</i>&nbsp;            LevelType level = LevelType.valueOf(stm.getObject());</b>
+<b class="fc"><i>203</i>&nbsp;        }catch (IllegalArgumentException ex){</b>
+<b class="fc"><i>204</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[EXISTS_LEVEL_TYPE] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid LevelType&quot;);</b>
+<b class="fc"><i>205</i>&nbsp;        }</b>
+<b class="fc"><i>206</i>&nbsp;    }</b>
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;    /**
+<i>209</i>&nbsp;     * Check INTERACTION_NUM
+<i>210</i>&nbsp;     * @param stm INTERACTION_NUM statement
+<i>211</i>&nbsp;     */
+<i>212</i>&nbsp;    private static void interactionNumValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>213</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>214</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>215</i>&nbsp;                break;</b>
+<i>216</i>&nbsp;            default:
+<b class="fc"><i>217</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[INTERACTION_NUM] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot;);</b>
+<i>218</i>&nbsp;        }
+<i>219</i>&nbsp;        try{
+<b class="fc"><i>220</i>&nbsp;            int val = Integer.parseInt(stm.getObject());</b>
+<b class="fc"><i>221</i>&nbsp;            if (val &lt; 0){</b>
+<b class="fc"><i>222</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[INTERACTION_NUM] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not &gt;= 0&quot;);</b>
+<i>223</i>&nbsp;            }
+<b class="fc"><i>224</i>&nbsp;        }catch (NumberFormatException ex){</b>
+<b class="fc"><i>225</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[INTERACTION_NUM] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid number&quot;);</b>
+<b class="fc"><i>226</i>&nbsp;        }</b>
+<b class="fc"><i>227</i>&nbsp;    }</b>
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;    /**
+<i>230</i>&nbsp;     * Check POSITION_EQUALS
+<i>231</i>&nbsp;     * @param stm POSITION_EQUALS statement
+<i>232</i>&nbsp;     */
+<i>233</i>&nbsp;    private static void positionEqualsValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>234</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>235</i>&nbsp;            case &quot;FINAL_POSITION&quot;:
+<b class="fc"><i>236</i>&nbsp;                break;</b>
+<i>237</i>&nbsp;            default:
+<b class="fc"><i>238</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[POSITION_EQUALS] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>239</i>&nbsp;        }
+<b class="fc"><i>240</i>&nbsp;        switch (stm.getObject()){</b>
+<i>241</i>&nbsp;            case &quot;START_POSITION&quot;:
+<i>242</i>&nbsp;            case &quot;OPPONENTS&quot;:
+<b class="fc"><i>243</i>&nbsp;                break;</b>
+<i>244</i>&nbsp;            default:
+<b class="fc"><i>245</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[POSITION_EQUALS] Object &#39;&quot; + stm.getObject() + &quot;&#39; not supported&quot; );</b>
+<i>246</i>&nbsp;        }
+<b class="fc"><i>247</i>&nbsp;    }</b>
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;    /**
+<i>250</i>&nbsp;     * Check BUILD_NUM
+<i>251</i>&nbsp;     * @param stm BUILD_NUM statement
+<i>252</i>&nbsp;     */
+<i>253</i>&nbsp;    private static void buildNumValidate(RuleStatement stm)  throws InvalidStatementSubjectException, InvalidStatementObjectException{
+<b class="fc"><i>254</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>255</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>256</i>&nbsp;                break;</b>
+<i>257</i>&nbsp;            default:
+<b class="fc"><i>258</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[BUILD_NUM] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot;);</b>
+<i>259</i>&nbsp;        }
+<i>260</i>&nbsp;        try{
+<b class="fc"><i>261</i>&nbsp;            int val = Integer.parseInt(stm.getObject());</b>
+<b class="fc"><i>262</i>&nbsp;            if (val &lt;= 0){</b>
+<b class="fc"><i>263</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[BUILD_NUM] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not &gt; 0&quot;);</b>
+<i>264</i>&nbsp;            }
+<b class="fc"><i>265</i>&nbsp;        }catch (NumberFormatException ex){</b>
+<b class="fc"><i>266</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[BUILD_NUM] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid number&quot;);</b>
+<b class="fc"><i>267</i>&nbsp;        }</b>
+<b class="fc"><i>268</i>&nbsp;    }</b>
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;    /**
+<i>271</i>&nbsp;     * Check BUILD_DOME_EXCEPT
+<i>272</i>&nbsp;     * @param stm BUILD_DOME_EXCEPT statement
+<i>273</i>&nbsp;     */
+<i>274</i>&nbsp;    private static void buildDomeExceptValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>275</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>276</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>277</i>&nbsp;                break;</b>
+<i>278</i>&nbsp;            default:
+<b class="fc"><i>279</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[BUILD_DOME_EXCEPT] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>280</i>&nbsp;        }
+<i>281</i>&nbsp;        try{
+<b class="fc"><i>282</i>&nbsp;            LevelType level = LevelType.valueOf(stm.getObject());</b>
+<b class="fc"><i>283</i>&nbsp;            if (level == LevelType.DOME)</b>
+<b class="fc"><i>284</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[BUILD_DOME_EXCEPT] Object &#39;DOME&#39; not supported&quot;);</b>
+<b class="nc"><i>285</i>&nbsp;        }catch (IllegalArgumentException ex){</b>
+<b class="nc"><i>286</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[BUILD_DOME_EXCEPT] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid LevelType&quot;);</b>
+<b class="fc"><i>287</i>&nbsp;        }</b>
+<b class="fc"><i>288</i>&nbsp;    }</b>
+<i>289</i>&nbsp;
+<i>290</i>&nbsp;    /**
+<i>291</i>&nbsp;     * Check BUILD_DOME
+<i>292</i>&nbsp;     * @param stm BUILD_DOME statement
+<i>293</i>&nbsp;     */
+<i>294</i>&nbsp;    private static void buildDomeValidate(RuleStatement stm)  throws InvalidStatementSubjectException, InvalidStatementObjectException{
+<b class="fc"><i>295</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>296</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>297</i>&nbsp;                break;</b>
+<i>298</i>&nbsp;            default:
+<b class="fc"><i>299</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[BUILD_DOME] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>300</i>&nbsp;        }
+<i>301</i>&nbsp;        try{
+<b class="fc"><i>302</i>&nbsp;            LevelType level = LevelType.valueOf(stm.getObject());</b>
+<b class="fc"><i>303</i>&nbsp;            if (level == LevelType.DOME)</b>
+<b class="fc"><i>304</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[BUILD_DOME] Object &#39;DOME&#39; not supported&quot;);</b>
+<b class="nc"><i>305</i>&nbsp;        }catch (IllegalArgumentException ex){</b>
+<b class="nc"><i>306</i>&nbsp;            throw new InvalidStatementObjectException(&quot;[BUILD_DOME] Object &#39;&quot; + stm.getObject() + &quot;&#39; is not a valid LevelType&quot;);</b>
+<b class="fc"><i>307</i>&nbsp;        }</b>
+<b class="fc"><i>308</i>&nbsp;    }</b>
+<i>309</i>&nbsp;
+<i>310</i>&nbsp;    /**
+<i>311</i>&nbsp;     * Check BUILD_IN_SAME_SPOT
+<i>312</i>&nbsp;     * @param stm BUILD_IN_SAME_SPOT statement
+<i>313</i>&nbsp;     */
+<i>314</i>&nbsp;    private static void buildInSameSpotValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>315</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>316</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>317</i>&nbsp;                break;</b>
+<i>318</i>&nbsp;            default:
+<b class="fc"><i>319</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[BUILD_IN_SAME_SPOT] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>320</i>&nbsp;        }
+<b class="fc"><i>321</i>&nbsp;        switch (stm.getObject()){</b>
+<i>322</i>&nbsp;            case &quot;ALL&quot;:
+<b class="fc"><i>323</i>&nbsp;                break;</b>
+<i>324</i>&nbsp;            default:
+<b class="fc"><i>325</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[BUILD_IN_SAME_SPOT] Object &#39;&quot; + stm.getObject() + &quot;&#39; not supported&quot; );</b>
+<i>326</i>&nbsp;        }
+<b class="fc"><i>327</i>&nbsp;    }</b>
+<i>328</i>&nbsp;
+<i>329</i>&nbsp;    /**
+<i>330</i>&nbsp;     * Check IS_NEAR
+<i>331</i>&nbsp;     * @param stm IS_NEAR statement
+<i>332</i>&nbsp;     */
+<i>333</i>&nbsp;    private static void isNearValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>334</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>335</i>&nbsp;            case &quot;START_POSITION&quot;:
+<i>336</i>&nbsp;            case &quot;FINAL_POSITION&quot;:
+<i>337</i>&nbsp;            case &quot;ONE_BUILD_POSITION&quot;:
+<b class="fc"><i>338</i>&nbsp;                break;</b>
+<i>339</i>&nbsp;            default:
+<b class="fc"><i>340</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[IS_NEAR] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>341</i>&nbsp;        }
+<b class="fc"><i>342</i>&nbsp;        switch (stm.getObject()){</b>
+<i>343</i>&nbsp;            case &quot;CARD_OWNER&quot;:
+<b class="fc"><i>344</i>&nbsp;                break;</b>
+<i>345</i>&nbsp;            default:
+<b class="fc"><i>346</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[IS_NEAR] Object &#39;&quot; + stm.getObject() + &quot;&#39; not supported&quot; );</b>
+<i>347</i>&nbsp;        }
+<b class="fc"><i>348</i>&nbsp;    }</b>
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;    /**
+<i>351</i>&nbsp;     * Check ONLY_COMPLETE_TOWERS_NEAR
+<i>352</i>&nbsp;     * @param stm  ONLY_COMPLETE_TOWERS_NEAR statement
+<i>353</i>&nbsp;     */
+<i>354</i>&nbsp;    private static void onlyCompleteTowersNearValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>355</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>356</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>357</i>&nbsp;                break;</b>
+<i>358</i>&nbsp;            default:
+<b class="fc"><i>359</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[ONLY_COMPLETE_TOWERS_NEAR] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>360</i>&nbsp;        }
+<b class="fc"><i>361</i>&nbsp;        switch (stm.getObject()){</b>
+<i>362</i>&nbsp;            case &quot;CARD_OWNER&quot;:
+<b class="fc"><i>363</i>&nbsp;                break;</b>
+<i>364</i>&nbsp;            default:
+<b class="fc"><i>365</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[ONLY_COMPLETE_TOWERS_NEAR] Object &#39;&quot; + stm.getObject() + &quot;&#39; not supported&quot; );</b>
+<i>366</i>&nbsp;        }
+<b class="fc"><i>367</i>&nbsp;    }</b>
+<i>368</i>&nbsp;
+<i>369</i>&nbsp;    /**
+<i>370</i>&nbsp;     * Check LAST_BUILD_ON
+<i>371</i>&nbsp;     * @param stm  LAST_BUILD_ON statement
+<i>372</i>&nbsp;     */
+<i>373</i>&nbsp;    private static void lastBuildOnValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>374</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>375</i>&nbsp;            case &quot;YOU&quot;:
+<b class="fc"><i>376</i>&nbsp;                break;</b>
+<i>377</i>&nbsp;            default:
+<b class="fc"><i>378</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[LAST_BUILD_ON] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>379</i>&nbsp;        }
+<b class="fc"><i>380</i>&nbsp;        switch (stm.getObject()){</b>
+<i>381</i>&nbsp;            case &quot;PERIMETER&quot;:
+<b class="fc"><i>382</i>&nbsp;                break;</b>
+<i>383</i>&nbsp;            default:
+<b class="fc"><i>384</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[LAST_BUILD_ON] Object &#39;&quot; + stm.getObject() + &quot;&#39; not supported&quot; );</b>
+<i>385</i>&nbsp;        }
+<b class="fc"><i>386</i>&nbsp;    }</b>
+<i>387</i>&nbsp;
+<i>388</i>&nbsp;    /**
+<i>389</i>&nbsp;     * Check IS_THE_HIGHEST
+<i>390</i>&nbsp;     * @param stm  IS_THE_HIGHEST statement
+<i>391</i>&nbsp;     */
+<i>392</i>&nbsp;    private static void isTheHighestValidate(RuleStatement stm) throws InvalidStatementSubjectException, InvalidStatementObjectException {
+<b class="fc"><i>393</i>&nbsp;        switch (stm.getSubject()){</b>
+<i>394</i>&nbsp;            case &quot;CHOSEN_WORKER&quot;:
+<b class="fc"><i>395</i>&nbsp;                break;</b>
+<i>396</i>&nbsp;            default:
+<b class="fc"><i>397</i>&nbsp;                throw new InvalidStatementSubjectException(&quot;[IS_THE_HIGHEST] Subject &#39;&quot; + stm.getSubject() + &quot;&#39; not supported&quot; );</b>
+<i>398</i>&nbsp;        }
+<b class="fc"><i>399</i>&nbsp;        switch (stm.getObject()){</b>
+<i>400</i>&nbsp;            case &quot;YOUR_WORKERS&quot;:
+<b class="fc"><i>401</i>&nbsp;                break;</b>
+<i>402</i>&nbsp;            default:
+<b class="fc"><i>403</i>&nbsp;                throw new InvalidStatementObjectException(&quot;[IS_THE_HIGHEST] Object &#39;&quot; + stm.getObject() + &quot;&#39; not supported&quot; );</b>
+<i>404</i>&nbsp;        }
+<b class="fc"><i>405</i>&nbsp;    }</b>
+<i>406</i>&nbsp;
+<i>407</i>&nbsp;
+<i>408</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

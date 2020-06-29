@@ -1,0 +1,375 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Board</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Board (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Board</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/ 15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (99/ 99)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Board$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (100/ 100)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.common.enums.BuildingType;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;import java.awt.*;
+<i>6</i>&nbsp;import java.util.ArrayList;
+<i>7</i>&nbsp;import java.util.HashMap;
+<i>8</i>&nbsp;import java.util.List;
+<i>9</i>&nbsp;import java.util.Map;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;/**
+<i>12</i>&nbsp; * This class represents the Board used during a Match.
+<i>13</i>&nbsp; * It contains rows * columns Cells and the number of available
+<i>14</i>&nbsp; * buildings that can be used by the Players in order to build on the Cells.
+<i>15</i>&nbsp; */
+<b class="fc"><i>16</i>&nbsp;class Board {</b>
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;    private final Cell[][] boardRep;
+<i>19</i>&nbsp;    private final Map&lt;BuildingType, Integer&gt; buildingsCounter;
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    public static final int NUM_OF_FIRST_FLOOR = 22;
+<i>22</i>&nbsp;    public static final int NUM_OF_SECOND_FLOOR = 18;
+<i>23</i>&nbsp;    public static final int NUM_OF_THIRD_FLOOR = 14;
+<i>24</i>&nbsp;    public static final int NUM_OF_DOME = 18;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;    public static final int ROWS = 5;
+<i>27</i>&nbsp;    public static final int COLUMNS = 5;
+<i>28</i>&nbsp;
+<b class="fc"><i>29</i>&nbsp;    Board(){</b>
+<b class="fc"><i>30</i>&nbsp;        this.boardRep = new Cell[ROWS][COLUMNS];</b>
+<b class="fc"><i>31</i>&nbsp;        this.buildingsCounter = new HashMap&lt;&gt;();</b>
+<i>32</i>&nbsp;
+<b class="fc"><i>33</i>&nbsp;        for (int i = 0; i &lt; ROWS; i++){</b>
+<b class="fc"><i>34</i>&nbsp;            for(int j = 0; j &lt; COLUMNS; j++){</b>
+<b class="fc"><i>35</i>&nbsp;                Point p = new Point(i, j);</b>
+<b class="fc"><i>36</i>&nbsp;                boardRep[i][j] = new Cell(p);</b>
+<i>37</i>&nbsp;            }
+<i>38</i>&nbsp;        }
+<i>39</i>&nbsp;
+<b class="fc"><i>40</i>&nbsp;        buildingsCounter.put(BuildingType.FIRST_FLOOR, NUM_OF_FIRST_FLOOR);</b>
+<b class="fc"><i>41</i>&nbsp;        buildingsCounter.put(BuildingType.SECOND_FLOOR, NUM_OF_SECOND_FLOOR);</b>
+<b class="fc"><i>42</i>&nbsp;        buildingsCounter.put(BuildingType.THIRD_FLOOR, NUM_OF_THIRD_FLOOR);</b>
+<b class="fc"><i>43</i>&nbsp;        buildingsCounter.put(BuildingType.DOME, NUM_OF_DOME);</b>
+<b class="fc"><i>44</i>&nbsp;    }</b>
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    /**
+<i>47</i>&nbsp;     * Getter that returns the Cell given its position on the Board.
+<i>48</i>&nbsp;     * @param p is the position of the Cell in coordinates x and y.
+<i>49</i>&nbsp;     * @return a Cell.
+<i>50</i>&nbsp;     */
+<i>51</i>&nbsp;    public Cell getCell(Point p){
+<b class="fc"><i>52</i>&nbsp;        if(p == null) return null;</b>
+<b class="fc"><i>53</i>&nbsp;        if(p.x &gt;= 0 &amp;&amp; p.x &lt; ROWS &amp;&amp; p.y &gt;= 0 &amp;&amp; p.y &lt; COLUMNS) return boardRep[p.x][p.y];</b>
+<b class="fc"><i>54</i>&nbsp;        return null;</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    //Could be entirely replaced by availableBuildings
+<i>58</i>&nbsp;    /**
+<i>59</i>&nbsp;     * This method checks if there are available buildings of the given BuildingType.
+<i>60</i>&nbsp;     * @param b is the BuildingType to check.
+<i>61</i>&nbsp;     * @return true if there is availability, false otherwise.
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    public boolean canUseBuilding(BuildingType b){
+<b class="fc"><i>64</i>&nbsp;        assert b != null;</b>
+<b class="fc"><i>65</i>&nbsp;        return buildingsCounter.get(b) &gt; 0;</b>
+<i>66</i>&nbsp;    }
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     * This method checks if it is possible to use a building given its type and then consumes it.
+<i>70</i>&nbsp;     * @param b is the BuildingType of the building to check and then use.
+<i>71</i>&nbsp;     * @return true if there is availability and the building is used, false otherwise.
+<i>72</i>&nbsp;     */
+<i>73</i>&nbsp;    public boolean useBuilding(BuildingType b){
+<b class="fc"><i>74</i>&nbsp;        assert b!= null;</b>
+<b class="fc"><i>75</i>&nbsp;        int currentBuilding = buildingsCounter.get(b);</b>
+<b class="fc"><i>76</i>&nbsp;        if(currentBuilding == 0) return false;</b>
+<b class="fc"><i>77</i>&nbsp;        buildingsCounter.put(b, currentBuilding - 1);</b>
+<b class="fc"><i>78</i>&nbsp;        return true;</b>
+<i>79</i>&nbsp;    }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    /**
+<i>82</i>&nbsp;     * This method returns the number of available buildings provided their type.
+<i>83</i>&nbsp;     * @param b is the BuildingType to check.
+<i>84</i>&nbsp;     * @return an int representing the number of available buildings of the BuildingType b.
+<i>85</i>&nbsp;     */
+<i>86</i>&nbsp;    public int availableBuildings(BuildingType b){
+<b class="fc"><i>87</i>&nbsp;        assert b!= null;</b>
+<b class="fc"><i>88</i>&nbsp;        return buildingsCounter.get(b);</b>
+<i>89</i>&nbsp;    }
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /**
+<i>92</i>&nbsp;     * This method restocks the number of available buildings of the given BuildingType.
+<i>93</i>&nbsp;     * @param b is the BuildingType to restock.
+<i>94</i>&nbsp;     */
+<i>95</i>&nbsp;    public boolean restockBuilding(BuildingType b, int howMany){
+<b class="fc"><i>96</i>&nbsp;        assert b != null;</b>
+<b class="fc"><i>97</i>&nbsp;        if(howMany &lt;= 0) return false;</b>
+<b class="fc"><i>98</i>&nbsp;        int current = buildingsCounter.get(b);</b>
+<b class="fc"><i>99</i>&nbsp;        switch(b){</b>
+<i>100</i>&nbsp;            case FIRST_FLOOR:
+<b class="fc"><i>101</i>&nbsp;                if(current + howMany &gt; NUM_OF_FIRST_FLOOR) return false;</b>
+<b class="fc"><i>102</i>&nbsp;                buildingsCounter.put(BuildingType.FIRST_FLOOR, current + howMany);</b>
+<b class="fc"><i>103</i>&nbsp;                break;</b>
+<i>104</i>&nbsp;            case SECOND_FLOOR:
+<b class="fc"><i>105</i>&nbsp;                if(current + howMany &gt; NUM_OF_SECOND_FLOOR) return false;</b>
+<b class="fc"><i>106</i>&nbsp;                buildingsCounter.put(BuildingType.SECOND_FLOOR, current + howMany);</b>
+<b class="fc"><i>107</i>&nbsp;                break;</b>
+<i>108</i>&nbsp;            case THIRD_FLOOR:
+<b class="fc"><i>109</i>&nbsp;                if(current + howMany &gt; NUM_OF_THIRD_FLOOR) return false;</b>
+<b class="fc"><i>110</i>&nbsp;                buildingsCounter.put(BuildingType.THIRD_FLOOR, current + howMany);</b>
+<b class="fc"><i>111</i>&nbsp;                break;</b>
+<i>112</i>&nbsp;            case DOME:
+<b class="fc"><i>113</i>&nbsp;                if(current + howMany &gt; NUM_OF_DOME) return false;</b>
+<b class="fc"><i>114</i>&nbsp;                buildingsCounter.put(BuildingType.DOME, current + howMany);</b>
+<i>115</i>&nbsp;                break;
+<i>116</i>&nbsp;        }
+<b class="fc"><i>117</i>&nbsp;        return true;</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    /**
+<i>121</i>&nbsp;     * This method restocks entirely the available buildings of the given BuildingType.
+<i>122</i>&nbsp;     * @param b is the BuildingType to restock.
+<i>123</i>&nbsp;     */
+<i>124</i>&nbsp;    public void restockBuilding(BuildingType b){
+<b class="fc"><i>125</i>&nbsp;        assert b != null;</b>
+<b class="fc"><i>126</i>&nbsp;        switch(b){</b>
+<i>127</i>&nbsp;            case FIRST_FLOOR:
+<b class="fc"><i>128</i>&nbsp;                buildingsCounter.put(BuildingType.FIRST_FLOOR, NUM_OF_FIRST_FLOOR);</b>
+<b class="fc"><i>129</i>&nbsp;                break;</b>
+<i>130</i>&nbsp;            case SECOND_FLOOR:
+<b class="fc"><i>131</i>&nbsp;                buildingsCounter.put(BuildingType.SECOND_FLOOR, NUM_OF_SECOND_FLOOR);</b>
+<b class="fc"><i>132</i>&nbsp;                break;</b>
+<i>133</i>&nbsp;            case THIRD_FLOOR:
+<b class="fc"><i>134</i>&nbsp;                buildingsCounter.put(BuildingType.THIRD_FLOOR, NUM_OF_THIRD_FLOOR);</b>
+<b class="fc"><i>135</i>&nbsp;                break;</b>
+<i>136</i>&nbsp;            case DOME:
+<b class="fc"><i>137</i>&nbsp;                buildingsCounter.put(BuildingType.DOME, NUM_OF_DOME);</b>
+<i>138</i>&nbsp;                break;
+<i>139</i>&nbsp;        }
+<b class="fc"><i>140</i>&nbsp;    }</b>
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;    /**
+<i>143</i>&nbsp;     * This method restocks entirely the available buildings for all the building types.
+<i>144</i>&nbsp;     */
+<i>145</i>&nbsp;    public void restockBuildings(){
+<i>146</i>&nbsp;
+<b class="fc"><i>147</i>&nbsp;        buildingsCounter.put(BuildingType.FIRST_FLOOR, NUM_OF_FIRST_FLOOR);</b>
+<b class="fc"><i>148</i>&nbsp;        buildingsCounter.put(BuildingType.SECOND_FLOOR, NUM_OF_SECOND_FLOOR);</b>
+<b class="fc"><i>149</i>&nbsp;        buildingsCounter.put(BuildingType.THIRD_FLOOR, NUM_OF_THIRD_FLOOR);</b>
+<b class="fc"><i>150</i>&nbsp;        buildingsCounter.put(BuildingType.DOME, NUM_OF_DOME);</b>
+<i>151</i>&nbsp;
+<b class="fc"><i>152</i>&nbsp;    }</b>
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;    /**
+<i>155</i>&nbsp;     *  It&#39;s true if the two points are adjacent
+<i>156</i>&nbsp;     *
+<i>157</i>&nbsp;     * @param p1 point 1
+<i>158</i>&nbsp;     * @param p2 point 2
+<i>159</i>&nbsp;     * @param considerEquals considers p1 as adjacent to himself
+<i>160</i>&nbsp;     * @return true if are they adjacent
+<i>161</i>&nbsp;     */
+<i>162</i>&nbsp;    public static boolean areAdjacent(Point p1, Point p2,boolean considerEquals){
+<b class="fc"><i>163</i>&nbsp;        assert (p1 != null &amp;&amp; p2 != null);</b>
+<b class="fc"><i>164</i>&nbsp;        if(considerEquals &amp;&amp; p1.equals(p2))</b>
+<b class="fc"><i>165</i>&nbsp;            return true;</b>
+<b class="fc"><i>166</i>&nbsp;        return (p2.x == p1.x &amp;&amp; p2.y == p1.y - 1) || (p2.x == p1.x &amp;&amp; p2.y == p1.y + 1) || (p2.x == p1.x - 1 &amp;&amp; p2.y == p1.y) || (p2.x == p1.x + 1 &amp;&amp; p2.y == p1.y) || (p2.x == p1.x + 1 &amp;&amp; p2.y == p1.y + 1) || (p2.x == p1.x + 1 &amp;&amp; p2.y == p1.y - 1) || (p2.x == p1.x - 1 &amp;&amp; p2.y == p1.y - 1) || (p2.x == p1.x - 1 &amp;&amp; p2.y == p1.y + 1);</b>
+<i>167</i>&nbsp;    }
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;    /**
+<i>170</i>&nbsp;     * This methods checks whether a given point resides on the perimeter of the board
+<i>171</i>&nbsp;     * @param point the point to evaluate
+<i>172</i>&nbsp;     * @return true if it is on the perimeter, false otherwise
+<i>173</i>&nbsp;     */
+<i>174</i>&nbsp;    public static boolean isOnPerimeter(Point point){
+<b class="fc"><i>175</i>&nbsp;        assert point != null;</b>
+<b class="fc"><i>176</i>&nbsp;        if(point.x == 0 || point.x == ROWS-1){</b>
+<b class="fc"><i>177</i>&nbsp;            return point.y &gt;= 0 &amp;&amp; point.y &lt; COLUMNS;</b>
+<b class="fc"><i>178</i>&nbsp;        } else if(point.y == 0 || point.y == COLUMNS-1) {</b>
+<b class="fc"><i>179</i>&nbsp;            return point.x &gt;= 0 &amp;&amp; point.x &lt; ROWS;</b>
+<i>180</i>&nbsp;        }
+<b class="fc"><i>181</i>&nbsp;        return false;</b>
+<i>182</i>&nbsp;    }
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;    /**
+<i>185</i>&nbsp;     * This method returns a list of level deltas among different move steps, including start position
+<i>186</i>&nbsp;     * @param moves List of move points, not including start position
+<i>187</i>&nbsp;     * @param startPosition Point of start for the movement
+<i>188</i>&nbsp;     * @return List of level deltas for this movement
+<i>189</i>&nbsp;     */
+<i>190</i>&nbsp;    public List&lt;Integer&gt; getMoveDeltas(List&lt;Point&gt; moves, Point startPosition){
+<b class="fc"><i>191</i>&nbsp;        assert (moves != null &amp;&amp; moves.size()&gt;0 &amp;&amp; startPosition != null);</b>
+<i>192</i>&nbsp;
+<b class="fc"><i>193</i>&nbsp;        List&lt;Integer&gt; result = new ArrayList&lt;&gt;();</b>
+<i>194</i>&nbsp;
+<b class="fc"><i>195</i>&nbsp;        result.add(getCell(moves.get(0)).getHeight() - getCell(startPosition).getHeight());</b>
+<i>196</i>&nbsp;
+<b class="fc"><i>197</i>&nbsp;        for(int i = 0; i&lt; moves.size()-1; i++){</b>
+<b class="fc"><i>198</i>&nbsp;            int differenceInHeight = (getCell(moves.get(i+1)).getHeight() - getCell(moves.get(i)).getHeight());</b>
+<b class="fc"><i>199</i>&nbsp;            result.add(differenceInHeight);</b>
+<i>200</i>&nbsp;        }
+<i>201</i>&nbsp;
+<b class="fc"><i>202</i>&nbsp;        return result;</b>
+<i>203</i>&nbsp;    }
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;    /**
+<i>206</i>&nbsp;     * Getter for the available buildings.
+<i>207</i>&nbsp;     * @return a Map containing the number of available buildings for each type of building.
+<i>208</i>&nbsp;     */
+<i>209</i>&nbsp;    public Map&lt;BuildingType, Integer&gt; getBuildingsCounter() {
+<b class="fc"><i>210</i>&nbsp;        Map&lt;BuildingType, Integer&gt; helper = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>211</i>&nbsp;        for(BuildingType buildingType : buildingsCounter.keySet()){</b>
+<b class="fc"><i>212</i>&nbsp;            int newInt = buildingsCounter.get(buildingType);</b>
+<b class="fc"><i>213</i>&nbsp;            helper.put(buildingType, newInt);</b>
+<b class="fc"><i>214</i>&nbsp;        }</b>
+<b class="fc"><i>215</i>&nbsp;        return helper;</b>
+<i>216</i>&nbsp;    }
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;    /**
+<i>219</i>&nbsp;     * This method checks if the passed object equals the Board.
+<i>220</i>&nbsp;     * @param obj is the object to check.
+<i>221</i>&nbsp;     * @return true if obj has all the Cells equal to the ones of this and the buildingsCounters have the same keys and values,
+<i>222</i>&nbsp;     * false otherwise.
+<i>223</i>&nbsp;     */
+<i>224</i>&nbsp;    @Override
+<i>225</i>&nbsp;    public boolean equals(Object obj) {
+<b class="fc"><i>226</i>&nbsp;        if(this == obj) return true;</b>
+<b class="fc"><i>227</i>&nbsp;        if(obj == null) return false;</b>
+<b class="fc"><i>228</i>&nbsp;        if(this.getClass() != obj.getClass()) return false;</b>
+<b class="fc"><i>229</i>&nbsp;        Board other = (Board)obj;</b>
+<b class="fc"><i>230</i>&nbsp;        for (int i = 0; i &lt; ROWS; i++){</b>
+<b class="fc"><i>231</i>&nbsp;            for(int j = 0; j &lt; COLUMNS; j++){</b>
+<b class="fc"><i>232</i>&nbsp;                if(!other.boardRep[i][j].equals(this.boardRep[i][j])) return false;</b>
+<i>233</i>&nbsp;            }
+<i>234</i>&nbsp;        }
+<i>235</i>&nbsp;
+<b class="fc"><i>236</i>&nbsp;        if(!this.buildingsCounter.keySet().equals(other.buildingsCounter.keySet())) return false;</b>
+<b class="fc"><i>237</i>&nbsp;        for(BuildingType building : this.buildingsCounter.keySet()){</b>
+<b class="fc"><i>238</i>&nbsp;            if(!other.buildingsCounter.get(building).equals(this.buildingsCounter.get(building))) return false;</b>
+<b class="fc"><i>239</i>&nbsp;        }</b>
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;
+<b class="fc"><i>242</i>&nbsp;        return true;</b>
+<i>243</i>&nbsp;    }
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;    /**
+<i>247</i>&nbsp;     * This method performs a cloning of the Board.
+<i>248</i>&nbsp;     * @return the cloned Board.
+<i>249</i>&nbsp;     */
+<i>250</i>&nbsp;    @Override
+<i>251</i>&nbsp;    protected Board clone(){
+<b class="fc"><i>252</i>&nbsp;        Board clonedBoard = new Board();</b>
+<b class="fc"><i>253</i>&nbsp;        for (int i = 0; i &lt; ROWS; i++){</b>
+<b class="fc"><i>254</i>&nbsp;            for(int j = 0; j &lt; COLUMNS; j++){</b>
+<b class="fc"><i>255</i>&nbsp;                clonedBoard.boardRep[i][j] = this.boardRep[i][j].clone();</b>
+<i>256</i>&nbsp;            }
+<i>257</i>&nbsp;        }
+<b class="fc"><i>258</i>&nbsp;        for(BuildingType building : this.buildingsCounter.keySet()){</b>
+<b class="fc"><i>259</i>&nbsp;            clonedBoard.buildingsCounter.put(building, this.buildingsCounter.get(building));</b>
+<b class="fc"><i>260</i>&nbsp;        }</b>
+<i>261</i>&nbsp;
+<b class="fc"><i>262</i>&nbsp;        return clonedBoard;</b>
+<i>263</i>&nbsp;    }
+<i>264</i>&nbsp;
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

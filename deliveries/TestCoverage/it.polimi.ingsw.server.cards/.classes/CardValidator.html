@@ -1,0 +1,228 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CardValidator</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CardValidator (it.polimi.ingsw.server.cards)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CardValidator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95,3%
+  </span>
+  <span class="absValue">
+    (41/ 43)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CardValidator$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95,7%
+  </span>
+  <span class="absValue">
+    (44/ 46)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.enums.EffectType;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.cards.exceptions.InvalidRuleEffectException;
+<i>5</i>&nbsp;import it.polimi.ingsw.server.cards.exceptions.InvalidStatementObjectException;
+<i>6</i>&nbsp;import it.polimi.ingsw.server.cards.exceptions.InvalidStatementSubjectException;
+<i>7</i>&nbsp;import it.polimi.ingsw.server.cards.enums.TriggerType;
+<i>8</i>&nbsp;import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;/**
+<i>11</i>&nbsp; * This class offers a method to validate semantically a CardFile
+<i>12</i>&nbsp; */
+<b class="fc"><i>13</i>&nbsp;class CardValidator {</b>
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;    /**
+<i>16</i>&nbsp;     * This method is used to validate a CardFile semantically
+<i>17</i>&nbsp;     * @param card CardFile to be validated
+<i>18</i>&nbsp;     * @throws InvalidCardException If problems are found during the scan.
+<i>19</i>&nbsp;     *                              In the message it&#39;s always reported the reason.
+<i>20</i>&nbsp;     */
+<i>21</i>&nbsp;    public static void checkCardFile(CardFile card) throws InvalidCardException {
+<b class="fc"><i>22</i>&nbsp;        for(CardRule cardRule : card.getRules()){</b>
+<b class="fc"><i>23</i>&nbsp;            checkCardRule(cardRule);</b>
+<b class="fc"><i>24</i>&nbsp;        }</b>
+<b class="fc"><i>25</i>&nbsp;    }</b>
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;    private static void checkCardRule(CardRule rule) throws InvalidCardException {
+<i>28</i>&nbsp;        //Check mixed statements
+<b class="fc"><i>29</i>&nbsp;        checkMixedStatements(rule);</b>
+<i>30</i>&nbsp;        //Check statements
+<i>31</i>&nbsp;        try{
+<b class="fc"><i>32</i>&nbsp;            for(RuleStatement stm : rule.getStatements()){</b>
+<b class="fc"><i>33</i>&nbsp;                StatementValidator.checkRuleStatement(stm);</b>
+<b class="fc"><i>34</i>&nbsp;            }</b>
+<b class="fc"><i>35</i>&nbsp;        } catch (InvalidStatementSubjectException e) {</b>
+<b class="fc"><i>36</i>&nbsp;            throw new InvalidCardException(&quot;[RULE_STATEMENTS][SUBJECT]&quot; + e.getMessage());</b>
+<b class="fc"><i>37</i>&nbsp;        } catch (InvalidStatementObjectException e) {</b>
+<b class="fc"><i>38</i>&nbsp;            throw new InvalidCardException(&quot;[RULE_STATEMENTS][OBJECT]&quot; + e.getMessage());</b>
+<b class="fc"><i>39</i>&nbsp;        }</b>
+<i>40</i>&nbsp;        //Check Effect
+<i>41</i>&nbsp;        try{
+<b class="fc"><i>42</i>&nbsp;            EffectValidator.checkRuleEffect(rule.getEffect());</b>
+<b class="fc"><i>43</i>&nbsp;        } catch (InvalidRuleEffectException e) {</b>
+<b class="fc"><i>44</i>&nbsp;            throw new InvalidCardException(&quot;[EFFECT]&quot; + e.getMessage());</b>
+<b class="fc"><i>45</i>&nbsp;        }</b>
+<i>46</i>&nbsp;        //Check effect allow subtypes
+<b class="fc"><i>47</i>&nbsp;        checkAllowSubtypes(rule);</b>
+<b class="fc"><i>48</i>&nbsp;    }</b>
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    private static void checkMixedStatements(CardRule rule) throws InvalidCardException{
+<b class="fc"><i>51</i>&nbsp;        for(RuleStatement stm : rule.getStatements()){</b>
+<b class="fc"><i>52</i>&nbsp;            if (!isStatementPlacementValid(stm,rule.getTrigger())){</b>
+<b class="fc"><i>53</i>&nbsp;                throw new InvalidCardException(&quot;[RULE]Mixed statements: &#39;&quot; + stm.getVerb().toString() + &quot;&#39; found in &#39;&quot; + rule.getTrigger().toString() + &quot;&#39;&quot;);</b>
+<i>54</i>&nbsp;            }
+<b class="fc"><i>55</i>&nbsp;        }</b>
+<b class="fc"><i>56</i>&nbsp;    }</b>
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    private static boolean isStatementPlacementValid(RuleStatement stm, TriggerType ruleTrigger){
+<b class="fc"><i>59</i>&nbsp;        switch (ruleTrigger){</b>
+<i>60</i>&nbsp;            case MOVE:
+<b class="fc"><i>61</i>&nbsp;                switch (stm.getVerb()){</b>
+<i>62</i>&nbsp;                    case PLAYER_EQUALS:
+<i>63</i>&nbsp;                    case STATE_EQUALS:
+<i>64</i>&nbsp;                    case HAS_FLAG:
+<i>65</i>&nbsp;                    case MOVE_LENGTH:
+<i>66</i>&nbsp;                    case EXISTS_DELTA_MORE:
+<i>67</i>&nbsp;                    case EXISTS_DELTA_LESS:
+<i>68</i>&nbsp;                    case INTERACTION_NUM:
+<i>69</i>&nbsp;                    case EXISTS_LEVEL_TYPE:
+<i>70</i>&nbsp;                    case POSITION_EQUALS:
+<i>71</i>&nbsp;                    case IS_NEAR:
+<i>72</i>&nbsp;                    case IS_THE_HIGHEST:
+<b class="fc"><i>73</i>&nbsp;                        return true;</b>
+<i>74</i>&nbsp;                }
+<b class="fc"><i>75</i>&nbsp;                break;</b>
+<i>76</i>&nbsp;            case BUILD:
+<b class="fc"><i>77</i>&nbsp;                switch (stm.getVerb()){</b>
+<i>78</i>&nbsp;                    case PLAYER_EQUALS:
+<i>79</i>&nbsp;                    case STATE_EQUALS:
+<i>80</i>&nbsp;                    case HAS_FLAG:
+<i>81</i>&nbsp;                    case BUILD_NUM:
+<i>82</i>&nbsp;                    case BUILD_DOME:
+<i>83</i>&nbsp;                    case BUILD_DOME_EXCEPT:
+<i>84</i>&nbsp;                    case BUILD_IN_SAME_SPOT:
+<i>85</i>&nbsp;                    case IS_NEAR:
+<i>86</i>&nbsp;                    case ONLY_COMPLETE_TOWERS_NEAR:
+<i>87</i>&nbsp;                    case LAST_BUILD_ON:
+<i>88</i>&nbsp;                    case IS_THE_HIGHEST:
+<b class="fc"><i>89</i>&nbsp;                        return true;</b>
+<i>90</i>&nbsp;                }
+<b class="fc"><i>91</i>&nbsp;                break;</b>
+<i>92</i>&nbsp;            default:
+<b class="nc"><i>93</i>&nbsp;                assert false;</b>
+<i>94</i>&nbsp;        }
+<b class="fc"><i>95</i>&nbsp;        return false;</b>
+<i>96</i>&nbsp;    }
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    private static void checkAllowSubtypes(CardRule rule) throws InvalidCardException{
+<b class="fc"><i>99</i>&nbsp;        if (rule.getEffect().getType() != EffectType.ALLOW) return; //Obviously skip if it&#39;s not allow</b>
+<b class="fc"><i>100</i>&nbsp;        if (rule.getEffect().getAllowType() == null) return; //Will be patched</b>
+<b class="fc"><i>101</i>&nbsp;        switch (rule.getTrigger()){</b>
+<i>102</i>&nbsp;            case MOVE:
+<b class="fc"><i>103</i>&nbsp;                switch (rule.getEffect().getAllowType()){</b>
+<i>104</i>&nbsp;                    case STANDARD:
+<i>105</i>&nbsp;                    case SET_OPPONENT:
+<b class="fc"><i>106</i>&nbsp;                        return;</b>
+<i>107</i>&nbsp;                }
+<b class="nc"><i>108</i>&nbsp;                break;</b>
+<i>109</i>&nbsp;            case BUILD:
+<b class="fc"><i>110</i>&nbsp;                switch (rule.getEffect().getAllowType()){</b>
+<i>111</i>&nbsp;                    case STANDARD:
+<i>112</i>&nbsp;                    case BUILD_UNDER:
+<b class="fc"><i>113</i>&nbsp;                        return;</b>
+<i>114</i>&nbsp;                }
+<i>115</i>&nbsp;                break;
+<i>116</i>&nbsp;        }
+<b class="fc"><i>117</i>&nbsp;        throw new InvalidCardException(&quot;[RULE]Mixed allow subtypes: &#39;&quot; + rule.getEffect().getAllowType().toString() + &quot;&#39; found in &#39;&quot; + rule.getTrigger().toString() + &quot;&#39;&quot;);</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

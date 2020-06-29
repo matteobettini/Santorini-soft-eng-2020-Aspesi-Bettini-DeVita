@@ -1,0 +1,124 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RuleCompiler</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RuleCompiler (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RuleCompiler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/ 9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.CardRule;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.cards.RuleStatement;
+<i>5</i>&nbsp;import it.polimi.ingsw.server.cards.enums.TriggerType;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.util.ArrayList;
+<i>8</i>&nbsp;import java.util.List;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;/**
+<i>11</i>&nbsp; *  Translates a CardRule into a CompiledCardRule
+<i>12</i>&nbsp; */
+<b class="fc"><i>13</i>&nbsp;class RuleCompiler {</b>
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    /**
+<i>17</i>&nbsp;     * Compiles the CardRule using the StatementCompiler and EffectCompiler
+<i>18</i>&nbsp;     * @param internalModel the internal model is needed to encapsulate it in the lambdas
+<i>19</i>&nbsp;     * @param cardRule the rule to be compiled
+<i>20</i>&nbsp;     * @param owner the owner of the rule to be compiled
+<i>21</i>&nbsp;     * @return the compiled rule
+<i>22</i>&nbsp;     **/
+<i>23</i>&nbsp;    public static CompiledCardRule compile(InternalModel internalModel, CardRule cardRule, Player owner){
+<i>24</i>&nbsp;
+<b class="fc"><i>25</i>&nbsp;        assert (internalModel != null &amp;&amp; cardRule != null);</b>
+<i>26</i>&nbsp;
+<b class="fc"><i>27</i>&nbsp;        List&lt;LambdaStatement&gt; compiledStatements = new ArrayList&lt;&gt;();</b>
+<i>28</i>&nbsp;        LambdaEffect compiledEffect;
+<b class="fc"><i>29</i>&nbsp;        TriggerType trigger = cardRule.getTrigger();</b>
+<i>30</i>&nbsp;
+<b class="fc"><i>31</i>&nbsp;        for(RuleStatement s : cardRule.getStatements()){</b>
+<b class="fc"><i>32</i>&nbsp;            compiledStatements.add(StatementCompiler.compileStatement(internalModel, s, owner));</b>
+<b class="fc"><i>33</i>&nbsp;        }</b>
+<i>34</i>&nbsp;
+<b class="fc"><i>35</i>&nbsp;        compiledEffect = EffectCompiler.compileEffect(internalModel, cardRule.getEffect());</b>
+<i>36</i>&nbsp;
+<b class="fc"><i>37</i>&nbsp;        return new CompiledCardRule(compiledStatements, compiledEffect, trigger);</b>
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    }
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

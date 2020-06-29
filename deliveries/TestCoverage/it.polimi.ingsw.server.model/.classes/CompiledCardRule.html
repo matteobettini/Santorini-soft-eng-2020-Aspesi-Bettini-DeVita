@@ -1,0 +1,179 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CompiledCardRule</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CompiledCardRule (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CompiledCardRule</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (4/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94,7%
+  </span>
+  <span class="absValue">
+    (18/ 19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.enums.TriggerType;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.model.exceptions.PlayerLostSignal;
+<i>5</i>&nbsp;import it.polimi.ingsw.server.model.exceptions.PlayerWonSignal;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.util.*;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;/**
+<i>10</i>&nbsp; * This is a compiled car rule, it is the same as a normal card rule but has some differences:
+<i>11</i>&nbsp; * It is specific of a given player and instead of rule statements and rule effects it has compiled ones.
+<i>12</i>&nbsp; * It represents a certain rule pf a specific card and has to be run every turn checking the consistency
+<i>13</i>&nbsp; * of the turn itself.
+<i>14</i>&nbsp; * 
+<i>15</i>&nbsp; */
+<b class="fc"><i>16</i>&nbsp;class CompiledCardRule {</b>
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    /**
+<i>21</i>&nbsp;     * The type of the rule: it can be a BUILD rule or a MOVE rule
+<i>22</i>&nbsp;     */
+<i>23</i>&nbsp;    private final TriggerType trigger;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    /**
+<i>26</i>&nbsp;     * The type of the effect: ALLOW, SET_OPPONENT_POSITION, DENY, WIN
+<i>27</i>&nbsp;     */
+<i>28</i>&nbsp;    private final LambdaEffect effect;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    /**
+<i>31</i>&nbsp;     * A list of all the compiled statements that belong to the rule
+<i>32</i>&nbsp;     */
+<i>33</i>&nbsp;    private final List&lt;LambdaStatement&gt; statements;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    /**
+<i>39</i>&nbsp;     * The constructor of the class
+<i>40</i>&nbsp;     */
+<b class="fc"><i>41</i>&nbsp;    CompiledCardRule(List&lt;LambdaStatement&gt; lambdaStatements, LambdaEffect lambdaEffect, TriggerType trigger) {</b>
+<b class="fc"><i>42</i>&nbsp;        assert (lambdaStatements != null &amp;&amp; lambdaEffect != null &amp;&amp; trigger != null);</b>
+<b class="fc"><i>43</i>&nbsp;        this.effect = lambdaEffect;</b>
+<b class="fc"><i>44</i>&nbsp;        this.statements = lambdaStatements;</b>
+<b class="fc"><i>45</i>&nbsp;        this.trigger = trigger;</b>
+<b class="fc"><i>46</i>&nbsp;    }</b>
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /**
+<i>51</i>&nbsp;     * Execute all the statements and the effect of the rule either
+<i>52</i>&nbsp;     * in simulation mode or in normal mode
+<i>53</i>&nbsp;     * @param moveData if it is a move rule, this parameter will contain the associated data otherwise it will be null
+<i>54</i>&nbsp;     * @param buildData if it is a build rule, this parameter will contain the associated data otherwise it will be null
+<i>55</i>&nbsp;     * @param simulate this flag enables the to simulate the whole execution of the rule without changing the internal model
+<i>56</i>&nbsp;     * @return returns true if the statements are all valid or false if it at least one fails
+<i>57</i>&nbsp;     */
+<i>58</i>&nbsp;    public boolean execute(MoveData moveData, BuildData buildData, boolean simulate) throws PlayerLostSignal, PlayerWonSignal {
+<i>59</i>&nbsp;
+<b class="fc"><i>60</i>&nbsp;        assert (this.trigger == TriggerType.MOVE ? buildData == null &amp;&amp; moveData != null : moveData == null &amp;&amp; buildData != null);</b>
+<i>61</i>&nbsp;
+<b class="fc"><i>62</i>&nbsp;        boolean result = true;</b>
+<i>63</i>&nbsp;
+<b class="fc"><i>64</i>&nbsp;        for(LambdaStatement s : statements) {</b>
+<b class="fc"><i>65</i>&nbsp;            result = s.evaluate(moveData, buildData);</b>
+<b class="fc"><i>66</i>&nbsp;            if(!result)</b>
+<b class="fc"><i>67</i>&nbsp;                break;</b>
+<b class="fc"><i>68</i>&nbsp;        }</b>
+<i>69</i>&nbsp;
+<b class="fc"><i>70</i>&nbsp;        result = result &amp;&amp; effect.apply(moveData, buildData, simulate);</b>
+<i>71</i>&nbsp;
+<b class="fc"><i>72</i>&nbsp;        return result;</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /**
+<i>76</i>&nbsp;     * Only applies the effect of the rule
+<i>77</i>&nbsp;     * @param moveData if it is a move effect, this parameter will contain the associated data otherwise it will be null
+<i>78</i>&nbsp;     * @param buildData if it is a build effect, this parameter will contain the associated data otherwise it will be null
+<i>79</i>&nbsp;     * @return returns true if the effect has been applied or false if it has failes
+<i>80</i>&nbsp;     */
+<i>81</i>&nbsp;    public boolean applyEffect(MoveData moveData, BuildData buildData) throws PlayerLostSignal, PlayerWonSignal {
+<i>82</i>&nbsp;
+<b class="fc"><i>83</i>&nbsp;        assert (this.trigger == TriggerType.MOVE ? buildData == null &amp;&amp; moveData != null : moveData == null &amp;&amp; buildData != null);</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;
+<b class="fc"><i>86</i>&nbsp;        return effect.apply(moveData, buildData, false);</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;    /**
+<i>90</i>&nbsp;     * getter for the trigger type of the rule: BUILD, MOVE
+<i>91</i>&nbsp;     * @return the trigger type
+<i>92</i>&nbsp;     */
+<i>93</i>&nbsp;    public TriggerType getTrigger() {
+<b class="nc"><i>94</i>&nbsp;        return trigger;</b>
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

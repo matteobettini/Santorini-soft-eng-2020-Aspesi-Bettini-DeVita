@@ -69,7 +69,7 @@ public class HardcoreBuildStrategy implements MakeBuildStrategy {
      */
     @Override
     public void handlePossibleActions(PacketPossibleBuilds data) {
-        assert false;
+
     }
 
     /**

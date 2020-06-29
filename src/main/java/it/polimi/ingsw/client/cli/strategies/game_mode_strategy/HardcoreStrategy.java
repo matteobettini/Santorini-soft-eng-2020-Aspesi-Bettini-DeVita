@@ -238,12 +238,12 @@ public class HardcoreStrategy implements GameModeStrategy{
      * Since the hardcore mode is on, a packet with the possible moves is not expected and thus it's ignored.
      */
     @Override
-    public void handlePossibleMoves(PacketPossibleMoves packetPossibleMoves) { assert false; }
+    public void handlePossibleMoves(PacketPossibleMoves packetPossibleMoves) {  }
 
     /**
      * Since the hardcore mode is on, a packet with the possible builds is not expected and thus it's ignored.
      */
     @Override
-    public void handlePossibleBuilds(PacketPossibleBuilds packetPossibleBuilds) { assert false;}
+    public void handlePossibleBuilds(PacketPossibleBuilds packetPossibleBuilds) { }
 
 }

@@ -1,0 +1,448 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CardReader</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CardReader (it.polimi.ingsw.server.cards)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CardReader</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71,5%
+  </span>
+  <span class="absValue">
+    (113/ 158)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CardReader$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    83,3%
+  </span>
+  <span class="absValue">
+    (10/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70,6%
+  </span>
+  <span class="absValue">
+    (115/ 163)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.common.utils.ResourceScanner;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.cards.enums.*;
+<i>5</i>&nbsp;import it.polimi.ingsw.server.cards.exceptions.InvalidCardException;
+<i>6</i>&nbsp;import it.polimi.ingsw.server.model.enums.PlayerState;
+<i>7</i>&nbsp;import org.w3c.dom.Document;
+<i>8</i>&nbsp;import org.w3c.dom.Element;
+<i>9</i>&nbsp;import org.w3c.dom.Node;
+<i>10</i>&nbsp;import org.w3c.dom.NodeList;
+<i>11</i>&nbsp;import org.xml.sax.*;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;import javax.xml.parsers.DocumentBuilder;
+<i>14</i>&nbsp;import javax.xml.parsers.DocumentBuilderFactory;
+<i>15</i>&nbsp;import javax.xml.parsers.ParserConfigurationException;
+<i>16</i>&nbsp;import java.io.File;
+<i>17</i>&nbsp;import java.io.IOException;
+<i>18</i>&nbsp;import java.io.InputStream;
+<i>19</i>&nbsp;import java.util.Arrays;
+<i>20</i>&nbsp;import java.util.Collections;
+<i>21</i>&nbsp;import java.util.LinkedList;
+<i>22</i>&nbsp;import java.util.List;
+<i>23</i>&nbsp;import java.util.concurrent.locks.ReadWriteLock;
+<i>24</i>&nbsp;import java.util.stream.Collectors;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;/**
+<i>27</i>&nbsp; * This class allows to read cards from a file.
+<i>28</i>&nbsp; * The cards returned (in form of List of CardFile) are completely checked syntactically and semantically.
+<i>29</i>&nbsp; *
+<i>30</i>&nbsp; * Syntax exceptions are maintained even if DTD syntax checking was introduced.
+<i>31</i>&nbsp; * Checks were maintained anyway in order to be fully covered from external DTD manipulation, during reading phase.
+<i>32</i>&nbsp; */
+<b class="fc"><i>33</i>&nbsp;class CardReader {</b>
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    /**
+<i>36</i>&nbsp;     * Read a list of cards from an XML file
+<i>37</i>&nbsp;     * @param defaultCard Default strategy card, in the form of CardFile
+<i>38</i>&nbsp;     * @param file The path where the cards&#39; XML is placed
+<i>39</i>&nbsp;     * @return List of CardFile of the indicated cards
+<i>40</i>&nbsp;     * @throws InvalidCardException If one of the card has problems syntactically or semantically.
+<i>41</i>&nbsp;     *                              It&#39;s always indicated the cause as message
+<i>42</i>&nbsp;     */
+<i>43</i>&nbsp;    public static List&lt;CardFile&gt; readCards(CardFile defaultCard, String file) throws InvalidCardException{
+<b class="fc"><i>44</i>&nbsp;        assert (defaultCard != null &amp;&amp; file != null);</b>
+<i>45</i>&nbsp;        Document document;
+<i>46</i>&nbsp;        try{
+<b class="fc"><i>47</i>&nbsp;            document = getXMLDocument(file);</b>
+<b class="fc"><i>48</i>&nbsp;        } catch (Exception e) {</b>
+<b class="fc"><i>49</i>&nbsp;            throw new InvalidCardException(&quot;[XML PARSE][&quot; + e.getClass().toString() + &quot;]&quot; + e.getMessage());</b>
+<b class="fc"><i>50</i>&nbsp;        }</b>
+<b class="fc"><i>51</i>&nbsp;        return parseCards(defaultCard,document);</b>
+<i>52</i>&nbsp;    }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * Read XML Document from file
+<i>56</i>&nbsp;     * @param cardFile The path of the file
+<i>57</i>&nbsp;     * @return Document containing parsed XML data
+<i>58</i>&nbsp;     * @throws IOException If the file could not be read
+<i>59</i>&nbsp;     * @throws ParserConfigurationException If the parser finds invalid config
+<i>60</i>&nbsp;     * @throws SAXException If syntax check goes wrong
+<i>61</i>&nbsp;     */
+<i>62</i>&nbsp;    private static Document getXMLDocument(String cardFile) throws IOException, ParserConfigurationException, SAXException {
+<b class="fc"><i>63</i>&nbsp;        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();</b>
+<b class="fc"><i>64</i>&nbsp;        factory.setValidating(true);</b>
+<b class="fc"><i>65</i>&nbsp;        DocumentBuilder builder = factory.newDocumentBuilder();</b>
+<b class="fc"><i>66</i>&nbsp;        builder.setErrorHandler(</b>
+<b class="fc"><i>67</i>&nbsp;                new ErrorHandler() {</b>
+<i>68</i>&nbsp;                    public void warning(SAXParseException e) {
+<b class="nc"><i>69</i>&nbsp;                        System.err.println(&quot;[XML PARSE]: &quot; + e.getMessage()); // do nothing</b>
+<b class="nc"><i>70</i>&nbsp;                    }</b>
+<i>71</i>&nbsp;                    public void error(SAXParseException e) throws SAXException {
+<b class="fc"><i>72</i>&nbsp;                        throw e;</b>
+<i>73</i>&nbsp;                    }
+<i>74</i>&nbsp;                    public void fatalError(SAXParseException e) throws SAXException {
+<b class="nc"><i>75</i>&nbsp;                        throw e;</b>
+<i>76</i>&nbsp;                    }
+<i>77</i>&nbsp;                }
+<i>78</i>&nbsp;        );
+<i>79</i>&nbsp;
+<b class="fc"><i>80</i>&nbsp;        ResourceScanner scanner = ResourceScanner.getInstance();</b>
+<b class="fc"><i>81</i>&nbsp;        Document document = builder.parse(scanner.getResourceAsStream(cardFile));</b>
+<b class="fc"><i>82</i>&nbsp;        document.getDocumentElement().normalize();</b>
+<b class="fc"><i>83</i>&nbsp;        return document;</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /**
+<i>87</i>&nbsp;     * Parses a file containing cards into a list of CardFile
+<i>88</i>&nbsp;     * @param defaultCard Default strategy to patch the cards
+<i>89</i>&nbsp;     * @param xml Document xml of the file
+<i>90</i>&nbsp;     * @return List of CardFile
+<i>91</i>&nbsp;     * @throws InvalidCardException If syntax error occurs during the process
+<i>92</i>&nbsp;     */
+<i>93</i>&nbsp;    private static List&lt;CardFile&gt; parseCards(CardFile defaultCard, Document xml) throws InvalidCardException{
+<b class="fc"><i>94</i>&nbsp;        List&lt;CardFile&gt; cardFiles = new LinkedList&lt;&gt;();</b>
+<i>95</i>&nbsp;        //Check root node
+<b class="fc"><i>96</i>&nbsp;        Element root = xml.getDocumentElement();</b>
+<b class="fc"><i>97</i>&nbsp;        if (root == null){</b>
+<b class="nc"><i>98</i>&nbsp;            throw new InvalidCardException(&quot;[CARDS PARSER]Root tag not found&quot;);</b>
+<i>99</i>&nbsp;        }
+<b class="fc"><i>100</i>&nbsp;        if (!root.getNodeName().equals(&quot;Cards&quot;)){</b>
+<b class="nc"><i>101</i>&nbsp;            throw new InvalidCardException(&quot;[CARDS PARSER]Wrong root tag&quot;);</b>
+<i>102</i>&nbsp;        }
+<i>103</i>&nbsp;        //Get cards
+<b class="fc"><i>104</i>&nbsp;        NodeList nList = root.getElementsByTagName(&quot;Card&quot;);</b>
+<b class="fc"><i>105</i>&nbsp;        if (nList.getLength() == 0){</b>
+<b class="nc"><i>106</i>&nbsp;            throw new InvalidCardException(&quot;[CARDS PARSER]At least one card must be defined&quot;);</b>
+<i>107</i>&nbsp;        }
+<i>108</i>&nbsp;        //For each card, parse it
+<b class="fc"><i>109</i>&nbsp;        for(int i = 0; i&lt;nList.getLength();i++){</b>
+<b class="fc"><i>110</i>&nbsp;            Node cardNode = nList.item(i);</b>
+<b class="fc"><i>111</i>&nbsp;            if (cardNode.getNodeType() != Node.ELEMENT_NODE){</b>
+<b class="nc"><i>112</i>&nbsp;                throw new InvalidCardException(&quot;[CARD PARSER]Cannot read card &quot; + (i+1));</b>
+<i>113</i>&nbsp;            }
+<b class="fc"><i>114</i>&nbsp;            CardFileImpl cardFile = parseCard((Element)cardNode);</b>
+<i>115</i>&nbsp;            //Check and patch the card
+<b class="fc"><i>116</i>&nbsp;            CardValidator.checkCardFile(cardFile);</b>
+<b class="fc"><i>117</i>&nbsp;            CardPatcher.patchCard(defaultCard,cardFile);</b>
+<i>118</i>&nbsp;            //If everything okay, add it to the list
+<b class="fc"><i>119</i>&nbsp;            cardFiles.add(cardFile);</b>
+<i>120</i>&nbsp;        }
+<b class="fc"><i>121</i>&nbsp;        return cardFiles;</b>
+<i>122</i>&nbsp;    }
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;    /**
+<i>125</i>&nbsp;     * Parse the CardFile from the xml element
+<i>126</i>&nbsp;     * @param cardElement Card tag to be parsed
+<i>127</i>&nbsp;     * @return CardFileImpl containing CardFile data
+<i>128</i>&nbsp;     * @throws InvalidCardException If syntax error occurs during the process
+<i>129</i>&nbsp;     */
+<i>130</i>&nbsp;    private static CardFileImpl parseCard(Element cardElement) throws InvalidCardException {
+<i>131</i>&nbsp;        //Get card name
+<i>132</i>&nbsp;        String cardName;
+<b class="fc"><i>133</i>&nbsp;        NodeList nList = cardElement.getElementsByTagName(&quot;name&quot;);</b>
+<b class="fc"><i>134</i>&nbsp;        if (nList.getLength() != 1){</b>
+<b class="nc"><i>135</i>&nbsp;            throw new InvalidCardException(&quot;[CARD PARSER]Missing/Multiple tag name&quot;);</b>
+<i>136</i>&nbsp;        }
+<b class="fc"><i>137</i>&nbsp;        cardName = nList.item(0).getTextContent().trim();</b>
+<b class="fc"><i>138</i>&nbsp;        if (cardName.length() == 0){</b>
+<b class="nc"><i>139</i>&nbsp;            throw new InvalidCardException(&quot;[CARD PARSER]Invalid card name&quot;);</b>
+<i>140</i>&nbsp;        }
+<i>141</i>&nbsp;
+<i>142</i>&nbsp;        //Get card description
+<i>143</i>&nbsp;        String cardDescription;
+<b class="fc"><i>144</i>&nbsp;        nList = cardElement.getElementsByTagName(&quot;description&quot;);</b>
+<b class="fc"><i>145</i>&nbsp;        if (nList.getLength() != 1){</b>
+<b class="nc"><i>146</i>&nbsp;            throw new InvalidCardException(&quot;[CARD PARSER]Missing/Multiple tag description&quot;);</b>
+<i>147</i>&nbsp;        }
+<b class="fc"><i>148</i>&nbsp;        cardDescription = nList.item(0).getTextContent().trim();</b>
+<b class="fc"><i>149</i>&nbsp;        if (cardDescription.length() == 0){</b>
+<b class="nc"><i>150</i>&nbsp;            throw new InvalidCardException(&quot;[CARD PARSER]Invalid card description&quot;);</b>
+<i>151</i>&nbsp;        }
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;        //Get possible numbers of players
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;        String numbersOfPlayers;
+<i>156</i>&nbsp;        List&lt;Integer&gt; possibleNumbersOfPlayers;
+<i>157</i>&nbsp;
+<b class="fc"><i>158</i>&nbsp;        nList = cardElement.getElementsByTagName(&quot;players&quot;);</b>
+<b class="fc"><i>159</i>&nbsp;        if (nList.getLength() != 1){</b>
+<b class="fc"><i>160</i>&nbsp;            throw new InvalidCardException(&quot;[CARD PARSER]Missing/Multiple tag numbers of players&quot;);</b>
+<i>161</i>&nbsp;        }
+<i>162</i>&nbsp;
+<b class="fc"><i>163</i>&nbsp;        numbersOfPlayers = nList.item(0).getTextContent().trim();</b>
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;        try{
+<b class="fc"><i>166</i>&nbsp;            possibleNumbersOfPlayers = Arrays.stream(numbersOfPlayers.split(&quot;\\s*,\\s*&quot;)).map(Integer::parseInt).collect(Collectors.toList());</b>
+<i>167</i>&nbsp;        }
+<b class="nc"><i>168</i>&nbsp;        catch (NumberFormatException e){</b>
+<b class="nc"><i>169</i>&nbsp;            throw new InvalidCardException(&quot;[CARD PARSER]Invalid numbers of players&quot;);</b>
+<b class="fc"><i>170</i>&nbsp;        }</b>
+<i>171</i>&nbsp;
+<b class="fc"><i>172</i>&nbsp;        if (possibleNumbersOfPlayers.isEmpty() || possibleNumbersOfPlayers.stream().anyMatch(n -&gt; n &lt;= 1 || n &gt; 4) || possibleNumbersOfPlayers.stream().anyMatch(i -&gt; Collections.frequency(possibleNumbersOfPlayers, i) &gt; 1)) {</b>
+<b class="nc"><i>173</i>&nbsp;            throw new InvalidCardException(&quot;[CARD PARSER]Invalid numbers of players&quot;);</b>
+<i>174</i>&nbsp;        }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;        //Parse the rules
+<b class="fc"><i>177</i>&nbsp;        List&lt;CardRuleImpl&gt; cardRules = extractCardRules(cardElement);</b>
+<b class="fc"><i>178</i>&nbsp;        return new CardFileImpl(cardName,cardDescription,cardRules, possibleNumbersOfPlayers);</b>
+<i>179</i>&nbsp;    }
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;    private static List&lt;CardRuleImpl&gt; extractCardRules(Element cardElement) throws InvalidCardException{
+<b class="fc"><i>182</i>&nbsp;        List&lt;CardRuleImpl&gt; rulesList = new LinkedList&lt;&gt;();</b>
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;        //Get card rules
+<b class="fc"><i>185</i>&nbsp;        NodeList nRules = cardElement.getElementsByTagName(&quot;rules&quot;);</b>
+<b class="fc"><i>186</i>&nbsp;        if (nRules.getLength() != 1){</b>
+<b class="nc"><i>187</i>&nbsp;            throw new InvalidCardException(&quot;[RULE PARSER]Missing/Multiple tag rules&quot;);</b>
+<i>188</i>&nbsp;        }
+<b class="fc"><i>189</i>&nbsp;        Node rulesNode = nRules.item(0);</b>
+<b class="fc"><i>190</i>&nbsp;        if (rulesNode.getNodeType() != Node.ELEMENT_NODE){</b>
+<b class="nc"><i>191</i>&nbsp;            throw new InvalidCardException(&quot;[RULE PARSER]Missing tags rule&quot;);</b>
+<i>192</i>&nbsp;        }
+<b class="fc"><i>193</i>&nbsp;        Element rulesElement = (Element)rulesNode;</b>
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;        //Let&#39;s extract all rules
+<b class="fc"><i>196</i>&nbsp;        nRules = rulesElement.getElementsByTagName(&quot;rule&quot;);</b>
+<b class="fc"><i>197</i>&nbsp;        for(int i = 0; i&lt;nRules.getLength();i++){ //For each rule</b>
+<b class="fc"><i>198</i>&nbsp;            Node ruleNode = nRules.item(i);</b>
+<i>199</i>&nbsp;            TriggerType eventType;
+<i>200</i>&nbsp;            //Get rule trigger
+<i>201</i>&nbsp;            try{
+<b class="fc"><i>202</i>&nbsp;                eventType = TriggerType.valueOf(ruleNode.getAttributes().getNamedItem(&quot;event&quot;).getNodeValue());</b>
+<b class="nc"><i>203</i>&nbsp;            }catch (IllegalArgumentException ex){</b>
+<b class="nc"><i>204</i>&nbsp;                throw  new InvalidCardException(&quot;[RULE PARSER]Event type &#39;&quot; + ruleNode.getAttributes().getNamedItem(&quot;event&quot;).getNodeValue() + &quot;&#39; not supported&quot;);</b>
+<b class="nc"><i>205</i>&nbsp;            }catch (NullPointerException ex){</b>
+<b class="nc"><i>206</i>&nbsp;                throw new InvalidCardException(&quot;[RULE PARSER]Cannot read \&quot;event\&quot; attribute&quot;);</b>
+<b class="fc"><i>207</i>&nbsp;            }</b>
+<b class="fc"><i>208</i>&nbsp;            if (ruleNode.getNodeType() != Node.ELEMENT_NODE){</b>
+<b class="nc"><i>209</i>&nbsp;                throw new InvalidCardException(&quot;[RULE PARSER]Missing rule attributes&quot;);</b>
+<i>210</i>&nbsp;            }
+<b class="fc"><i>211</i>&nbsp;            Element ruleElement = (Element)ruleNode;</b>
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;            //Get rule statements
+<b class="fc"><i>214</i>&nbsp;            List&lt;RuleStatementImpl&gt; statements = new LinkedList&lt;&gt;();</b>
+<b class="fc"><i>215</i>&nbsp;            NodeList statementList = ruleElement.getElementsByTagName(&quot;statements&quot;);</b>
+<b class="fc"><i>216</i>&nbsp;            if (statementList.getLength() != 1){</b>
+<b class="nc"><i>217</i>&nbsp;                throw new InvalidCardException(&quot;[RULE PARSER]Missing/Invalid tag statements&quot;);</b>
+<i>218</i>&nbsp;            }
+<b class="fc"><i>219</i>&nbsp;            Node statementNode = statementList.item(0);</b>
+<b class="fc"><i>220</i>&nbsp;            if (statementNode.getNodeType() != Node.ELEMENT_NODE){</b>
+<b class="nc"><i>221</i>&nbsp;                throw new InvalidCardException(&quot;[RULE PARSER]Missing tags of statements&quot;);</b>
+<i>222</i>&nbsp;            }
+<b class="fc"><i>223</i>&nbsp;            NodeList children = statementNode.getChildNodes();</b>
+<b class="fc"><i>224</i>&nbsp;            for(int j=0;j&lt;children.getLength();j++){</b>
+<b class="fc"><i>225</i>&nbsp;                Node child = children.item(j);</b>
+<b class="fc"><i>226</i>&nbsp;                if (child.getNodeType() == Node.ELEMENT_NODE) { //Skipping spaces and return characters</b>
+<b class="fc"><i>227</i>&nbsp;                    statements.add(nodeToRuleStatement((Element)child));</b>
+<i>228</i>&nbsp;                }
+<i>229</i>&nbsp;            }
+<b class="fc"><i>230</i>&nbsp;            if(statements.size() == 0){ //A rule must have at least one statement</b>
+<b class="nc"><i>231</i>&nbsp;                throw new InvalidCardException(&quot;[RULE PARSER]Rule has no statements&quot;);</b>
+<i>232</i>&nbsp;            }
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;            //Get Rule Effect
+<i>235</i>&nbsp;            RuleEffectImpl ruleEffect;
+<b class="fc"><i>236</i>&nbsp;            NodeList nList = ruleElement.getElementsByTagName(&quot;effect&quot;);</b>
+<b class="fc"><i>237</i>&nbsp;            if (nList.getLength() != 1){</b>
+<b class="nc"><i>238</i>&nbsp;                throw new InvalidCardException(&quot;[EFFECT PARSER]Missing/Multiple tag effect&quot;);</b>
+<i>239</i>&nbsp;            }
+<b class="fc"><i>240</i>&nbsp;            Node effectNode = nList.item(0);</b>
+<b class="fc"><i>241</i>&nbsp;            if (effectNode.getNodeType() != Node.ELEMENT_NODE){</b>
+<b class="nc"><i>242</i>&nbsp;                throw new InvalidCardException(&quot;[EFFECT PARSER]Missing tags of effect&quot;);</b>
+<i>243</i>&nbsp;            }
+<b class="fc"><i>244</i>&nbsp;            ruleEffect = nodeToRuleEffect((Element)effectNode);</b>
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;            //Add rule to list
+<b class="fc"><i>247</i>&nbsp;            rulesList.add(new CardRuleImpl(eventType, statements, ruleEffect));</b>
+<i>248</i>&nbsp;        }
+<b class="fc"><i>249</i>&nbsp;        return rulesList;</b>
+<i>250</i>&nbsp;    }
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;    private static RuleStatementImpl nodeToRuleStatement(Element node) throws InvalidCardException{
+<b class="fc"><i>253</i>&nbsp;        String stmType = node.getNodeName();</b>
+<b class="fc"><i>254</i>&nbsp;        if (!node.hasChildNodes()){</b>
+<b class="nc"><i>255</i>&nbsp;            throw new InvalidCardException(&quot;[STATEMENT PARSER]Rule statement empty&quot;);</b>
+<i>256</i>&nbsp;        }
+<b class="fc"><i>257</i>&nbsp;        NodeList children = node.getChildNodes();</b>
+<b class="fc"><i>258</i>&nbsp;        List&lt;Node&gt; trueChildren = new LinkedList&lt;&gt;();</b>
+<b class="fc"><i>259</i>&nbsp;        for(int i=0;i&lt;children.getLength();i++){</b>
+<b class="fc"><i>260</i>&nbsp;            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) { //Skipping spaces and return characters</b>
+<b class="fc"><i>261</i>&nbsp;                trueChildren.add(children.item(i));</b>
+<i>262</i>&nbsp;            }
+<i>263</i>&nbsp;        }
+<b class="fc"><i>264</i>&nbsp;        if (trueChildren.size() != 3){</b>
+<b class="nc"><i>265</i>&nbsp;            throw new InvalidCardException(&quot;[STATEMENT PARSER]A rule statement must contain 3 tags (subject, verb, object)&quot;);</b>
+<i>266</i>&nbsp;        }
+<i>267</i>&nbsp;        //Parse statement
+<b class="fc"><i>268</i>&nbsp;        String subject = trueChildren.get(0).getTextContent();</b>
+<b class="fc"><i>269</i>&nbsp;        String verb = trueChildren.get(1).getTextContent();</b>
+<b class="fc"><i>270</i>&nbsp;        String object = trueChildren.get(2).getTextContent();</b>
+<i>271</i>&nbsp;        try{
+<b class="fc"><i>272</i>&nbsp;            StatementType statementType = StatementType.valueByContent(stmType);</b>
+<b class="fc"><i>273</i>&nbsp;            StatementVerbType verbType = StatementVerbType.valueOf(verb);</b>
+<b class="fc"><i>274</i>&nbsp;            return new RuleStatementImpl(statementType,subject,verbType,object);</b>
+<b class="nc"><i>275</i>&nbsp;        }catch (IllegalArgumentException ex){</b>
+<b class="nc"><i>276</i>&nbsp;            throw  new InvalidCardException(&quot;[STATEMENT PARSER]Rule statement contains not supported items&quot;);</b>
+<b class="nc"><i>277</i>&nbsp;        }catch (NullPointerException ex){</b>
+<b class="nc"><i>278</i>&nbsp;            throw new InvalidCardException(&quot;[STATEMENT PARSER]Cannot read tags in statement&quot;);</b>
+<i>279</i>&nbsp;        }
+<i>280</i>&nbsp;    }
+<i>281</i>&nbsp;
+<i>282</i>&nbsp;    private static RuleEffectImpl nodeToRuleEffect(Element effectElement) throws InvalidCardException{
+<i>283</i>&nbsp;        //Parse effect type
+<i>284</i>&nbsp;        EffectType effectType;
+<b class="fc"><i>285</i>&nbsp;        NodeList nList = effectElement.getElementsByTagName(&quot;type&quot;);</b>
+<b class="fc"><i>286</i>&nbsp;        if (nList.getLength() != 1){</b>
+<b class="nc"><i>287</i>&nbsp;            throw new InvalidCardException(&quot;[EFFECT PARSER]Missing/Multiple tag type&quot;);</b>
+<i>288</i>&nbsp;        }
+<i>289</i>&nbsp;        try{
+<b class="fc"><i>290</i>&nbsp;            effectType = EffectType.valueOf(nList.item(0).getTextContent());</b>
+<b class="nc"><i>291</i>&nbsp;        }catch (IllegalArgumentException ex){</b>
+<b class="nc"><i>292</i>&nbsp;            throw  new InvalidCardException(&quot;[EFFECT PARSER]Effect type &#39;&quot; + nList.item(0).getTextContent() + &quot;&#39; not supported&quot;);</b>
+<b class="nc"><i>293</i>&nbsp;        }catch (NullPointerException ex){</b>
+<b class="nc"><i>294</i>&nbsp;            throw new InvalidCardException(&quot;[EFFECT PARSER]Cannot read tag effect&quot;);</b>
+<b class="fc"><i>295</i>&nbsp;        }</b>
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;        //Parse tag allow subtype if present
+<b class="fc"><i>298</i>&nbsp;        AllowType allowType = null;</b>
+<b class="fc"><i>299</i>&nbsp;        nList = effectElement.getElementsByTagName(&quot;subtype&quot;);</b>
+<b class="fc"><i>300</i>&nbsp;        if (nList.getLength() == 1){</b>
+<i>301</i>&nbsp;            try{
+<b class="fc"><i>302</i>&nbsp;                allowType = AllowType.valueOf(nList.item(0).getTextContent());</b>
+<b class="nc"><i>303</i>&nbsp;            }catch (IllegalArgumentException ex){</b>
+<b class="nc"><i>304</i>&nbsp;                throw  new InvalidCardException(&quot;[EFFECT PARSER]Allow subtype &#39;&quot; + nList.item(0).getTextContent() + &quot;&#39; not supported&quot;);</b>
+<b class="nc"><i>305</i>&nbsp;            }catch (NullPointerException ex){</b>
+<b class="nc"><i>306</i>&nbsp;                throw new InvalidCardException(&quot;[EFFECT PARSER]Cannot read tag effect&quot;);</b>
+<b class="fc"><i>307</i>&nbsp;            }</b>
+<b class="fc"><i>308</i>&nbsp;        }else if (nList.getLength() &gt; 1){</b>
+<b class="nc"><i>309</i>&nbsp;            throw new InvalidCardException(&quot;[EFFECT PARSER]Multiple tag subtype&quot;);</b>
+<i>310</i>&nbsp;        }
+<i>311</i>&nbsp;
+<i>312</i>&nbsp;        //Parse tag data if present
+<b class="fc"><i>313</i>&nbsp;        String effectData = null;</b>
+<b class="fc"><i>314</i>&nbsp;        nList = effectElement.getElementsByTagName(&quot;data&quot;);</b>
+<b class="fc"><i>315</i>&nbsp;        if (nList.getLength() == 1){</b>
+<b class="fc"><i>316</i>&nbsp;            effectData = nList.item(0).getTextContent();</b>
+<b class="fc"><i>317</i>&nbsp;        }else if (nList.getLength() &gt; 1){</b>
+<b class="nc"><i>318</i>&nbsp;            throw new InvalidCardException(&quot;[EFFECT PARSER]Multiple tag data&quot;);</b>
+<i>319</i>&nbsp;        }
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;        //Parse tag next state
+<b class="fc"><i>322</i>&nbsp;        PlayerState nextState = null;</b>
+<b class="fc"><i>323</i>&nbsp;        nList = effectElement.getElementsByTagName(&quot;nextstate&quot;);</b>
+<b class="fc"><i>324</i>&nbsp;        if (nList.getLength() == 1){</b>
+<i>325</i>&nbsp;            try{
+<b class="fc"><i>326</i>&nbsp;                nextState = PlayerState.valueOf(nList.item(0).getTextContent());</b>
+<b class="nc"><i>327</i>&nbsp;            }catch (IllegalArgumentException ex){</b>
+<b class="nc"><i>328</i>&nbsp;                throw  new InvalidCardException(&quot;[EFFECT PARSER]Player state &#39;&quot; + nList.item(0).getTextContent() + &quot;&#39; unknown&quot;);</b>
+<b class="nc"><i>329</i>&nbsp;            }catch (NullPointerException ex){</b>
+<b class="nc"><i>330</i>&nbsp;                throw new InvalidCardException(&quot;[EFFECT PARSER]Cannot read tag nextstate&quot;);</b>
+<b class="fc"><i>331</i>&nbsp;            }</b>
+<b class="fc"><i>332</i>&nbsp;        }else if (nList.getLength() &gt; 1){</b>
+<b class="nc"><i>333</i>&nbsp;            throw new InvalidCardException(&quot;[EFFECT PARSER]Multiple tag nextstate&quot;);</b>
+<i>334</i>&nbsp;        }
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;        //Return Rule Effect
+<b class="fc"><i>337</i>&nbsp;        return new RuleEffectImpl(effectType, allowType, nextState, effectData);</b>
+<i>338</i>&nbsp;    }
+<i>339</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

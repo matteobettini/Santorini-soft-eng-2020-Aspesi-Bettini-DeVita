@@ -1,0 +1,91 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ObservableModel</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ObservableModel (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ObservableModel</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.common.utils.observe.Observer;
+<i>4</i>&nbsp;import it.polimi.ingsw.common.packets.*;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;public interface ObservableModel {
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;    /**
+<i>9</i>&nbsp;     * Used to add the observer
+<i>10</i>&nbsp;     * @param observer the observer
+<i>11</i>&nbsp;     */
+<i>12</i>&nbsp;    void addPacketCardsFromServerObserver(Observer&lt;PacketCardsFromServer&gt; observer);
+<i>13</i>&nbsp;    /**
+<i>14</i>&nbsp;     * Used to add the observer
+<i>15</i>&nbsp;     * @param observer the observer
+<i>16</i>&nbsp;     */
+<i>17</i>&nbsp;    void addPacketDoActionObserver(Observer&lt;PacketDoAction&gt; observer);
+<i>18</i>&nbsp;    /**
+<i>19</i>&nbsp;     * Used to add the observer
+<i>20</i>&nbsp;     * @param observer the observer
+<i>21</i>&nbsp;     */
+<i>22</i>&nbsp;    void addPacketPossibleBuildsObserver(Observer&lt;PacketPossibleBuilds&gt; observer);
+<i>23</i>&nbsp;    /**
+<i>24</i>&nbsp;     * Used to add the observer
+<i>25</i>&nbsp;     * @param observer the observer
+<i>26</i>&nbsp;     */
+<i>27</i>&nbsp;    void addPacketPossibleMovesObserver(Observer&lt;PacketPossibleMoves&gt; observer);
+<i>28</i>&nbsp;    /**
+<i>29</i>&nbsp;     * Used to add the observer
+<i>30</i>&nbsp;     * @param observer the observer
+<i>31</i>&nbsp;     */
+<i>32</i>&nbsp;    void addPacketSetupObserver(Observer&lt;PacketSetup&gt; observer);
+<i>33</i>&nbsp;    /**
+<i>34</i>&nbsp;     * Used to add the observer
+<i>35</i>&nbsp;     * @param observer the observer
+<i>36</i>&nbsp;     */
+<i>37</i>&nbsp;    void addPacketUpdateBoardObserver(Observer&lt;PacketUpdateBoard&gt; observer);
+<i>38</i>&nbsp;    /**
+<i>39</i>&nbsp;     * Used to add the handler for the game end event
+<i>40</i>&nbsp;     * @param gameFinishedHandler the handler
+<i>41</i>&nbsp;     */
+<i>42</i>&nbsp;    void setGameFinishedHandler(Observer&lt;String&gt; gameFinishedHandler);
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

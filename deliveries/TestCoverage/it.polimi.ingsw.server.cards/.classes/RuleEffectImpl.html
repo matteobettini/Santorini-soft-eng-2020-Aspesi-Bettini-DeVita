@@ -1,0 +1,189 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RuleEffectImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RuleEffectImpl (it.polimi.ingsw.server.cards)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RuleEffectImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (28/ 28)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.enums.AllowType;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.cards.enums.EffectType;
+<i>5</i>&nbsp;import it.polimi.ingsw.server.model.enums.PlayerState;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.util.Objects;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;/**
+<i>10</i>&nbsp; * This class represent a rule effect, which will be applied if
+<i>11</i>&nbsp; * its rule evaluates true.
+<i>12</i>&nbsp; * It MAY also carry additional information used during effect compilation into lambda effect
+<i>13</i>&nbsp; */
+<b class="fc"><i>14</i>&nbsp;class RuleEffectImpl implements RuleEffect {</b>
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    private final EffectType type;
+<i>17</i>&nbsp;    private AllowType allowType;
+<i>18</i>&nbsp;    private PlayerState playerNextState;
+<i>19</i>&nbsp;    private final String data;
+<i>20</i>&nbsp;
+<b class="fc"><i>21</i>&nbsp;    public RuleEffectImpl(EffectType type, AllowType allowType, PlayerState playerNextState, String data) {</b>
+<b class="fc"><i>22</i>&nbsp;        assert(type != null);</b>
+<b class="fc"><i>23</i>&nbsp;        this.type = type;</b>
+<b class="fc"><i>24</i>&nbsp;        this.allowType = allowType;</b>
+<b class="fc"><i>25</i>&nbsp;        this.playerNextState = playerNextState;</b>
+<b class="fc"><i>26</i>&nbsp;        this.data = data;</b>
+<b class="fc"><i>27</i>&nbsp;    }</b>
+<i>28</i>&nbsp;    public RuleEffectImpl(EffectType type, PlayerState playerNextState) {
+<b class="fc"><i>29</i>&nbsp;        this(type,null,playerNextState,null);</b>
+<b class="fc"><i>30</i>&nbsp;    }</b>
+<b class="fc"><i>31</i>&nbsp;    public RuleEffectImpl(EffectType type, AllowType allowType, PlayerState playerNextState) { this(type, allowType, playerNextState,null); }</b>
+<i>32</i>&nbsp;    public RuleEffectImpl(EffectType type) {
+<b class="fc"><i>33</i>&nbsp;        this(type,null, null,null);</b>
+<b class="fc"><i>34</i>&nbsp;    }</b>
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    /**
+<i>37</i>&nbsp;     * Getter for the effect type of this rule effect
+<i>38</i>&nbsp;     * @return Enum value corresponding to this effect type
+<i>39</i>&nbsp;     */
+<i>40</i>&nbsp;    public EffectType getType(){
+<b class="fc"><i>41</i>&nbsp;        return this.type;</b>
+<i>42</i>&nbsp;    }
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    /**
+<i>45</i>&nbsp;     * Getter for the player&#39;s next state
+<i>46</i>&nbsp;     * @return Enum value corresponding to the desired player next state
+<i>47</i>&nbsp;     */
+<i>48</i>&nbsp;    public PlayerState getNextState(){
+<b class="fc"><i>49</i>&nbsp;        return this.playerNextState;</b>
+<i>50</i>&nbsp;    }
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /**
+<i>53</i>&nbsp;     * Setter for the player&#39;s next state
+<i>54</i>&nbsp;     * @param nextState Enum value to be applied to the player after the rule successfully activates
+<i>55</i>&nbsp;     */
+<i>56</i>&nbsp;    public void setNextState(PlayerState nextState){
+<b class="fc"><i>57</i>&nbsp;        this.playerNextState = nextState;</b>
+<b class="fc"><i>58</i>&nbsp;    }</b>
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /**
+<i>61</i>&nbsp;     * Setter for the allow subtype
+<i>62</i>&nbsp;     * @param type Enum value corresponding at the subtype of this allow
+<i>63</i>&nbsp;     */
+<b class="fc"><i>64</i>&nbsp;    public void setAllowType(AllowType type){ this.allowType = type;}</b>
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /**
+<i>67</i>&nbsp;     * Getter for additional personalization of the effect
+<i>68</i>&nbsp;     * @return String element, containing info to personalize the effect. Null if none is present
+<i>69</i>&nbsp;     */
+<i>70</i>&nbsp;    public String getData(){
+<b class="fc"><i>71</i>&nbsp;        return this.data;</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * Getter for the subtype of a rule effect.
+<i>76</i>&nbsp;     * @return AllowType value if the rule is allow, otherwise null
+<i>77</i>&nbsp;     */
+<i>78</i>&nbsp;    public AllowType getAllowType(){
+<b class="fc"><i>79</i>&nbsp;        return this.allowType;</b>
+<i>80</i>&nbsp;    }
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;    /**
+<i>83</i>&nbsp;     * Compares two RuleEffect, using the internal state instead of the memory location
+<i>84</i>&nbsp;     * @param o Object to compare to
+<i>85</i>&nbsp;     * @return True if the two objects contains the same information
+<i>86</i>&nbsp;     */
+<i>87</i>&nbsp;    @Override
+<i>88</i>&nbsp;    public boolean equals(Object o) {
+<b class="fc"><i>89</i>&nbsp;        if (this == o) return true;</b>
+<b class="fc"><i>90</i>&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+<b class="fc"><i>91</i>&nbsp;        RuleEffectImpl that = (RuleEffectImpl) o;</b>
+<b class="fc"><i>92</i>&nbsp;        return type == that.type &amp;&amp;</b>
+<b class="fc"><i>93</i>&nbsp;                Objects.equals(allowType,that.allowType) &amp;&amp;</b>
+<b class="fc"><i>94</i>&nbsp;                Objects.equals(playerNextState,that.playerNextState) &amp;&amp;</b>
+<b class="fc"><i>95</i>&nbsp;                Objects.equals(data, that.data);</b>
+<i>96</i>&nbsp;    }
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    /**
+<i>99</i>&nbsp;     * Return an hash code for this class, using the internal information
+<i>100</i>&nbsp;     * @return The generated hashcode
+<i>101</i>&nbsp;     */
+<i>102</i>&nbsp;    @Override
+<i>103</i>&nbsp;    public int hashCode() {
+<b class="fc"><i>104</i>&nbsp;        return Objects.hash(type, allowType, playerNextState, data);</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

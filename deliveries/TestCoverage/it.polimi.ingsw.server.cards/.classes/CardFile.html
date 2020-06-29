@@ -1,0 +1,81 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CardFile</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CardFile (it.polimi.ingsw.server.cards)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">CardFile</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.enums.TriggerType;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;import java.util.List;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;public interface CardFile {
+<i>8</i>&nbsp;    /**
+<i>9</i>&nbsp;     * Getter for the card instance name
+<i>10</i>&nbsp;     * @return Card name
+<i>11</i>&nbsp;     */
+<i>12</i>&nbsp;    String getName();
+<i>13</i>&nbsp;    /**
+<i>14</i>&nbsp;     * Getter for the card instance description
+<i>15</i>&nbsp;     * @return Card description
+<i>16</i>&nbsp;     */
+<i>17</i>&nbsp;    String getDescription();
+<i>18</i>&nbsp;    /**
+<i>19</i>&nbsp;     * Getter for the card instance possible numbers of players
+<i>20</i>&nbsp;     * @return a List of Integer containing the possible numbers of players
+<i>21</i>&nbsp;     */
+<i>22</i>&nbsp;    List&lt;Integer&gt; getNumbersOfPlayers();
+<i>23</i>&nbsp;    /**
+<i>24</i>&nbsp;     * Getter for this card&#39;s rules
+<i>25</i>&nbsp;     * @return List of all the rules of the card
+<i>26</i>&nbsp;     */
+<i>27</i>&nbsp;    List&lt;CardRule&gt; getRules();
+<i>28</i>&nbsp;    /**
+<i>29</i>&nbsp;     * Getter for this card&#39;s rules that have a specific trigger
+<i>30</i>&nbsp;     * @param trigger Trigger for the returned rules
+<i>31</i>&nbsp;     * @return List of all the rules of the card that have this trigger
+<i>32</i>&nbsp;     */
+<i>33</i>&nbsp;    List&lt;CardRule&gt; getRules(TriggerType trigger);
+<i>34</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

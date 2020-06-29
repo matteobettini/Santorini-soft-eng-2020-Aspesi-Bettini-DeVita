@@ -1,0 +1,71 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CardRule</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CardRule (it.polimi.ingsw.server.cards)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">CardRule</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.enums.TriggerType;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;import java.util.List;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;public interface CardRule {
+<i>8</i>&nbsp;    /**
+<i>9</i>&nbsp;     * Getter for the trigger of this rule
+<i>10</i>&nbsp;     * @return Enum value corresponding to the trigger of this rule
+<i>11</i>&nbsp;     */
+<i>12</i>&nbsp;    TriggerType getTrigger();
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;    /**
+<i>15</i>&nbsp;     * Getter for this card rule statements
+<i>16</i>&nbsp;     * @return List of all the statements of the card
+<i>17</i>&nbsp;     */
+<i>18</i>&nbsp;    List&lt;RuleStatement&gt; getStatements();
+<i>19</i>&nbsp;    /**
+<i>20</i>&nbsp;     * Getter for the effect of this rule
+<i>21</i>&nbsp;     * @return Object RuleEffect containing effect data of this rule
+<i>22</i>&nbsp;     */
+<i>23</i>&nbsp;    RuleEffect getEffect();
+<i>24</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

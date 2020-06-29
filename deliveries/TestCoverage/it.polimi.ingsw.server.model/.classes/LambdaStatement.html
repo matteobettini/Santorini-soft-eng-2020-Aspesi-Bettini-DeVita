@@ -1,0 +1,65 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LambdaStatement</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LambdaStatement (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">LambdaStatement</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;/**
+<i>4</i>&nbsp; * Thi is a lmabda function that encapsulates the logic of one statement of a certain rule.
+<i>5</i>&nbsp; * It says if a certain statement is true or folse given some specific game coditions.
+<i>6</i>&nbsp; * It can be both the statement of a move rule or of a build rule.
+<i>7</i>&nbsp; */
+<i>8</i>&nbsp;@FunctionalInterface
+<i>9</i>&nbsp;interface LambdaStatement {
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;    /**
+<i>12</i>&nbsp;     * This method runs the statement
+<i>13</i>&nbsp;     * @param moveData if it is a move statement, this parameter will contain the associated data otherwise it will be null
+<i>14</i>&nbsp;     * @param buildData if it is a build statement, this parameter will contain the associated data otherwise it will be null
+<i>15</i>&nbsp;     * @return returns true if the statement is true or false if it is wrong
+<i>16</i>&nbsp;     */
+<i>17</i>&nbsp;    boolean evaluate(MoveData moveData, BuildData buildData);
+<i>18</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,635 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TurnLogic</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TurnLogic (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TurnLogic</td>
+<td class="coverageStat">
+  <span class="percent">
+    95,5%
+  </span>
+  <span class="absValue">
+    (21/ 22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    86,1%
+  </span>
+  <span class="absValue">
+    (230/ 267)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TurnLogic$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    95,7%
+  </span>
+  <span class="absValue">
+    (22/ 23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    86,2%
+  </span>
+  <span class="absValue">
+    (231/ 268)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.enums.TriggerType;
+<i>4</i>&nbsp;import it.polimi.ingsw.common.enums.ActionType;
+<i>5</i>&nbsp;import it.polimi.ingsw.common.enums.BuildingType;
+<i>6</i>&nbsp;import it.polimi.ingsw.server.model.enums.PlayerState;
+<i>7</i>&nbsp;import it.polimi.ingsw.server.model.exceptions.PlayerLostSignal;
+<i>8</i>&nbsp;import it.polimi.ingsw.server.model.exceptions.PlayerWonSignal;
+<i>9</i>&nbsp;import it.polimi.ingsw.common.utils.observe.Observer;
+<i>10</i>&nbsp;import it.polimi.ingsw.common.packets.*;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import java.awt.*;
+<i>13</i>&nbsp;import java.util.*;
+<i>14</i>&nbsp;import java.util.List;
+<i>15</i>&nbsp;import java.util.stream.Collectors;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;/**
+<i>18</i>&nbsp; * This class manages the turns of the game, manging the state changes in the model finite state machine
+<i>19</i>&nbsp; */
+<b class="fc"><i>20</i>&nbsp;class TurnLogic {</b>
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;    private List&lt;Player&gt; stillInGamePlayers;
+<i>23</i>&nbsp;    private final InternalModel model;
+<i>24</i>&nbsp;    private Player currPlayer;
+<i>25</i>&nbsp;    private Set&lt;TriggerType&gt; currPossibleActions;
+<i>26</i>&nbsp;    private Worker currWorker;
+<i>27</i>&nbsp;    private int activePlayerIndex;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    private final List&lt;Observer&lt;PacketDoAction&gt;&gt; packetDoActionObservers;
+<i>30</i>&nbsp;    private final List&lt;Observer&lt;PacketUpdateBoard&gt;&gt; packetUpdateBoardObservers;
+<i>31</i>&nbsp;    private final List&lt;Observer&lt;PacketPossibleMoves&gt;&gt; packetPossibleMovesObservers;
+<i>32</i>&nbsp;    private final List&lt;Observer&lt;PacketPossibleBuilds&gt;&gt; packetPossibleBuildsObservers;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    private Observer&lt;String&gt; gameFinishedHandler;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    /**
+<i>37</i>&nbsp;     * Constructs the component, initialising the internal values
+<i>38</i>&nbsp;     * @param model the internal model
+<i>39</i>&nbsp;     */
+<b class="fc"><i>40</i>&nbsp;    TurnLogic(InternalModel model) {</b>
+<b class="fc"><i>41</i>&nbsp;        this.model = model;</b>
+<b class="fc"><i>42</i>&nbsp;        this.currPossibleActions = new HashSet&lt;&gt;();</b>
+<i>43</i>&nbsp;
+<b class="fc"><i>44</i>&nbsp;        this.packetDoActionObservers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>45</i>&nbsp;        this.packetUpdateBoardObservers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>46</i>&nbsp;        this.packetPossibleBuildsObservers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>47</i>&nbsp;        this.packetPossibleMovesObservers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>48</i>&nbsp;    }</b>
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /**
+<i>51</i>&nbsp;     * Method used by the concrete model to start the first turn of the game,
+<i>52</i>&nbsp;     * Asks a packet to the starting player
+<i>53</i>&nbsp;     */
+<i>54</i>&nbsp;    public void start() {
+<b class="fc"><i>55</i>&nbsp;        stillInGamePlayers = new ArrayList&lt;&gt;(model.getPlayers());</b>
+<b class="fc"><i>56</i>&nbsp;        currPlayer = stillInGamePlayers.get(0);</b>
+<b class="fc"><i>57</i>&nbsp;        currWorker = null;</b>
+<b class="fc"><i>58</i>&nbsp;        activePlayerIndex = 0;</b>
+<b class="fc"><i>59</i>&nbsp;        askNextPacket();</b>
+<b class="fc"><i>60</i>&nbsp;    }</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /**
+<i>63</i>&nbsp;     * Private method used to set a new player in the game as active
+<i>64</i>&nbsp;     */
+<i>65</i>&nbsp;    private void setNextPlayer() {
+<i>66</i>&nbsp;
+<b class="fc"><i>67</i>&nbsp;        if (stillInGamePlayers.size() == 0)</b>
+<b class="nc"><i>68</i>&nbsp;            return;</b>
+<i>69</i>&nbsp;
+<b class="fc"><i>70</i>&nbsp;        if (stillInGamePlayers.size() == 1) {</b>
+<b class="fc"><i>71</i>&nbsp;            String winner = stillInGamePlayers.get(0).getNickname();</b>
+<b class="fc"><i>72</i>&nbsp;            PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(winner, true);</b>
+<b class="fc"><i>73</i>&nbsp;            notifyPacketUpdateBoardObservers(packetUpdateBoard);</b>
+<b class="fc"><i>74</i>&nbsp;            model.setWinner(stillInGamePlayers.get(0));</b>
+<b class="fc"><i>75</i>&nbsp;            stillInGamePlayers.clear();</b>
+<b class="fc"><i>76</i>&nbsp;            if (gameFinishedHandler != null)</b>
+<b class="nc"><i>77</i>&nbsp;                gameFinishedHandler.update(winner);</b>
+<b class="fc"><i>78</i>&nbsp;            return;</b>
+<i>79</i>&nbsp;        }
+<i>80</i>&nbsp;
+<b class="fc"><i>81</i>&nbsp;        incrementActivePlayerIndex();</b>
+<i>82</i>&nbsp;
+<b class="fc"><i>83</i>&nbsp;        currPlayer = stillInGamePlayers.get(activePlayerIndex);</b>
+<b class="fc"><i>84</i>&nbsp;        currWorker = null;</b>
+<b class="fc"><i>85</i>&nbsp;        currPlayer.setPlayerState(PlayerState.TURN_STARTED);</b>
+<b class="fc"><i>86</i>&nbsp;        currPlayer.clearFlags();</b>
+<b class="fc"><i>87</i>&nbsp;        currPossibleActions.clear();</b>
+<i>88</i>&nbsp;
+<b class="fc"><i>89</i>&nbsp;        askNextPacket();</b>
+<b class="fc"><i>90</i>&nbsp;    }</b>
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    /**
+<i>93</i>&nbsp;     * Private method that gets the next possible actions of a player
+<i>94</i>&nbsp;     * and asks him to perform one of them
+<i>95</i>&nbsp;     */
+<i>96</i>&nbsp;    private void askNextPacket() {
+<i>97</i>&nbsp;
+<b class="fc"><i>98</i>&nbsp;        if (stillInGamePlayers.size() &lt; 2) {</b>
+<b class="nc"><i>99</i>&nbsp;            setNextPlayer();</b>
+<b class="nc"><i>100</i>&nbsp;            return;</b>
+<i>101</i>&nbsp;        }
+<i>102</i>&nbsp;
+<b class="fc"><i>103</i>&nbsp;        ActionType nextPossibleAction = null;</b>
+<b class="fc"><i>104</i>&nbsp;        currPossibleActions = currPlayer.getPossibleActions();</b>
+<b class="fc"><i>105</i>&nbsp;        if (currPossibleActions.contains(TriggerType.BUILD) &amp;&amp; currPossibleActions.contains(TriggerType.MOVE))</b>
+<b class="fc"><i>106</i>&nbsp;            nextPossibleAction = ActionType.MOVE_BUILD;</b>
+<b class="fc"><i>107</i>&nbsp;        else if (currPossibleActions.contains(TriggerType.BUILD))</b>
+<b class="fc"><i>108</i>&nbsp;            nextPossibleAction = ActionType.BUILD;</b>
+<b class="fc"><i>109</i>&nbsp;        else if (currPossibleActions.contains(TriggerType.MOVE))</b>
+<b class="fc"><i>110</i>&nbsp;            nextPossibleAction = ActionType.MOVE;</b>
+<i>111</i>&nbsp;
+<b class="fc"><i>112</i>&nbsp;        assert (currPlayer.getState() == PlayerState.BUILT || nextPossibleAction != null);</b>
+<i>113</i>&nbsp;
+<b class="fc"><i>114</i>&nbsp;        switch (currPlayer.getState()) {</b>
+<i>115</i>&nbsp;            case FIRST_BUILT:
+<b class="fc"><i>116</i>&nbsp;                assert currWorker != null;</b>
+<b class="fc"><i>117</i>&nbsp;                if (!model.canMove(currPlayer, currWorker)) {</b>
+<b class="nc"><i>118</i>&nbsp;                    makePlayerLoose();</b>
+<b class="nc"><i>119</i>&nbsp;                    return;</b>
+<i>120</i>&nbsp;                }
+<i>121</i>&nbsp;                break;
+<i>122</i>&nbsp;            case TURN_STARTED:
+<b class="fc"><i>123</i>&nbsp;                if (!model.canMove(currPlayer)) {</b>
+<b class="fc"><i>124</i>&nbsp;                    makePlayerLoose();</b>
+<b class="fc"><i>125</i>&nbsp;                    return;</b>
+<i>126</i>&nbsp;                }
+<i>127</i>&nbsp;                break;
+<i>128</i>&nbsp;            case MOVED:
+<b class="fc"><i>129</i>&nbsp;                assert currWorker != null;</b>
+<b class="fc"><i>130</i>&nbsp;                if (!model.canBuild(currPlayer, currWorker)) {</b>
+<b class="fc"><i>131</i>&nbsp;                    makePlayerLoose();</b>
+<b class="fc"><i>132</i>&nbsp;                    return;</b>
+<i>133</i>&nbsp;                }
+<i>134</i>&nbsp;                break;
+<i>135</i>&nbsp;            case BUILT:
+<b class="fc"><i>136</i>&nbsp;                assert currWorker != null;</b>
+<b class="fc"><i>137</i>&nbsp;                setNextPlayer();</b>
+<b class="fc"><i>138</i>&nbsp;                return;</b>
+<i>139</i>&nbsp;        }
+<i>140</i>&nbsp;
+<b class="fc"><i>141</i>&nbsp;        PacketDoAction packetDoAction = new PacketDoAction(currPlayer.getNickname(), nextPossibleAction);</b>
+<b class="fc"><i>142</i>&nbsp;        notifyPacketDoActionObservers(packetDoAction);</b>
+<i>143</i>&nbsp;
+<b class="fc"><i>144</i>&nbsp;    }</b>
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;    /**
+<i>147</i>&nbsp;     * This method is called by the concrete model when a player wants to make a move,
+<i>148</i>&nbsp;     * it checks that everything is right and applies the move to the model,
+<i>149</i>&nbsp;     * this could result in a win, a loss (depending on the game mode) or in a request of the next move to the player
+<i>150</i>&nbsp;     * @param senderID the player that wants to move
+<i>151</i>&nbsp;     * @param packetMove the move
+<i>152</i>&nbsp;     * @throws InvalidPacketException thrown when the sender is right but the move is invalid or against the rules
+<i>153</i>&nbsp;     */
+<i>154</i>&nbsp;    public void consumePacketMove(String senderID, PacketMove packetMove) throws InvalidPacketException {
+<i>155</i>&nbsp;
+<b class="fc"><i>156</i>&nbsp;        if (!senderID.equals(currPlayer.getNickname()))</b>
+<b class="fc"><i>157</i>&nbsp;            return;</b>
+<i>158</i>&nbsp;
+<b class="fc"><i>159</i>&nbsp;        if (!packetMove.getPlayerNickname().equals(currPlayer.getNickname()))</b>
+<b class="fc"><i>160</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>161</i>&nbsp;
+<b class="fc"><i>162</i>&nbsp;        if (currWorker != null)</b>
+<b class="fc"><i>163</i>&nbsp;            if (!packetMove.getWorkerID().equals(currWorker.getID()))</b>
+<b class="nc"><i>164</i>&nbsp;                throw new InvalidPacketException();</b>
+<i>165</i>&nbsp;
+<b class="fc"><i>166</i>&nbsp;        if (!currPossibleActions.contains(TriggerType.MOVE))</b>
+<b class="nc"><i>167</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;
+<b class="fc"><i>170</i>&nbsp;        String winner = null;</b>
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;        Map&lt;String, Point&gt; workersPosition;
+<b class="fc"><i>173</i>&nbsp;        MoveData moveData = model.packetMoveToMoveData(packetMove);</b>
+<i>174</i>&nbsp;        try {
+<i>175</i>&nbsp;
+<b class="fc"><i>176</i>&nbsp;            if (!model.makeMove(moveData))</b>
+<b class="fc"><i>177</i>&nbsp;                throw new InvalidPacketException();</b>
+<i>178</i>&nbsp;
+<b class="fc"><i>179</i>&nbsp;            currWorker = moveData.getWorker();</b>
+<b class="fc"><i>180</i>&nbsp;            workersPosition = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>181</i>&nbsp;            for (Player p : stillInGamePlayers)</b>
+<b class="fc"><i>182</i>&nbsp;                for (Worker w : p.getWorkers())</b>
+<b class="fc"><i>183</i>&nbsp;                    workersPosition.put(w.getID(), w.getPosition());</b>
+<i>184</i>&nbsp;
+<b class="fc"><i>185</i>&nbsp;        } catch (PlayerWonSignal playerWonSignal) {</b>
+<i>186</i>&nbsp;
+<b class="fc"><i>187</i>&nbsp;            model.setWinner(currPlayer);</b>
+<b class="fc"><i>188</i>&nbsp;            winner = currPlayer.getNickname();</b>
+<i>189</i>&nbsp;
+<b class="fc"><i>190</i>&nbsp;            currWorker = moveData.getWorker();</b>
+<b class="fc"><i>191</i>&nbsp;            workersPosition = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>192</i>&nbsp;            for (Player p : stillInGamePlayers)</b>
+<b class="fc"><i>193</i>&nbsp;                for (Worker w : p.getWorkers())</b>
+<b class="fc"><i>194</i>&nbsp;                    workersPosition.put(w.getID(), w.getPosition());</b>
+<i>195</i>&nbsp;
+<b class="fc"><i>196</i>&nbsp;            stillInGamePlayers.clear();</b>
+<i>197</i>&nbsp;
+<b class="fc"><i>198</i>&nbsp;        } catch (PlayerLostSignal playerLostSignal) {</b>
+<b class="fc"><i>199</i>&nbsp;            makePlayerLoose();</b>
+<b class="fc"><i>200</i>&nbsp;            return;</b>
+<b class="fc"><i>201</i>&nbsp;        }</b>
+<i>202</i>&nbsp;
+<b class="fc"><i>203</i>&nbsp;        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPosition, winner);</b>
+<b class="fc"><i>204</i>&nbsp;        notifyPacketUpdateBoardObservers(packetUpdateBoard);</b>
+<i>205</i>&nbsp;
+<b class="fc"><i>206</i>&nbsp;        if(winner != null &amp;&amp; gameFinishedHandler != null)</b>
+<b class="nc"><i>207</i>&nbsp;            gameFinishedHandler.update(winner);</b>
+<i>208</i>&nbsp;
+<b class="fc"><i>209</i>&nbsp;        assert stillInGamePlayers.size() != 1;</b>
+<b class="fc"><i>210</i>&nbsp;        if (stillInGamePlayers.size() &gt; 0)</b>
+<b class="fc"><i>211</i>&nbsp;            askNextPacket();</b>
+<b class="fc"><i>212</i>&nbsp;    }</b>
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;    /**
+<i>216</i>&nbsp;     * This method is called by the concrete model when a player wants to make a build,
+<i>217</i>&nbsp;     * it checks that everything is right and applies the build to the model,
+<i>218</i>&nbsp;     * this could result in a win, a loss (depending on the game mode) or in a request of the next move to the player
+<i>219</i>&nbsp;     * @param senderID the player that wants to build
+<i>220</i>&nbsp;     * @param packetBuild the proposed builds
+<i>221</i>&nbsp;     * @throws InvalidPacketException thrown when the sender is right but the build is invalid or against the rules
+<i>222</i>&nbsp;     */
+<i>223</i>&nbsp;    public void consumePacketBuild(String senderID, PacketBuild packetBuild) throws InvalidPacketException {
+<i>224</i>&nbsp;
+<b class="fc"><i>225</i>&nbsp;        if (!senderID.equals(currPlayer.getNickname()))</b>
+<b class="fc"><i>226</i>&nbsp;            return;</b>
+<i>227</i>&nbsp;
+<b class="fc"><i>228</i>&nbsp;        if (!packetBuild.getPlayerNickname().equals(currPlayer.getNickname()))</b>
+<b class="fc"><i>229</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>230</i>&nbsp;
+<b class="fc"><i>231</i>&nbsp;        if (currWorker != null)</b>
+<b class="fc"><i>232</i>&nbsp;            if (!packetBuild.getWorkerID().equals(currWorker.getID()))</b>
+<b class="fc"><i>233</i>&nbsp;                throw new InvalidPacketException();</b>
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;
+<b class="fc"><i>236</i>&nbsp;        if (!currPossibleActions.contains(TriggerType.BUILD))</b>
+<b class="nc"><i>237</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>238</i>&nbsp;
+<b class="fc"><i>239</i>&nbsp;        String winner = null;</b>
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;        Map&lt;Point, List&lt;BuildingType&gt;&gt; newBuildings;
+<b class="fc"><i>242</i>&nbsp;        BuildData buildData = model.packetBuildToBuildData(packetBuild);</b>
+<i>243</i>&nbsp;        try {
+<b class="fc"><i>244</i>&nbsp;            if (!model.makeBuild(buildData))</b>
+<b class="fc"><i>245</i>&nbsp;                throw new InvalidPacketException();</b>
+<i>246</i>&nbsp;
+<b class="fc"><i>247</i>&nbsp;            newBuildings = new HashMap&lt;&gt;(buildData.getData());</b>
+<b class="fc"><i>248</i>&nbsp;            currWorker = buildData.getWorker();</b>
+<i>249</i>&nbsp;
+<b class="nc"><i>250</i>&nbsp;        } catch (PlayerWonSignal playerWonSignal) {</b>
+<i>251</i>&nbsp;
+<b class="nc"><i>252</i>&nbsp;            model.setWinner(currPlayer);</b>
+<b class="nc"><i>253</i>&nbsp;            winner = currPlayer.getNickname();</b>
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;            newBuildings = new HashMap&lt;&gt;(buildData.getData());</b>
+<b class="nc"><i>256</i>&nbsp;            currWorker = buildData.getWorker();</b>
+<i>257</i>&nbsp;
+<b class="nc"><i>258</i>&nbsp;            stillInGamePlayers.clear();</b>
+<b class="nc"><i>259</i>&nbsp;        } catch (PlayerLostSignal playerLostSignal) {</b>
+<b class="nc"><i>260</i>&nbsp;            makePlayerLoose();</b>
+<b class="nc"><i>261</i>&nbsp;            return;</b>
+<b class="fc"><i>262</i>&nbsp;        }</b>
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;
+<b class="fc"><i>265</i>&nbsp;        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(winner, newBuildings);</b>
+<b class="fc"><i>266</i>&nbsp;        notifyPacketUpdateBoardObservers(packetUpdateBoard);</b>
+<i>267</i>&nbsp;
+<b class="fc"><i>268</i>&nbsp;        if(winner != null &amp;&amp; gameFinishedHandler != null)</b>
+<b class="nc"><i>269</i>&nbsp;            gameFinishedHandler.update(winner);</b>
+<i>270</i>&nbsp;
+<b class="fc"><i>271</i>&nbsp;        assert stillInGamePlayers.size() != 1;</b>
+<b class="fc"><i>272</i>&nbsp;        if (stillInGamePlayers.size() &gt; 0)</b>
+<b class="fc"><i>273</i>&nbsp;            askNextPacket();</b>
+<b class="fc"><i>274</i>&nbsp;    }</b>
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;    /**
+<i>278</i>&nbsp;     * This method is used for the normal game mode,
+<i>279</i>&nbsp;     * a client always asks for the possible moves to make the player choose from them only.
+<i>280</i>&nbsp;     * If the request is correct and valid the server answers with the requested possible moves
+<i>281</i>&nbsp;     * @param senderID the asking client
+<i>282</i>&nbsp;     * @param packetMove the context of the request
+<i>283</i>&nbsp;     */
+<i>284</i>&nbsp;    public void getPossibleMoves(String senderID, PacketMove packetMove) {
+<b class="fc"><i>285</i>&nbsp;        assert (packetMove.isSimulate());</b>
+<i>286</i>&nbsp;
+<b class="fc"><i>287</i>&nbsp;        if (!senderID.equals(currPlayer.getNickname()) || !packetMove.getPlayerNickname().equals(currPlayer.getNickname()))</b>
+<b class="nc"><i>288</i>&nbsp;            return;</b>
+<i>289</i>&nbsp;
+<b class="fc"><i>290</i>&nbsp;        if (!currPossibleActions.contains(TriggerType.MOVE))</b>
+<b class="nc"><i>291</i>&nbsp;            return;</b>
+<i>292</i>&nbsp;
+<b class="fc"><i>293</i>&nbsp;        boolean wantsInfoForAllWorkers = false;</b>
+<i>294</i>&nbsp;
+<b class="fc"><i>295</i>&nbsp;        if(packetMove.getWorkerID() == null)</b>
+<b class="fc"><i>296</i>&nbsp;            wantsInfoForAllWorkers = true;</b>
+<i>297</i>&nbsp;        else{
+<b class="fc"><i>298</i>&nbsp;            if(currPlayer.getWorkers().stream().noneMatch(x -&gt; x.getID().equals(packetMove.getWorkerID())))</b>
+<b class="nc"><i>299</i>&nbsp;                return;</b>
+<i>300</i>&nbsp;        }
+<i>301</i>&nbsp;
+<b class="fc"><i>302</i>&nbsp;        if (currWorker != null) {</b>
+<b class="fc"><i>303</i>&nbsp;            if (packetMove.getWorkerID() != null &amp;&amp; !packetMove.getWorkerID().equals(currWorker.getID()))</b>
+<b class="nc"><i>304</i>&nbsp;                return;</b>
+<i>305</i>&nbsp;        }
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;        Worker myWorker;
+<b class="fc"><i>308</i>&nbsp;        if(currWorker != null)</b>
+<b class="fc"><i>309</i>&nbsp;            myWorker = currWorker;</b>
+<b class="fc"><i>310</i>&nbsp;        else if(wantsInfoForAllWorkers)</b>
+<b class="fc"><i>311</i>&nbsp;            myWorker = currPlayer.getWorkers().get(0);</b>
+<i>312</i>&nbsp;        else
+<b class="fc"><i>313</i>&nbsp;            myWorker = model.getWorkerByID(packetMove.getWorkerID());</b>
+<i>314</i>&nbsp;
+<b class="fc"><i>315</i>&nbsp;        List&lt;Worker&gt; myOtherWorkers = currPlayer.getWorkers().stream().filter(x -&gt; !x.getID().equals(myWorker.getID())).collect(Collectors.toList());</b>
+<b class="fc"><i>316</i>&nbsp;        assert myOtherWorkers.size() &gt; 0;</b>
+<i>317</i>&nbsp;
+<b class="fc"><i>318</i>&nbsp;        Map&lt;String, Set&lt;Point&gt;&gt; possibleMoves = new HashMap&lt;&gt;();</b>
+<i>319</i>&nbsp;
+<b class="fc"><i>320</i>&nbsp;        Set&lt;Point&gt; possiblePointsMyWorker = new HashSet&lt;&gt;();</b>
+<b class="fc"><i>321</i>&nbsp;        possibleMoves.put(myWorker.getID(), possiblePointsMyWorker);</b>
+<i>322</i>&nbsp;
+<b class="fc"><i>323</i>&nbsp;        for(Worker myOtherWorker : myOtherWorkers){</b>
+<b class="fc"><i>324</i>&nbsp;            Set&lt;Point&gt; possiblePointsOtherWorker = new HashSet&lt;&gt;();</b>
+<b class="fc"><i>325</i>&nbsp;            possibleMoves.put(myOtherWorker.getID(), possiblePointsOtherWorker);</b>
+<b class="fc"><i>326</i>&nbsp;        }</b>
+<i>327</i>&nbsp;
+<b class="fc"><i>328</i>&nbsp;        if (!wantsInfoForAllWorkers &amp;&amp; packetMove.getMove() != null &amp;&amp; !packetMove.getMove().isEmpty()) {</b>
+<i>329</i>&nbsp;            MoveData moveData;
+<i>330</i>&nbsp;            try {
+<b class="fc"><i>331</i>&nbsp;                moveData = model.packetMoveToMoveData(packetMove);</b>
+<b class="nc"><i>332</i>&nbsp;            } catch (InvalidPacketException e) {</b>
+<b class="nc"><i>333</i>&nbsp;                sendPossibleMoves(currPlayer.getNickname(), possibleMoves);</b>
+<b class="nc"><i>334</i>&nbsp;                return;</b>
+<b class="fc"><i>335</i>&nbsp;            }</b>
+<i>336</i>&nbsp;
+<b class="fc"><i>337</i>&nbsp;            possiblePointsMyWorker.addAll(model.getPossibleMoves(moveData));</b>
+<i>338</i>&nbsp;
+<b class="fc"><i>339</i>&nbsp;        } else {</b>
+<b class="fc"><i>340</i>&nbsp;            possiblePointsMyWorker.addAll(model.getPossibleMoves(currPlayer, myWorker));</b>
+<b class="fc"><i>341</i>&nbsp;            if (wantsInfoForAllWorkers &amp;&amp; currWorker == null) {</b>
+<b class="fc"><i>342</i>&nbsp;                for(Worker myOtherWorker : myOtherWorkers){</b>
+<b class="fc"><i>343</i>&nbsp;                    Set&lt;Point&gt; possiblePointsOtherWorker = possibleMoves.get(myOtherWorker.getID());</b>
+<b class="fc"><i>344</i>&nbsp;                    possiblePointsOtherWorker.addAll(model.getPossibleMoves(currPlayer, myOtherWorker));</b>
+<b class="fc"><i>345</i>&nbsp;                }</b>
+<i>346</i>&nbsp;            }
+<i>347</i>&nbsp;        }
+<i>348</i>&nbsp;
+<b class="fc"><i>349</i>&nbsp;        sendPossibleMoves(currPlayer.getNickname(), possibleMoves);</b>
+<b class="fc"><i>350</i>&nbsp;    }</b>
+<i>351</i>&nbsp;
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;    /**
+<i>354</i>&nbsp;     * This method is used for the normal game mode,
+<i>355</i>&nbsp;     * a client always asks for the possible builds to make the player choose from them only.
+<i>356</i>&nbsp;     * If the request is correct and valid the server answers with the requested possible builds
+<i>357</i>&nbsp;     * @param senderID the asking client
+<i>358</i>&nbsp;     * @param packetBuild the context of the request
+<i>359</i>&nbsp;     */
+<i>360</i>&nbsp;    public void getPossibleBuilds(String senderID, PacketBuild packetBuild) {
+<b class="fc"><i>361</i>&nbsp;        assert (packetBuild.isSimulate());</b>
+<i>362</i>&nbsp;
+<b class="fc"><i>363</i>&nbsp;        if (!senderID.equals(currPlayer.getNickname()) || !packetBuild.getPlayerNickname().equals(currPlayer.getNickname()))</b>
+<b class="nc"><i>364</i>&nbsp;            return;</b>
+<i>365</i>&nbsp;
+<b class="fc"><i>366</i>&nbsp;        if (!currPossibleActions.contains(TriggerType.BUILD))</b>
+<b class="nc"><i>367</i>&nbsp;            return;</b>
+<i>368</i>&nbsp;
+<b class="fc"><i>369</i>&nbsp;        boolean wantsInfoForAllWorkers = false;</b>
+<i>370</i>&nbsp;
+<b class="fc"><i>371</i>&nbsp;        if(packetBuild.getWorkerID() == null)</b>
+<b class="fc"><i>372</i>&nbsp;            wantsInfoForAllWorkers = true;</b>
+<i>373</i>&nbsp;        else{
+<b class="fc"><i>374</i>&nbsp;            if(currPlayer.getWorkers().stream().noneMatch(x -&gt; x.getID().equals(packetBuild.getWorkerID())))</b>
+<b class="nc"><i>375</i>&nbsp;                return;</b>
+<i>376</i>&nbsp;        }
+<i>377</i>&nbsp;
+<b class="fc"><i>378</i>&nbsp;        if (currWorker != null) {</b>
+<b class="fc"><i>379</i>&nbsp;            if (packetBuild.getWorkerID() != null &amp;&amp; !packetBuild.getWorkerID().equals(currWorker.getID()))</b>
+<b class="nc"><i>380</i>&nbsp;                return;</b>
+<i>381</i>&nbsp;        }
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;        Worker myWorker;
+<b class="fc"><i>384</i>&nbsp;        if(currWorker != null)</b>
+<b class="fc"><i>385</i>&nbsp;            myWorker = currWorker;</b>
+<b class="fc"><i>386</i>&nbsp;        else if(wantsInfoForAllWorkers)</b>
+<b class="fc"><i>387</i>&nbsp;            myWorker = currPlayer.getWorkers().get(0);</b>
+<i>388</i>&nbsp;        else
+<b class="nc"><i>389</i>&nbsp;            myWorker = model.getWorkerByID(packetBuild.getWorkerID());</b>
+<i>390</i>&nbsp;
+<b class="fc"><i>391</i>&nbsp;        List&lt;Worker&gt; myOtherWorkers = currPlayer.getWorkers().stream().filter(x -&gt; !x.getID().equals(myWorker.getID())).collect(Collectors.toList());</b>
+<b class="fc"><i>392</i>&nbsp;        assert myOtherWorkers.size() &gt; 0;</b>
+<i>393</i>&nbsp;
+<b class="fc"><i>394</i>&nbsp;        Map&lt;String, Map&lt;Point, List&lt;BuildingType&gt;&gt;&gt; possibleBuilds = new HashMap&lt;&gt;();</b>
+<i>395</i>&nbsp;
+<b class="fc"><i>396</i>&nbsp;        Map&lt;Point, List&lt;BuildingType&gt;&gt; possibleBuildsMyWorker = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>397</i>&nbsp;        possibleBuilds.put(myWorker.getID(), possibleBuildsMyWorker);</b>
+<i>398</i>&nbsp;
+<b class="fc"><i>399</i>&nbsp;        for(Worker myOtherWorker : myOtherWorkers){</b>
+<b class="fc"><i>400</i>&nbsp;            Map&lt;Point, List&lt;BuildingType&gt;&gt; possibleBuildsMyOtherWorker = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>401</i>&nbsp;            possibleBuilds.put(myOtherWorker.getID(),possibleBuildsMyOtherWorker);</b>
+<b class="fc"><i>402</i>&nbsp;        }</b>
+<i>403</i>&nbsp;
+<b class="fc"><i>404</i>&nbsp;        if (!wantsInfoForAllWorkers &amp;&amp; packetBuild.getBuilds() != null &amp;&amp; !packetBuild.getBuilds().isEmpty()) {</b>
+<i>405</i>&nbsp;            BuildData buildData;
+<i>406</i>&nbsp;            try {
+<b class="fc"><i>407</i>&nbsp;                buildData = model.packetBuildToBuildData(packetBuild);</b>
+<b class="nc"><i>408</i>&nbsp;            } catch (InvalidPacketException e) {</b>
+<b class="nc"><i>409</i>&nbsp;                sendPossibleBuilds(currPlayer.getNickname(), possibleBuilds);</b>
+<b class="nc"><i>410</i>&nbsp;                return;</b>
+<b class="fc"><i>411</i>&nbsp;            }</b>
+<b class="fc"><i>412</i>&nbsp;            possibleBuildsMyWorker.putAll(model.getPossibleBuilds(buildData));</b>
+<i>413</i>&nbsp;
+<b class="fc"><i>414</i>&nbsp;        } else {</b>
+<b class="fc"><i>415</i>&nbsp;            possibleBuildsMyWorker.putAll(model.getPossibleBuilds(currPlayer, myWorker));</b>
+<b class="fc"><i>416</i>&nbsp;            if (wantsInfoForAllWorkers &amp;&amp; currWorker == null) {</b>
+<b class="fc"><i>417</i>&nbsp;                for(Worker myOtherWorker : myOtherWorkers){</b>
+<b class="fc"><i>418</i>&nbsp;                    Map&lt;Point, List&lt;BuildingType&gt;&gt; possibleBuildsMyOtherWorker = possibleBuilds.get(myOtherWorker.getID());</b>
+<b class="fc"><i>419</i>&nbsp;                    possibleBuildsMyOtherWorker.putAll(model.getPossibleBuilds(currPlayer, myOtherWorker));</b>
+<b class="fc"><i>420</i>&nbsp;                }</b>
+<i>421</i>&nbsp;            }
+<i>422</i>&nbsp;        }
+<b class="fc"><i>423</i>&nbsp;        sendPossibleBuilds(currPlayer.getNickname(), possibleBuilds);</b>
+<b class="fc"><i>424</i>&nbsp;    }</b>
+<i>425</i>&nbsp;
+<i>426</i>&nbsp;    /**
+<i>427</i>&nbsp;     * Private method used to send the possible builds
+<i>428</i>&nbsp;     * @param to the recipient
+<i>429</i>&nbsp;     * @param possibleBuilds the possible builds
+<i>430</i>&nbsp;     */
+<i>431</i>&nbsp;    private void sendPossibleBuilds(String to, Map&lt;String, Map&lt;Point, List&lt;BuildingType&gt;&gt;&gt; possibleBuilds) {
+<b class="fc"><i>432</i>&nbsp;        PacketPossibleBuilds packetPossibleBuilds = new PacketPossibleBuilds(to, possibleBuilds);</b>
+<b class="fc"><i>433</i>&nbsp;        notifyPacketPossibleBuildsObservers(packetPossibleBuilds);</b>
+<b class="fc"><i>434</i>&nbsp;    }</b>
+<i>435</i>&nbsp;
+<i>436</i>&nbsp;    /**
+<i>437</i>&nbsp;     * Private method used to send the possible moves
+<i>438</i>&nbsp;     * @param to the recipient
+<i>439</i>&nbsp;     * @param possibleMoves the possible moves
+<i>440</i>&nbsp;     */
+<i>441</i>&nbsp;    private void sendPossibleMoves(String to, Map&lt;String, Set&lt;Point&gt;&gt; possibleMoves) {
+<b class="fc"><i>442</i>&nbsp;        PacketPossibleMoves packetPossibleMoves = new PacketPossibleMoves(to, possibleMoves);</b>
+<b class="fc"><i>443</i>&nbsp;        notifyPacketPossibleMovesObservers(packetPossibleMoves);</b>
+<b class="fc"><i>444</i>&nbsp;    }</b>
+<i>445</i>&nbsp;
+<i>446</i>&nbsp;    /**
+<i>447</i>&nbsp;     * Increments the current player index
+<i>448</i>&nbsp;     */
+<i>449</i>&nbsp;    private void incrementActivePlayerIndex() {
+<b class="fc"><i>450</i>&nbsp;        if (activePlayerIndex &gt;= stillInGamePlayers.size() - 1)</b>
+<b class="fc"><i>451</i>&nbsp;            activePlayerIndex = 0;</b>
+<i>452</i>&nbsp;        else
+<b class="fc"><i>453</i>&nbsp;            ++activePlayerIndex;</b>
+<b class="fc"><i>454</i>&nbsp;    }</b>
+<i>455</i>&nbsp;
+<i>456</i>&nbsp;    /**
+<i>457</i>&nbsp;     * Makes the current player loose and notifies everyone
+<i>458</i>&nbsp;     */
+<i>459</i>&nbsp;    private void makePlayerLoose() {
+<i>460</i>&nbsp;
+<b class="fc"><i>461</i>&nbsp;        model.addLoser(currPlayer);</b>
+<i>462</i>&nbsp;
+<b class="fc"><i>463</i>&nbsp;        if (activePlayerIndex == 0)</b>
+<b class="fc"><i>464</i>&nbsp;            activePlayerIndex = stillInGamePlayers.size() - 1;</b>
+<i>465</i>&nbsp;        else
+<b class="fc"><i>466</i>&nbsp;            activePlayerIndex--;</b>
+<b class="fc"><i>467</i>&nbsp;        stillInGamePlayers.remove(currPlayer);</b>
+<i>468</i>&nbsp;
+<b class="fc"><i>469</i>&nbsp;        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(currPlayer.getNickname(), false);</b>
+<b class="fc"><i>470</i>&nbsp;        notifyPacketUpdateBoardObservers(packetUpdateBoard);</b>
+<b class="fc"><i>471</i>&nbsp;        setNextPlayer();</b>
+<b class="fc"><i>472</i>&nbsp;    }</b>
+<i>473</i>&nbsp;
+<i>474</i>&nbsp;    /**
+<i>475</i>&nbsp;     * Used to add the observer
+<i>476</i>&nbsp;     * @param o the observer
+<i>477</i>&nbsp;     */
+<i>478</i>&nbsp;    public void addPacketDoActionObserver(Observer&lt;PacketDoAction&gt; o) {
+<b class="fc"><i>479</i>&nbsp;        this.packetDoActionObservers.add(o);</b>
+<b class="fc"><i>480</i>&nbsp;    }</b>
+<i>481</i>&nbsp;    /**
+<i>482</i>&nbsp;     * Used to add the observer
+<i>483</i>&nbsp;     * @param o the observer
+<i>484</i>&nbsp;     */
+<i>485</i>&nbsp;    public void addPacketUpdateBoardObserver(Observer&lt;PacketUpdateBoard&gt; o) {
+<b class="fc"><i>486</i>&nbsp;        this.packetUpdateBoardObservers.add(o);</b>
+<b class="fc"><i>487</i>&nbsp;    }</b>
+<i>488</i>&nbsp;    /**
+<i>489</i>&nbsp;     * Used to add the observer
+<i>490</i>&nbsp;     * @param o the observer
+<i>491</i>&nbsp;     */
+<i>492</i>&nbsp;    public void addPacketPossibleMovesObserver(Observer&lt;PacketPossibleMoves&gt; o) {
+<b class="fc"><i>493</i>&nbsp;        this.packetPossibleMovesObservers.add(o);</b>
+<b class="fc"><i>494</i>&nbsp;    }</b>
+<i>495</i>&nbsp;    /**
+<i>496</i>&nbsp;     * Used to add the observer
+<i>497</i>&nbsp;     * @param o the observer
+<i>498</i>&nbsp;     */
+<i>499</i>&nbsp;    public void addPacketPossibleBuildsObserver(Observer&lt;PacketPossibleBuilds&gt; o) {
+<b class="fc"><i>500</i>&nbsp;        this.packetPossibleBuildsObservers.add(o);</b>
+<b class="fc"><i>501</i>&nbsp;    }</b>
+<i>502</i>&nbsp;
+<i>503</i>&nbsp;    private void notifyPacketPossibleMovesObservers(PacketPossibleMoves p){
+<b class="fc"><i>504</i>&nbsp;        for(Observer&lt;PacketPossibleMoves&gt; o : packetPossibleMovesObservers){</b>
+<b class="fc"><i>505</i>&nbsp;            o.update(p);</b>
+<b class="fc"><i>506</i>&nbsp;        }</b>
+<b class="fc"><i>507</i>&nbsp;    }</b>
+<i>508</i>&nbsp;    private void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
+<b class="fc"><i>509</i>&nbsp;        for(Observer&lt;PacketUpdateBoard&gt; o : packetUpdateBoardObservers){</b>
+<b class="fc"><i>510</i>&nbsp;            o.update(p);</b>
+<b class="fc"><i>511</i>&nbsp;        }</b>
+<b class="fc"><i>512</i>&nbsp;    }</b>
+<i>513</i>&nbsp;    private void notifyPacketPossibleBuildsObservers(PacketPossibleBuilds p){
+<b class="fc"><i>514</i>&nbsp;        for(Observer&lt;PacketPossibleBuilds&gt; o : packetPossibleBuildsObservers){</b>
+<b class="fc"><i>515</i>&nbsp;            o.update(p);</b>
+<b class="fc"><i>516</i>&nbsp;        }</b>
+<b class="fc"><i>517</i>&nbsp;    }</b>
+<i>518</i>&nbsp;    private void notifyPacketDoActionObservers(PacketDoAction p){
+<b class="fc"><i>519</i>&nbsp;        for(Observer&lt;PacketDoAction&gt; o : packetDoActionObservers){</b>
+<b class="fc"><i>520</i>&nbsp;            o.update(p);</b>
+<b class="fc"><i>521</i>&nbsp;        }</b>
+<b class="fc"><i>522</i>&nbsp;    }</b>
+<i>523</i>&nbsp;    public void setGameFinishedHandler(Observer&lt;String&gt; gameFinishedHandler) {
+<b class="nc"><i>524</i>&nbsp;        this.gameFinishedHandler = gameFinishedHandler;</b>
+<b class="nc"><i>525</i>&nbsp;    }</b>
+<i>526</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

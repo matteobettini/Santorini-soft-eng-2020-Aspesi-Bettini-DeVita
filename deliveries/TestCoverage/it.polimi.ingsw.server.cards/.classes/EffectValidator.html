@@ -1,0 +1,205 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: EffectValidator</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards</a> ]
+</div>
+
+<h1>Coverage Summary for Class: EffectValidator (it.polimi.ingsw.server.cards)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EffectValidator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97,8%
+  </span>
+  <span class="absValue">
+    (44/ 45)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">EffectValidator$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97,9%
+  </span>
+  <span class="absValue">
+    (46/ 47)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.exceptions.InvalidRuleEffectException;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * This class offers a method to validate card effect&#39;s semantic
+<i>7</i>&nbsp; */
+<b class="fc"><i>8</i>&nbsp;class EffectValidator {</b>
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;    /**
+<i>11</i>&nbsp;     * Validate card effect semantic
+<i>12</i>&nbsp;     * @param effect Effect to be validated
+<i>13</i>&nbsp;     * @throws InvalidRuleEffectException   If problems are found during the scan.
+<i>14</i>&nbsp;     *                                      In the message it&#39;s always reported the reason.
+<i>15</i>&nbsp;     */
+<i>16</i>&nbsp;    public static void checkRuleEffect(RuleEffect effect) throws InvalidRuleEffectException {
+<b class="fc"><i>17</i>&nbsp;        switch (effect.getType()){</b>
+<i>18</i>&nbsp;            case ALLOW:
+<b class="fc"><i>19</i>&nbsp;                allowValidate(effect);</b>
+<b class="fc"><i>20</i>&nbsp;                break;</b>
+<i>21</i>&nbsp;            case DENY:
+<b class="fc"><i>22</i>&nbsp;                denyValidate(effect);</b>
+<b class="fc"><i>23</i>&nbsp;                break;</b>
+<i>24</i>&nbsp;            case WIN:
+<b class="fc"><i>25</i>&nbsp;                winValidate(effect);</b>
+<i>26</i>&nbsp;                break;
+<i>27</i>&nbsp;        }
+<b class="fc"><i>28</i>&nbsp;    }</b>
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    private static void allowValidate(RuleEffect effect) throws InvalidRuleEffectException {
+<b class="fc"><i>31</i>&nbsp;        if (effect.getAllowType() == null) return; //Will be patched</b>
+<b class="fc"><i>32</i>&nbsp;        switch (effect.getAllowType()){</b>
+<i>33</i>&nbsp;            case STANDARD:
+<b class="fc"><i>34</i>&nbsp;                allowStandardValidate(effect);</b>
+<b class="fc"><i>35</i>&nbsp;                break;</b>
+<i>36</i>&nbsp;            case SET_OPPONENT:
+<b class="fc"><i>37</i>&nbsp;                setOpponentPositionValidate(effect);</b>
+<b class="fc"><i>38</i>&nbsp;                break;</b>
+<i>39</i>&nbsp;            case BUILD_UNDER:
+<b class="fc"><i>40</i>&nbsp;                buildUnderValidate(effect);</b>
+<b class="fc"><i>41</i>&nbsp;                break;</b>
+<i>42</i>&nbsp;            default:
+<b class="nc"><i>43</i>&nbsp;                assert false;</b>
+<i>44</i>&nbsp;        }
+<b class="fc"><i>45</i>&nbsp;    }</b>
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    private static void allowStandardValidate(RuleEffect effect) throws InvalidRuleEffectException {
+<b class="fc"><i>48</i>&nbsp;        if (effect.getData() != null){</b>
+<b class="fc"><i>49</i>&nbsp;            throw new InvalidRuleEffectException(&quot;[ALLOW][STANDARD] Effect data not supported&quot;);</b>
+<i>50</i>&nbsp;        }
+<b class="fc"><i>51</i>&nbsp;    }</b>
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    private static void setOpponentPositionValidate(RuleEffect effect) throws InvalidRuleEffectException {
+<b class="fc"><i>54</i>&nbsp;        String effect_data = effect.getData();</b>
+<b class="fc"><i>55</i>&nbsp;        if (effect_data == null){</b>
+<b class="fc"><i>56</i>&nbsp;            throw new InvalidRuleEffectException(&quot;[ALLOW][SET_OPPONENT] Effect data is required. None provided&quot;);</b>
+<i>57</i>&nbsp;        }
+<b class="fc"><i>58</i>&nbsp;        switch (effect_data){</b>
+<i>59</i>&nbsp;            case &quot;SWAP&quot;:
+<i>60</i>&nbsp;            case &quot;PUSH_STRAIGHT&quot;:
+<b class="fc"><i>61</i>&nbsp;                break;</b>
+<i>62</i>&nbsp;            default:
+<b class="fc"><i>63</i>&nbsp;                throw new InvalidRuleEffectException(&quot;[ALLOW][SET_OPPONENT] Data &#39;&quot; + effect_data + &quot;&#39; is not supported&quot;);</b>
+<i>64</i>&nbsp;        }
+<b class="fc"><i>65</i>&nbsp;    }</b>
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    private static void buildUnderValidate(RuleEffect effect) throws InvalidRuleEffectException {
+<b class="fc"><i>68</i>&nbsp;        if (effect.getData() != null){</b>
+<b class="fc"><i>69</i>&nbsp;            throw new InvalidRuleEffectException(&quot;[ALLOW][BUILD_UNDER] Effect data not supported&quot;);</b>
+<i>70</i>&nbsp;        }
+<b class="fc"><i>71</i>&nbsp;    }</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    private static void denyValidate(RuleEffect effect) throws InvalidRuleEffectException {
+<b class="fc"><i>74</i>&nbsp;        if (effect.getAllowType() != null){</b>
+<b class="fc"><i>75</i>&nbsp;            throw new InvalidRuleEffectException(&quot;[DENY] Allow subtype tag not allowed&quot;);</b>
+<i>76</i>&nbsp;        }
+<b class="fc"><i>77</i>&nbsp;        if (effect.getData() != null){</b>
+<b class="fc"><i>78</i>&nbsp;            throw new InvalidRuleEffectException(&quot;[DENY] Effect data tag not supported&quot;);</b>
+<i>79</i>&nbsp;        }
+<b class="fc"><i>80</i>&nbsp;        if (effect.getNextState() != null){</b>
+<b class="fc"><i>81</i>&nbsp;            throw new InvalidRuleEffectException(&quot;[DENY] Effect player next state tag not supported&quot;);</b>
+<i>82</i>&nbsp;        }
+<b class="fc"><i>83</i>&nbsp;    }</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    private static void winValidate(RuleEffect effect)  throws InvalidRuleEffectException{
+<b class="fc"><i>86</i>&nbsp;        if (effect.getAllowType() != null){</b>
+<b class="fc"><i>87</i>&nbsp;            throw new InvalidRuleEffectException(&quot;[WIN] Allow subtype tag not allowed&quot;);</b>
+<i>88</i>&nbsp;        }
+<b class="fc"><i>89</i>&nbsp;        if (effect.getData() != null){</b>
+<b class="fc"><i>90</i>&nbsp;            throw new InvalidRuleEffectException(&quot;[WIN] Effect data tag not supported&quot;);</b>
+<i>91</i>&nbsp;        }
+<b class="fc"><i>92</i>&nbsp;        if (effect.getNextState() != null){</b>
+<b class="fc"><i>93</i>&nbsp;            throw new InvalidRuleEffectException(&quot;[WIN] Effect player next state tag not supported&quot;);</b>
+<i>94</i>&nbsp;        }
+<b class="fc"><i>95</i>&nbsp;    }</b>
+<i>96</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

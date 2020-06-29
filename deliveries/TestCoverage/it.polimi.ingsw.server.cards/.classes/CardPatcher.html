@@ -1,0 +1,229 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CardPatcher</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CardPatcher (it.polimi.ingsw.server.cards)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CardPatcher</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (46/ 46)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.enums.AllowType;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.cards.enums.EffectType;
+<i>5</i>&nbsp;import it.polimi.ingsw.server.cards.enums.TriggerType;
+<i>6</i>&nbsp;import it.polimi.ingsw.server.model.enums.PlayerState;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;import java.util.List;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;/**
+<i>11</i>&nbsp; * This class offers a method to patch CardFile with
+<i>12</i>&nbsp; * part of the default strategy.
+<i>13</i>&nbsp; * Default cardFile must have ONE AND ONLY ONE:
+<i>14</i>&nbsp; * - move rule with allow
+<i>15</i>&nbsp; * - build rule with allow
+<i>16</i>&nbsp; */
+<b class="fc"><i>17</i>&nbsp;class CardPatcher {</b>
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;    /**
+<i>20</i>&nbsp;     * This method adds missing statements/parts of the specified CardFile using
+<i>21</i>&nbsp;     * the default strategy
+<i>22</i>&nbsp;     * @param defaultCard CardFile of the default strategy
+<i>23</i>&nbsp;     * @param card CardFile of the card to be patched
+<i>24</i>&nbsp;     */
+<i>25</i>&nbsp;    public static void patchCard(CardFile defaultCard, CardFileImpl card){
+<b class="fc"><i>26</i>&nbsp;        assert(defaultCard.getRules(TriggerType.MOVE).stream().filter(CardPatcher::canBeUsedToPatch).count() == 1);</b>
+<b class="fc"><i>27</i>&nbsp;        assert(defaultCard.getRules(TriggerType.BUILD).stream().filter(CardPatcher::canBeUsedToPatch).count() == 1);</b>
+<i>28</i>&nbsp;
+<b class="fc"><i>29</i>&nbsp;        for(CardRule rule : defaultCard.getRules()){</b>
+<b class="fc"><i>30</i>&nbsp;            if (canBeUsedToPatch(rule)){</b>
+<i>31</i>&nbsp;                //Add its statements where missing
+<b class="fc"><i>32</i>&nbsp;                for(RuleStatement stm : rule.getStatements()){</b>
+<b class="fc"><i>33</i>&nbsp;                    applyStatementToCardRule(rule.getTrigger(), stm, card);</b>
+<b class="fc"><i>34</i>&nbsp;                }</b>
+<i>35</i>&nbsp;                //Add its default allow type where missing
+<b class="fc"><i>36</i>&nbsp;                applySubtypeToCardFile(rule.getTrigger(), rule.getEffect().getAllowType(), card);</b>
+<i>37</i>&nbsp;                //Add its default next state where missing
+<b class="fc"><i>38</i>&nbsp;                applyNextStateToCardFile(rule.getTrigger(),rule.getEffect().getNextState(),card);</b>
+<i>39</i>&nbsp;            }
+<b class="fc"><i>40</i>&nbsp;        }</b>
+<b class="fc"><i>41</i>&nbsp;    }</b>
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    /**
+<i>44</i>&nbsp;     * This method patches all card rules with same trigger, adding missing default statement.
+<i>45</i>&nbsp;     * This operation is done only for compliant statements (ALLOW, SET_OPPONENT_POSITION statements)
+<i>46</i>&nbsp;     * @param triggerDefault Default card rule trigger
+<i>47</i>&nbsp;     * @param stmDefault Default statement to add
+<i>48</i>&nbsp;     * @param card CardFile where we want to add the statement
+<i>49</i>&nbsp;     */
+<i>50</i>&nbsp;    private static void applyStatementToCardRule(TriggerType triggerDefault, RuleStatement stmDefault, CardFileImpl card){
+<b class="fc"><i>51</i>&nbsp;        List&lt;CardRuleImpl&gt; similarRules = card.getRulesInternal(triggerDefault);</b>
+<b class="fc"><i>52</i>&nbsp;        for(CardRuleImpl rule : similarRules){</b>
+<b class="fc"><i>53</i>&nbsp;            if (isPatchableCompliant(rule)){</b>
+<b class="fc"><i>54</i>&nbsp;                if (!containsDefaultStatement(stmDefault, rule)){</b>
+<b class="fc"><i>55</i>&nbsp;                    rule.addStatement(stmDefault);</b>
+<i>56</i>&nbsp;                }
+<i>57</i>&nbsp;            }
+<b class="fc"><i>58</i>&nbsp;        }</b>
+<b class="fc"><i>59</i>&nbsp;    }</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /**
+<i>62</i>&nbsp;     * This method searches for the statement in a CardRule
+<i>63</i>&nbsp;     * @param stmDefault Default statement to be searched
+<i>64</i>&nbsp;     * @param rule Rule where to search
+<i>65</i>&nbsp;     * @return True if the statement is found, False otherwise
+<i>66</i>&nbsp;     */
+<i>67</i>&nbsp;    private static boolean containsDefaultStatement(RuleStatement stmDefault, CardRule rule){
+<b class="fc"><i>68</i>&nbsp;        for(RuleStatement stm : rule.getStatements()){</b>
+<b class="fc"><i>69</i>&nbsp;            if (stm.getSubject().equals(stmDefault.getSubject()) &amp;&amp; stm.getVerb().equals(stmDefault.getVerb())){</b>
+<b class="fc"><i>70</i>&nbsp;                return true;</b>
+<i>71</i>&nbsp;            }
+<b class="fc"><i>72</i>&nbsp;        }</b>
+<b class="fc"><i>73</i>&nbsp;        return false;</b>
+<i>74</i>&nbsp;    }
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    /**
+<i>77</i>&nbsp;     * This method patches the cardFile adding default player next state in the compatible rules where was not specified.
+<i>78</i>&nbsp;     * @param triggerDefault Default card rule trigger
+<i>79</i>&nbsp;     * @param nextStateDefault Default next state to be added
+<i>80</i>&nbsp;     * @param card CardFile where we want to add the next state
+<i>81</i>&nbsp;     */
+<i>82</i>&nbsp;    private static void applyNextStateToCardFile(TriggerType triggerDefault, PlayerState nextStateDefault, CardFileImpl card){
+<b class="fc"><i>83</i>&nbsp;        List&lt;CardRuleImpl&gt; similarRules = card.getRulesInternal(triggerDefault);</b>
+<b class="fc"><i>84</i>&nbsp;        for(CardRuleImpl rule : similarRules){</b>
+<b class="fc"><i>85</i>&nbsp;            if (isPatchableCompliant(rule)){</b>
+<b class="fc"><i>86</i>&nbsp;                applyNextStateToCardRule(nextStateDefault, rule);</b>
+<i>87</i>&nbsp;            }
+<b class="fc"><i>88</i>&nbsp;        }</b>
+<b class="fc"><i>89</i>&nbsp;    }</b>
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;    /**
+<i>92</i>&nbsp;     * This method patches the card player next state with the default, if was not specified
+<i>93</i>&nbsp;     * @param defaultNextState Default player next state
+<i>94</i>&nbsp;     * @param rule Rule to be patched
+<i>95</i>&nbsp;     */
+<i>96</i>&nbsp;    private static void applyNextStateToCardRule(PlayerState defaultNextState, CardRuleImpl rule){
+<b class="fc"><i>97</i>&nbsp;        RuleEffectImpl ruleEffect = rule.getEffectInternal();</b>
+<b class="fc"><i>98</i>&nbsp;        if (ruleEffect.getNextState() == null){</b>
+<b class="fc"><i>99</i>&nbsp;            ruleEffect.setNextState(defaultNextState);</b>
+<i>100</i>&nbsp;        }
+<b class="fc"><i>101</i>&nbsp;    }</b>
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    /**
+<i>104</i>&nbsp;     * This method patches the cardFile allow subtype in the compatible rules where was not specified.
+<i>105</i>&nbsp;     * @param triggerDefault Default card rule trigger
+<i>106</i>&nbsp;     * @param typeDefault Default allow subtype
+<i>107</i>&nbsp;     * @param card CardFile where we want to add the subtype
+<i>108</i>&nbsp;     */
+<i>109</i>&nbsp;    private static void applySubtypeToCardFile(TriggerType triggerDefault, AllowType typeDefault, CardFileImpl card){
+<b class="fc"><i>110</i>&nbsp;        List&lt;CardRuleImpl&gt; similarRules = card.getRulesInternal(triggerDefault);</b>
+<b class="fc"><i>111</i>&nbsp;        for(CardRuleImpl rule : similarRules){</b>
+<b class="fc"><i>112</i>&nbsp;            if (isPatchableCompliant(rule)){</b>
+<b class="fc"><i>113</i>&nbsp;                applySubtypeToCardRule(typeDefault, rule);</b>
+<i>114</i>&nbsp;            }
+<b class="fc"><i>115</i>&nbsp;        }</b>
+<b class="fc"><i>116</i>&nbsp;    }</b>
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    /**
+<i>119</i>&nbsp;     * This method patches the cardRule allow subtype in the compatible rules where was not specified.
+<i>120</i>&nbsp;     * @param typeDefault Default allow subtype
+<i>121</i>&nbsp;     * @param rule Rule to be patched
+<i>122</i>&nbsp;     */
+<i>123</i>&nbsp;    private static void applySubtypeToCardRule(AllowType typeDefault, CardRuleImpl rule){
+<b class="fc"><i>124</i>&nbsp;        RuleEffectImpl ruleEffect = rule.getEffectInternal();</b>
+<b class="fc"><i>125</i>&nbsp;        if (ruleEffect.getAllowType() == null){</b>
+<b class="fc"><i>126</i>&nbsp;            ruleEffect.setAllowType(typeDefault);</b>
+<i>127</i>&nbsp;        }
+<b class="fc"><i>128</i>&nbsp;    }</b>
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    /**
+<i>131</i>&nbsp;     * This methods returns true if the rule can be patched be used to patch
+<i>132</i>&nbsp;     * @param rule CardRule to analyse
+<i>133</i>&nbsp;     * @return True if the rule can be patched, False otherwise
+<i>134</i>&nbsp;     */
+<i>135</i>&nbsp;    private static boolean isPatchableCompliant(CardRule rule){
+<b class="fc"><i>136</i>&nbsp;        return rule.getEffect().getType() == EffectType.ALLOW;</b>
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;    /**
+<i>139</i>&nbsp;     * This methods returns true if the rule can be used to patch
+<i>140</i>&nbsp;     * @param rule CardRule to analyse
+<i>141</i>&nbsp;     * @return True if the rule can be used to patch, False otherwise
+<i>142</i>&nbsp;     */
+<i>143</i>&nbsp;    private static boolean canBeUsedToPatch(CardRule rule){
+<b class="fc"><i>144</i>&nbsp;        return rule.getEffect().getType() == EffectType.ALLOW &amp;&amp; rule.getEffect().getAllowType() == AllowType.STANDARD;</b>
+<i>145</i>&nbsp;    }
+<i>146</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

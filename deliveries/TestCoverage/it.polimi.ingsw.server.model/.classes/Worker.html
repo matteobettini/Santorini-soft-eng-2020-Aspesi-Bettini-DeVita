@@ -1,0 +1,179 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Worker</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Worker (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Worker</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/ 25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import java.awt.*;
+<i>4</i>&nbsp;import java.util.Objects;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;/**
+<i>7</i>&nbsp; * This class contains all the info about a Worker. In particular its ID and the Player associated to it.
+<i>8</i>&nbsp; * Furthermore it contains the info about the current position of the Worker on the Board.
+<i>9</i>&nbsp; */
+<b class="fc"><i>10</i>&nbsp;class Worker {</b>
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;    /**
+<i>13</i>&nbsp;     * This is the ID of the Worker which is the concatenation of the Player nickname + &quot;.&quot; + the number starting from 1.
+<i>14</i>&nbsp;     */
+<i>15</i>&nbsp;    private final String ID;
+<i>16</i>&nbsp;    private final String playerID;
+<i>17</i>&nbsp;    private Point position;
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;
+<b class="fc"><i>20</i>&nbsp;    Worker(String ID, String playerID){</b>
+<b class="fc"><i>21</i>&nbsp;        this.ID = ID;</b>
+<b class="fc"><i>22</i>&nbsp;        this.playerID = playerID;</b>
+<b class="fc"><i>23</i>&nbsp;        this.position = null;</b>
+<b class="fc"><i>24</i>&nbsp;    }</b>
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;    /**
+<i>27</i>&nbsp;     * Getter that returns the ID of the Worker.
+<i>28</i>&nbsp;     * @return a String containing the id of the Worker.
+<i>29</i>&nbsp;     */
+<b class="fc"><i>30</i>&nbsp;    public String getID(){ return this.ID; }</b>
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    /**
+<i>34</i>&nbsp;     * set worker&#39;s position to null
+<i>35</i>&nbsp;     */
+<i>36</i>&nbsp;    public void removeFromBoard(){
+<b class="fc"><i>37</i>&nbsp;        this.position = null;</b>
+<b class="fc"><i>38</i>&nbsp;    }</b>
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    /**
+<i>41</i>&nbsp;     * Setter that sets the position of the Worker to the given position.
+<i>42</i>&nbsp;     * @param position is an instance of position that contains the info about the position to set.
+<i>43</i>&nbsp;     */
+<i>44</i>&nbsp;    public void setPosition(Point position){
+<b class="fc"><i>45</i>&nbsp;        assert position != null;</b>
+<b class="fc"><i>46</i>&nbsp;        if(position.x &gt;= 0 &amp;&amp; position.x &lt; Board.ROWS &amp;&amp; position.y &gt;= 0 &amp;&amp; position.y &lt; Board.COLUMNS)</b>
+<b class="fc"><i>47</i>&nbsp;            this.position = new Point(position);</b>
+<b class="fc"><i>48</i>&nbsp;    }</b>
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;    /**
+<i>51</i>&nbsp;     * Getter that returns the position of the Worker.
+<i>52</i>&nbsp;     * @return a Point with the coordinates of the position.
+<i>53</i>&nbsp;     */
+<b class="fc"><i>54</i>&nbsp;    public Point getPosition(){ return (this.position != null ? new Point(this.position) : null); }</b>
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    /**
+<i>57</i>&nbsp;     * Getter that returns the Player (ID) associated to the Worker.
+<i>58</i>&nbsp;     * @return ID of the player.
+<i>59</i>&nbsp;     */
+<b class="fc"><i>60</i>&nbsp;    public String getPlayerID(){ return this.playerID; }</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /**
+<i>63</i>&nbsp;     * This method checks if the given obj equals the Worker.
+<i>64</i>&nbsp;     * @param obj is an instance of Object to check.
+<i>65</i>&nbsp;     * @return true if obj and the Worker are identical, false otherwise.
+<i>66</i>&nbsp;     */
+<i>67</i>&nbsp;    @Override
+<i>68</i>&nbsp;    public boolean equals(Object obj){
+<b class="fc"><i>69</i>&nbsp;        if(this == obj) return true;</b>
+<b class="fc"><i>70</i>&nbsp;        if(obj == null) return false;</b>
+<b class="fc"><i>71</i>&nbsp;        if(this.getClass() != obj.getClass()) return false;</b>
+<b class="fc"><i>72</i>&nbsp;        Worker other = (Worker)obj;</b>
+<b class="fc"><i>73</i>&nbsp;        return this.ID.equals(other.ID);</b>
+<i>74</i>&nbsp;    }
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    /**
+<i>77</i>&nbsp;     * This method returns a clone of the Worker.
+<i>78</i>&nbsp;     * @return an cloned instance of the Worker.
+<i>79</i>&nbsp;     */
+<i>80</i>&nbsp;    @Override
+<i>81</i>&nbsp;    protected Worker clone(){
+<b class="fc"><i>82</i>&nbsp;        Worker w = new Worker(this.ID, this.playerID);</b>
+<b class="fc"><i>83</i>&nbsp;        if (this.position != null)</b>
+<b class="fc"><i>84</i>&nbsp;            w.setPosition(this.position);</b>
+<b class="fc"><i>85</i>&nbsp;        return w;</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    /**
+<i>89</i>&nbsp;     * Get the hash code for this worker
+<i>90</i>&nbsp;     * @return Hashcode
+<i>91</i>&nbsp;     */
+<i>92</i>&nbsp;    @Override
+<i>93</i>&nbsp;    public int hashCode() {
+<b class="fc"><i>94</i>&nbsp;        return Objects.hash(this.ID, this.playerID);</b>
+<i>95</i>&nbsp;    }
+<i>96</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

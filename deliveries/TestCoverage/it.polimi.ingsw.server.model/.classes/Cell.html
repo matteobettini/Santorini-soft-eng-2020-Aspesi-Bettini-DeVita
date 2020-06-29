@@ -1,0 +1,405 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Cell</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Cell (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Cell</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (21/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96,6%
+  </span>
+  <span class="absValue">
+    (85/ 88)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Cell$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (22/ 22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96,7%
+  </span>
+  <span class="absValue">
+    (87/ 90)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.common.enums.BuildingType;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.model.enums.LevelType;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import java.awt.*;
+<i>7</i>&nbsp;import java.util.ArrayList;
+<i>8</i>&nbsp;import java.util.List;
+<i>9</i>&nbsp;import java.util.Objects;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;/**
+<i>12</i>&nbsp; * This class represents a Cell of the Board.
+<i>13</i>&nbsp; * It contains the Buildings and it may contain a Worker.
+<i>14</i>&nbsp; * It is uniquely identified by its position on the Board.
+<i>15</i>&nbsp; */
+<b class="fc"><i>16</i>&nbsp;class Cell{</b>
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;    public static final int FULL_TOWER_HEIGHT = 4;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    private String workerID;
+<i>21</i>&nbsp;    private final Point position;
+<i>22</i>&nbsp;    private final List&lt;BuildingType&gt; buildings;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;
+<b class="fc"><i>25</i>&nbsp;    Cell(Point position){</b>
+<b class="fc"><i>26</i>&nbsp;        assert (position != null);</b>
+<b class="fc"><i>27</i>&nbsp;        this.position = new Point(position);</b>
+<b class="fc"><i>28</i>&nbsp;        this.buildings = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>29</i>&nbsp;    }</b>
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;    /**
+<i>32</i>&nbsp;     *  This method returns the Cell position.
+<i>33</i>&nbsp;     * @return Cell Position.
+<i>34</i>&nbsp;     */
+<b class="fc"><i>35</i>&nbsp;    public Point getPosition(){ return new Point(this.position); }</b>
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;    /**
+<i>38</i>&nbsp;     * Returns the height of the buildings in the cell
+<i>39</i>&nbsp;     * @return the height of the buildings in the cell
+<i>40</i>&nbsp;     */
+<i>41</i>&nbsp;    public int getHeight(){
+<b class="fc"><i>42</i>&nbsp;        return buildings.size();</b>
+<i>43</i>&nbsp;    }
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    /**
+<i>46</i>&nbsp;     * This method builds on the Cell.
+<i>47</i>&nbsp;     * @param b is the BuildingType of the building to add.
+<i>48</i>&nbsp;     * @return true if it succeeded to build onto the previous building or the ground, false otherwise.
+<i>49</i>&nbsp;     */
+<i>50</i>&nbsp;    public boolean addBuilding(BuildingType b){
+<b class="fc"><i>51</i>&nbsp;        assert b != null;</b>
+<b class="fc"><i>52</i>&nbsp;        if(canBuild(b)) {</b>
+<b class="fc"><i>53</i>&nbsp;            buildings.add(b);</b>
+<b class="fc"><i>54</i>&nbsp;            return true;</b>
+<i>55</i>&nbsp;        }
+<i>56</i>&nbsp;
+<b class="fc"><i>57</i>&nbsp;        return false;</b>
+<i>58</i>&nbsp;    }
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /**
+<i>61</i>&nbsp;     * This method checks if it is possible to build on the Cell.
+<i>62</i>&nbsp;     * @param b is the BuildingType of the building to check.
+<i>63</i>&nbsp;     * @return true if it is possible to build onto the previous building or the ground, false otherwise.
+<i>64</i>&nbsp;     */
+<i>65</i>&nbsp;    public boolean canBuild(BuildingType b){
+<b class="fc"><i>66</i>&nbsp;        return canBuild(b,false);</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    /**
+<i>70</i>&nbsp;     * This method checks if it is possible to build on the Cell, specifying if considering worker check or not
+<i>71</i>&nbsp;     * @param b is the BuildingType of the building to check.
+<i>72</i>&nbsp;     * @param excludeWorkerControl true, if excluding worker presence check, false otherwise
+<i>73</i>&nbsp;     * @return true if it is &quot;possible&quot; to build onto the previous building or the ground, false otherwise.
+<i>74</i>&nbsp;     *         The actual possibility is linked to the presence of the worker
+<i>75</i>&nbsp;     */
+<i>76</i>&nbsp;    public boolean canBuild(BuildingType b, boolean excludeWorkerControl){
+<b class="fc"><i>77</i>&nbsp;        assert b!= null;</b>
+<b class="fc"><i>78</i>&nbsp;        if(workerID != null &amp;&amp; !excludeWorkerControl) return false;</b>
+<b class="fc"><i>79</i>&nbsp;        LevelType level = this.getTopBuilding();</b>
+<b class="fc"><i>80</i>&nbsp;        switch (b) {</b>
+<i>81</i>&nbsp;            case FIRST_FLOOR:
+<b class="fc"><i>82</i>&nbsp;                if(level == LevelType.GROUND){</b>
+<b class="fc"><i>83</i>&nbsp;                    return true;</b>
+<i>84</i>&nbsp;                }
+<i>85</i>&nbsp;                break;
+<i>86</i>&nbsp;            case SECOND_FLOOR:
+<b class="fc"><i>87</i>&nbsp;                if(level == LevelType.FIRST_FLOOR){</b>
+<b class="fc"><i>88</i>&nbsp;                    return true;</b>
+<i>89</i>&nbsp;                }
+<i>90</i>&nbsp;                break;
+<i>91</i>&nbsp;            case THIRD_FLOOR:
+<b class="fc"><i>92</i>&nbsp;                if(level == LevelType.SECOND_FLOOR){</b>
+<b class="fc"><i>93</i>&nbsp;                    return true;</b>
+<i>94</i>&nbsp;                }
+<i>95</i>&nbsp;                break;
+<i>96</i>&nbsp;            case DOME:
+<b class="fc"><i>97</i>&nbsp;                if(level != LevelType.DOME){</b>
+<b class="fc"><i>98</i>&nbsp;                    return true;</b>
+<i>99</i>&nbsp;                }
+<i>100</i>&nbsp;            default:
+<b class="fc"><i>101</i>&nbsp;                return false;</b>
+<i>102</i>&nbsp;        }
+<i>103</i>&nbsp;
+<b class="fc"><i>104</i>&nbsp;        return false;</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    /**
+<i>108</i>&nbsp;     * This method checks if it is possible to build on the Cell.
+<i>109</i>&nbsp;     * @param b is the List of BuildingType of the buildings to check.
+<i>110</i>&nbsp;     * @return true if it is possible to build onto the previous building or the ground, false otherwise.
+<i>111</i>&nbsp;     */
+<i>112</i>&nbsp;    public boolean canBuild(List&lt;BuildingType&gt; b){
+<b class="fc"><i>113</i>&nbsp;        return canBuild(b,false);</b>
+<i>114</i>&nbsp;    }
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;    /**
+<i>117</i>&nbsp;     * This method checks if it is possible to build on the Cell, specifying if considering worker check or not
+<i>118</i>&nbsp;     * @param b is the List of BuildingType of the buildings to check.
+<i>119</i>&nbsp;     * @param excludeWorkerControl true, if excluding worker presence check, false otherwise
+<i>120</i>&nbsp;     * @return true if it is &quot;possible&quot; to build onto the previous building or the ground, false otherwise.
+<i>121</i>&nbsp;     *         The actual possibility is linked to the presence of the worker
+<i>122</i>&nbsp;     */
+<i>123</i>&nbsp;    public boolean canBuild(List&lt;BuildingType&gt; b, boolean excludeWorkerControl){
+<i>124</i>&nbsp;        BuildingType temp;
+<b class="fc"><i>125</i>&nbsp;        assert b != null;</b>
+<b class="fc"><i>126</i>&nbsp;        if(workerID != null &amp;&amp; !excludeWorkerControl) return false;</b>
+<b class="fc"><i>127</i>&nbsp;        if (b.isEmpty() || !canBuild(b.get(0), excludeWorkerControl)) return false;</b>
+<b class="fc"><i>128</i>&nbsp;        temp = b.get(0);</b>
+<b class="fc"><i>129</i>&nbsp;        for(int i = 1; i &lt; b.size(); ++i) {</b>
+<b class="fc"><i>130</i>&nbsp;            if(b.get(i) == BuildingType.FIRST_FLOOR) return false;</b>
+<b class="fc"><i>131</i>&nbsp;            else if(b.get(i) == BuildingType.SECOND_FLOOR &amp;&amp; temp != BuildingType.FIRST_FLOOR) return false;</b>
+<b class="fc"><i>132</i>&nbsp;            else if(b.get(i) == BuildingType.THIRD_FLOOR &amp;&amp; temp != BuildingType.SECOND_FLOOR) return false;</b>
+<b class="fc"><i>133</i>&nbsp;            else if(b.get(i) == BuildingType.DOME &amp;&amp; temp == BuildingType.DOME) return false;</b>
+<b class="fc"><i>134</i>&nbsp;            temp = b.get(i);</b>
+<i>135</i>&nbsp;        }
+<b class="fc"><i>136</i>&nbsp;        return true;</b>
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    /**
+<i>140</i>&nbsp;     * This method checks if it is possible to build on the Cell and, if it is, checks
+<i>141</i>&nbsp;     * whether the resulting cell would be a complete tower, specifying if considering worker check or not
+<i>142</i>&nbsp;     * @param b is the List of BuildingType of the buildings to check.
+<i>143</i>&nbsp;     * @param excludeWorkerControl true, if excluding worker presence check, false otherwise
+<i>144</i>&nbsp;     * @return true if it is &quot;possible&quot; to build onto the previous building or the ground
+<i>145</i>&nbsp;     *         and if the resulting cell would be a complete tower, false otherwise.
+<i>146</i>&nbsp;     *         The actual possibility is linked to the presence of the worker
+<i>147</i>&nbsp;     */
+<i>148</i>&nbsp;    public boolean canBuildAndWouldItBeFullTower(List&lt;BuildingType&gt; b, boolean excludeWorkerControl){
+<b class="fc"><i>149</i>&nbsp;        if(!canBuild(b,excludeWorkerControl))</b>
+<b class="nc"><i>150</i>&nbsp;            return false;</b>
+<b class="fc"><i>151</i>&nbsp;        List&lt;BuildingType&gt; tempBuildings = new ArrayList&lt;&gt;(buildings);</b>
+<b class="fc"><i>152</i>&nbsp;        tempBuildings.addAll(b);</b>
+<b class="fc"><i>153</i>&nbsp;        return tempBuildings.size() == Cell.FULL_TOWER_HEIGHT;</b>
+<i>154</i>&nbsp;    }
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;    /**
+<i>157</i>&nbsp;     * This method returns the level of the cell (i.e GROUND if there are no buildings).
+<i>158</i>&nbsp;     * @return the LevelType associated to the Cell.
+<i>159</i>&nbsp;     */
+<i>160</i>&nbsp;    public LevelType getTopBuilding(){
+<b class="fc"><i>161</i>&nbsp;        if(buildings.isEmpty()) return LevelType.GROUND;</b>
+<i>162</i>&nbsp;        else{
+<b class="fc"><i>163</i>&nbsp;            BuildingType currentTop = buildings.get(buildings.size() - 1);</b>
+<b class="fc"><i>164</i>&nbsp;            switch(currentTop){</b>
+<i>165</i>&nbsp;                case FIRST_FLOOR:
+<b class="fc"><i>166</i>&nbsp;                    return LevelType.FIRST_FLOOR;</b>
+<i>167</i>&nbsp;                case SECOND_FLOOR:
+<b class="fc"><i>168</i>&nbsp;                    return LevelType.SECOND_FLOOR;</b>
+<i>169</i>&nbsp;                case THIRD_FLOOR:
+<b class="fc"><i>170</i>&nbsp;                    return LevelType.THIRD_FLOOR;</b>
+<i>171</i>&nbsp;                case DOME:
+<b class="fc"><i>172</i>&nbsp;                    return LevelType.DOME;</b>
+<i>173</i>&nbsp;                default:
+<b class="nc"><i>174</i>&nbsp;                    assert false;</b>
+<b class="nc"><i>175</i>&nbsp;                    return null;</b>
+<i>176</i>&nbsp;            }
+<i>177</i>&nbsp;        }
+<i>178</i>&nbsp;    }
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;    /**
+<i>181</i>&nbsp;     * This method sets on the Cell the Worker passed as an argument.
+<i>182</i>&nbsp;     * @param workerID is the ID ot the Worker to set.
+<i>183</i>&nbsp;     */
+<i>184</i>&nbsp;    public boolean setWorker(String workerID){
+<b class="fc"><i>185</i>&nbsp;        assert workerID != null;</b>
+<b class="fc"><i>186</i>&nbsp;        if(this.getTopBuilding() == LevelType.DOME) return false;</b>
+<b class="fc"><i>187</i>&nbsp;        if(this.workerID != null) return false;</b>
+<b class="fc"><i>188</i>&nbsp;        this.workerID = workerID;</b>
+<b class="fc"><i>189</i>&nbsp;        return true;</b>
+<i>190</i>&nbsp;    }
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;    /**
+<i>193</i>&nbsp;     * The method returns the Worker placed on the Cell.
+<i>194</i>&nbsp;     * @return the Worker ID if present, null otherwise.
+<i>195</i>&nbsp;     */
+<b class="fc"><i>196</i>&nbsp;    public String getWorkerID() { return this.workerID; }</b>
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;    /**
+<i>199</i>&nbsp;     * This method removes the Worker placed on the Cell.
+<i>200</i>&nbsp;     */
+<i>201</i>&nbsp;    public boolean removeWorker() {
+<b class="fc"><i>202</i>&nbsp;        if (workerID == null) return false;</b>
+<b class="fc"><i>203</i>&nbsp;        this.workerID = null;</b>
+<b class="fc"><i>204</i>&nbsp;        return true;</b>
+<i>205</i>&nbsp;    }
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;    /**
+<i>208</i>&nbsp;     * This method checks if the Cell has a Worker.
+<i>209</i>&nbsp;     * @return true if there is a Worker, false otherwise;
+<i>210</i>&nbsp;     */
+<b class="fc"><i>211</i>&nbsp;    public boolean hasWorker(){ return workerID != null; }</b>
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;    /**
+<i>214</i>&nbsp;     * This method checks if the Cell is occupied by a DOME or a Worker.
+<i>215</i>&nbsp;     * @return true if the Cell is occupied, false otherwise;
+<i>216</i>&nbsp;     */
+<b class="fc"><i>217</i>&nbsp;    public boolean isOccupied(){ return getTopBuilding() == LevelType.DOME || hasWorker();}</b>
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;    /**
+<i>220</i>&nbsp;     * Returns next building that can be built on this cell,
+<i>221</i>&nbsp;     * regardless if is occupied by a worker.
+<i>222</i>&nbsp;     * @return Building type that &quot;can&quot; be built on this cell, or null if none is available
+<i>223</i>&nbsp;     */
+<i>224</i>&nbsp;    public BuildingType getNextBuildable(){
+<b class="fc"><i>225</i>&nbsp;        switch (getTopBuilding()){</b>
+<i>226</i>&nbsp;            case GROUND:
+<b class="fc"><i>227</i>&nbsp;                return BuildingType.FIRST_FLOOR;</b>
+<i>228</i>&nbsp;            case FIRST_FLOOR:
+<b class="fc"><i>229</i>&nbsp;                return BuildingType.SECOND_FLOOR;</b>
+<i>230</i>&nbsp;            case SECOND_FLOOR:
+<b class="fc"><i>231</i>&nbsp;                return BuildingType.THIRD_FLOOR;</b>
+<i>232</i>&nbsp;            case THIRD_FLOOR:
+<b class="fc"><i>233</i>&nbsp;                return BuildingType.DOME;</b>
+<i>234</i>&nbsp;            default:
+<b class="fc"><i>235</i>&nbsp;                return null;</b>
+<i>236</i>&nbsp;        }
+<i>237</i>&nbsp;    }
+<i>238</i>&nbsp;
+<i>239</i>&nbsp;    /**
+<i>240</i>&nbsp;     * Return next building that can be built on this cell, on top of all the other,
+<i>241</i>&nbsp;     * regardless if the cell is occupied by a worker.
+<i>242</i>&nbsp;     * buildings provided with the list.
+<i>243</i>&nbsp;     * @param buildings List of buildings. Cannot be empty.
+<i>244</i>&nbsp;     * @return Building type that &quot;can&quot; be built, or null if none is available
+<i>245</i>&nbsp;     */
+<i>246</i>&nbsp;    public BuildingType getNextBuildable(List&lt;BuildingType&gt; buildings){
+<b class="fc"><i>247</i>&nbsp;        assert buildings!= null &amp;&amp; !buildings.isEmpty();</b>
+<b class="fc"><i>248</i>&nbsp;        if (!canBuild(buildings,true)) return null;</b>
+<b class="fc"><i>249</i>&nbsp;        switch (buildings.get(buildings.size()-1)){</b>
+<i>250</i>&nbsp;            case FIRST_FLOOR:
+<b class="fc"><i>251</i>&nbsp;                return BuildingType.SECOND_FLOOR;</b>
+<i>252</i>&nbsp;            case SECOND_FLOOR:
+<b class="fc"><i>253</i>&nbsp;                return BuildingType.THIRD_FLOOR;</b>
+<i>254</i>&nbsp;            case THIRD_FLOOR:
+<b class="fc"><i>255</i>&nbsp;                return BuildingType.DOME;</b>
+<i>256</i>&nbsp;            default:
+<b class="fc"><i>257</i>&nbsp;                return null;</b>
+<i>258</i>&nbsp;        }
+<i>259</i>&nbsp;    }
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;    /**
+<i>262</i>&nbsp;     * This method checks if the passed object equals the Cell.
+<i>263</i>&nbsp;     * @param obj is the object to check.
+<i>264</i>&nbsp;     * @return true if obj has the same position of this in the Board, false otherwise.
+<i>265</i>&nbsp;     */
+<i>266</i>&nbsp;    @Override
+<i>267</i>&nbsp;    public boolean equals(Object obj){
+<b class="fc"><i>268</i>&nbsp;        if(this == obj) return true;</b>
+<b class="fc"><i>269</i>&nbsp;        if(obj == null) return false;</b>
+<b class="fc"><i>270</i>&nbsp;        if(this.getClass() != obj.getClass()) return false;</b>
+<b class="fc"><i>271</i>&nbsp;        Cell other = (Cell)obj;</b>
+<b class="fc"><i>272</i>&nbsp;        return other.getPosition().equals(this.position);</b>
+<i>273</i>&nbsp;    }
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;    /**
+<i>276</i>&nbsp;     * This method returns a clone of the Cell.
+<i>277</i>&nbsp;     * @return the cloned Cell
+<i>278</i>&nbsp;     */
+<i>279</i>&nbsp;    @Override
+<i>280</i>&nbsp;    protected Cell clone(){
+<b class="fc"><i>281</i>&nbsp;        Cell clonedCell = new Cell(new Point(this.position));</b>
+<b class="fc"><i>282</i>&nbsp;        if(hasWorker()) clonedCell.setWorker(this.workerID);</b>
+<b class="fc"><i>283</i>&nbsp;        clonedCell.buildings.addAll(this.buildings);</b>
+<i>284</i>&nbsp;
+<b class="fc"><i>285</i>&nbsp;        return clonedCell;</b>
+<i>286</i>&nbsp;    }
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;    /**
+<i>289</i>&nbsp;     * Returns hashcode for this cell
+<i>290</i>&nbsp;     * @return Hashcode
+<i>291</i>&nbsp;     */
+<i>292</i>&nbsp;    @Override
+<i>293</i>&nbsp;    public int hashCode() {
+<b class="fc"><i>294</i>&nbsp;        return Objects.hash(position);</b>
+<i>295</i>&nbsp;    }
+<i>296</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

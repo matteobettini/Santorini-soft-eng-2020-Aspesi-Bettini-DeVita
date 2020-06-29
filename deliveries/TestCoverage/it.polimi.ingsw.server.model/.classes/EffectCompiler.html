@@ -1,0 +1,502 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: EffectCompiler</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: EffectCompiler (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EffectCompiler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92,1%
+  </span>
+  <span class="absValue">
+    (186/ 202)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">EffectCompiler$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92,2%
+  </span>
+  <span class="absValue">
+    (188/ 204)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.RuleEffect;
+<i>4</i>&nbsp;import it.polimi.ingsw.server.cards.enums.EffectType;
+<i>5</i>&nbsp;import it.polimi.ingsw.common.enums.BuildingType;
+<i>6</i>&nbsp;import it.polimi.ingsw.server.model.enums.LevelType;
+<i>7</i>&nbsp;import it.polimi.ingsw.server.model.enums.PlayerFlag;
+<i>8</i>&nbsp;import it.polimi.ingsw.server.model.enums.PlayerState;
+<i>9</i>&nbsp;import it.polimi.ingsw.server.model.exceptions.PlayerLostSignal;
+<i>10</i>&nbsp;import it.polimi.ingsw.server.model.exceptions.PlayerWonSignal;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import java.awt.*;
+<i>13</i>&nbsp;import java.util.*;
+<i>14</i>&nbsp;import java.util.List;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;/**
+<i>17</i>&nbsp; * Translates Rule Effects into Compiled Effects
+<i>18</i>&nbsp; */
+<b class="fc"><i>19</i>&nbsp;class EffectCompiler {</b>
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    /** Compiles the given effect
+<i>22</i>&nbsp;     * @param model the internal model is needed to encapsulate it in the lambdas
+<i>23</i>&nbsp;     * @param effect the effect to compile
+<i>24</i>&nbsp;     * @return the compiled effect
+<i>25</i>&nbsp;     */
+<i>26</i>&nbsp;    public static LambdaEffect compileEffect(InternalModel model, RuleEffect effect) {
+<i>27</i>&nbsp;
+<b class="fc"><i>28</i>&nbsp;        assert (model != null &amp;&amp; effect != null);</b>
+<i>29</i>&nbsp;
+<b class="fc"><i>30</i>&nbsp;        EffectType effectType = effect.getType();</b>
+<b class="fc"><i>31</i>&nbsp;        LambdaEffect compiledEffect = null;</b>
+<i>32</i>&nbsp;
+<b class="fc"><i>33</i>&nbsp;        switch (effectType){</b>
+<i>34</i>&nbsp;            case ALLOW:
+<b class="fc"><i>35</i>&nbsp;                switch (effect.getAllowType()){</b>
+<i>36</i>&nbsp;                    case STANDARD:
+<b class="fc"><i>37</i>&nbsp;                        compiledEffect = compileAllowStandardEffect(model, effect);</b>
+<b class="fc"><i>38</i>&nbsp;                        break;</b>
+<i>39</i>&nbsp;                    case SET_OPPONENT:
+<b class="fc"><i>40</i>&nbsp;                        compiledEffect = compileAllowSetOpponentEffect(model, effect);</b>
+<b class="fc"><i>41</i>&nbsp;                        break;</b>
+<i>42</i>&nbsp;                    case BUILD_UNDER:
+<b class="fc"><i>43</i>&nbsp;                        compiledEffect = compileAllowBuildUnderEffect(model, effect);</b>
+<b class="fc"><i>44</i>&nbsp;                        break;</b>
+<i>45</i>&nbsp;                    default:
+<b class="nc"><i>46</i>&nbsp;                        assert false;</b>
+<i>47</i>&nbsp;                }
+<i>48</i>&nbsp;                break;
+<i>49</i>&nbsp;            case DENY:
+<b class="fc"><i>50</i>&nbsp;                compiledEffect = ((moveData, buildData, simulate) -&gt; {</b>
+<b class="fc"><i>51</i>&nbsp;                    if (!simulate) {</b>
+<b class="fc"><i>52</i>&nbsp;                        throw new PlayerLostSignal();</b>
+<i>53</i>&nbsp;                    }
+<b class="fc"><i>54</i>&nbsp;                    return true;</b>
+<i>55</i>&nbsp;                });
+<b class="fc"><i>56</i>&nbsp;                break;</b>
+<i>57</i>&nbsp;            case WIN:
+<b class="fc"><i>58</i>&nbsp;                compiledEffect = ((moveData, buildData, simulate) -&gt; {</b>
+<b class="fc"><i>59</i>&nbsp;                    if (!simulate) {</b>
+<b class="fc"><i>60</i>&nbsp;                        throw new PlayerWonSignal();</b>
+<i>61</i>&nbsp;                    }
+<b class="fc"><i>62</i>&nbsp;                    return true;</b>
+<i>63</i>&nbsp;                });
+<i>64</i>&nbsp;                break;
+<i>65</i>&nbsp;        }
+<b class="fc"><i>66</i>&nbsp;        return compiledEffect;</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    private static LambdaEffect compileAllowStandardEffect(InternalModel model, RuleEffect effect) {
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;
+<b class="fc"><i>72</i>&nbsp;        PlayerState nextPlayerState = effect.getNextState();</b>
+<i>73</i>&nbsp;
+<b class="fc"><i>74</i>&nbsp;        return (moveData, buildData, simulate) -&gt; {</b>
+<i>75</i>&nbsp;
+<b class="fc"><i>76</i>&nbsp;            if(buildData == null) {</b>
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;                // All the player moves
+<b class="fc"><i>79</i>&nbsp;                List&lt;Point&gt; moves = moveData.getData();</b>
+<b class="fc"><i>80</i>&nbsp;                Point startPosition = moveData.getWorker().getPosition();</b>
+<b class="fc"><i>81</i>&nbsp;                Point finalPosition = moves.get(moves.size() - 1);</b>
+<b class="fc"><i>82</i>&nbsp;                Cell startPositionCell = model.getBoard().getCell(startPosition);</b>
+<b class="fc"><i>83</i>&nbsp;                Cell finalPositionCell = model.getBoard().getCell(finalPosition);</b>
+<b class="fc"><i>84</i>&nbsp;                Worker myWorker = moveData.getWorker();</b>
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;                // Where i want to go should be without workers and domes (should be already tested)
+<b class="fc"><i>89</i>&nbsp;                if (finalPositionCell.isOccupied()){</b>
+<b class="nc"><i>90</i>&nbsp;                    assert false;</b>
+<b class="nc"><i>91</i>&nbsp;                    return false;</b>
+<i>92</i>&nbsp;                }
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;                // Check i am where i want to start the move
+<b class="fc"><i>95</i>&nbsp;                assert(startPositionCell.getWorkerID().equals(myWorker.getID()));</b>
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;                // If we are not in a simulation
+<b class="fc"><i>99</i>&nbsp;                if(!simulate){</b>
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;                    // Set my worker in final cell
+<b class="fc"><i>102</i>&nbsp;                    finalPositionCell.setWorker(myWorker.getID());</b>
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;                    // remove my worker from previous position
+<b class="fc"><i>105</i>&nbsp;                    if ((!startPositionCell.removeWorker())) throw new AssertionError();</b>
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;                    // Set my new worker&#39;s position
+<b class="fc"><i>108</i>&nbsp;                    myWorker.setPosition(finalPosition);</b>
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;                    // Set the new player state
+<b class="fc"><i>111</i>&nbsp;                    moveData.getPlayer().setPlayerState(nextPlayerState);</b>
+<i>112</i>&nbsp;
+<b class="fc"><i>113</i>&nbsp;                    setPlayerFlags(model.getBoard(),moveData,startPosition); //Update flags</b>
+<i>114</i>&nbsp;                }
+<b class="fc"><i>115</i>&nbsp;                return true;</b>
+<i>116</i>&nbsp;            }
+<i>117</i>&nbsp;
+<b class="fc"><i>118</i>&nbsp;            else if(moveData == null){</b>
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;
+<b class="fc"><i>121</i>&nbsp;                Map&lt;Point, List&lt;BuildingType&gt;&gt; builds = buildData.getData();</b>
+<b class="fc"><i>122</i>&nbsp;                Iterator&lt;Point&gt; buildingPos = builds.keySet().iterator();</b>
+<b class="fc"><i>123</i>&nbsp;                List&lt;BuildingType&gt; allBuildingsIWantToBuild = new ArrayList&lt;&gt;();</b>
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;                // CHeck i can build the chosen buildings in the chosen cells
+<b class="fc"><i>126</i>&nbsp;                while(buildingPos.hasNext()){</b>
+<b class="fc"><i>127</i>&nbsp;                    Point whereIWantToBuild = buildingPos.next();</b>
+<b class="fc"><i>128</i>&nbsp;                    List&lt;BuildingType&gt; whatIWantToBuildHere = builds.get(whereIWantToBuild);</b>
+<b class="fc"><i>129</i>&nbsp;                    allBuildingsIWantToBuild.addAll(whatIWantToBuildHere);</b>
+<b class="fc"><i>130</i>&nbsp;                    if(!model.getBoard().getCell(whereIWantToBuild).canBuild(whatIWantToBuildHere))</b>
+<b class="fc"><i>131</i>&nbsp;                        return false;</b>
+<b class="fc"><i>132</i>&nbsp;                }</b>
+<i>133</i>&nbsp;
+<b class="fc"><i>134</i>&nbsp;                if(notEnoughBuildings(model, allBuildingsIWantToBuild))</b>
+<b class="nc"><i>135</i>&nbsp;                    return false;</b>
+<i>136</i>&nbsp;
+<b class="fc"><i>137</i>&nbsp;                if(!simulate){</b>
+<b class="fc"><i>138</i>&nbsp;                    buildingPos = builds.keySet().iterator();</b>
+<b class="fc"><i>139</i>&nbsp;                    while(buildingPos.hasNext()){</b>
+<b class="fc"><i>140</i>&nbsp;                        Point whereIWantToBuild = buildingPos.next();</b>
+<b class="fc"><i>141</i>&nbsp;                        List&lt;BuildingType&gt; whatIWantToBuildHere = builds.get(whereIWantToBuild);</b>
+<b class="fc"><i>142</i>&nbsp;                        for(BuildingType b : whatIWantToBuildHere)</b>
+<b class="fc"><i>143</i>&nbsp;                            if(!model.getBoard().getCell(whereIWantToBuild).addBuilding(b)) {</b>
+<b class="nc"><i>144</i>&nbsp;                                System.err.println(&quot;L&#39;effetto allow build del worker &quot; + buildData.getWorker().getID() + &quot;nell applicazione dell&#39;effetto ha trovato cose diverse da quelle che ha checkato nell&#39;effetto&quot;);</b>
+<b class="nc"><i>145</i>&nbsp;                                assert false;</b>
+<i>146</i>&nbsp;                            }
+<b class="fc"><i>147</i>&nbsp;                    }</b>
+<i>148</i>&nbsp;
+<b class="fc"><i>149</i>&nbsp;                    Board board = model.getBoard();</b>
+<b class="fc"><i>150</i>&nbsp;                    for(BuildingType b : allBuildingsIWantToBuild)</b>
+<b class="fc"><i>151</i>&nbsp;                        board.useBuilding(b);</b>
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;                    // Set next player state
+<b class="fc"><i>154</i>&nbsp;                    buildData.getPlayer().setPlayerState(nextPlayerState);</b>
+<i>155</i>&nbsp;                }
+<i>156</i>&nbsp;
+<b class="fc"><i>157</i>&nbsp;                return true;</b>
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;            }
+<b class="nc"><i>160</i>&nbsp;            return false;</b>
+<i>161</i>&nbsp;        };
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;    }
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;    private static LambdaEffect compileAllowSetOpponentEffect(InternalModel model, RuleEffect effect) {
+<i>166</i>&nbsp;
+<b class="fc"><i>167</i>&nbsp;        PlayerState nextPlayerState = effect.getNextState();</b>
+<b class="fc"><i>168</i>&nbsp;        LambdaEffect lambdaEffect = null;</b>
+<i>169</i>&nbsp;
+<b class="fc"><i>170</i>&nbsp;        if (effect.getData().equals(&quot;PUSH_STRAIGHT&quot;)){</b>
+<b class="fc"><i>171</i>&nbsp;            lambdaEffect = ((moveData, buildData, simulate) -&gt; {</b>
+<i>172</i>&nbsp;
+<b class="fc"><i>173</i>&nbsp;                assert(buildData == null);</b>
+<i>174</i>&nbsp;
+<b class="fc"><i>175</i>&nbsp;                Point startPosition = moveData.getWorker().getPosition();</b>
+<b class="fc"><i>176</i>&nbsp;                Cell startPositionCell = model.getBoard().getCell(startPosition);</b>
+<b class="fc"><i>177</i>&nbsp;                List&lt;Point&gt; moves = moveData.getData();</b>
+<b class="fc"><i>178</i>&nbsp;                Point finalPosition = moves.get(moves.size()-1);</b>
+<b class="fc"><i>179</i>&nbsp;                Cell finalPositionCell = model.getBoard().getCell(finalPosition);</b>
+<i>180</i>&nbsp;                Point mySecondToLastPosition;
+<b class="fc"><i>181</i>&nbsp;                Worker myWorker = moveData.getWorker();</b>
+<b class="fc"><i>182</i>&nbsp;                Worker hisWorker = model.getWorkerByID(finalPositionCell.getWorkerID());</b>
+<b class="fc"><i>183</i>&nbsp;                if(moves.size() &gt; 1)</b>
+<b class="fc"><i>184</i>&nbsp;                    mySecondToLastPosition = moves.get(moves.size()-2);</b>
+<i>185</i>&nbsp;                else
+<b class="fc"><i>186</i>&nbsp;                    mySecondToLastPosition = startPosition;</b>
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;                // Check i am where i want to start the move
+<b class="fc"><i>189</i>&nbsp;                assert(startPositionCell.getWorkerID().equals(myWorker.getID()));</b>
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;                // Check in my final pos there is not a dome
+<b class="fc"><i>192</i>&nbsp;                assert (finalPositionCell.getTopBuilding() != LevelType.DOME);</b>
+<i>193</i>&nbsp;
+<i>194</i>&nbsp;                // Check there is someone in my final position and it is not me
+<i>195</i>&nbsp;
+<b class="fc"><i>196</i>&nbsp;                if(hisWorker == null || moveData.getPlayer().getWorkers().contains(hisWorker)) {</b>
+<i>197</i>&nbsp;                    //System.err.println(&quot;There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos push effect of worker &quot; + moveData.getWorker().getID());
+<i>198</i>&nbsp;                    //NOTE: if the card was written correctly, no way i can enter here.
+<b class="nc"><i>199</i>&nbsp;                    return false;</b>
+<i>200</i>&nbsp;                }
+<i>201</i>&nbsp;
+<b class="fc"><i>202</i>&nbsp;                int deltaX = finalPosition.x - mySecondToLastPosition.x;</b>
+<b class="fc"><i>203</i>&nbsp;                int deltaY = finalPosition.y - mySecondToLastPosition.y;</b>
+<i>204</i>&nbsp;
+<b class="fc"><i>205</i>&nbsp;                Cell whereHeHasToGo = model.getBoard().getCell(new Point(finalPosition.x+deltaX,finalPosition.y+deltaY));</b>
+<i>206</i>&nbsp;
+<b class="fc"><i>207</i>&nbsp;                if(whereHeHasToGo == null || whereHeHasToGo.isOccupied())</b>
+<b class="fc"><i>208</i>&nbsp;                    return false;</b>
+<i>209</i>&nbsp;
+<b class="fc"><i>210</i>&nbsp;                if (!simulate) {</b>
+<i>211</i>&nbsp;
+<b class="fc"><i>212</i>&nbsp;                    whereHeHasToGo.setWorker(hisWorker.getID());</b>
+<i>213</i>&nbsp;
+<b class="fc"><i>214</i>&nbsp;                    hisWorker.setPosition(whereHeHasToGo.getPosition());</b>
+<i>215</i>&nbsp;
+<b class="fc"><i>216</i>&nbsp;                    finalPositionCell.removeWorker();</b>
+<i>217</i>&nbsp;
+<b class="fc"><i>218</i>&nbsp;                    finalPositionCell.setWorker(myWorker.getID());</b>
+<i>219</i>&nbsp;
+<b class="fc"><i>220</i>&nbsp;                    startPositionCell.removeWorker();</b>
+<i>221</i>&nbsp;
+<b class="fc"><i>222</i>&nbsp;                    myWorker.setPosition(finalPosition);</b>
+<i>223</i>&nbsp;
+<b class="fc"><i>224</i>&nbsp;                    moveData.getPlayer().setPlayerState(nextPlayerState);</b>
+<i>225</i>&nbsp;
+<b class="fc"><i>226</i>&nbsp;                    setPlayerFlags(model.getBoard(),moveData,startPosition); //Update flags</b>
+<i>227</i>&nbsp;                }
+<i>228</i>&nbsp;
+<b class="fc"><i>229</i>&nbsp;                return true;</b>
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;            });
+<i>232</i>&nbsp;        }
+<b class="fc"><i>233</i>&nbsp;        else if(effect.getData().equals(&quot;SWAP&quot;)){</b>
+<b class="fc"><i>234</i>&nbsp;             lambdaEffect = ((moveData, buildData, simulate) -&gt; {</b>
+<i>235</i>&nbsp;
+<b class="fc"><i>236</i>&nbsp;                 assert(buildData == null);</b>
+<i>237</i>&nbsp;
+<b class="fc"><i>238</i>&nbsp;                 List&lt;Point&gt; moves = moveData.getData();</b>
+<i>239</i>&nbsp;
+<b class="fc"><i>240</i>&nbsp;                 Point startPosition = moveData.getWorker().getPosition();</b>
+<b class="fc"><i>241</i>&nbsp;                 Cell startPositionCell = model.getBoard().getCell(startPosition);</b>
+<b class="fc"><i>242</i>&nbsp;                 Point finalPosition = moves.get(moves.size()-1);</b>
+<b class="fc"><i>243</i>&nbsp;                 Cell finalPositionCell = model.getBoard().getCell(finalPosition);</b>
+<i>244</i>&nbsp;                 Point mySecondToLastPosition;
+<b class="fc"><i>245</i>&nbsp;                 if(moves.size() &gt; 1)</b>
+<b class="fc"><i>246</i>&nbsp;                     mySecondToLastPosition = moves.get(moves.size()-2);</b>
+<i>247</i>&nbsp;                 else
+<b class="fc"><i>248</i>&nbsp;                     mySecondToLastPosition = startPosition;</b>
+<b class="fc"><i>249</i>&nbsp;                 Cell mySecondToLastCell = model.getBoard().getCell(mySecondToLastPosition);</b>
+<b class="fc"><i>250</i>&nbsp;                 Worker myWorker = moveData.getWorker();</b>
+<b class="fc"><i>251</i>&nbsp;                 Worker hisWorker = model.getWorkerByID(finalPositionCell.getWorkerID());</b>
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;                 // Check i am where i want to start the move
+<b class="fc"><i>254</i>&nbsp;                 assert(startPositionCell.getWorkerID().equals(myWorker.getID()));</b>
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;                 // My second to last cell is empty
+<b class="fc"><i>257</i>&nbsp;                 assert ((mySecondToLastCell.getWorkerID() == null || mySecondToLastCell.getWorkerID().equals(myWorker.getID())) &amp;&amp; mySecondToLastCell.getTopBuilding() != LevelType.DOME);</b>
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;                 // Check in my final pos there is not a dome
+<b class="fc"><i>260</i>&nbsp;                 assert (finalPositionCell.getTopBuilding() != LevelType.DOME);</b>
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;                 //System.out.println(finalPosition);
+<i>263</i>&nbsp;                 // Check there is someone in my final position and it is not me
+<b class="fc"><i>264</i>&nbsp;                 if(hisWorker == null || moveData.getPlayer().getWorkers().contains(hisWorker)) {</b>
+<i>265</i>&nbsp;                     //System.err.println(&quot;There is no one in the cell i want to push with my worker or he is one of mine, i am the set opp pos swap effect of worker &quot; + moveData.getWorker().getID());
+<i>266</i>&nbsp;                     //NOTE: if the card was written correctly, no way i can enter here.
+<b class="fc"><i>267</i>&nbsp;                     return false;</b>
+<i>268</i>&nbsp;                 }
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;
+<b class="fc"><i>271</i>&nbsp;                 if (!simulate) {</b>
+<i>272</i>&nbsp;
+<b class="fc"><i>273</i>&nbsp;                     startPositionCell.removeWorker();</b>
+<i>274</i>&nbsp;
+<b class="fc"><i>275</i>&nbsp;                     finalPositionCell.removeWorker();</b>
+<i>276</i>&nbsp;
+<b class="fc"><i>277</i>&nbsp;                     finalPositionCell.setWorker(myWorker.getID());</b>
+<i>278</i>&nbsp;
+<b class="fc"><i>279</i>&nbsp;                     mySecondToLastCell.setWorker(hisWorker.getID());</b>
+<i>280</i>&nbsp;
+<b class="fc"><i>281</i>&nbsp;                     myWorker.setPosition(finalPosition);</b>
+<i>282</i>&nbsp;
+<b class="fc"><i>283</i>&nbsp;                     hisWorker.setPosition(mySecondToLastPosition);</b>
+<i>284</i>&nbsp;
+<b class="fc"><i>285</i>&nbsp;                     moveData.getPlayer().setPlayerState(nextPlayerState);</b>
+<i>286</i>&nbsp;
+<b class="fc"><i>287</i>&nbsp;                     setPlayerFlags(model.getBoard(),moveData,startPosition); //Update flags</b>
+<i>288</i>&nbsp;                 }
+<i>289</i>&nbsp;
+<b class="fc"><i>290</i>&nbsp;                 return true;</b>
+<i>291</i>&nbsp;            });
+<i>292</i>&nbsp;        }
+<b class="fc"><i>293</i>&nbsp;        return lambdaEffect;</b>
+<i>294</i>&nbsp;    }
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;    private static LambdaEffect compileAllowBuildUnderEffect(InternalModel model, RuleEffect effect){
+<b class="fc"><i>297</i>&nbsp;        PlayerState nextPlayerState = effect.getNextState();</b>
+<i>298</i>&nbsp;
+<b class="fc"><i>299</i>&nbsp;        return (moveData, buildData, simulate) -&gt; {</b>
+<b class="fc"><i>300</i>&nbsp;            assert moveData == null;</b>
+<i>301</i>&nbsp;
+<b class="fc"><i>302</i>&nbsp;            Map&lt;Point, List&lt;BuildingType&gt;&gt; builds = buildData.getData();</b>
+<b class="fc"><i>303</i>&nbsp;            Iterator&lt;Point&gt; buildingPos = builds.keySet().iterator();</b>
+<b class="fc"><i>304</i>&nbsp;            List&lt;BuildingType&gt; allBuildingsIWantToBuild = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>305</i>&nbsp;            Worker workerOnBuild = buildData.getWorker();</b>
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;
+<b class="fc"><i>308</i>&nbsp;            while(buildingPos.hasNext()){</b>
+<b class="fc"><i>309</i>&nbsp;                Point whereIWantToBuild = buildingPos.next();</b>
+<b class="fc"><i>310</i>&nbsp;                Cell cellWhereIWantToBuild = model.getBoard().getCell(whereIWantToBuild);</b>
+<b class="fc"><i>311</i>&nbsp;                List&lt;BuildingType&gt; whatIWantToBuildHere = builds.get(whereIWantToBuild);</b>
+<b class="fc"><i>312</i>&nbsp;                boolean isMyPos = whereIWantToBuild.equals(workerOnBuild.getPosition());</b>
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;                // I CHECK THE POSSIBILITY OF BUILDING USING THE EXCLUDE WORKER FLAG
+<b class="fc"><i>315</i>&nbsp;                if(!cellWhereIWantToBuild.canBuild(whatIWantToBuildHere, isMyPos))</b>
+<b class="nc"><i>316</i>&nbsp;                    return false;</b>
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;                // WHEN I&#39;M TRYING TO BUILD UNDER MYSELF THE WORKER CAN&#39;T BUILD A DOME
+<b class="fc"><i>319</i>&nbsp;                if(isMyPos &amp;&amp; whatIWantToBuildHere.contains(BuildingType.DOME))</b>
+<b class="fc"><i>320</i>&nbsp;                    return false;</b>
+<i>321</i>&nbsp;
+<b class="fc"><i>322</i>&nbsp;                allBuildingsIWantToBuild.addAll(whatIWantToBuildHere);</b>
+<b class="fc"><i>323</i>&nbsp;            }</b>
+<i>324</i>&nbsp;
+<b class="fc"><i>325</i>&nbsp;            if(notEnoughBuildings(model, allBuildingsIWantToBuild))</b>
+<b class="nc"><i>326</i>&nbsp;                return false;</b>
+<i>327</i>&nbsp;
+<b class="fc"><i>328</i>&nbsp;            if(!simulate){</b>
+<i>329</i>&nbsp;
+<b class="fc"><i>330</i>&nbsp;                buildingPos = builds.keySet().iterator();</b>
+<b class="fc"><i>331</i>&nbsp;                while(buildingPos.hasNext()){</b>
+<b class="fc"><i>332</i>&nbsp;                    Point whereIWantToBuild = buildingPos.next();</b>
+<b class="fc"><i>333</i>&nbsp;                    Cell cellWhereIWantToBuild = model.getBoard().getCell(whereIWantToBuild);</b>
+<b class="fc"><i>334</i>&nbsp;                    List&lt;BuildingType&gt; whatIWantToBuildHere = builds.get(whereIWantToBuild);</b>
+<b class="fc"><i>335</i>&nbsp;                    boolean isMyPos = whereIWantToBuild.equals(workerOnBuild.getPosition());</b>
+<b class="fc"><i>336</i>&nbsp;                    if(isMyPos)</b>
+<b class="fc"><i>337</i>&nbsp;                        cellWhereIWantToBuild.removeWorker();</b>
+<b class="fc"><i>338</i>&nbsp;                    for(BuildingType b : whatIWantToBuildHere){</b>
+<b class="fc"><i>339</i>&nbsp;                        if(!cellWhereIWantToBuild.addBuilding(b)){</b>
+<b class="nc"><i>340</i>&nbsp;                            System.err.println(&quot;The allow build under effect of worker &quot; + buildData.getWorker().getID() + &quot; encountered different things compared to the checked ones&quot;);</b>
+<b class="nc"><i>341</i>&nbsp;                            model.getBoard().getCell(workerOnBuild.getPosition()).setWorker(workerOnBuild.getID());</b>
+<b class="nc"><i>342</i>&nbsp;                            assert  false;</b>
+<i>343</i>&nbsp;                        }
+<b class="fc"><i>344</i>&nbsp;                    }</b>
+<b class="fc"><i>345</i>&nbsp;                    if(isMyPos)</b>
+<b class="fc"><i>346</i>&nbsp;                        cellWhereIWantToBuild.setWorker(workerOnBuild.getID());</b>
+<b class="fc"><i>347</i>&nbsp;                }</b>
+<i>348</i>&nbsp;
+<b class="fc"><i>349</i>&nbsp;                Board board = model.getBoard();</b>
+<b class="fc"><i>350</i>&nbsp;                for(BuildingType b : allBuildingsIWantToBuild)</b>
+<b class="fc"><i>351</i>&nbsp;                    board.useBuilding(b);</b>
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;                // Set next player state
+<b class="fc"><i>354</i>&nbsp;                buildData.getPlayer().setPlayerState(nextPlayerState);</b>
+<i>355</i>&nbsp;            }
+<i>356</i>&nbsp;
+<b class="fc"><i>357</i>&nbsp;            return true;</b>
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;        };
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;    }
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;    private static void setPlayerFlags(Board board, MoveData moveData, Point startPosition){
+<b class="fc"><i>364</i>&nbsp;        List&lt;Integer&gt; deltas = board.getMoveDeltas(moveData.getData(),startPosition);</b>
+<b class="fc"><i>365</i>&nbsp;        if (deltas.stream().max(Integer::compareTo).orElse(0) &gt; 0) //If the player moved up at least once</b>
+<b class="fc"><i>366</i>&nbsp;            moveData.getPlayer().addFlag(PlayerFlag.MOVED_UP_ONCE);</b>
+<b class="fc"><i>367</i>&nbsp;    }</b>
+<i>368</i>&nbsp;
+<i>369</i>&nbsp;    private static boolean notEnoughBuildings(InternalModel model, List&lt;BuildingType&gt; allBuildingsIWantToBuild){
+<i>370</i>&nbsp;
+<b class="fc"><i>371</i>&nbsp;        long numOfFirstFloorsIWantToUse = allBuildingsIWantToBuild.stream()</b>
+<b class="fc"><i>372</i>&nbsp;                .filter((buildingType -&gt; buildingType == BuildingType.FIRST_FLOOR))</b>
+<b class="fc"><i>373</i>&nbsp;                .count();</b>
+<b class="fc"><i>374</i>&nbsp;        long numOfSecondFloorsIWantToUse = allBuildingsIWantToBuild.stream()</b>
+<b class="fc"><i>375</i>&nbsp;                .filter((buildingType -&gt; buildingType == BuildingType.SECOND_FLOOR))</b>
+<b class="fc"><i>376</i>&nbsp;                .count();</b>
+<b class="fc"><i>377</i>&nbsp;        long numOfThirdFloorsIWantToUse = allBuildingsIWantToBuild.stream()</b>
+<b class="fc"><i>378</i>&nbsp;                .filter((buildingType -&gt; buildingType == BuildingType.THIRD_FLOOR))</b>
+<b class="fc"><i>379</i>&nbsp;                .count();</b>
+<b class="fc"><i>380</i>&nbsp;        long numOfDomesIWantToUse = allBuildingsIWantToBuild.stream()</b>
+<b class="fc"><i>381</i>&nbsp;                .filter((buildingType -&gt; buildingType == BuildingType.DOME))</b>
+<b class="fc"><i>382</i>&nbsp;                .count();</b>
+<i>383</i>&nbsp;
+<b class="fc"><i>384</i>&nbsp;        if(numOfFirstFloorsIWantToUse &gt; model.getBoard().availableBuildings(BuildingType.FIRST_FLOOR))</b>
+<b class="nc"><i>385</i>&nbsp;            return true;</b>
+<b class="fc"><i>386</i>&nbsp;        if(numOfSecondFloorsIWantToUse &gt; model.getBoard().availableBuildings(BuildingType.SECOND_FLOOR))</b>
+<b class="nc"><i>387</i>&nbsp;            return true;</b>
+<b class="fc"><i>388</i>&nbsp;        if(numOfThirdFloorsIWantToUse &gt; model.getBoard().availableBuildings(BuildingType.THIRD_FLOOR))</b>
+<b class="nc"><i>389</i>&nbsp;            return true;</b>
+<b class="fc"><i>390</i>&nbsp;        return numOfDomesIWantToUse &gt; model.getBoard().availableBuildings(BuildingType.DOME);</b>
+<i>391</i>&nbsp;    }
+<i>392</i>&nbsp;
+<i>393</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

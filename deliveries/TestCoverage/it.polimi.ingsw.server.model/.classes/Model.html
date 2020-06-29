@@ -1,0 +1,128 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Model</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Model (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">Model</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.common.packets.InvalidPacketException;
+<i>4</i>&nbsp;import it.polimi.ingsw.common.packets.PacketBuild;
+<i>5</i>&nbsp;import it.polimi.ingsw.common.packets.PacketMove;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.awt.*;
+<i>8</i>&nbsp;import java.util.List;
+<i>9</i>&nbsp;import java.util.Map;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;/**
+<i>12</i>&nbsp; * Interface that contains the methods exposed by the Model.
+<i>13</i>&nbsp; */
+<i>14</i>&nbsp;public interface Model{
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    /**
+<i>17</i>&nbsp;     * Used by a client to propose a move action
+<i>18</i>&nbsp;     * @param senderID the requesting client
+<i>19</i>&nbsp;     * @param packetMove the proposed move
+<i>20</i>&nbsp;     * @throws InvalidPacketException thrown if the proposing client is the one I am waiting, but the move is invalid or against the rules
+<i>21</i>&nbsp;     */
+<i>22</i>&nbsp;    void makeMove(String senderID, PacketMove packetMove) throws InvalidPacketException;
+<i>23</i>&nbsp;    /**
+<i>24</i>&nbsp;     * Used by a client to propose a build action
+<i>25</i>&nbsp;     * @param senderID the requesting client
+<i>26</i>&nbsp;     * @param packetBuild the proposed build
+<i>27</i>&nbsp;     * @throws InvalidPacketException thrown if the proposing client is the one I am waiting, but the build is invalid or against the rules
+<i>28</i>&nbsp;     */
+<i>29</i>&nbsp;    void makeBuild(String senderID, PacketBuild packetBuild) throws InvalidPacketException;
+<i>30</i>&nbsp;    /**
+<i>31</i>&nbsp;     * This method is used for the normal game mode,
+<i>32</i>&nbsp;     * a client always asks for the possible moves to make the player choose from them only.
+<i>33</i>&nbsp;     * If the request is correct and valid the server answers with the requested possible moves
+<i>34</i>&nbsp;     * @param senderID the asking client
+<i>35</i>&nbsp;     * @param packetMove the context of the request
+<i>36</i>&nbsp;     */
+<i>37</i>&nbsp;    void getPossibleMoves(String senderID, PacketMove packetMove);
+<i>38</i>&nbsp;    /**
+<i>39</i>&nbsp;     * This method is used for the normal game mode,
+<i>40</i>&nbsp;     * a client always asks for the possible builds to make the player choose from them only.
+<i>41</i>&nbsp;     * If the request is correct and valid the server answers with the requested possible builds
+<i>42</i>&nbsp;     * @param senderID the asking client
+<i>43</i>&nbsp;     * @param packetBuild the context of the request
+<i>44</i>&nbsp;     */
+<i>45</i>&nbsp;    void getPossibleBuilds(String senderID, PacketBuild packetBuild);
+<i>46</i>&nbsp;    /**
+<i>47</i>&nbsp;     * This function is used when a client provides the server with some chosen cards,
+<i>48</i>&nbsp;     * it checks that the server is indeed waiting for that choice and eventually saves the
+<i>49</i>&nbsp;     * chosen cards and proceeds to ask the cards to the next player or ends the setup
+<i>50</i>&nbsp;     * and asks the challenger to choose the starting player
+<i>51</i>&nbsp;     * @param senderID the client providing the cards
+<i>52</i>&nbsp;     * @param selectedCards the chosen cards
+<i>53</i>&nbsp;     * @throws InvalidPacketException if the sender is who I am waiting for, but makes some mistakes in the choice, I notify him by throwing this exception
+<i>54</i>&nbsp;     */
+<i>55</i>&nbsp;    void setSelectedCards(String senderID, List&lt;String&gt; selectedCards) throws InvalidPacketException;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * This function is supposed to be called when the challenger provides the choice
+<i>59</i>&nbsp;     * regarding the starting player, it checks the choice and eventually asks the chosen starting player to place his workers
+<i>60</i>&nbsp;     * @param senderID the client providing the choice
+<i>61</i>&nbsp;     * @param startPlayer the chosen starting player nickname
+<i>62</i>&nbsp;     * @throws InvalidPacketException if the sender is who I am waiting for, but makes some mistakes in the choice, I notify him by throwing this exception
+<i>63</i>&nbsp;     */
+<i>64</i>&nbsp;    void setStartPlayer(String senderID, String startPlayer) throws InvalidPacketException;
+<i>65</i>&nbsp;    /**
+<i>66</i>&nbsp;     * This function is supposed to be called when a player provides the chosen workers positions,
+<i>67</i>&nbsp;     * it checks the choice and places the workers on the board,
+<i>68</i>&nbsp;     * afterwards either asks the next player to place his workers and sends info of current workers&#39; placements,
+<i>69</i>&nbsp;     * or, if the setup is completed sets the relative phase and ends
+<i>70</i>&nbsp;     *
+<i>71</i>&nbsp;     * @param senderID the client providing the choice
+<i>72</i>&nbsp;     * @param workersPositions the proposed workers positions
+<i>73</i>&nbsp;     * @throws InvalidPacketException if the sender is who I am waiting for, but makes some mistakes in the choice, I notify him by throwing this exception
+<i>74</i>&nbsp;     */
+<i>75</i>&nbsp;    void setWorkersPositions(String senderID, Map&lt;String,Point&gt; workersPositions) throws InvalidPacketException;
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

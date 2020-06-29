@@ -1,0 +1,468 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SetupManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SetupManager (it.polimi.ingsw.server.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SetupManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (179/ 179)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.server.cards.CardFile;
+<i>4</i>&nbsp;import it.polimi.ingsw.common.enums.ActionType;
+<i>5</i>&nbsp;import it.polimi.ingsw.server.model.enums.SetupPhase;
+<i>6</i>&nbsp;import it.polimi.ingsw.common.utils.Pair;
+<i>7</i>&nbsp;import it.polimi.ingsw.common.utils.observe.Observer;
+<i>8</i>&nbsp;import it.polimi.ingsw.common.packets.*;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;import java.awt.*;
+<i>11</i>&nbsp;import java.util.*;
+<i>12</i>&nbsp;import java.util.List;
+<i>13</i>&nbsp;import java.util.stream.Collectors;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;/**
+<i>16</i>&nbsp; * This class manages the setup phase of a match
+<i>17</i>&nbsp; */
+<b class="fc"><i>18</i>&nbsp;class SetupManager{</b>
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    private List&lt;Player&gt; players;
+<i>21</i>&nbsp;    private SetupPhase setupPhase;
+<i>22</i>&nbsp;    private int activePlayerIndex;
+<i>23</i>&nbsp;    private Player challenger;
+<i>24</i>&nbsp;    private Player startingPlayer;
+<i>25</i>&nbsp;    private final Map&lt;Player, CardFile&gt; cardAssociations;
+<i>26</i>&nbsp;    private final InternalModel model;
+<i>27</i>&nbsp;    private final List&lt;CardFile&gt; cards;
+<i>28</i>&nbsp;    private List&lt;String&gt; availableCards;
+<i>29</i>&nbsp;    private final Map&lt;String, String&gt; allCards;
+<i>30</i>&nbsp;    private int numberOfCardsToChoose;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;    private final List&lt;Observer&lt;PacketSetup&gt;&gt; packetSetupObservers;
+<i>33</i>&nbsp;    private final List&lt;Observer&lt;PacketCardsFromServer&gt;&gt; packetCardsFromServerObservers;
+<i>34</i>&nbsp;    private final List&lt;Observer&lt;PacketDoAction&gt;&gt; packetDoActionObservers;
+<i>35</i>&nbsp;    private final List&lt;Observer&lt;PacketUpdateBoard&gt;&gt; packetUpdateBoardObservers;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    /**
+<i>39</i>&nbsp;     * Class constructor, builds the setup manager
+<i>40</i>&nbsp;     * @param model the internal model instance
+<i>41</i>&nbsp;     * @param cards a list of all the possible card files
+<i>42</i>&nbsp;     */
+<b class="fc"><i>43</i>&nbsp;    SetupManager(InternalModel model, List&lt;CardFile&gt; cards) {</b>
+<b class="fc"><i>44</i>&nbsp;        this.setupPhase = SetupPhase.STARTING;</b>
+<b class="fc"><i>45</i>&nbsp;        this.challenger = null;</b>
+<b class="fc"><i>46</i>&nbsp;        this.cardAssociations = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>47</i>&nbsp;        this.activePlayerIndex = 0;</b>
+<b class="fc"><i>48</i>&nbsp;        this.model = model;</b>
+<b class="fc"><i>49</i>&nbsp;        this.cards = cards;</b>
+<b class="fc"><i>50</i>&nbsp;        this.players = model.getPlayers();</b>
+<b class="fc"><i>51</i>&nbsp;        this.numberOfCardsToChoose = players.size();</b>
+<b class="fc"><i>52</i>&nbsp;        this.startingPlayer = null;</b>
+<i>53</i>&nbsp;
+<b class="fc"><i>54</i>&nbsp;        this.packetCardsFromServerObservers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>55</i>&nbsp;        this.packetDoActionObservers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>56</i>&nbsp;        this.packetSetupObservers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>57</i>&nbsp;        this.packetUpdateBoardObservers = new ArrayList&lt;&gt;();</b>
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;
+<b class="fc"><i>61</i>&nbsp;        assert (players.size() == 2 || players.size() == 3);</b>
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;        //HERE WE PUT CONTROLS ON THE GODS AVAILABLE FOR THE NUMBER OF PLAYERS IN THE GAME
+<b class="fc"><i>64</i>&nbsp;        cards = cards.stream().filter(x -&gt; x.getNumbersOfPlayers().contains(players.size())).collect(Collectors.toList());</b>
+<i>65</i>&nbsp;
+<b class="fc"><i>66</i>&nbsp;        this.allCards = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>67</i>&nbsp;        for (CardFile card : cards)</b>
+<b class="fc"><i>68</i>&nbsp;            this.allCards.put(card.getName(), card.getDescription());</b>
+<i>69</i>&nbsp;
+<b class="fc"><i>70</i>&nbsp;        this.availableCards = cards.stream()</b>
+<b class="fc"><i>71</i>&nbsp;                .map(CardFile::getName)</b>
+<b class="fc"><i>72</i>&nbsp;                .collect(Collectors.toList());</b>
+<b class="fc"><i>73</i>&nbsp;    }</b>
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /**
+<i>76</i>&nbsp;     * The method that starts the setup phase,
+<i>77</i>&nbsp;     * choosing the challenger and asking him to choose the cards in game
+<i>78</i>&nbsp;     */
+<i>79</i>&nbsp;    public void start(){
+<b class="fc"><i>80</i>&nbsp;        assert(setupPhase == SetupPhase.STARTING);</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;        //CHOOSING THE CHALLENGER
+<b class="fc"><i>83</i>&nbsp;        chooseChallenger();</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;        //SENDING THE CARDS TO CHOOSE TO THE CHALLENGER
+<b class="fc"><i>86</i>&nbsp;        PacketCardsFromServer packetCardsFromServer = new PacketCardsFromServer(challenger.getNickname(), numberOfCardsToChoose, allCards ,availableCards);</b>
+<b class="fc"><i>87</i>&nbsp;        notifyPacketCardsFromServerObservers(packetCardsFromServer);</b>
+<b class="fc"><i>88</i>&nbsp;        this.setupPhase = SetupPhase.WAIT_CARDS;</b>
+<i>89</i>&nbsp;
+<b class="fc"><i>90</i>&nbsp;    }</b>
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;    /**
+<i>93</i>&nbsp;     * This function is used when a client provides the server with some chosen cards,
+<i>94</i>&nbsp;     * it checks that the server is indeed waiting for that choice and eventually saves the
+<i>95</i>&nbsp;     * chosen cards and proceeds to ask the cards to the next player or ends the setup
+<i>96</i>&nbsp;     * and asks the challenger to choose the starting player
+<i>97</i>&nbsp;     * @param SenderID the client providing the cards
+<i>98</i>&nbsp;     * @param chosenCards the chosen cards
+<i>99</i>&nbsp;     * @throws InvalidPacketException if the sender is who I am waiting for, but makes some mistakes in the choice, I notify him by throwing this exception
+<i>100</i>&nbsp;     */
+<i>101</i>&nbsp;    public void setSelectedCards(String SenderID, List&lt;String&gt; chosenCards) throws InvalidPacketException {
+<b class="fc"><i>102</i>&nbsp;        if(setupPhase != SetupPhase.WAIT_CARDS)</b>
+<b class="fc"><i>103</i>&nbsp;            return;</b>
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;        // IF THE SENDER IS WRONG -&gt; IGNORE
+<b class="fc"><i>106</i>&nbsp;        if( SenderID == null || !SenderID.equals(players.get(activePlayerIndex).getNickname()))</b>
+<b class="fc"><i>107</i>&nbsp;            return;</b>
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;        // IF THE LIST IS NULL -&gt; INVALID
+<b class="fc"><i>110</i>&nbsp;        if(chosenCards == null )</b>
+<b class="fc"><i>111</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;        // IF THE NUMBER OF CARDS CHOSEN IS NOT RIGHT -&gt; INVALID
+<b class="fc"><i>114</i>&nbsp;        if(chosenCards.size() != numberOfCardsToChoose)</b>
+<b class="fc"><i>115</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;        //IF THERE ARE IDENTICAL CARDS -&gt; INVALID
+<b class="fc"><i>118</i>&nbsp;        if(chosenCards.stream().distinct().count() != chosenCards.size())</b>
+<b class="fc"><i>119</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;        // IF ONE OF THE CARDS IS NOT AVAILABLE -&gt; INVALID
+<b class="fc"><i>122</i>&nbsp;        for(String card : chosenCards)</b>
+<b class="fc"><i>123</i>&nbsp;            if(!availableCards.contains(card))</b>
+<b class="fc"><i>124</i>&nbsp;                throw new InvalidPacketException();</b>
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;         //IF I DIDN&#39;T RECEIVED THEM FORM THE CHALLENGER I SET THE ASSOCIATION AND UPDATE AVAILABLE CARDS
+<b class="fc"><i>127</i>&nbsp;        if(!(SenderID.equals(challenger.getNickname()))) {</b>
+<b class="fc"><i>128</i>&nbsp;            assert(chosenCards.size() == 1);</b>
+<b class="fc"><i>129</i>&nbsp;            cardAssociations.put(players.get(activePlayerIndex), cards.stream().filter(x -&gt; x.getName().equals(chosenCards.get(0))).findAny().orElse(null));</b>
+<b class="fc"><i>130</i>&nbsp;            availableCards.remove(chosenCards.get(0));</b>
+<i>131</i>&nbsp;        } else{ //IF I DID RECEIVE THEM FROM THE CHALLENGER I SET THE NEXT CARDS TO CHOOSE TO 1 AND UPDATE THE AVAILABLE CARDS
+<b class="fc"><i>132</i>&nbsp;            numberOfCardsToChoose = 1;</b>
+<b class="fc"><i>133</i>&nbsp;            availableCards = availableCards.stream().filter(chosenCards::contains).collect(Collectors.toList());</b>
+<b class="fc"><i>134</i>&nbsp;            allCards.entrySet().removeIf(entry -&gt; !chosenCards.contains(entry.getKey()));</b>
+<i>135</i>&nbsp;        }
+<i>136</i>&nbsp;        //INCREMENT THE PLAYER INDEX
+<b class="fc"><i>137</i>&nbsp;        incrementActivePlayerIndex();</b>
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;        /*
+<i>140</i>&nbsp;            IF THE NEXT PLAYER IS THE CHALLENGER HE DOESN&#39;T CHOOSE
+<i>141</i>&nbsp;            SO I ASSIGN HIM THE REMAINING CARD AND I ASK HIM THE STARTING PLAYER
+<i>142</i>&nbsp;        */
+<b class="fc"><i>143</i>&nbsp;        if(players.get(activePlayerIndex).equals(challenger)){</b>
+<b class="fc"><i>144</i>&nbsp;            assert(availableCards.size() == 1);</b>
+<b class="fc"><i>145</i>&nbsp;            cardAssociations.put(players.get(activePlayerIndex), cards.stream().filter(x -&gt; x.getName().equals(availableCards.get(0))).findAny().orElse(null));</b>
+<b class="fc"><i>146</i>&nbsp;            availableCards.clear();</b>
+<i>147</i>&nbsp;
+<b class="fc"><i>148</i>&nbsp;            assert(cardAssociations.size() == players.size());</b>
+<i>149</i>&nbsp;
+<b class="fc"><i>150</i>&nbsp;            Map&lt;String, Pair&lt;String, String&gt;&gt; playersAndTheirCards = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>151</i>&nbsp;            for( Player p : cardAssociations.keySet()){</b>
+<b class="fc"><i>152</i>&nbsp;                CardFile hisCard = cardAssociations.get(p);</b>
+<b class="fc"><i>153</i>&nbsp;                p.setCard(hisCard);</b>
+<b class="fc"><i>154</i>&nbsp;                Pair&lt;String, String&gt; hisCardWithDesc = new Pair&lt;&gt;(hisCard.getName(), hisCard.getDescription());</b>
+<b class="fc"><i>155</i>&nbsp;                playersAndTheirCards.put(p.getNickname(), hisCardWithDesc);</b>
+<b class="fc"><i>156</i>&nbsp;            }</b>
+<i>157</i>&nbsp;
+<b class="fc"><i>158</i>&nbsp;            Map&lt;String, List&lt;String&gt;&gt; ids = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>159</i>&nbsp;            for( Player p : players){</b>
+<b class="fc"><i>160</i>&nbsp;                List&lt;String&gt; hisWorkers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>161</i>&nbsp;                for(Worker w : p.getWorkers()){</b>
+<b class="fc"><i>162</i>&nbsp;                    hisWorkers.add(w.getID());</b>
+<b class="fc"><i>163</i>&nbsp;                }</b>
+<b class="fc"><i>164</i>&nbsp;                ids.put(p.getNickname(), hisWorkers);</b>
+<b class="fc"><i>165</i>&nbsp;            }</b>
+<i>166</i>&nbsp;
+<b class="fc"><i>167</i>&nbsp;            Map&lt;String, Color&gt; colors = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>168</i>&nbsp;            List&lt;Color&gt; possibleColors = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>169</i>&nbsp;            possibleColors.add(Color.CYAN);</b>
+<b class="fc"><i>170</i>&nbsp;            possibleColors.add(Color.WHITE);</b>
+<b class="fc"><i>171</i>&nbsp;            possibleColors.add(Color.ORANGE);</b>
+<b class="fc"><i>172</i>&nbsp;            int i = 0;</b>
+<b class="fc"><i>173</i>&nbsp;            for(Player p : players){</b>
+<b class="fc"><i>174</i>&nbsp;                colors.put(p.getNickname(), possibleColors.get(i));</b>
+<b class="fc"><i>175</i>&nbsp;                i++;</b>
+<b class="fc"><i>176</i>&nbsp;            }</b>
+<i>177</i>&nbsp;
+<b class="fc"><i>178</i>&nbsp;            PacketSetup packetSetup = new PacketSetup(ids, colors, playersAndTheirCards, model.getBoard().getBuildingsCounter());</b>
+<b class="fc"><i>179</i>&nbsp;            notifyPacketSetupObservers(packetSetup);</b>
+<i>180</i>&nbsp;
+<b class="fc"><i>181</i>&nbsp;            PacketDoAction packetDoAction = new PacketDoAction(challenger.getNickname(), ActionType.CHOOSE_START_PLAYER);</b>
+<b class="fc"><i>182</i>&nbsp;            notifyPacketDoActionObservers(packetDoAction);</b>
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;
+<b class="fc"><i>185</i>&nbsp;            this.setupPhase = SetupPhase.WAIT_START_PLAYER;</b>
+<b class="fc"><i>186</i>&nbsp;        }else{ //IF THE NEXT PLAYER IS NOT THE CHALLENGER I ASK HIM TO CHOOSE</b>
+<b class="fc"><i>187</i>&nbsp;            PacketCardsFromServer packetCardsFromServer = new PacketCardsFromServer(players.get(activePlayerIndex).getNickname(), numberOfCardsToChoose, allCards ,availableCards);</b>
+<b class="fc"><i>188</i>&nbsp;            notifyPacketCardsFromServerObservers(packetCardsFromServer);</b>
+<i>189</i>&nbsp;        }
+<i>190</i>&nbsp;
+<b class="fc"><i>191</i>&nbsp;    }</b>
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;    /**
+<i>194</i>&nbsp;     * This function is supposed to be called when the challenger provides the choice
+<i>195</i>&nbsp;     * regarding the starting player, it checks the choice and eventually asks the chosen starting player to place his workers
+<i>196</i>&nbsp;     * @param SenderID the client providing the choice
+<i>197</i>&nbsp;     * @param startPlayer the chosen starting player nickname
+<i>198</i>&nbsp;     * @throws InvalidPacketException if the sender is who I am waiting for, but makes some mistakes in the choice, I notify him by throwing this exception
+<i>199</i>&nbsp;     */
+<i>200</i>&nbsp;    public void setStartPlayer(String SenderID, String startPlayer) throws InvalidPacketException{
+<i>201</i>&nbsp;
+<b class="fc"><i>202</i>&nbsp;        if(setupPhase != SetupPhase.WAIT_START_PLAYER)</b>
+<b class="fc"><i>203</i>&nbsp;            return;</b>
+<i>204</i>&nbsp;
+<b class="fc"><i>205</i>&nbsp;        assert(challenger.equals(players.get(activePlayerIndex)));</b>
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;        //IF I AM NOT RECEIVING IT FROM THE CHALLENGER  -&gt; IGNORE
+<b class="fc"><i>208</i>&nbsp;        if( SenderID == null || !(SenderID.equals(players.get(activePlayerIndex).getNickname())))</b>
+<b class="fc"><i>209</i>&nbsp;            return;</b>
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;        // IF THE START PLAYER IS NULL -&gt; INVALID
+<b class="fc"><i>212</i>&nbsp;        if(startPlayer == null )</b>
+<b class="fc"><i>213</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;        //IF THE CHOSEN PLAYER IS NOT ONE OF THE PLAYERS
+<b class="fc"><i>216</i>&nbsp;        if(players.stream().filter(x -&gt; x.getNickname().equals(startPlayer)).count() != 1){</b>
+<b class="fc"><i>217</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>218</i>&nbsp;        }
+<i>219</i>&nbsp;        //Setting start player
+<b class="fc"><i>220</i>&nbsp;        startingPlayer = model.getPlayerByNick(startPlayer);</b>
+<b class="fc"><i>221</i>&nbsp;        model.setStartPlayer(startingPlayer);</b>
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;        //Reload data and check
+<b class="fc"><i>224</i>&nbsp;        players = model.getPlayers();</b>
+<b class="fc"><i>225</i>&nbsp;        activePlayerIndex = players.indexOf(startingPlayer);</b>
+<b class="fc"><i>226</i>&nbsp;        assert (activePlayerIndex == 0);</b>
+<i>227</i>&nbsp;
+<b class="fc"><i>228</i>&nbsp;        PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);</b>
+<b class="fc"><i>229</i>&nbsp;        notifyPacketDoActionObservers(packetDoAction);</b>
+<i>230</i>&nbsp;
+<b class="fc"><i>231</i>&nbsp;        this.setupPhase = SetupPhase.WAIT_WORKERS_CHOICE;</b>
+<i>232</i>&nbsp;
+<b class="fc"><i>233</i>&nbsp;    }</b>
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;    /**
+<i>236</i>&nbsp;     * This function is supposed to be called when a player provides the chosen workers positions,
+<i>237</i>&nbsp;     * it checks the choice and places the workers on the board,
+<i>238</i>&nbsp;     * afterwards either asks the next player to place his workers and sends info of current workers&#39; placements,
+<i>239</i>&nbsp;     * or, if the setup is completed sets the relative phase and ends
+<i>240</i>&nbsp;     *
+<i>241</i>&nbsp;     * @param SenderID the client providing the choice
+<i>242</i>&nbsp;     * @param myWorkersPositions the proposed workers positions
+<i>243</i>&nbsp;     * @throws InvalidPacketException if the sender is who I am waiting for, but makes some mistakes in the choice, I notify him by throwing this exception
+<i>244</i>&nbsp;     */
+<i>245</i>&nbsp;    public void setWorkersPositions(String SenderID, Map&lt;String, Point&gt; myWorkersPositions) throws InvalidPacketException{
+<b class="fc"><i>246</i>&nbsp;        if(setupPhase != SetupPhase.WAIT_WORKERS_CHOICE)</b>
+<b class="fc"><i>247</i>&nbsp;            return;</b>
+<i>248</i>&nbsp;
+<b class="fc"><i>249</i>&nbsp;        Player activePlayer = players.get(activePlayerIndex);</b>
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;        // IF THE SENDER IS WRONG -&gt; IGNORE
+<b class="fc"><i>252</i>&nbsp;        if( SenderID == null || !SenderID.equals(activePlayer.getNickname()))</b>
+<b class="fc"><i>253</i>&nbsp;            return;</b>
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;        // IF THE MAP IS NULL -&gt; INVALID
+<b class="fc"><i>256</i>&nbsp;        if(myWorkersPositions == null)</b>
+<b class="fc"><i>257</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;        // IF THE NUMBER OF POSITIONS IS NOT RIGHT -&gt; INVALID
+<b class="fc"><i>260</i>&nbsp;        if(myWorkersPositions.size() != activePlayer.getWorkers().size())</b>
+<b class="fc"><i>261</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;        //ID DUPLICATED POSITIONS IN PACKET -&gt; INVALID
+<b class="fc"><i>264</i>&nbsp;        if (myWorkersPositions.values().stream().distinct().count() != myWorkersPositions.values().size())</b>
+<b class="fc"><i>265</i>&nbsp;            throw new InvalidPacketException();</b>
+<i>266</i>&nbsp;
+<b class="fc"><i>267</i>&nbsp;        for(String workerID : myWorkersPositions.keySet()){</b>
+<b class="fc"><i>268</i>&nbsp;            if(workerID == null)</b>
+<b class="fc"><i>269</i>&nbsp;                throw new InvalidPacketException();</b>
+<i>270</i>&nbsp;            // IF ONE OF THE WORKERS IS NOT ONE OF MINE -&gt; INVALID
+<b class="fc"><i>271</i>&nbsp;            if(activePlayer.getWorkers().stream().noneMatch(w-&gt;w.getID().equals(workerID)))</b>
+<b class="fc"><i>272</i>&nbsp;                throw new InvalidPacketException();</b>
+<i>273</i>&nbsp;            // IF ONE OF THE CELLS I WANT TO SET HIM IN IS OUT OF THE BOARD OR HAS ANOTHER WORKER -&gt; INVALID
+<b class="fc"><i>274</i>&nbsp;            if(model.getBoard().getCell(myWorkersPositions.get(workerID)) == null || model.getBoard().getCell(myWorkersPositions.get(workerID)).isOccupied())</b>
+<b class="fc"><i>275</i>&nbsp;                throw new InvalidPacketException();</b>
+<b class="fc"><i>276</i>&nbsp;        }</b>
+<i>277</i>&nbsp;
+<i>278</i>&nbsp;        // IF EVERYTHING IS CORRECT I SET THE WORKERS ON THE BOARD
+<b class="fc"><i>279</i>&nbsp;        for( String workerID : myWorkersPositions.keySet()){</b>
+<b class="fc"><i>280</i>&nbsp;            model.getWorkerByID(workerID).setPosition(myWorkersPositions.get(workerID));</b>
+<b class="fc"><i>281</i>&nbsp;            model.getBoard().getCell(myWorkersPositions.get(workerID)).setWorker(workerID);</b>
+<b class="fc"><i>282</i>&nbsp;        }</b>
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;        //BUILDING PACKET UPDATE BOARD
+<b class="fc"><i>285</i>&nbsp;        Map&lt;String, Point&gt; workersPositions = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>286</i>&nbsp;        for(Player p: players){</b>
+<b class="fc"><i>287</i>&nbsp;            for(Worker w : p.getWorkers()){</b>
+<b class="fc"><i>288</i>&nbsp;                if(w.getPosition() != null)</b>
+<b class="fc"><i>289</i>&nbsp;                    workersPositions.put(w.getID(), w.getPosition());</b>
+<b class="fc"><i>290</i>&nbsp;            }</b>
+<b class="fc"><i>291</i>&nbsp;        }</b>
+<b class="fc"><i>292</i>&nbsp;        PacketUpdateBoard packetUpdateBoard = new PacketUpdateBoard(workersPositions);</b>
+<b class="fc"><i>293</i>&nbsp;        notifyPacketUpdateBoardObservers(packetUpdateBoard);</b>
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;
+<b class="fc"><i>296</i>&nbsp;        incrementActivePlayerIndex();</b>
+<i>297</i>&nbsp;
+<i>298</i>&nbsp;        //IF THE NEXT PLAYER IS THE STARTING PLAYER WE HAVE FINISHED SETUP
+<b class="fc"><i>299</i>&nbsp;        if(players.get(activePlayerIndex) == startingPlayer){</b>
+<b class="fc"><i>300</i>&nbsp;            this.setupPhase = SetupPhase.SETUP_FINISHED;</b>
+<i>301</i>&nbsp;        }else{ // IF NOT WE ASK FOR OTHER WORKERS POSITIONING
+<b class="fc"><i>302</i>&nbsp;            PacketDoAction packetDoAction = new PacketDoAction(players.get(activePlayerIndex).getNickname(), ActionType.SET_WORKERS_POSITION);</b>
+<b class="fc"><i>303</i>&nbsp;            notifyPacketDoActionObservers(packetDoAction);</b>
+<i>304</i>&nbsp;        }
+<i>305</i>&nbsp;
+<b class="fc"><i>306</i>&nbsp;    }</b>
+<i>307</i>&nbsp;
+<i>308</i>&nbsp;    /**
+<i>309</i>&nbsp;     * Returns the setup phase
+<i>310</i>&nbsp;     * @return the setup phase
+<i>311</i>&nbsp;     */
+<i>312</i>&nbsp;    public SetupPhase getSetupPhase() {
+<b class="fc"><i>313</i>&nbsp;        return setupPhase;</b>
+<i>314</i>&nbsp;    }
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;    /**
+<i>317</i>&nbsp;     * The function used to choose the starting player
+<i>318</i>&nbsp;     */
+<i>319</i>&nbsp;    private void chooseChallenger(){
+<i>320</i>&nbsp;        //CHOOSING THE CHALLENGER
+<b class="fc"><i>321</i>&nbsp;        Random random = new Random();</b>
+<b class="fc"><i>322</i>&nbsp;        activePlayerIndex = random.nextInt(players.size());</b>
+<b class="fc"><i>323</i>&nbsp;        this.challenger = players.get(activePlayerIndex);</b>
+<b class="fc"><i>324</i>&nbsp;    }</b>
+<i>325</i>&nbsp;
+<i>326</i>&nbsp;    /**
+<i>327</i>&nbsp;     * Sets the index of the next player
+<i>328</i>&nbsp;     */
+<i>329</i>&nbsp;    private void incrementActivePlayerIndex(){
+<b class="fc"><i>330</i>&nbsp;        activePlayerIndex ++;</b>
+<b class="fc"><i>331</i>&nbsp;        if(activePlayerIndex &gt; (players.size() - 1 ))</b>
+<b class="fc"><i>332</i>&nbsp;            activePlayerIndex = 0;</b>
+<b class="fc"><i>333</i>&nbsp;    }</b>
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;    /**
+<i>336</i>&nbsp;     * Used to add the observer
+<i>337</i>&nbsp;     * @param o the observer
+<i>338</i>&nbsp;     */
+<i>339</i>&nbsp;    public void addPacketSetupObserver(Observer&lt;PacketSetup&gt; o){
+<b class="fc"><i>340</i>&nbsp;        this.packetSetupObservers.add(o);</b>
+<b class="fc"><i>341</i>&nbsp;    }</b>
+<i>342</i>&nbsp;    /**
+<i>343</i>&nbsp;     * Used to add the observer
+<i>344</i>&nbsp;     * @param o the observer
+<i>345</i>&nbsp;     */
+<i>346</i>&nbsp;    public void addPacketDoActionObserver(Observer&lt;PacketDoAction&gt; o){
+<b class="fc"><i>347</i>&nbsp;        this.packetDoActionObservers.add(o);</b>
+<b class="fc"><i>348</i>&nbsp;    }</b>
+<i>349</i>&nbsp;    /**
+<i>350</i>&nbsp;     * Used to add the observer
+<i>351</i>&nbsp;     * @param o the observer
+<i>352</i>&nbsp;     */
+<i>353</i>&nbsp;    public void addPacketUpdateBoardObserver(Observer&lt;PacketUpdateBoard&gt; o){
+<b class="fc"><i>354</i>&nbsp;        this.packetUpdateBoardObservers.add(o);</b>
+<b class="fc"><i>355</i>&nbsp;    }</b>
+<i>356</i>&nbsp;    /**
+<i>357</i>&nbsp;     * Used to add the observer
+<i>358</i>&nbsp;     * @param o the observer
+<i>359</i>&nbsp;     */
+<i>360</i>&nbsp;    public void addPacketCardsFromServerObserver(Observer&lt;PacketCardsFromServer&gt; o){
+<b class="fc"><i>361</i>&nbsp;        this.packetCardsFromServerObservers.add(o);</b>
+<b class="fc"><i>362</i>&nbsp;    }</b>
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;    private void notifyPacketSetupObservers(PacketSetup p){
+<b class="fc"><i>365</i>&nbsp;        for(Observer&lt;PacketSetup&gt; o : packetSetupObservers){</b>
+<b class="fc"><i>366</i>&nbsp;            o.update(p);</b>
+<b class="fc"><i>367</i>&nbsp;        }</b>
+<b class="fc"><i>368</i>&nbsp;    }</b>
+<i>369</i>&nbsp;    private void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
+<b class="fc"><i>370</i>&nbsp;        for(Observer&lt;PacketUpdateBoard&gt; o : packetUpdateBoardObservers){</b>
+<b class="fc"><i>371</i>&nbsp;            o.update(p);</b>
+<b class="fc"><i>372</i>&nbsp;        }</b>
+<b class="fc"><i>373</i>&nbsp;    }</b>
+<i>374</i>&nbsp;    private void notifyPacketCardsFromServerObservers(PacketCardsFromServer p){
+<b class="fc"><i>375</i>&nbsp;        for(Observer&lt;PacketCardsFromServer&gt; o : packetCardsFromServerObservers){</b>
+<b class="fc"><i>376</i>&nbsp;            o.update(p);</b>
+<b class="fc"><i>377</i>&nbsp;        }</b>
+<b class="fc"><i>378</i>&nbsp;    }</b>
+<i>379</i>&nbsp;    private void notifyPacketDoActionObservers(PacketDoAction p){
+<b class="fc"><i>380</i>&nbsp;        for(Observer&lt;PacketDoAction&gt; o : packetDoActionObservers){</b>
+<b class="fc"><i>381</i>&nbsp;            o.update(p);</b>
+<b class="fc"><i>382</i>&nbsp;        }</b>
+<b class="fc"><i>383</i>&nbsp;    }</b>
+<i>384</i>&nbsp; 
+<i>385</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>

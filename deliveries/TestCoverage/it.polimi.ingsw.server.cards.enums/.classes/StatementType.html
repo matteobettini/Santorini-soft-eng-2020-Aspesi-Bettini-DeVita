@@ -1,0 +1,122 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StatementType</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.server.cards.enums</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StatementType (it.polimi.ingsw.server.cards.enums)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StatementType</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/ 11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.server.cards.enums;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;/**
+<i>4</i>&nbsp; * Represents the possible types of statement
+<i>5</i>&nbsp; * of a card.
+<i>6</i>&nbsp; * Contains methods to easily get enum value from xml string value
+<i>7</i>&nbsp; */
+<b class="fc"><i>8</i>&nbsp;public enum StatementType {</b>
+<b class="fc"><i>9</i>&nbsp;    IF(&quot;if&quot;),</b>
+<b class="fc"><i>10</i>&nbsp;    NIF(&quot;nif&quot;);</b>
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;    private final String code;
+<b class="fc"><i>13</i>&nbsp;    StatementType(String code){</b>
+<b class="fc"><i>14</i>&nbsp;        this.code = code;</b>
+<b class="fc"><i>15</i>&nbsp;    }</b>
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;    /**
+<i>18</i>&nbsp;     * Getter for the current enum value&#39;s code
+<i>19</i>&nbsp;     * @return The code associated with this value
+<i>20</i>&nbsp;     */
+<i>21</i>&nbsp;    public String getCode() {
+<b class="fc"><i>22</i>&nbsp;        return code;</b>
+<i>23</i>&nbsp;    }
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    /**
+<i>26</i>&nbsp;     * Helper function to reproduce Enum.valueOf using enum value&#39;s codes
+<i>27</i>&nbsp;     * instead of enum names
+<i>28</i>&nbsp;     * @param code The code of the enum value
+<i>29</i>&nbsp;     * @return The enum value corresponding to the code
+<i>30</i>&nbsp;     * @throws IllegalArgumentException If there is no enum value with that code
+<i>31</i>&nbsp;     */
+<i>32</i>&nbsp;    public static StatementType valueByContent(String code){
+<b class="fc"><i>33</i>&nbsp;        for(StatementType e : StatementType.values()){</b>
+<b class="fc"><i>34</i>&nbsp;            if(e.code.equals(code))</b>
+<b class="fc"><i>35</i>&nbsp;                return e;</b>
+<i>36</i>&nbsp;        }
+<b class="fc"><i>37</i>&nbsp;        throw new IllegalArgumentException();</b>
+<i>38</i>&nbsp;    }
+<i>39</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 14:40</div>
+</div>
+</body>
+</html>
