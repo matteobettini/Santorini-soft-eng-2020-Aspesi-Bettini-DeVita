@@ -1,12 +1,11 @@
 package it.polimi.ingsw.client.cli;
 
-import it.polimi.ingsw.client.cli.graphical.GraphicalStartMenu;
+
 import it.polimi.ingsw.client.cli.match_data.MatchData;
 import it.polimi.ingsw.client.cli.strategies.*;
 import it.polimi.ingsw.client.cli.strategies.game_mode_strategy.GameModeStrategy;
 import it.polimi.ingsw.client.cli.strategies.game_mode_strategy.HardcoreStrategy;
 import it.polimi.ingsw.client.cli.strategies.game_mode_strategy.NormalStrategy;
-import it.polimi.ingsw.client.cli.utilities.CharStream;
 import it.polimi.ingsw.client.cli.utilities.InputUtilities;
 import it.polimi.ingsw.client.cli.utilities.OutputUtilities;
 import it.polimi.ingsw.client.communication.Client;
@@ -50,7 +49,7 @@ public class CLI {
     }
 
     /**
-     * The main creates a new instance of CLI and calls the CLI's method run.
+     * The main creates a new instance of CLI and calls the CLI's run method.
      */
     public static void main(String[] args){
         CLI cli = new CLI();

@@ -13,6 +13,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * This class manages the connection with the game server using a socket
+ */
 public class ClientImpl implements Client {
 
     public static final int PING_PERIOD = 5000;
@@ -48,7 +51,9 @@ public class ClientImpl implements Client {
     private final AtomicBoolean ended = new AtomicBoolean(false);
 
 
-
+    /**
+     * Constructs the client connection, initializing its attributes
+     */
     public ClientImpl(){
         this.incomingPackets = new LinkedBlockingDeque<>();
 
@@ -144,7 +149,10 @@ public class ClientImpl implements Client {
         }
     }
 
-
+    /**
+     * Gets the incoming packets one by one from a queue and acts accordingly notifying
+     * the listeners interested in the received packet
+     */
     private void manageIncomingPackets(){
 
         while(!ended.get()) {
@@ -223,7 +231,10 @@ public class ClientImpl implements Client {
         }
     }
 
-
+    /**
+     * Called when the client is unable to connect to the given ip and port,
+     * notifies the listeners interested in the connection status
+     */
     private void manageUnconnected(){
         if(packetReceiver.isAlive())
             packetReceiver.interrupt();
@@ -231,7 +242,9 @@ public class ClientImpl implements Client {
         closeRoutine();
     }
 
-
+    /**
+     * Tries to close the socket channel
+     */
     private void closeRoutine(){
 
         started.set(false);
