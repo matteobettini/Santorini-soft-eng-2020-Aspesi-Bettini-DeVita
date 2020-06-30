@@ -14,9 +14,9 @@ public class GraphicalOcean implements CharFigure {
     private final CharStream stream;
     private final int width;
     private final int height;
-    private final int defaultX = 0;
-    private final int defaultY = 0;
-    private final int numberOfBoats = 7;
+    private static final int defaultX = CharStream.defaultX;
+    private static final int defaultY = CharStream.defaultY;
+    private static final int numberOfBoats = 7;
     private final List<Point> possibleBoatsPositions = Arrays.asList(
             new Point(20, 1),new Point(40, 1),
             new Point(10, 15), new Point(12, 47),
@@ -43,7 +43,7 @@ public class GraphicalOcean implements CharFigure {
      */
     @Override
     public void draw(){
-        draw(CharStream.defaultX, CharStream.defaultY);
+        draw(defaultX, defaultY);
     }
 
     /**
@@ -67,7 +67,7 @@ public class GraphicalOcean implements CharFigure {
             Random random = new Random();
             int boatIndex = random.nextInt(boatsPositions.size());
             Point chosenBoat = boatsPositions.get(boatIndex);
-            if(!alreadyDrawn.contains(chosenBoat)) drawBoat(chosenBoat.x,chosenBoat.y);
+            if(!alreadyDrawn.contains(chosenBoat)) drawBoat(defaultX + chosenBoat.x,defaultY + chosenBoat.y);
             alreadyDrawn.add(chosenBoat);
         }
     }

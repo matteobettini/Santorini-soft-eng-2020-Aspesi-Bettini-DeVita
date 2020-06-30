@@ -16,7 +16,7 @@ public class GraphicalCell implements CharFigure {
     private final Point position;
     private final int RATIO_X;
     private final int RATIO_Y;
-    private final int WORKER_RATIO = 4;
+    private static final int WORKER_RATIO = 4;
 
     /**
      * This constructor initializes the GraphicalCell'stream used to print itself, its position

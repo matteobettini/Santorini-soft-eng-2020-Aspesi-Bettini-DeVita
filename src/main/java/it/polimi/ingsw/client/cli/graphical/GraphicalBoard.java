@@ -14,8 +14,8 @@ public class GraphicalBoard implements CharFigure {
     private final GraphicalCell[][] graphicalCells;
     private final int RATIO_X = 20;
     private final int RATIO_Y = 8;
-    private final int defaultX = 50;
-    private final int defaultY = 5;
+    private static final int defaultX = 50;
+    private static final int defaultY = 5;
     private List<Point> possiblePositions;
 
     /**

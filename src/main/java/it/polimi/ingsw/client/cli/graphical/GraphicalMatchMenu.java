@@ -19,20 +19,22 @@ public class GraphicalMatchMenu implements CharFigure {
     private final CharStream stream;
     private boolean gameOver;
     private boolean youWin;
-    private final int playersBoxWidth = 35;
-    private final int playersBoxHeight = 8;
-    private final BackColor playersBoxColor = BackColor.ANSI_BG_BLUE;
-    private final int buildingsBoxWidth = 35;
-    private final int buildingsBoxHeight = 25;
-    private final BackColor buildingsBoxColor = BackColor.ANSI_BG_RED;
-    private final int gameOverBoxWidth = 69;
-    private final int gameOverBoxHeight = 16;
-    private final BackColor gameOverBoxColor = BackColor.ANSI_BG_BLACK;
-    private final int youWinBoxWidth = 64;
-    private final int youWinBoxHeight = 16;
-    private final BackColor youWinBoxColor = BackColor.ANSI_BRIGHT_BG_BLUE;
-    private final int marginX_MessageEndGame = 50;
-    private final int marginY_MessageEndGame = 15;
+    private static final int playersBoxWidth = 35;
+    private static final int playersBoxHeight = 8;
+    private static final BackColor playersBoxColor = BackColor.ANSI_BG_BLUE;
+    private static final int buildingsBoxWidth = 35;
+    private static final int buildingsBoxHeight = 25;
+    private static final BackColor buildingsBoxColor = BackColor.ANSI_BG_RED;
+    private static final int gameOverBoxWidth = 69;
+    private static final int gameOverBoxHeight = 16;
+    private static final BackColor gameOverBoxColor = BackColor.ANSI_BG_BLACK;
+    private static final int youWinBoxWidth = 64;
+    private static final int youWinBoxHeight = 16;
+    private static final BackColor youWinBoxColor = BackColor.ANSI_BRIGHT_BG_BLUE;
+    private static final int marginX_MessageEndGame = 50;
+    private static final int marginY_MessageEndGame = 15;
+    private static final int maximumPlayerNameLength = 15;
+    private static final int maximumGodNameLength = 15;
 
 
     /**
@@ -191,16 +193,16 @@ public class GraphicalMatchMenu implements CharFigure {
                 stream.addColor(relX + 8, relY + nextLine, BackColor.ANSI_BRIGHT_BG_GREEN);
             }
             String godCard = playersGodCardAssociation.get(player).getFirst();
-            if(godCard.length() >= 15){
-                godCard = godCard.substring(0, 12);
+            if(godCard.length() >= maximumGodNameLength){
+                godCard = godCard.substring(0, maximumGodNameLength - 3);
                 godCard = godCard.concat("...");
             }
             stream.addString(relX + 25, relY + nextLine, godCard, BackColor.ANSI_BG_BLUE);
 
             BackColor col = OutputUtilities.fromColorToBackColor(playersColor.get(player));
 
-            if(player.length() >= 15){
-                player = player.substring(0, 12);
+            if(player.length() >= maximumPlayerNameLength){
+                player = player.substring(0, maximumPlayerNameLength - 3);
                 player = player.concat("...");
             }
 

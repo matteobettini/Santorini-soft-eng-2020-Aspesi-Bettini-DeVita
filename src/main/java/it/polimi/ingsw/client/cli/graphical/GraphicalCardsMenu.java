@@ -17,8 +17,8 @@ public class GraphicalCardsMenu implements CharFigure {
     private List<String> chosenCards;
     private int cardsPerRow;
     private List<String> availableCards;
-    private final int defaultRequiredWidth = 159;
-    private final int marginTitle = 40;
+    private static final int defaultRequiredWidth = 159;
+    private static final int marginTitle = 40;
 
     /**
      * This constructor initializes all the godCards received from the server. GodCards are all the received god cards,

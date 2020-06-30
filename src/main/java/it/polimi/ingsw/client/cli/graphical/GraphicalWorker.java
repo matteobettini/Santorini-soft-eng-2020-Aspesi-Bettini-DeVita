@@ -14,8 +14,8 @@ class GraphicalWorker implements CharFigure {
     private final int RATIO_Y;
     private final Integer number;
     private final String playerName;
-    private final int marginX = 8;
-    private final int marginY = 3;
+    private static final int marginX = 8;
+    private static final int marginY = 3;
 
     /**
      * This constructor initializes the stream used by the GraphicalWorker to print itself, its color, its lengths on
