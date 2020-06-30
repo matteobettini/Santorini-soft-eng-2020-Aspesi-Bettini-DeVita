@@ -229,36 +229,6 @@
             </StackPane>
          </right>
       </BorderPane>
-        <HBox fx:id="waitPane" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="back-7" visible="false">
-            <children>
-                <VBox alignment="CENTER" prefHeight="500.0" prefWidth="900.0" spacing="20.0">
-                    <children>
-                        <Label fx:id="lblWait" alignment="CENTER" contentDisplay="CENTER" maxWidth="800.0" text="Please wait ..." textFill="WHITE" wrapText="true">
-                            <font>
-                                <Font name="Calibri" size="35.0" />
-                            </font>
-                        </Label>
-                        <ImageView fx:id="imgWait" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../textures/gear.gif" /> <!--Change in /client/textures/gear.gif for the jar-->
-                            </image>
-                        </ImageView>
-                        <Button fx:id="btnClose" alignment="BOTTOM_CENTER" mnemonicParsing="false" onMouseClicked="#onBtnCloseClicked" text="Close" visible="false">
-                            <font>
-                                <Font name="Calibri" size="30.0" />
-                            </font>
-                            <padding>
-                                <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
-                            </padding>
-                            <styleClass>
-                                <String fx:value="btn" />
-                                <String fx:value="btn-blue" />
-                            </styleClass>
-                        </Button>
-                    </children>
-                </VBox>
-            </children>
-        </HBox>
       <HBox fx:id="choosePane" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" styleClass="back-7" visible="false">
          <children>
             <VBox alignment="CENTER" prefHeight="500.0" prefWidth="900.0" spacing="20.0">
@@ -303,6 +273,36 @@
             <Insets />
          </StackPane.margin>
       </HBox>
+        <HBox fx:id="waitPane" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" styleClass="back-7" visible="false">
+            <children>
+                <VBox alignment="CENTER" prefHeight="500.0" prefWidth="900.0" spacing="20.0">
+                    <children>
+                        <Label fx:id="lblWait" alignment="CENTER" contentDisplay="CENTER" maxWidth="800.0" text="Please wait ..." textFill="WHITE" wrapText="true">
+                            <font>
+                                <Font name="Calibri" size="35.0" />
+                            </font>
+                        </Label>
+                        <ImageView fx:id="imgWait" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../textures/gear.gif" /> <!--Change in /client/textures/gear.gif for the jar-->
+                            </image>
+                        </ImageView>
+                        <Button fx:id="btnClose" alignment="BOTTOM_CENTER" mnemonicParsing="false" onMouseClicked="#onBtnCloseClicked" text="Close" visible="false">
+                            <font>
+                                <Font name="Calibri" size="30.0" />
+                            </font>
+                            <padding>
+                                <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
+                            </padding>
+                            <styleClass>
+                                <String fx:value="btn" />
+                                <String fx:value="btn-blue" />
+                            </styleClass>
+                        </Button>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
    </children>
    <stylesheets>
       <URL value="@styles/global.css" />
