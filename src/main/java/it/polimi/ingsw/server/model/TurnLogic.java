@@ -25,6 +25,7 @@ class TurnLogic {
     private Set<TriggerType> currPossibleActions;
     private Worker currWorker;
     private int activePlayerIndex;
+    private boolean isStarted;
 
     private final List<Observer<PacketDoAction>> packetDoActionObservers;
     private final List<Observer<PacketUpdateBoard>> packetUpdateBoardObservers;
@@ -45,18 +46,32 @@ class TurnLogic {
         this.packetUpdateBoardObservers = new ArrayList<>();
         this.packetPossibleBuildsObservers = new ArrayList<>();
         this.packetPossibleMovesObservers = new ArrayList<>();
+
+        this.isStarted = false;
     }
 
     /**
      * Method used by the concrete model to start the first turn of the game,
-     * Asks a packet to the starting player
+     * Asks a packet to the starting player.
+     * If already started, do nothing
      */
     public void start() {
+        if (isStarted)
+            return;
         stillInGamePlayers = new ArrayList<>(model.getPlayers());
         currPlayer = stillInGamePlayers.get(0);
         currWorker = null;
         activePlayerIndex = 0;
+        isStarted = true;
         askNextPacket();
+    }
+
+    /**
+     * Method used to see if Turn Logic is already started
+     * @return True if turn logic is already started, False otherwise
+     */
+    public boolean isStarted(){
+        return isStarted;
     }
 
     /**
