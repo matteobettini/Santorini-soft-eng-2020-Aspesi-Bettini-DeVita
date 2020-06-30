@@ -10,8 +10,8 @@ public class GraphicalStartMenu implements CharFigure {
     private final int height;
     public static final int DEFAULT_WIDTH = 159;
     public static final int DEFAULT_HEIGHT = 30;
-    private static final int marginTitleX = 10;
-    private static final int marginTitleY = 46;
+    private static final int marginTitleX = 46;
+    private static final int marginTitleY = 10;
 
     /**
      * This constructor initializes the stream used by the GraphicalStartMenu to print itself, its width and height.
