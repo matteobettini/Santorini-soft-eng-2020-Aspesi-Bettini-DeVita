@@ -315,14 +315,12 @@ public class ConnectionToClient extends Observable<Object> implements Runnable{
 
             if (timerEnded) {
                 try {
-                    os.writeObject(ConnectionMessages.TIMER_ENDED);
-                    os.flush();
+                    internalSend(ConnectionMessages.TIMER_ENDED);
                 } catch (IOException ignored) { }
             }
 
             try {
-                os.writeObject(ConnectionMessages.CONNECTION_CLOSED);
-                os.flush();;
+                internalSend(ConnectionMessages.CONNECTION_CLOSED);
             } catch (IOException ignored) { }
 
             try {

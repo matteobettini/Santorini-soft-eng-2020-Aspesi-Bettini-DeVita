@@ -126,8 +126,8 @@ public class ClientImpl implements Client {
                         if(messageFromServer == ConnectionMessages.PING)
                             skip = true;
                         else if (messageFromServer == ConnectionMessages.MATCH_INTERRUPTED || messageFromServer == ConnectionMessages.TIMER_ENDED || messageFromServer == ConnectionMessages.CONNECTION_CLOSED) {
-                            packetReceiver.interrupt();
                             pinger.interrupt();
+                            packetReceiver.interrupt();
                             notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, messageFromServer.getMessage()));
                             break;
                         }else if(messageFromServer == ConnectionMessages.MATCH_FINISHED){
@@ -140,8 +140,8 @@ public class ClientImpl implements Client {
                 }
 
             } catch (IOException | ClassNotFoundException e) {
-                packetReceiver.interrupt();
                 pinger.interrupt();
+                packetReceiver.interrupt();
                 notifyConnectionStatusObservers(new ConnectionStatus(ConnectionState.CLOSURE_UNEXPECTED, ConnectionMessages.CONNECTION_CLOSED.getMessage()));
             } finally {
                 closeRoutine();
@@ -303,53 +303,53 @@ public class ClientImpl implements Client {
         this.packetCardsFromServerObservers.add(o);
     }
 
-    public void notifyConnectionStatusObservers(ConnectionStatus p){
+    private void notifyConnectionStatusObservers(ConnectionStatus p){
         for(Observer<ConnectionStatus> o : connectionStatusObservers){
             o.update(p);
         }
     }
-    public void notifyInsertNickRequestObserver(String p, boolean isRetry){
+    private void notifyInsertNickRequestObserver(String p, boolean isRetry){
         for(ClientObserver<String> o : insertNickRequestObservers){
             o.update(p,isRetry);
         }
     }
-    public void notifyInsertNumOfPlayersAndGamemodeRequestObservers(String p, boolean isRetry){
+    private void notifyInsertNumOfPlayersAndGamemodeRequestObservers(String p, boolean isRetry){
         for(ClientObserver<String> o : insertNumOfPlayersAndGamemodeRequestObservers){
             o.update(p,isRetry);
         }
     }
 
-    public void notifyPacketSetupObservers(PacketSetup p){
+    private void notifyPacketSetupObservers(PacketSetup p){
         for(Observer<PacketSetup> o : packetSetupObservers){
             o.update(p);
         }
     }
-    public void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
+    private void notifyPacketUpdateBoardObservers(PacketUpdateBoard p){
         for(Observer<PacketUpdateBoard> o : packetUpdateBoardObservers){
             o.update(p);
         }
     }
-    public void notifyPacketCardsFromServerObservers(PacketCardsFromServer p, boolean isRetry){
+    private void notifyPacketCardsFromServerObservers(PacketCardsFromServer p, boolean isRetry){
         for(ClientObserver<PacketCardsFromServer> o : packetCardsFromServerObservers){
             o.update(p, isRetry);
         }
     }
-    public void notifyPacketDoActionObservers(PacketDoAction p, boolean isRetry){
+    private void notifyPacketDoActionObservers(PacketDoAction p, boolean isRetry){
         for(ClientObserver<PacketDoAction> o : packetDoActionObservers){
             o.update(p, isRetry);
         }
     }
-    public void notifyPacketPossibleMovesObservers(PacketPossibleMoves p){
+    private void notifyPacketPossibleMovesObservers(PacketPossibleMoves p){
         for(Observer<PacketPossibleMoves> o : packetPossibleMovesObservers){
             o.update(p);
         }
     }
-    public void notifyPacketPossibleBuildsObservers(PacketPossibleBuilds p){
+    private void notifyPacketPossibleBuildsObservers(PacketPossibleBuilds p){
         for(Observer<PacketPossibleBuilds> o : packetPossibleBuildsObservers){
             o.update(p);
         }
     }
-    public void notifyPacketMatchStartedObservers(PacketMatchStarted p){
+    private void notifyPacketMatchStartedObservers(PacketMatchStarted p){
         for(Observer<PacketMatchStarted> o : packetMatchStartedObservers){
             o.update(p);
         }
