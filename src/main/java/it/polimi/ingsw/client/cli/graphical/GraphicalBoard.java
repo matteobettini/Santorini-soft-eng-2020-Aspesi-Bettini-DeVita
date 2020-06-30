@@ -38,7 +38,7 @@ public class GraphicalBoard implements CharFigure {
      */
     @Override
     public void draw() {
-        draw(defaultX, defaultY);
+        draw( CharStream.defaultX + defaultX, CharStream.defaultY + defaultY);
     }
 
     /**

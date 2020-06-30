@@ -17,8 +17,8 @@ public class GraphicalCardsMenu implements CharFigure {
     private List<String> chosenCards;
     private int cardsPerRow;
     private List<String> availableCards;
-    private final int defaultX = 0;
-    private final int defaultY = 0;
+    private final int defaultRequiredWidth = 159;
+    private final int marginTitle = 40;
 
     /**
      * This constructor initializes all the godCards received from the server. GodCards are all the received god cards,
@@ -45,8 +45,8 @@ public class GraphicalCardsMenu implements CharFigure {
      * @return an integer corresponding to the required width.
      */
     public int getRequiredWidth(){
-        if(!chosenCards.isEmpty() || availableCards.size() != godCards.size()) return 159;
-        return GraphicalCard.getWidth() * cardsPerRow + 20 - 1;
+        if(!chosenCards.isEmpty() || availableCards.size() != godCards.size()) return defaultRequiredWidth;
+        return GraphicalCard.getWidth() * cardsPerRow + 19;
     }
 
     /**
@@ -90,11 +90,11 @@ public class GraphicalCardsMenu implements CharFigure {
     }
 
     /**
-     * This method is used to display the GraphicalCardsMenu on the stream. It's default position is 0, 0.
+     * This method is used to display the GraphicalCardsMenu on the stream's default position.
      */
     @Override
     public void draw() {
-        draw(defaultX,defaultY);
+        draw(CharStream.defaultX, CharStream.defaultY);
     }
 
     /**
@@ -108,12 +108,12 @@ public class GraphicalCardsMenu implements CharFigure {
         if (stream == null) return;
 
         if (!chosenCards.isEmpty()) {
-            printAvailableOrChosen("CARDS IN GAME", relX, relY, chosenCards, BackColor.ANSI_BG_RED, 40);
+            printAvailableOrChosen("CARDS IN GAME", relX, relY, chosenCards, BackColor.ANSI_BG_RED);
             return;
         }
 
         if(availableCards.size() != godCards.size()){
-            printAvailableOrChosen("CHOOSE A CARD", relX, relY, availableCards, BackColor.ANSI_BRIGHT_BG_GREEN, 40);
+            printAvailableOrChosen("CHOOSE A CARD", relX, relY, availableCards, BackColor.ANSI_BRIGHT_BG_GREEN);
             return;
         }
 
@@ -147,8 +147,8 @@ public class GraphicalCardsMenu implements CharFigure {
      * @param relX is the X coordinate relative to the menu.
      * @param relY is the Y coordinate relative to the menu.
      */
-    private void printAvailableOrChosen(String message, int relX, int relY, List<String> cardsToPrint, BackColor titleColor, int startTitle){
-        stream.setMessage(message, relX + startTitle, relY + 2, ForeColor.ANSI_BLACK, titleColor);
+    private void printAvailableOrChosen(String message, int relX, int relY, List<String> cardsToPrint, BackColor titleColor){
+        stream.setMessage(message, relX + marginTitle, relY + 2, ForeColor.ANSI_BLACK, titleColor);
         int marginY = 10;
         if (cardsToPrint.size() == 2) {
             int marginX = 0;

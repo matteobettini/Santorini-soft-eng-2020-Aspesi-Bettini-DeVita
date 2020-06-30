@@ -59,12 +59,16 @@
  ## Testing and Documentation
  
  The [model package](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/src/main/java/it/polimi/ingsw/server/model) is entirely tested:
- - <a href="https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/blob/master/deliveries/tests_coverage_report.html" title="Tests' Coverage Report">Tests' Coverage Report</a>
+ - <a href="https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/deliveries/TestCoverage" title="Tests' Coverage Report">Tests' Coverage Report</a>
+ ![Model Coverage](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/blob/master/modelCoverage.png)
+ 
+ ![Cards Coverage](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/blob/master/cardsCoverage.png)
+ 
  - JavaDoc
  
  ## Tools
  
- * [Draw.io](http://www.draw.io/) - UML Diagram
+ * [StarUML](http://staruml.io) - UML Diagram
  * [Maven](https://maven.apache.org/) - Dependency Management
  * [IntelliJ](https://www.jetbrains.com/idea/) - IDE
  * [JavaFX](https://openjfx.io) - Graphical Framework

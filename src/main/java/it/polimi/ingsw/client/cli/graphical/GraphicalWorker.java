@@ -14,6 +14,8 @@ class GraphicalWorker implements CharFigure {
     private final int RATIO_Y;
     private final Integer number;
     private final String playerName;
+    private final int marginX = 8;
+    private final int marginY = 3;
 
     /**
      * This constructor initializes the stream used by the GraphicalWorker to print itself, its color, its lengths on
@@ -52,10 +54,10 @@ class GraphicalWorker implements CharFigure {
 
     /**
      * This method is used to display the GraphicalWorker on the stream. Since workers are always displayed
-     * relatively to the GraphicalCells this method is not implemented.
+     * relatively to the GraphicalCells this method draws on the stream's default position..
      */
     @Override
-    public void draw() { }
+    public void draw() { draw(CharStream.defaultX, CharStream.defaultY); }
 
     /**
      * This method is used to display the GraphicalWorker on the stream. GraphicalWorkers are always displayed
@@ -65,8 +67,8 @@ class GraphicalWorker implements CharFigure {
      */
     @Override
     public void draw(int relX, int relY) {
-        relX += 8;
-        relY += 3;
+        relX += marginX;
+        relY += marginY;
         for(int i = 0; i <= RATIO_X; ++i){
             for(int j = 0; j <= RATIO_Y; ++j){
                 if(i == 1 && j == 1) stream.addChar('*', i + relX, j + relY, color);

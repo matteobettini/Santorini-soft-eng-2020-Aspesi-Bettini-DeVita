@@ -16,6 +16,7 @@ public class GraphicalCell implements CharFigure {
     private final Point position;
     private final int RATIO_X;
     private final int RATIO_Y;
+    private final int WORKER_RATIO = 4;
 
     /**
      * This constructor initializes the GraphicalCell'stream used to print itself, its position
@@ -49,7 +50,7 @@ public class GraphicalCell implements CharFigure {
                 playerName = player;
                 workerNumber = matchData.getWorkerNumber(workerID);
                 Color color = matchData.getPlayersColor().get(playerName);
-                if(playerName != null) this.worker = new GraphicalWorker(stream, color, RATIO_X / 4, RATIO_Y / 4, workerNumber, playerName);
+                if(playerName != null) this.worker = new GraphicalWorker(stream, color, RATIO_X / WORKER_RATIO, RATIO_Y / WORKER_RATIO, workerNumber, playerName);
             }
         }
     }
@@ -95,10 +96,10 @@ public class GraphicalCell implements CharFigure {
 
     /**
      * This method draws the GraphicalCell on the stream. Since GraphicalCells are always
-     * drawn relatively to the GraphicalBoard this method is not implemented.
+     * drawn relatively to the GraphicalBoard this method draws on the stream's default position.
      */
     @Override
-    public void draw() { }
+    public void draw() { draw(CharStream.defaultX, CharStream.defaultY); }
 
     /**
      * This method draws the GraphicalCell relatively to the GraphicalBoard.

@@ -9,6 +9,10 @@ class SecondFloorBuilding implements CharFigure {
     private final CharStream stream;
     private final int RATIO_X;
     private final int RATIO_Y;
+    private final int marginX = 5;
+    private final int marginY = 2;
+    private final BackColor backColor = BackColor.ANSI_BG_WHITE;
+    private final ForeColor foreColor = ForeColor.ANSI_BLACK;
 
     /**
      * /**
@@ -28,7 +32,7 @@ class SecondFloorBuilding implements CharFigure {
      * Since the building position on the stream is relative to the one of the graphical board this method is not used.
      */
     @Override
-    public void draw() { }
+    public void draw() { draw(CharStream.defaultX, CharStream.defaultY); }
 
     /**
      * This method will set colors and characters used to display the second floor through the stream.
@@ -38,10 +42,8 @@ class SecondFloorBuilding implements CharFigure {
      */
     @Override
     public void draw(int relX, int relY) {
-        BackColor backColor = BackColor.ANSI_BG_WHITE;
-        ForeColor foreColor = ForeColor.ANSI_BLACK;
-        relX += 5;
-        relY += 2;
+        relX += marginX;
+        relY += marginY;
         for(int i = 0; i <= RATIO_X; ++i){
             for(int j = 0; j <= RATIO_Y; ++j){
                 if(i == 0 && j == 0) stream.addChar('╔', i + relX, j + relY, foreColor, backColor);

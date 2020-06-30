@@ -13,6 +13,8 @@ public class CharStream {
     private final int width;
     private final char[][] content;
     private final String[][]colors;
+    public static final int defaultX = 0;
+    public  static final int defaultY = 0;
 
     /**
      * This constructor initializes the stream's width and height to the given ones.

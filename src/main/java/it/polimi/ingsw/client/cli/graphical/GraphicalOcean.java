@@ -6,6 +6,7 @@ import it.polimi.ingsw.client.cli.utilities.colors.BackColor;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -16,6 +17,14 @@ public class GraphicalOcean implements CharFigure {
     private final int defaultX = 0;
     private final int defaultY = 0;
     private final int numberOfBoats = 7;
+    private final List<Point> possibleBoatsPositions = Arrays.asList(
+            new Point(20, 1),new Point(40, 1),
+            new Point(10, 15), new Point(12, 47),
+            new Point(32, 47), new Point(56, 47),
+            new Point(79, 47), new Point(99, 47),
+            new Point(125, 47), new Point(60, 1),
+            new Point(80, 1), new Point(100, 1),
+            new Point(120, 1), new Point(140, 1));
 
     /**
      * This constructor initializes the stream used by the GraphicalOcean to print itself, its width and height.
@@ -34,7 +43,7 @@ public class GraphicalOcean implements CharFigure {
      */
     @Override
     public void draw(){
-        draw(defaultX, defaultY);
+        draw(CharStream.defaultX, CharStream.defaultY);
     }
 
     /**
@@ -51,40 +60,18 @@ public class GraphicalOcean implements CharFigure {
             }
         }
 
-        List<Point> boatsPositions = possibleBoatsPositions();
+        List<Point> boatsPositions = possibleBoatsPositions;
         List<Point> alreadyDrawn = new ArrayList<>();
 
         for(int i = 0; i < numberOfBoats; ++i){
             Random random = new Random();
-            int boatIndex = random.nextInt(possibleBoatsPositions().size());
-            Point chosenBoat = possibleBoatsPositions().get(boatIndex);
+            int boatIndex = random.nextInt(boatsPositions.size());
+            Point chosenBoat = boatsPositions.get(boatIndex);
             if(!alreadyDrawn.contains(chosenBoat)) drawBoat(chosenBoat.x,chosenBoat.y);
             alreadyDrawn.add(chosenBoat);
         }
     }
 
-    /**
-     * This method returns the list o possible points where the GraphicalBoat can be drawn.
-     * @return a List of Points.
-     */
-    private List<Point> possibleBoatsPositions(){
-        List<Point> boatsPositions = new ArrayList<>();
-        boatsPositions.add(new Point(20, 1));
-        boatsPositions.add(new Point(40, 1));
-        boatsPositions.add(new Point(10, 15));
-        boatsPositions.add(new Point(12, 47));
-        boatsPositions.add(new Point(32, 47));
-        boatsPositions.add(new Point(56, 47));
-        boatsPositions.add(new Point(79, 47));
-        boatsPositions.add(new Point(99, 47));
-        boatsPositions.add(new Point(125, 47));
-        boatsPositions.add(new Point(60, 1));
-        boatsPositions.add(new Point(80, 1));
-        boatsPositions.add(new Point(100, 1));
-        boatsPositions.add(new Point(120, 1));
-        boatsPositions.add(new Point(140, 1));
-        return boatsPositions;
-    }
 
     /**
      * This method randomly draws GraphicalBoats on the GraphicalOcean.

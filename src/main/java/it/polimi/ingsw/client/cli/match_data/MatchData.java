@@ -147,18 +147,14 @@ public class MatchData {
     }
 
     /**
-     * Getter for the buildings counter.
-     * @return a map that associates BuildingType to the current available number.
-     */
-    public Map<BuildingType, Integer> getBuildingsCounter() {
-        return buildingsCounter;
-    }
-
-    /**
      * Getter for the temporary buildings counter.
      * @return a map that associates BuildingType to the current available number (not the confirmed number after the board updating).
      */
-    public Map<BuildingType, Integer> getBuildingsTempCounter() { return buildingsTempCounter; }
+    public Map<BuildingType, Integer> getBuildingsTempCounter() {
+        Map<BuildingType, Integer> buildingsCounter = new HashMap<>();
+        for(BuildingType building : buildingsTempCounter.keySet()) buildingsCounter.put(building, buildingsTempCounter.get(building));
+        return buildingsCounter;
+    }
 
     /**
      * This method returns the Graphical Board instance.
@@ -181,6 +177,8 @@ public class MatchData {
      * @return a Map that associates cards' names to their descriptions.
      */
     public Map<String, String> getAllCards() {
+        Map<String, String> allCards = new HashMap<>();
+        for(String card : this.allCards.keySet()) allCards.put(card, this.allCards.get(card));
         return allCards;
     }
 
@@ -189,6 +187,10 @@ public class MatchData {
      * @return a Map that associates player' ids to their List of workers' ids.
      */
     public Map<String, List<String>> getIds() {
+        Map<String, List<String>> ids = new HashMap<>();
+        for(String player : this.ids.keySet()){
+            ids.put(player, new ArrayList<>(this.ids.get(player)));
+        }
         return ids;
     }
 
@@ -197,6 +199,10 @@ public class MatchData {
      * @return a Map that associates players' ids to their colors.
      */
     public Map<String, Color> getPlayersColor() {
+        Map<String, Color> playersColor = new HashMap<>();
+        for(String player : this.playersColor.keySet()){
+            playersColor.put(player, new Color(this.playersColor.get(player).getRGB()));
+        }
         return playersColor;
     }
 
@@ -205,6 +211,11 @@ public class MatchData {
      * @return a Map that associates players to their cards.
      */
     public Map<String, Pair<String, String>> getPlayersCards() {
+        Map<String, Pair<String, String>> playersCards = new HashMap<>();
+        for(String player : this.playersCards.keySet()){
+            Pair<String, String> card = new Pair<>(this.playersCards.get(player).getFirst(), this.playersCards.get(player).getSecond());
+            playersCards.put(player, card);
+        }
         return playersCards;
     }
 

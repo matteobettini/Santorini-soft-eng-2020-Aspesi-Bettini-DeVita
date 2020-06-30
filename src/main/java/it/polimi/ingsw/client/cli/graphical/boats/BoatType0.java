@@ -21,7 +21,7 @@ class BoatType0 implements CharFigure {
      * Since the board position on the stream is relative to the one of the graphical ocean this method is not used.
      */
     @Override
-    public void draw() { }
+    public void draw() { draw(CharStream.defaultX, CharStream.defaultY);  }
 
     /**
      * This method will set colors and characters used to display the board through the stream.

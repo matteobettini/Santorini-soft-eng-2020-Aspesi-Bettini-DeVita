@@ -22,7 +22,7 @@ class BoatType3 implements CharFigure {
      */
     @Override
     public void draw() {
-        draw(0,0);
+        draw(CharStream.defaultX, CharStream.defaultY);
     }
 
     /**

@@ -45,10 +45,10 @@ class GraphicalCard implements CharFigure {
 
     /**
      * This method is used to display the GraphicalCard on the stream. Since cards are always displayed
-     * relatively to the GraphicalCardsMenu this method is not implemented.
+     * relatively to the GraphicalCardsMenu this method draws on the stream's default position .
      */
     @Override
-    public void draw() { }
+    public void draw() { draw(CharStream.defaultX, CharStream.defaultY); }
 
     /**
      * This method is used to display the GraphicalCard on the stream. GraphicalCards are always displayed

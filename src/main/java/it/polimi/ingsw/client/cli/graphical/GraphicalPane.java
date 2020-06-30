@@ -42,10 +42,10 @@ class GraphicalPane implements CharFigure {
 
     /**
      * This method draws the GraphicalPane on the stream. Since they are always drawn relatively to the game-scene, this
-     * method is not implemented.
+     * method draws on the stream's default position.
      */
     @Override
-    public void draw() { }
+    public void draw() { draw(CharStream.defaultX, CharStream.defaultY);}
 
     /**
      * This method draws the GraphicalPane on the stream given the relative coordinates.

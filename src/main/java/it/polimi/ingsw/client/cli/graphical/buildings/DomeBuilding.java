@@ -7,6 +7,10 @@ import it.polimi.ingsw.client.cli.utilities.colors.ForeColor;
 
 class DomeBuilding implements CharFigure {
     private final CharStream stream;
+    private final int marginX = 9;
+    private final int marginY = 3;
+    private final BackColor backColor = BackColor.ANSI_BG_BLUE;
+    private final ForeColor foreColor = ForeColor.ANSI_BLACK;
 
     /**
      * This method is the constructor for the graphical dome that implements the CharFigure interface.
@@ -21,7 +25,7 @@ class DomeBuilding implements CharFigure {
      * Since the building position on the stream is relative to the one of the graphical board this method is not used.
      */
     @Override
-    public void draw() { }
+    public void draw() { draw(CharStream.defaultX, CharStream.defaultY); }
 
     /**
      * This method will set colors and characters used to display the dome through the stream.
@@ -31,10 +35,8 @@ class DomeBuilding implements CharFigure {
      */
     @Override
     public void draw(int relX, int relY) {
-        relX += 9;
-        relY += 3;
-        BackColor backColor = BackColor.ANSI_BG_BLUE;
-        ForeColor foreColor = ForeColor.ANSI_BLACK;
+        relX += marginX;
+        relY += marginY;
 
         stream.addChar('*', relX , relY, foreColor, backColor);
         stream.addChar('*', relX + 1 , relY , foreColor, backColor);

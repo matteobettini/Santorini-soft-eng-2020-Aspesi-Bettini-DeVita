@@ -10,8 +10,8 @@ public class GraphicalStartMenu implements CharFigure {
     private final int height;
     public static final int DEFAULT_WIDTH = 159;
     public static final int DEFAULT_HEIGHT = 30;
-    private final int defaultX = 0;
-    private final int defaultY = 0;
+    private final int marginTitleX = 10;
+    private final int marginTitleY = 46;
 
     /**
      * This constructor initializes the stream used by the GraphicalStartMenu to print itself, its width and height.
@@ -34,11 +34,11 @@ public class GraphicalStartMenu implements CharFigure {
     }
 
     /**
-     * This method draws the GraphicalStartMenu on the stream.
+     * This method draws the GraphicalStartMenu on the stream's default position.
      */
     @Override
     public void draw() {
-        draw(defaultX,defaultY);
+        draw(CharStream.defaultX, CharStream.defaultY);
     }
 
     /**
@@ -54,11 +54,9 @@ public class GraphicalStartMenu implements CharFigure {
             }
         }
 
-        int marginY = 10;
-        int marginX = 46;
         String title = "SANTORINI";
-        stream.setMessage(title, relX + marginX, relY + marginY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_BLUE,BackColor.ANSI_BG_CYAN);
-        stream.addString(relX + marginX + 18, relY + marginY + 7, "Welcome to Santorini Board-Game",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
-        stream.addString(relX + marginX - 10, relY + marginY + 9, "This video-game adaption was created by Andrea Aspesi, Matteo Bettini and Mirko De Vita",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
+        stream.setMessage(title, relX + marginTitleX, relY + marginTitleY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_BLUE,BackColor.ANSI_BG_CYAN);
+        stream.addString(relX + marginTitleX + 18, relY + marginTitleY + 7, "Welcome to Santorini Board-Game",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
+        stream.addString(relX + marginTitleX - 10, relY + marginTitleY + 9, "This video-game adaption was created by Andrea Aspesi, Matteo Bettini and Mirko De Vita",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
     }
 }

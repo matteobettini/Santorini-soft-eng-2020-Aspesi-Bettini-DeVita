@@ -9,6 +9,10 @@ class FirstFloorBuilding implements CharFigure {
     private final CharStream stream;
     private final int RATIO_X;
     private final int RATIO_Y;
+    private final int marginX = 0;
+    private final int marginY = 0;
+    private final BackColor backColor = BackColor.ANSI_BG_WHITE;
+    private final ForeColor foreColor = ForeColor.ANSI_BLACK;
 
     /**
      * /**
@@ -28,7 +32,7 @@ class FirstFloorBuilding implements CharFigure {
      * Since the building position on the stream is relative to the one of the graphical board this method is not used.
      */
     @Override
-    public void draw() { }
+    public void draw() { draw(CharStream.defaultX, CharStream.defaultY); }
 
 
     /**
@@ -39,8 +43,8 @@ class FirstFloorBuilding implements CharFigure {
      */
     @Override
     public void draw(int relX, int relY) {
-        BackColor backColor = BackColor.ANSI_BG_WHITE;
-        ForeColor foreColor = ForeColor.ANSI_BLACK;
+        relX += marginX;
+        relY += marginY;
         for(int i = 1; i < RATIO_X; ++i) {
             for (int j = 1; j < RATIO_Y; ++j) {
                 stream.addColor(i + relX, j + relY, foreColor, backColor);
