@@ -2,6 +2,8 @@ package it.polimi.ingsw.client.cli.graphical.buildings;
 
 import it.polimi.ingsw.client.cli.graphical.CharFigure;
 import it.polimi.ingsw.client.cli.utilities.CharStream;
+import it.polimi.ingsw.client.cli.utilities.colors.BackColor;
+import it.polimi.ingsw.client.cli.utilities.colors.ForeColor;
 import it.polimi.ingsw.common.enums.BuildingType;
 
 public class BuildingFactory {
@@ -9,6 +11,9 @@ public class BuildingFactory {
     private static final int FF_RATIO = 1;
     private static final int SF_RATIO = 2;
     private static final int TF_RATIO = 4;
+    public static final BackColor domeColor = BackColor.ANSI_BG_BLUE;
+    public static final BackColor floorColor = BackColor.ANSI_BG_WHITE;
+    public static final ForeColor sidesColor = ForeColor.ANSI_BLACK;
 
     /**
      * This method is the factory for the graphical building. Four possible instances are possible based on the given building type.

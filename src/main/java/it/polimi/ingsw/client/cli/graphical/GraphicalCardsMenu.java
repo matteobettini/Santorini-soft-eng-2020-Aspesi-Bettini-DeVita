@@ -19,6 +19,14 @@ public class GraphicalCardsMenu implements CharFigure {
     private List<String> availableCards;
     private static final int defaultRequiredWidth = 159;
     private static final int marginTitle = 40;
+    private static final BackColor cardsInGameTitleColor = BackColor.ANSI_BG_RED;
+    private static final BackColor chooseCardsTitleColor = BackColor.ANSI_BRIGHT_BG_GREEN;
+    private static final int marginAvailableChosenY = 10;
+    private static final ForeColor titleCharacterColor = ForeColor.ANSI_BLACK;
+    private static final int space_2Cards = 20;
+    private static final int space_3Cards = 10;
+    private static final int marginX_2Cards = 40;
+    private static final int marginX_3Cards = 25;
 
     /**
      * This constructor initializes all the godCards received from the server. GodCards are all the received god cards,
@@ -45,7 +53,7 @@ public class GraphicalCardsMenu implements CharFigure {
      * @return an integer corresponding to the required width.
      */
     public int getRequiredWidth(){
-        if(!chosenCards.isEmpty() || availableCards.size() != godCards.size()) return defaultRequiredWidth;
+        if(!chosenCards.isEmpty() || availableCards.size() <= 3) return defaultRequiredWidth;
         return GraphicalCard.getWidth() * cardsPerRow + 19;
     }
 
@@ -54,7 +62,7 @@ public class GraphicalCardsMenu implements CharFigure {
      * @return an integer corresponding to the required height.
      */
     public int getRequiredHeight(){
-        if(!chosenCards.isEmpty() || availableCards.size() != godCards.size()) return GraphicalCard.getHeight() + 20;
+        if(!chosenCards.isEmpty() || availableCards.size() <= 3) return GraphicalCard.getHeight() + 20;
         int count = godCards.size();
         while(count % cardsPerRow != 0){
             count ++;
@@ -108,12 +116,12 @@ public class GraphicalCardsMenu implements CharFigure {
         if (stream == null) return;
 
         if (!chosenCards.isEmpty()) {
-            printAvailableOrChosen("CARDS IN GAME", relX, relY, chosenCards, BackColor.ANSI_BG_RED);
+            printAvailableOrChosen("CARDS IN GAME", relX, relY, chosenCards, cardsInGameTitleColor);
             return;
         }
 
-        if(availableCards.size() != godCards.size()){
-            printAvailableOrChosen("CHOOSE A CARD", relX, relY, availableCards, BackColor.ANSI_BRIGHT_BG_GREEN);
+        if(availableCards.size() <= 3){
+            printAvailableOrChosen("CHOOSE A CARD", relX, relY, availableCards, chooseCardsTitleColor);
             return;
         }
 
@@ -127,8 +135,8 @@ public class GraphicalCardsMenu implements CharFigure {
      */
     private void printAllCards(int relX, int relY){
         int marginForTitle = 7;
-        int marginForHeading = (cardsPerRow * 10) - (cardsPerRow <= 2 ? 20 : 0);
-        stream.setMessage("GOD CARDS", relX + marginForHeading + 5, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW);
+        int marginForHeading = (cardsPerRow * space_3Cards) - (cardsPerRow <= 2 ? space_2Cards : 0) + 5;
+        stream.setMessage("GOD CARDS", relX + marginForHeading, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW);
         int countY = 0;
         int countX = 0;
         for (String godCard : availableCards) {
@@ -148,21 +156,21 @@ public class GraphicalCardsMenu implements CharFigure {
      * @param relY is the Y coordinate relative to the menu.
      */
     private void printAvailableOrChosen(String message, int relX, int relY, List<String> cardsToPrint, BackColor titleColor){
-        stream.setMessage(message, relX + marginTitle, relY + 2, ForeColor.ANSI_BLACK, titleColor);
-        int marginY = 10;
+        stream.setMessage(message, relX + marginTitle, relY + 2, titleCharacterColor, titleColor);
+
         if (cardsToPrint.size() == 2) {
-            int marginX = 0;
+            int space = 0;
             for (String card : cardsToPrint) {
                 GraphicalCard graphicalCard = new GraphicalCard(stream, card, godCards.get(card));
-                graphicalCard.draw(relX + 40 + marginX, relY + marginY);
-                marginX += GraphicalCard.getWidth() + 20;
+                graphicalCard.draw(relX + marginX_2Cards + space, relY + marginAvailableChosenY);
+                space += GraphicalCard.getWidth() + space_2Cards;
             }
         } else if (cardsToPrint.size() == 3) {
-            int marginX = 0;
+            int space = 0;
             for (String card : cardsToPrint) {
                 GraphicalCard graphicalCard = new GraphicalCard(stream, card, godCards.get(card));
-                graphicalCard.draw(relX + 25 + marginX, relY + marginY);
-                marginX += GraphicalCard.getWidth() + 10;
+                graphicalCard.draw(relX + marginX_3Cards + space, relY + marginAvailableChosenY);
+                space += GraphicalCard.getWidth() + space_3Cards;
             }
         }
     }

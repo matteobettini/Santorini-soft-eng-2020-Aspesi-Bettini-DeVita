@@ -12,6 +12,10 @@ public class GraphicalStartMenu implements CharFigure {
     public static final int DEFAULT_HEIGHT = 30;
     private static final int marginTitleX = 46;
     private static final int marginTitleY = 10;
+    private static final int marginWelcomeMessageX = 18;
+    private static final int marginWelcomeMessageY = 7;
+    private static final int marginContributorsMessageX = -10;
+    private static final int marginContributorsMessageY = 9;
 
     /**
      * This constructor initializes the stream used by the GraphicalStartMenu to print itself, its width and height.
@@ -56,7 +60,7 @@ public class GraphicalStartMenu implements CharFigure {
 
         String title = "SANTORINI";
         stream.setMessage(title, relX + marginTitleX, relY + marginTitleY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_BLUE,BackColor.ANSI_BG_CYAN);
-        stream.addString(relX + marginTitleX + 18, relY + marginTitleY + 7, "Welcome to Santorini Board-Game",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
-        stream.addString(relX + marginTitleX - 10, relY + marginTitleY + 9, "This video-game adaption was created by Andrea Aspesi, Matteo Bettini and Mirko De Vita",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
+        stream.addString(relX + marginTitleX + marginWelcomeMessageX, relY + marginTitleY + marginWelcomeMessageY, "Welcome to Santorini Board-Game",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
+        stream.addString(relX + marginTitleX + marginContributorsMessageX, relY + marginTitleY + marginContributorsMessageY, "This video-game adaption was created by Andrea Aspesi, Matteo Bettini and Mirko De Vita",   ForeColor.ANSI_BRIGHT_BLUE, BackColor.ANSI_BG_CYAN);
     }
 }

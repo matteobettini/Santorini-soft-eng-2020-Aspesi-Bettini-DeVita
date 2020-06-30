@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.cli.graphical;
 import it.polimi.ingsw.client.cli.utilities.CharStream;
 import it.polimi.ingsw.client.cli.graphical.boats.BoatFactory;
 import it.polimi.ingsw.client.cli.utilities.colors.BackColor;
+import it.polimi.ingsw.client.cli.utilities.colors.ForeColor;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ public class GraphicalOcean implements CharFigure {
     private static final int defaultX = CharStream.defaultX;
     private static final int defaultY = CharStream.defaultY;
     private static final int numberOfBoats = 7;
+    public static final ForeColor waveColor = ForeColor.ANSI_BRIGHT_WHITE;
+    public static final BackColor waterColor = BackColor.ANSI_BRIGHT_BG_CYAN;
     private final List<Point> possibleBoatsPositions = Arrays.asList(
             new Point(20, 1),new Point(40, 1),
             new Point(10, 15), new Point(12, 47),
@@ -56,7 +59,7 @@ public class GraphicalOcean implements CharFigure {
 
         for(int i = 0; i < width; ++i) {
             for (int j = 0; j < height; ++j) {
-                stream.addColor(i ,j , BackColor.ANSI_BRIGHT_BG_CYAN);
+                stream.addColor(i ,j , waterColor);
             }
         }
 

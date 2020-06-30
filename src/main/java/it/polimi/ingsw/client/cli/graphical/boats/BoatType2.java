@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.cli.graphical.boats;
 
 import it.polimi.ingsw.client.cli.graphical.CharFigure;
+import it.polimi.ingsw.client.cli.graphical.GraphicalOcean;
 import it.polimi.ingsw.client.cli.utilities.CharStream;
 import it.polimi.ingsw.client.cli.utilities.colors.BackColor;
 import it.polimi.ingsw.client.cli.utilities.colors.ForeColor;
@@ -8,6 +9,9 @@ import it.polimi.ingsw.client.cli.utilities.colors.ForeColor;
 class BoatType2 implements CharFigure {
 
     private final CharStream stream;
+    private static final BackColor sailColor = BackColor.ANSI_BRIGHT_BG_BLACK;
+    private static final ForeColor mastColor = ForeColor.ANSI_BRIGHT_WHITE;
+    private static final BackColor boatColor = BackColor.ANSI_BRIGHT_BG_RED;
 
     /**
      * The constructor only need to know the stream in order to print itself.
@@ -32,16 +36,16 @@ class BoatType2 implements CharFigure {
      */
     @Override
     public void draw(int relX, int relY) {
-        stream.addChar('_',relX - 2, relY + 1, ForeColor.ANSI_BRIGHT_WHITE, BackColor.ANSI_BRIGHT_BG_CYAN);
-        stream.addChar('_',relX + 5, relY + 1, ForeColor.ANSI_BRIGHT_WHITE, BackColor.ANSI_BRIGHT_BG_CYAN);
-        stream.addColor(relX - 1, relY + 1, BackColor.ANSI_BRIGHT_BG_RED);
-        stream.addColor(relX , relY + 1, BackColor.ANSI_BRIGHT_BG_RED);
-        stream.addColor(relX + 1 , relY + 1, BackColor.ANSI_BRIGHT_BG_RED);
-        stream.addColor(relX + 2, relY + 1, BackColor.ANSI_BRIGHT_BG_RED);
-        stream.addColor(relX + 3, relY + 1, BackColor.ANSI_BRIGHT_BG_RED);
-        stream.addColor(relX + 4, relY + 1, BackColor.ANSI_BRIGHT_BG_RED);
-        stream.addColor(relX + 1, relY, BackColor.ANSI_BRIGHT_BG_BLACK);
-        stream.addColor(relX + 2, relY, BackColor.ANSI_BRIGHT_BG_BLACK);
-        stream.addChar('|',relX + 2, relY, ForeColor.ANSI_BRIGHT_WHITE, BackColor.ANSI_BRIGHT_BG_BLACK);
+        stream.addChar('_',relX - 2, relY + 1, GraphicalOcean.waveColor, GraphicalOcean.waterColor);
+        stream.addChar('_',relX + 5, relY + 1, GraphicalOcean.waveColor, GraphicalOcean.waterColor);
+        stream.addColor(relX - 1, relY + 1, boatColor);
+        stream.addColor(relX , relY + 1, boatColor);
+        stream.addColor(relX + 1 , relY + 1, boatColor);
+        stream.addColor(relX + 2, relY + 1, boatColor);
+        stream.addColor(relX + 3, relY + 1, boatColor);
+        stream.addColor(relX + 4, relY + 1, boatColor);
+        stream.addColor(relX + 1, relY, sailColor);
+        stream.addColor(relX + 2, relY, sailColor);
+        stream.addChar('|',relX + 2, relY, mastColor, sailColor);
     }
 }

@@ -9,10 +9,10 @@ class SecondFloorBuilding implements CharFigure {
     private final CharStream stream;
     private final int RATIO_X;
     private final int RATIO_Y;
-    private final int marginX = 5;
-    private final int marginY = 2;
-    private final BackColor backColor = BackColor.ANSI_BG_WHITE;
-    private final ForeColor foreColor = ForeColor.ANSI_BLACK;
+    private static final int marginX = 5;
+    private static final int marginY = 2;
+    private final BackColor backColor = BuildingFactory.floorColor;
+    private final ForeColor foreColor = BuildingFactory.sidesColor;
 
     /**
      * /**

@@ -14,6 +14,9 @@ class GraphicalCard implements CharFigure {
     private final String description;
     private static final int width = 35;
     private static final int height = 20;
+    private static final BackColor cardsColor = BackColor.ANSI_BRIGHT_BG_WHITE;
+    private static final ForeColor descriptionColor = ForeColor.ANSI_BLACK;
+    private static final ForeColor effectColor = ForeColor.ANSI_BLUE;
 
     /**
      * This constructor initializes the card's name, description and the stream used to display itself.
@@ -67,26 +70,27 @@ class GraphicalCard implements CharFigure {
                 else stream.addColor(i + relX, j + relY,  BackColor.ANSI_BRIGHT_BG_WHITE);
             }
         }
-        int midPointCard = relX + 18;
-        int midPointName = cardName.length()/2;
-        stream.addString(midPointCard - midPointName, relY, cardName.substring(0,midPointName + 1), ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_WHITE);
-        stream.addString(midPointCard , relY, cardName.substring(midPointName), ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_WHITE);
+        int midPointCard = (int) (relX + Math.ceil(width * 1.0 / 2.0));
+        int midPointName = cardName.length() / 2;
+        stream.addString(midPointCard - midPointName, relY, cardName.substring(0,midPointName + 1), descriptionColor, cardsColor);
+        stream.addString(midPointCard , relY, cardName.substring(midPointName), descriptionColor, cardsColor);
         List<String> desc = Arrays.stream(description.split("\\s+")).collect(Collectors.toList());
         int currentSpace = width - 1;
         int nextLine = 4;
-        ForeColor descColor = ForeColor.ANSI_BLUE;
+
+        ForeColor descColor = effectColor;
         for(String word : desc){
             if(currentSpace - (word.length() + 1) < 0){
                 if(nextLine == height - 1 || word.length() >= width){
-                    stream.addString(relX + width / 2, relY + nextLine + 1,"...", descColor, BackColor.ANSI_BRIGHT_BG_WHITE);
+                    stream.addString(relX + width / 2, relY + nextLine + 1,"...", descColor, cardsColor);
                     return;
                 }
                 nextLine += 1;
                 currentSpace = width - 1;
             }
-            stream.addString(relX + width  - currentSpace, relY + nextLine, word.concat(" "), descColor, BackColor.ANSI_BRIGHT_BG_WHITE);
+            stream.addString(relX + width  - currentSpace, relY + nextLine, word.concat(" "), descColor, cardsColor);
             currentSpace -= word.length() + 1;
-            if(word.contains(":")) descColor = ForeColor.ANSI_BLACK;
+            if(word.contains(":")) descColor = descriptionColor;
         }
 
     }

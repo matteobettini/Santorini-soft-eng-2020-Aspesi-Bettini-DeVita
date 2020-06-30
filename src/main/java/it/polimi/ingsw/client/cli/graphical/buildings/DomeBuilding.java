@@ -9,8 +9,8 @@ class DomeBuilding implements CharFigure {
     private final CharStream stream;
     private final int marginX = 9;
     private final int marginY = 3;
-    private final BackColor backColor = BackColor.ANSI_BG_BLUE;
-    private final ForeColor foreColor = ForeColor.ANSI_BLACK;
+    private final BackColor backColor = BuildingFactory.domeColor;
+    private final ForeColor foreColor = BuildingFactory.sidesColor;
 
     /**
      * This method is the constructor for the graphical dome that implements the CharFigure interface.

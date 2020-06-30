@@ -8,15 +8,21 @@ import java.awt.*;
 import java.util.List;
 
 public class GraphicalBoard implements CharFigure {
-    private final int rows = 5;
-    private final int columns = 5;
+    private static final int rows = 5;
+    private static final int columns = 5;
     private final CharStream stream;
     private final GraphicalCell[][] graphicalCells;
-    private final int RATIO_X = 20;
-    private final int RATIO_Y = 8;
-    private static final int defaultX = 50;
-    private static final int defaultY = 5;
+    private static final int RATIO_X = 20;
+    private static final int RATIO_Y = 8;
+    private static final int defaultX = CharStream.defaultX + 50;
+    private static final int defaultY = CharStream.defaultY + 5;
     private List<Point> possiblePositions;
+    private static final BackColor gridColor = BackColor.ANSI_BG_WHITE;
+    private static final BackColor internalCellColor = BackColor.ANSI_BG_GREEN;
+    private static final ForeColor gridSymbolsColor = ForeColor.ANSI_BLACK;
+    private static final char startingLetter = 'A';
+    private static final char startingNumber = '1';
+    private static final BackColor actionsColor = BackColor.ANSI_BRIGHT_BG_GREEN;
 
     /**
      * This constructor initializes the GraphicalBoard given the stream that will be used in order to print itself.
@@ -51,15 +57,10 @@ public class GraphicalBoard implements CharFigure {
     @Override
     public void draw(int relX, int relY) {
 
-        BackColor backColor = BackColor.ANSI_BG_WHITE;
-        ForeColor foreColor = ForeColor.ANSI_BLACK;
-
         char[] coordinatesYaxis = new char[rows];
-        char startingLetter = 'A';
         for(int i = 0; i < rows; ++i) coordinatesYaxis[i] = (char)(startingLetter + i);
 
         char[] coordinatesXaxis = new char[columns];
-        char startingNumber = '1';
         for(int i = 0; i < columns; ++i) coordinatesXaxis[i] = (char)(startingNumber + i);
 
         int indexX = 0;
@@ -67,25 +68,25 @@ public class GraphicalBoard implements CharFigure {
 
         for(int i = 0; i <= rows * RATIO_X; ++i){
             for(int j = 0; j <= columns * RATIO_Y; ++j){
-                if(i == 0 && j == 0) stream.addChar('╔', i + relX, j + relY, foreColor, backColor);
-                else if(i == 0  && j % RATIO_Y == 0 && j != columns * RATIO_Y) stream.addChar('╠', i + relX, j + relY, foreColor, backColor);
-                else if(i == 0 && j == columns * RATIO_Y) stream.addChar('╚', i + relX, j + relY, foreColor, backColor);
-                else if(i == rows * RATIO_X && j == 0) stream.addChar('╗', i + relX, j + relY, foreColor, backColor);
-                else if(i == rows * RATIO_X && j % RATIO_Y == 0 && j != columns * RATIO_Y) stream.addChar('╣', i + relX, j + relY, foreColor, backColor);
-                else if(i == rows * RATIO_X && j == columns * RATIO_Y) stream.addChar('╝', i + relX, j + relY, foreColor, backColor);
-                else if(i % RATIO_X == 0 && i != rows * RATIO_X && j == 0) stream.addChar('╦', i + relX, j + relY, foreColor,backColor);
-                else if(i % RATIO_X == 0 && i != rows * RATIO_X && j == columns * RATIO_Y) stream.addChar('╩', i + relX, j + relY, foreColor, backColor);
-                else if(i % RATIO_X == 0 && j % RATIO_Y == 0) stream.addChar('╬', i + relX, j + relY, foreColor, backColor);
-                else if(i % RATIO_X == 0) stream.addChar('║', i + relX, j + relY, foreColor, backColor);
-                else if(j % RATIO_Y == 0) stream.addChar('═', i + relX, j + relY, foreColor, backColor);
-                else stream.addColor(i + relX, j + relY, foreColor, BackColor.ANSI_BG_GREEN);
+                if(i == 0 && j == 0) stream.addChar('╔', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else if(i == 0  && j % RATIO_Y == 0 && j != columns * RATIO_Y) stream.addChar('╠', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else if(i == 0 && j == columns * RATIO_Y) stream.addChar('╚', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else if(i == rows * RATIO_X && j == 0) stream.addChar('╗', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else if(i == rows * RATIO_X && j % RATIO_Y == 0 && j != columns * RATIO_Y) stream.addChar('╣', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else if(i == rows * RATIO_X && j == columns * RATIO_Y) stream.addChar('╝', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else if(i % RATIO_X == 0 && i != rows * RATIO_X && j == 0) stream.addChar('╦', i + relX, j + relY, gridSymbolsColor,gridColor);
+                else if(i % RATIO_X == 0 && i != rows * RATIO_X && j == columns * RATIO_Y) stream.addChar('╩', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else if(i % RATIO_X == 0 && j % RATIO_Y == 0) stream.addChar('╬', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else if(i % RATIO_X == 0) stream.addChar('║', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else if(j % RATIO_Y == 0) stream.addChar('═', i + relX, j + relY, gridSymbolsColor, gridColor);
+                else stream.addColor(i + relX, j + relY, gridSymbolsColor, internalCellColor);
 
-                if(i % 10 == 0 && j == 0 && i % RATIO_X != 0){
-                    stream.addChar(coordinatesXaxis[indexX], i + relX, j + relY - 1, foreColor, backColor);
+                if(i % (RATIO_X / 2) == 0 && j == 0 && i % RATIO_X != 0){
+                    stream.addChar(coordinatesXaxis[indexX], i + relX, j + relY - 1, gridSymbolsColor, gridColor);
                     ++indexX;
                 }
-                if(j % 4 == 0 && i == 0 && j % RATIO_Y != 0){
-                    stream.addChar(coordinatesYaxis[indexY], i + relX - 1, j + relY, foreColor, backColor);
+                if(j % (RATIO_Y / 2) == 0 && i == 0 && j % RATIO_Y != 0){
+                    stream.addChar(coordinatesYaxis[indexY], i + relX - 1, j + relY, gridSymbolsColor, gridColor);
                     ++indexY;
                 }
             }
@@ -126,22 +127,21 @@ public class GraphicalBoard implements CharFigure {
      */
     private void highlightActions(int relX, int relY){
         if(possiblePositions == null) return;
-        ForeColor foreColor = ForeColor.ANSI_BLACK;
-        BackColor backColor = BackColor.ANSI_BRIGHT_BG_GREEN;
+
         for(Point pos : possiblePositions){
             int X = pos.x * RATIO_X;
             int Y = pos.y * RATIO_Y;
             for(int i = 1; i < RATIO_X; ++ i){
-                stream.addColor(i + relX + X, relY + Y + 1, foreColor, backColor);
+                stream.addColor(i + relX + X, relY + Y + 1, gridSymbolsColor, actionsColor);
             }
             for(int i = 1; i < RATIO_Y; ++ i){
-                stream.addColor(relX + X + 1, i + relY + Y, foreColor, backColor);
+                stream.addColor(relX + X + 1, i + relY + Y, gridSymbolsColor, actionsColor);
             }
             for(int i = 1; i < RATIO_X; ++ i){
-                stream.addColor(i + relX + X, relY + Y + RATIO_Y - 1, foreColor, backColor);
+                stream.addColor(i + relX + X, relY + Y + RATIO_Y - 1, gridSymbolsColor, actionsColor);
             }
             for(int i = 1; i < RATIO_Y; ++ i){
-                stream.addColor(relX + X + RATIO_X - 1, i + relY + Y, foreColor, backColor);
+                stream.addColor(relX + X + RATIO_X - 1, i + relY + Y, gridSymbolsColor, actionsColor);
             }
         }
     }
