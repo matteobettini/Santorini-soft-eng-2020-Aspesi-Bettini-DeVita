@@ -58,7 +58,6 @@ public class HardcoreBuildStrategy implements MakeBuildStrategy {
             controller.showMessage("Select a worker to perform your build");
         }else{
             isEnabled = false;
-            controller.inputChangeState(false);
             controller.showMessage(activePlayer + " is making his build");
         }
     }

@@ -70,7 +70,6 @@ public class NormalBuildStrategy implements MakeBuildStrategy {
             matchData.getClient().send(new PacketBuild(activePlayer));
         }else{
             isEnabled = false;
-            controller.inputChangeState(false);
             controller.showMessage(activePlayer + " is making his build");
         }
     }

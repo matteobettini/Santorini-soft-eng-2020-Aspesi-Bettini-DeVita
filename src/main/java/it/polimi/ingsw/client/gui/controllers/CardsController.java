@@ -90,10 +90,11 @@ public class CardsController extends GUIController {
         //Clear previous data
         cardsToChoose = packet.getNumberToChoose();
         selectedCards.clear();
+        btnNext.setVisible(false); //Hide confirm button
         //Display cards
         populateCards(packet.getAllCards(), packet.getAvailableCards());
         //Ensure everything is active and ready for the choice
-        showMessage("Select " + packet.getNumberToChoose() + " card" + (packet.getNumberToChoose() > 1 ? "s" : "") + " using the right click.\nUse the left click to show card's description");
+        showMessage("Select " + packet.getNumberToChoose() + " card" + (packet.getNumberToChoose() > 1 ? "s" : "") + " using the left click.\nUse the right click to show card's description");
         closeWait();
         ensureActive(); //Show linked scene if not already active
     }

@@ -51,7 +51,6 @@ public class HardcoreMoveStrategy implements MakeMoveStrategy {
             controller.showMessage("Select a worker to perform your move");
         }else{
             isEnabled = false;
-            controller.inputChangeState(false);
             controller.showMessage(activePlayer + " is making his move");
         }
     }

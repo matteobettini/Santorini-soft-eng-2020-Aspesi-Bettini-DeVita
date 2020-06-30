@@ -10,9 +10,9 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.gui.controllers.MatchActiveController">
+<StackPane alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="750.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.client.gui.controllers.MatchActiveController">
    <children>
-      <SubScene fx:id="gameScene" depthBuffer="true" height="600.0" width="1080.0">
+      <SubScene fx:id="gameScene" depthBuffer="true" height="750.0" width="1080.0">
           <antiAliasing>
               <SceneAntialiasing fx:constant="BALANCED" />
           </antiAliasing>
@@ -105,21 +105,21 @@
                         <Insets bottom="10.0" left="50.0" right="50.0" top="10.0" />
                      </padding>
                   </VBox>
-                  <VBox fx:id="playersPane" alignment="TOP_CENTER" maxWidth="100.0" mouseTransparent="true" prefHeight="200.0" prefWidth="100.0" spacing="5.0" styleClass="back-1" StackPane.alignment="TOP_LEFT">
+                  <VBox fx:id="playersPane" alignment="TOP_CENTER" maxWidth="120.0" mouseTransparent="true" prefHeight="200.0" prefWidth="100.0" spacing="5.0" styleClass="back-1" StackPane.alignment="TOP_LEFT">
                      <children>
-                        <ImageView fitHeight="146.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="175.0" fitWidth="105.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../textures/gods/apollo.png" />
                            </image>
                         </ImageView>
                         <Label text="You" />
-                        <ImageView fitHeight="146.0" fitWidth="76.0" layoutX="47.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="175.0" fitWidth="105.0" layoutX="47.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../textures/gods/artemis.png" />
                            </image>
                         </ImageView>
                         <Label layoutX="72.0" layoutY="158.0" text="Matteo" />
-                        <ImageView fitHeight="146.0" fitWidth="76.0" layoutX="47.0" layoutY="179.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="175.0" fitWidth="105.0" layoutX="47.0" layoutY="179.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../textures/gods/demeter.png" />
                            </image>

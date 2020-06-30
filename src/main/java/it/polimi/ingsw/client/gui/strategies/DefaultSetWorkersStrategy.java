@@ -40,7 +40,6 @@ public class DefaultSetWorkersStrategy implements SetWorkersStrategy {
             controller.showMessage("Select a cell to start placing your workers");
         }else{
             isEnabled = false;
-            controller.inputChangeState(false); //Disable Confirm/Revert
             controller.showMessage(activePlayer + " is setting his workers' position");
         }
     }

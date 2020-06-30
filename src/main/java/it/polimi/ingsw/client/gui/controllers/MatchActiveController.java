@@ -115,14 +115,14 @@ public class MatchActiveController extends GUIController {
     private static final Color SCENE_BACKGROUND = Color.LIGHTBLUE;
     private static final double SCENE_START_ANGLE_X = 330;
     private static final double SCENE_START_ANGLE_Y = 0;
-    private static final double SCENE_MAX_ANGLE_X = 0;
-    private static final double SCENE_MIN_ANGLE_X = 0;
-    private static final double SCENE_MAX_ANGLE_Y = 0;
-    private static final double SCENE_MIN_ANGLE_Y = 0;
+    private static final double SCENE_MAX_ANGLE_X = 430;
+    private static final double SCENE_MIN_ANGLE_X = 280;
+    private static final double SCENE_MAX_ANGLE_Y = 32;
+    private static final double SCENE_MIN_ANGLE_Y = -32;
 
-    private static final Font NICKNAMES_FONT = new Font("Calibri", 20);
-    private static final int PLAYER_CARD_WIDTH = 170;
-    private static final int PLAYER_CARD_HEIGHT = 88;
+    private static final Font NICKNAMES_FONT = new Font("Calibri", 15);
+    private static final int PLAYER_CARD_WIDTH = 105;
+    private static final int PLAYER_CARD_HEIGHT = 175;
 
     /*
       -----------------------
@@ -266,8 +266,12 @@ public class MatchActiveController extends GUIController {
         });
         gameContainer.setOnMouseDragged(mouseEvent -> {
             //Rotate while dragging
-            sceneAngleX.set(anchorAngleX - (anchorY - mouseEvent.getSceneY()));
-            sceneAngleY.set(anchorAngleY + (anchorX - mouseEvent.getSceneX()));
+            double newAngleX = anchorAngleX - (anchorY - mouseEvent.getSceneY());
+            double newAngleY = anchorAngleY + (anchorX - mouseEvent.getSceneX());
+            if (newAngleX >= SCENE_MIN_ANGLE_X && newAngleX <= SCENE_MAX_ANGLE_X)
+                sceneAngleX.set(newAngleX);
+            if (newAngleY >= SCENE_MIN_ANGLE_Y && newAngleY <= SCENE_MAX_ANGLE_Y)
+                sceneAngleY.set(newAngleY);
         });
     }
 
@@ -467,6 +471,8 @@ public class MatchActiveController extends GUIController {
     public void handlePacketUpdateBoard(PacketUpdateBoard packet){
         ensureActive();
         closeWait();
+        inputChangeState(false); //Hide buttons
+
         //Extract data
         Map<Point, List<BuildingType>> newBuilding = packet.getNewBuildings();
         Map<String, Point> newPositions = packet.getWorkersPositions();
@@ -772,7 +778,7 @@ public class MatchActiveController extends GUIController {
     }
 
     /**
-     * Shows/Hide confirm-revert buttons
+     * Shows/Hide confirm-restart buttons
      * @param showButtons True to show buttons, False to hide them
      */
     public void inputChangeState(boolean showButtons){

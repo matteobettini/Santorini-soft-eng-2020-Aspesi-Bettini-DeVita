@@ -63,7 +63,6 @@ public class NormalMoveStrategy implements MakeMoveStrategy {
             matchData.getClient().send(new PacketMove(activePlayer));
         }else{
             isEnabled = false;
-            controller.inputChangeState(false);
             controller.showMessage(activePlayer + " is making his move");
         }
     }
