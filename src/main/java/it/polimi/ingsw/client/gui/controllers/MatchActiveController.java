@@ -756,6 +756,7 @@ public class MatchActiveController extends GUIController {
     }
     /**
      * Show buildings choice pane, only for the supplied buildings
+     * @param buildings List of selectable buildings for this action
      */
     public void showBuildings(List<BuildingType> buildings){
         domePane.setVisible(buildings.contains(BuildingType.DOME));

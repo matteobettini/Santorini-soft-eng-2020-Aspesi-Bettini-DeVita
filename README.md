@@ -28,11 +28,11 @@
 
 # Santorini
 
-![Santorini Logo](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/blob/master/logo.png)
+![Santorini Logo](logo.png)
 
 ## Setup
 
-- In the [deliveries](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/deliveries) folder there are two multi-platform jar files, one to set the Server up and the other one to start the Client.
+- In the [deliveries](deliveries) folder there are two multi-platform jar files, one to set the Server up and the other one to start the Client.
 - The Server can be run with the following command, as default it runs on port 4567:
     ```shell
     > java -jar GameServer.jar
@@ -49,7 +49,26 @@
     ```
   - This command sets the Client on Graphical User Interface(GUI) mode, but it can be followed by **-cli** if the Command Line Interface(CLI) is preferred.
   - The Server's IP to connect to can be specified during the execution.
-  
+ 
+ ## Build
+ Use maven to build jar files for both the Client and the Server by choosing the appropriate Maven Profile.  
+ 
+ To build the Server, issue:  
+    ```
+       > mvn clean    
+    ```  
+    ```
+      > mvn package -P Server    
+    ```  
+ <br>
+ To build the Client, issue:  
+    ```
+        > mvn clean    
+    ```  
+    ```
+       > mvn package -P Client    
+    ```
+    
  ## Extra
  
  Two game-modes are implemented:
@@ -58,13 +77,13 @@
  
  ## Testing and Documentation
  
- The [model package](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/src/main/java/it/polimi/ingsw/server/model) is entirely tested:
- - <a href="https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/tree/master/deliveries/TestCoverage" title="Tests' Coverage Report">Tests' Coverage Report</a>
- ![Model Coverage](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/blob/master/modelCoverage.png)
+ The [model](src/main/java/it/polimi/ingsw/server/model) and [card](src/main/java/it/polimi/ingsw/server/cards)'s packages are entirely tested:
  
- ![Cards Coverage](https://github.com/MatteoBettini/ing-sw-2020-Aspesi-Bettini-DeVita/blob/master/cardsCoverage.png)
+ - <a href="deliveries/TestCoverage" title="Tests' Coverage Report">Tests' Coverage Report</a>
+ ![Model Coverage](modelCoverage.png)
+ ![Cards Coverage](cardsCoverage.png)
  
- - JavaDoc
+ - [JavaDoc](deliveries/JavaDoc)
  
  ## Tools
  

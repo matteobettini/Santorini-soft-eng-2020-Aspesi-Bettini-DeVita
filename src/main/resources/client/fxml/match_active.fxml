@@ -284,7 +284,7 @@
                         </Label>
                         <ImageView fx:id="imgWait" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../textures/gear.gif" /> <!--Change in /client/textures/gear.gif for the jar-->
+                                <Image url="@../textures/gear.gif" />
                             </image>
                         </ImageView>
                         <Button fx:id="btnClose" alignment="BOTTOM_CENTER" mnemonicParsing="false" onMouseClicked="#onBtnCloseClicked" text="Close" visible="false">

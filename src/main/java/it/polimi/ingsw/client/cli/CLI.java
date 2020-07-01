@@ -50,6 +50,7 @@ public class CLI {
 
     /**
      * The main creates a new instance of CLI and calls the CLI's run method.
+     * @param args Arguments
      */
     public static void main(String[] args){
         CLI cli = new CLI();

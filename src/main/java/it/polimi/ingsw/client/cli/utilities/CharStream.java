@@ -46,7 +46,9 @@ public class CharStream {
     }
 
     /**
-     * This method returns the char saved on the stream's position X, Y,
+     * This method returns the char saved on the stream's position X, Y
+     * @param x X coord
+     * @param y Y param
      * @return an char.
      */
     public char getChar(int x, int y){
@@ -249,6 +251,7 @@ public class CharStream {
 
     /**
      * This method prints the stream's content and its colors.
+     * @param stream Stream used to print
      */
     public void print(PrintStream stream){
         stream.println();

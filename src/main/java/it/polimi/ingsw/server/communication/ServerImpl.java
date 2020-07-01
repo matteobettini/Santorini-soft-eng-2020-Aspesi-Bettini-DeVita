@@ -39,6 +39,7 @@ public class ServerImpl implements Server {
 
     /**
      * The constructor initializes the variables
+     * @param port Port of the Server
      */
     public ServerImpl(int port) {
         this.executor = Executors.newCachedThreadPool();

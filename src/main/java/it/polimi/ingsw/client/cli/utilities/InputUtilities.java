@@ -51,6 +51,7 @@ public class InputUtilities {
 
     /**
      * This method gets an integer from from the command line asynchronously.
+     * @param errorMessage Message in case of Not-a-Number.
      * @return the Integer in input.
      */
     public static Integer getInt(String errorMessage){
@@ -422,7 +423,7 @@ public class InputUtilities {
     }
 
     /**
-     * This method map BuildingType to the corresponding number. (ex. DOME -> 4)
+     * This method maps BuildingType to the corresponding number. (ex. DOME for 4)
      * @param buildingType is the BuildingType enum to map.
      * @return an integer associated with the given enum.
      */
@@ -446,7 +447,7 @@ public class InputUtilities {
     }
 
     /**
-     * This method map an integer to the corresponding BuildingType. (ex. 2 -> SECOND_FLOOR)
+     * This method maps an integer to the corresponding BuildingType. (ex. 2 for SECOND_FLOOR)
      * @param level is the integer enum to map.
      * @return a BuildingType enum associated with the given integer.
      */

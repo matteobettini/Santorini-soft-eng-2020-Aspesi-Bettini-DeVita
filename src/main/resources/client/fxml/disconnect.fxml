@@ -59,6 +59,6 @@
         </BorderPane>
     </children>
     <stylesheets>
-      <URL value="@styles/global.css" /> <!--Change in @/client/fxml/styles/global.css for the jar-->
+      <URL value="@styles/global.css" />
     </stylesheets>
 </StackPane>

@@ -288,6 +288,7 @@ public class MatchData {
 
     /**
      * This method sets the cards received from the server.
+     * @param allCards Cards with their description
      */
     public void setAllCards(Map<String, String> allCards) {
         this.allCards = allCards;
@@ -295,6 +296,7 @@ public class MatchData {
 
     /**
      * Setter for the buildings counter.
+     * @param buildingsCounter Counter for available buildings
      */
     public void setCounter(Map<BuildingType, Integer> buildingsCounter){
         this.buildingsCounter = buildingsCounter;
@@ -305,6 +307,7 @@ public class MatchData {
 
     /**
      * Setter for the players and workers' ids.
+     * @param ids IDs' association
      */
     public void setIds(Map<String, List<String>> ids) {
         this.ids = ids;
@@ -312,6 +315,7 @@ public class MatchData {
 
     /**
      * Setter for the players' colors.
+     * @param playersColor Colors' association
      */
     public void setPlayersColor(Map<String, Color> playersColor) {
         this.playersColor = playersColor;
@@ -319,6 +323,7 @@ public class MatchData {
 
     /**
      * Setter for the players' cards.
+     * @param playersCards Cards' association
      */
     public void setPlayersCards(Map<String, Pair<String, String>> playersCards) {
         this.playersCards = playersCards;
@@ -326,6 +331,7 @@ public class MatchData {
 
     /**
      * Setter for the game-mode.
+     * @param hardcore Flag to indicate whether the match is hardcore
      */
     public void setHardcore(boolean hardcore) {
         this.hardcore = hardcore;
@@ -333,6 +339,7 @@ public class MatchData {
 
     /**
      * Setter for the user nickname.
+     * @param playerName Player name ID
      */
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
@@ -340,6 +347,7 @@ public class MatchData {
 
     /**
      * Setter for the winner's nickname.
+     * @param winner Winner ID
      */
     public void setWinner(String winner) {
         this.winner = winner;
@@ -347,6 +355,7 @@ public class MatchData {
 
     /**
      * Setter for the loser's nickname.
+     * @param loser Loser ID
      */
     public void addLoser(String loser) {
         this.losers.add(loser);
@@ -354,6 +363,7 @@ public class MatchData {
 
     /**
      * Setter for the current active player's nickname.
+     * @param currentActivePlayer Current active player ID
      */
     public void setCurrentActivePlayer(String currentActivePlayer) {
         this.currentActivePlayer = currentActivePlayer;

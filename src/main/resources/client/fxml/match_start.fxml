@@ -25,7 +25,7 @@
                            <children>
                               <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../textures/icon_player.png" /> <!--Change in /client/textures/icon_player.png for jar-->
+                                    <Image url="@../textures/icon_player.png" />
                                  </image>
                               </ImageView>
                               <Label text="Test" textFill="WHITE">
@@ -39,7 +39,7 @@
                            <children>
                               <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../textures/icon_player.png" /> <!--Change in /client/textures/icon_player.png for jar-->
+                                    <Image url="@../textures/icon_player.png" />
                                  </image>
                               </ImageView>
                               <Label text="Test" textFill="WHITE">
@@ -53,7 +53,7 @@
                            <children>
                               <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../textures/icon_player.png" /> <!--Change in /client/textures/icon_player.png for jar-->
+                                    <Image url="@../textures/icon_player.png" />
                                  </image>
                               </ImageView>
                               <Label text="Test" textFill="WHITE">
@@ -105,7 +105,7 @@
                         </Label>
                         <ImageView fx:id="imgWait" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../textures/gear.gif" /> <!--Change in /client/textures/gear.gif for the jar-->
+                                <Image url="@../textures/gear.gif" />
                             </image>
                         </ImageView>
                         <Button fx:id="btnClose" alignment="BOTTOM_CENTER" mnemonicParsing="false" onMouseClicked="#onBtnCloseClicked" text="Close" visible="false">
@@ -126,6 +126,6 @@
         </HBox>
     </children>
     <stylesheets>
-      <URL value="@styles/global.css" /> <!--Change in @/client/fxml/styles/global.css for the jar-->
+      <URL value="@styles/global.css" />
    </stylesheets>
 </StackPane>

@@ -83,6 +83,7 @@ public class OutputUtilities {
 
     /**
      * This method prints the GraphicalMatchMenu and the GraphicalBoard to the user with possible actions highlighted.
+     * @param possibleActions List of points that can be selected
      */
     public static void printMatchAndActions(List<Point> possibleActions){
         MatchData matchData = MatchData.getInstance();
