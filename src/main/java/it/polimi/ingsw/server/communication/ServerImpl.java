@@ -78,7 +78,7 @@ public class ServerImpl implements Server {
                 executor.submit(clientConnection);
             }
         } catch (IOException e) {
-            serverLogger.log(Level.SEVERE, "Server socket has stopped working with an exception", e.getMessage());
+            serverLogger.log(Level.SEVERE, "Server socket has stopped working with an exception:", e);
             if(serverSocket != null && !serverSocket.isClosed()) {
                 try {
                     serverSocket.close();
