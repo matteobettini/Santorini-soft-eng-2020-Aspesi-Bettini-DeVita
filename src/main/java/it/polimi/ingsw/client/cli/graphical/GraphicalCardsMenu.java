@@ -21,6 +21,7 @@ public class GraphicalCardsMenu implements CharFigure {
     private static final int marginTitle = 40;
     private static final BackColor cardsInGameTitleColor = BackColor.ANSI_BG_RED;
     private static final BackColor chooseCardsTitleColor = BackColor.ANSI_BRIGHT_BG_GREEN;
+    private static final BackColor godCardsTitleColor =  BackColor.ANSI_BG_YELLOW;
     private static final int marginAvailableChosenY = 10;
     private static final ForeColor titleCharacterColor = ForeColor.ANSI_BLACK;
     private static final int space_2Cards = 20;
@@ -136,7 +137,7 @@ public class GraphicalCardsMenu implements CharFigure {
     private void printAllCards(int relX, int relY){
         int marginForTitle = 7;
         int marginForHeading = (cardsPerRow * space_3Cards) - (cardsPerRow <= 2 ? space_2Cards : 0) + 5;
-        stream.setMessage("GOD CARDS", relX + marginForHeading, relY + 2, ForeColor.ANSI_BLACK, BackColor.ANSI_BG_YELLOW);
+        stream.setMessage("GOD CARDS", relX + marginForHeading, relY + 2, titleCharacterColor, godCardsTitleColor);
         int countY = 0;
         int countX = 0;
         for (String godCard : availableCards) {

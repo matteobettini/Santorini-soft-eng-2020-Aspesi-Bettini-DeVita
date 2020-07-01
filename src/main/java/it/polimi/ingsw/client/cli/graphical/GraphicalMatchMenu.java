@@ -49,6 +49,12 @@ public class GraphicalMatchMenu implements CharFigure {
     private static final int godNameMarginX = 20;
     private static final int FF_WIDTH = 18;
     private static final int FF_HEIGHT = 7;
+    private static final ForeColor characterMessageColor = ForeColor.ANSI_BLACK;
+    private static final BackColor gameOverMessageColor = BackColor.ANSI_BRIGHT_BG_RED;
+    private static final BackColor youWinMessageColor = BackColor.ANSI_BRIGHT_BG_YELLOW;
+    private static final BackColor lostIconColor = BackColor.ANSI_BRIGHT_BG_RED;
+    private static final BackColor inactiveIconColor = BackColor.ANSI_BG_YELLOW;
+    private static final BackColor activeIconColor = BackColor.ANSI_BRIGHT_BG_GREEN;
 
 
 
@@ -117,10 +123,10 @@ public class GraphicalMatchMenu implements CharFigure {
         GraphicalPane gameOverBox = new GraphicalPane(stream, youWinBoxWidth, youWinBoxHeight, youWinBoxColor);
         gameOverBox.draw(relX + marginX_MessageEndGame, relY + marginY_MessageEndGame);
         String title = "YOU";
-        stream.setMessage(title, relX + marginYouWinX, relY + marginYouWinY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_YELLOW, youWinBoxColor);
+        stream.setMessage(title, relX + marginYouWinX, relY + marginYouWinY, characterMessageColor, youWinMessageColor, youWinBoxColor);
 
         title = "WIN!";
-        stream.setMessage(title, relX + marginYouWinX - 3, relY + marginYouWinY + 5, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_YELLOW, youWinBoxColor);
+        stream.setMessage(title, relX + marginYouWinX - 3, relY + marginYouWinY + 5, characterMessageColor, youWinMessageColor, youWinBoxColor);
     }
 
     /**
@@ -132,9 +138,9 @@ public class GraphicalMatchMenu implements CharFigure {
         GraphicalPane gameOverBox = new GraphicalPane(stream, gameOverBoxWidth, gameOverBoxHeight, gameOverBoxColor);
         gameOverBox.draw(relX + marginX_MessageEndGame, relY + marginY_MessageEndGame);
         String title = "GAME";
-        stream.setMessage(title, relX + marginGameOverX, relY + marginGameOverY, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_RED, gameOverBoxColor);
+        stream.setMessage(title, relX + marginGameOverX, relY + marginGameOverY, characterMessageColor, gameOverMessageColor, gameOverBoxColor);
         title = "OVER";
-        stream.setMessage(title, relX + marginGameOverX, relY + marginGameOverY + 5, ForeColor.ANSI_BLACK, BackColor.ANSI_BRIGHT_BG_RED, gameOverBoxColor);
+        stream.setMessage(title, relX + marginGameOverX, relY + marginGameOverY + 5, characterMessageColor, gameOverMessageColor, gameOverBoxColor);
     }
 
     /**
@@ -186,17 +192,17 @@ public class GraphicalMatchMenu implements CharFigure {
 
             if(activePlayer != null && !activePlayer.equals(player)){
                 if(losers.contains(player)){
-                    stream.addColor(relX + playersBoxMarginX + 2, relY + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
-                    stream.addColor(relX + playersBoxMarginX + 3, relY + nextLine, BackColor.ANSI_BRIGHT_BG_RED);
+                    stream.addColor(relX + playersBoxMarginX + 2, relY + nextLine, lostIconColor);
+                    stream.addColor(relX + playersBoxMarginX + 3, relY + nextLine, lostIconColor);
                 }
                 else{
-                    stream.addColor(relX + playersBoxMarginX + 2, relY + nextLine, BackColor.ANSI_BRIGHT_BG_YELLOW);
-                    stream.addColor(relX + playersBoxMarginX + 3, relY + nextLine, BackColor.ANSI_BRIGHT_BG_YELLOW);
+                    stream.addColor(relX + playersBoxMarginX + 2, relY + nextLine, inactiveIconColor);
+                    stream.addColor(relX + playersBoxMarginX + 3, relY + nextLine, inactiveIconColor);
                 }
             }
             else {
-                stream.addColor(relX + playersBoxMarginX + 2, relY + nextLine, BackColor.ANSI_BRIGHT_BG_GREEN);
-                stream.addColor(relX + playersBoxMarginX + 3, relY + nextLine, BackColor.ANSI_BRIGHT_BG_GREEN);
+                stream.addColor(relX + playersBoxMarginX + 2, relY + nextLine, activeIconColor);
+                stream.addColor(relX + playersBoxMarginX + 3, relY + nextLine, activeIconColor);
             }
             String godCard = playersGodCardAssociation.get(player).getFirst();
             if(godCard.length() >= maximumGodNameLength){
