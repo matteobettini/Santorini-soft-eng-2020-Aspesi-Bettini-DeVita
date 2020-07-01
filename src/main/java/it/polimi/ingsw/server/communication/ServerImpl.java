@@ -58,9 +58,13 @@ public class ServerImpl implements Server {
      * and assigning them to a thread in the thread pool
      */
     public void startServer(){
-        try {
+        try{
             serverSocket = new ServerSocket(port);
-
+        }catch (IOException e){
+            serverLogger.log(Level.SEVERE, "Cannot open server on port " + port);
+            return; //Close server
+        }
+        try {
             serverLogger.info("Server is ready");
             while (true) {
                 Socket clientSocket = serverSocket.accept();
