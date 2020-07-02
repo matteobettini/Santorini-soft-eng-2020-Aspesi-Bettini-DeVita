@@ -35,7 +35,7 @@
 - In the [deliveries](deliveries) folder there are two multi-platform jar files, one to set the Server up and the other one to start the Client.
 - The Server can be run with the following command, as default it runs on port 4567:
     ```shell
-    > java -jar GameServer.jar
+    > java -jar SantoriniServer.jar
     ```
   This command can be followed by these arguments:
   - **-port**: followed by the desired port number between MIN_PORT and MAX_PORT as argument;
@@ -45,7 +45,7 @@
   
 - The Client can be run with the following command:
     ```shell
-    > java -jar GameClient.jar
+    > java -jar SantoriniClient.jar
     ```
   - This command sets the Client on Graphical User Interface(GUI) mode, but it can be followed by **-cli** if the Command Line Interface(CLI) is preferred.
   - The Server's IP and port to connect to can be specified during the execution.

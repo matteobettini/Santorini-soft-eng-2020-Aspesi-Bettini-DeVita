@@ -25,14 +25,14 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <project.outputName>GameServer</project.outputName>
+                <project.outputName>SantoriniServer</project.outputName>
                 <project.mainClass>it.polimi.ingsw.server.GameServer</project.mainClass>
             </properties>
         </profile>
         <profile>
             <id>Client</id>
             <properties>
-                <project.outputName>GameClient</project.outputName>
+                <project.outputName>SantoriniClient</project.outputName>
                 <project.mainClass>it.polimi.ingsw.client.GameClient</project.mainClass>
             </properties>
         </profile>
