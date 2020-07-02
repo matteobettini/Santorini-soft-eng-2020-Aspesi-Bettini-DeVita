@@ -48,7 +48,7 @@
     > java -jar GameClient.jar
     ```
   - This command sets the Client on Graphical User Interface(GUI) mode, but it can be followed by **-cli** if the Command Line Interface(CLI) is preferred.
-  - The Server's IP to connect to can be specified during the execution.
+  - The Server's IP and port to connect to can be specified during the execution.
  
  ## Build
  Use maven to build jar files for both the Client and the Server by choosing the appropriate Maven Profile.  
@@ -67,8 +67,9 @@
     ```  
     ```
        > mvn package -P Client    
-    ```
-    
+    ```    
+  
+  After these processes both jars can be found in the builds folder.
  ## Extra
  
  Two game-modes are implemented:
