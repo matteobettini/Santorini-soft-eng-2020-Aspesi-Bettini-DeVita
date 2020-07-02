@@ -28,6 +28,10 @@ public class GraphicalCardsMenu implements CharFigure {
     private static final int space_3Cards = 10;
     private static final int marginX_2Cards = 40;
     private static final int marginX_3Cards = 25;
+    private static final int cardsDeltaFromTitle = 7;
+    private static final int deltaWidthFromRight = 19;
+    private static final int deltaHeightChooseCards = 20;
+    private static final int deltaHeightAllCards = 7;
 
     /**
      * This constructor initializes all the godCards received from the server. GodCards are all the received god cards,
@@ -55,7 +59,7 @@ public class GraphicalCardsMenu implements CharFigure {
      */
     public int getRequiredWidth(){
         if(!chosenCards.isEmpty() || availableCards.size() <= 3) return defaultRequiredWidth;
-        return GraphicalCard.getWidth() * cardsPerRow + 19;
+        return GraphicalCard.getWidth() * cardsPerRow + deltaWidthFromRight;
     }
 
     /**
@@ -63,12 +67,12 @@ public class GraphicalCardsMenu implements CharFigure {
      * @return an integer corresponding to the required height.
      */
     public int getRequiredHeight(){
-        if(!chosenCards.isEmpty() || availableCards.size() <= 3) return GraphicalCard.getHeight() + 20;
+        if(!chosenCards.isEmpty() || availableCards.size() <= 3) return GraphicalCard.getHeight() + deltaHeightChooseCards;
         int count = godCards.size();
         while(count % cardsPerRow != 0){
             count ++;
         }
-        return (count / cardsPerRow) * GraphicalCard.getHeight() + 2 * (count / cardsPerRow + 1) + 7;
+        return (count / cardsPerRow) * GraphicalCard.getHeight() + 2 * (count / cardsPerRow + 1) + deltaHeightAllCards;
     }
 
     /**
@@ -135,14 +139,13 @@ public class GraphicalCardsMenu implements CharFigure {
      * @param relY is the Y coordinate relative to the menu.
      */
     private void printAllCards(int relX, int relY){
-        int marginForTitle = 7;
         int marginForHeading = (cardsPerRow * space_3Cards) - (cardsPerRow <= 2 ? space_2Cards : 0) + 5;
         stream.setMessage("GOD CARDS", relX + marginForHeading, relY + 2, titleCharacterColor, godCardsTitleColor);
         int countY = 0;
         int countX = 0;
         for (String godCard : availableCards) {
             GraphicalCard graphicalCard = new GraphicalCard(stream, godCard, godCards.get(godCard));
-            graphicalCard.draw(relX + GraphicalCard.getWidth() * countY + cardsPerRow * (countY + 1), relY + marginForTitle + GraphicalCard.getHeight() * countX + 2 * (countX + 1));
+            graphicalCard.draw(relX + GraphicalCard.getWidth() * countY + cardsPerRow * (countY + 1), relY + cardsDeltaFromTitle + GraphicalCard.getHeight() * countX + 2 * (countX + 1));
             countY++;
             if (countY == cardsPerRow) {
                 countY = 0;

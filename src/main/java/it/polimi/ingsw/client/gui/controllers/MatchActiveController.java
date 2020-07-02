@@ -154,6 +154,8 @@ public class MatchActiveController extends GUIController {
     private PacketDoAction lastAction; //Last action performed
     private boolean isFinished; //Is match ended
     private String finishedMessage; //Match ended message
+    private double stageWidth; //Stage width when the scene is activated
+    private double stageHeight; //Stage height when the scene is activated
 
     /*
       -----------------------
@@ -196,10 +198,14 @@ public class MatchActiveController extends GUIController {
         stage.widthProperty().addListener((obs, oldVal, newVal) -> {
             if (isActive())
                 gameScene.setWidth(newVal.doubleValue());
+            else
+                stageWidth = newVal.doubleValue(); //Save for next activation
         });
         stage.heightProperty().addListener((obs, oldVal, newVal) -> {
             if (isActive())
                 gameScene.setHeight(newVal.doubleValue());
+            else
+                stageHeight = newVal.doubleValue(); //Save for next activation
         });
     }
 
@@ -242,9 +248,13 @@ public class MatchActiveController extends GUIController {
      */
     @Override
     public void activate() {
+        //Reset camera angle
         sceneAngleX.set(SCENE_START_ANGLE_X);
         sceneAngleY.set(SCENE_START_ANGLE_Y);
         super.activate(); //Do scene settings stuff
+        //Reset game scene size
+        gameScene.setWidth(stageWidth);
+        gameScene.setHeight(stageHeight);
     }
 
     //Handlers

@@ -81,8 +81,8 @@
  The [model](src/main/java/it/polimi/ingsw/server/model) and [card](src/main/java/it/polimi/ingsw/server/cards)'s packages are entirely tested:
  
  - <a href="deliveries/TestCoverage" title="Tests' Coverage Report">Tests' Coverage Report</a>
- ![Model Coverage](modelCoverage.png)
- ![Cards Coverage](cardsCoverage.png)
+ ![Model Coverage](deliveries/TestCoverage/modelCoverage.png)
+ ![Cards Coverage](deliveries/TestCoverage/cardsCoverage.png)
  
  - [JavaDoc](deliveries/JavaDoc)
  
