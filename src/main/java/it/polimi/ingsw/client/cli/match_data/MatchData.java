@@ -53,7 +53,7 @@ public class MatchData {
     }
 
     /**
-     * This constructor call the method reset that instantiates the new attributes.
+     * This constructor calls the method reset that instantiates the new attributes.
      */
     private MatchData(){
         reset();

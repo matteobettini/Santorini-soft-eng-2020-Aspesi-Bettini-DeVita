@@ -1,8 +1,8 @@
 package it.polimi.ingsw.server.model;
 
 /**
- * Thi is a lmabda function that encapsulates the logic of one statement of a certain rule.
- * It says if a certain statement is true or folse given some specific game coditions.
+ * This is a lambda function that encapsulates the logic of one statement of a certain rule.
+ * It says if a certain statement is true or false given some specific game condition.
  * It can be both the statement of a move rule or of a build rule.
  */
 @FunctionalInterface

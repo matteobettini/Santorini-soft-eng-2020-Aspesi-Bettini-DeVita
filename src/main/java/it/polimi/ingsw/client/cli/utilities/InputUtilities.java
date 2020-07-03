@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.cli.utilities;
 
-import it.polimi.ingsw.client.cli.graphical.GraphicalBoard;
 import it.polimi.ingsw.client.cli.match_data.Board;
 import it.polimi.ingsw.client.cli.match_data.MatchData;
 import it.polimi.ingsw.common.enums.BuildingType;
@@ -29,13 +28,17 @@ public class InputUtilities {
     public static final int ERROR = -1;
 
     /**
-     * This method gets a line from from the command line asynchronously.
+     * This method gets a line from from the command line.
      * @return the String in input.
      */
     public static String getLine(){
         String input;
         do {
             try {
+                //Reset buffer
+                while(InputUtilities.input.ready())
+                    InputUtilities.input.readLine(); //Flush
+                //Wait for user
                 while (!InputUtilities.input.ready()) {
                     Thread.sleep(200);
                 }
@@ -50,7 +53,7 @@ public class InputUtilities {
 
 
     /**
-     * This method gets an integer from from the command line asynchronously.
+     * This method gets an integer from from the command line.
      * @param errorMessage Message in case of Not-a-Number.
      * @return the Integer in input.
      */
@@ -61,6 +64,10 @@ public class InputUtilities {
 
         try {
             do {
+                //Reset buffer
+                while(input.ready())
+                    input.readLine(); //Flush
+                //Wait for user
                 while (!input.ready()) {
                     Thread.sleep(200);
                 }
@@ -78,38 +85,6 @@ public class InputUtilities {
             return null;
         }
         return num;
-    }
-
-    /**
-     * This method gets a boolean from from the command line asynchronously.
-     * @return the boolean in input.
-     */
-    public static Boolean getBoolean(){
-        String boolString;
-        Boolean bool = null;
-        boolean fin = false;
-        try {
-            do {
-                while (!input.ready()) {
-                    Thread.sleep(200);
-                }
-                boolString = input.readLine();
-                try {
-                    if(!boolString.equals("true") && !boolString.equals("false"))
-                        throw new NumberFormatException();
-                    bool = Boolean.parseBoolean(boolString);
-                    fin = true;
-                } catch (NumberFormatException e) {
-                    System.out.println("Retry");
-                }
-            }while(!fin);
-
-        }catch (InterruptedException | IOException e){
-            Thread.currentThread().interrupt();
-            return null;
-        }
-
-        return bool;
     }
 
     /**

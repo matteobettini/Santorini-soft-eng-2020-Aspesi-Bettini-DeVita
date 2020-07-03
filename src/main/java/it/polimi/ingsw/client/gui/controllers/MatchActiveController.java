@@ -106,7 +106,7 @@ public class MatchActiveController extends GUIController {
         Constants
       ------------
      */
-    private static final double CAMERA_START_Z = -150;
+    private static final double CAMERA_START_Z = -170;
     private static final double CAMERA_START_Y = -10;
 
     private static final double MIN_VIEW_DEPTH = 0.1;
@@ -251,6 +251,7 @@ public class MatchActiveController extends GUIController {
         //Reset camera angle
         sceneAngleX.set(SCENE_START_ANGLE_X);
         sceneAngleY.set(SCENE_START_ANGLE_Y);
+        gameContainer.translateZProperty().setValue(0);
         super.activate(); //Do scene settings stuff
         //Reset game scene size
         gameScene.setWidth(stageWidth);

@@ -24,7 +24,7 @@ public interface Client {
     void start(String address, int port);
 
     /**
-     * Used to send a serializable packet to hte server
+     * Used to send a serializable packet to the server
      * @param packet the packet to be sent
      */
     void send(Serializable packet);
