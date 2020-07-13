@@ -4,9 +4,9 @@
 ## Gruppo AM09
 
 
-- ###   10568949    Andrea Aspesi ([@AspesiAndrea](https://github.com/AspesiAndrea))<br>andrea1.aspesi@mail.polimi.it
-- ###   10580728    Matteo Bettini ([@MatteoBettini](https://github.com/MatteoBettini))<br>matteo1.bettini@mail.polimi.it
-- ###   10560693    Mirko De Vita ([@MirkoDeVita98](https://github.com/MirkoDeVita98))<br>mirko.devita@mail.polimi.it
+- ###  Andrea Aspesi ([@AspesiAndrea](https://github.com/AspesiAndrea))<br>andrea1.aspesi@mail.polimi.it
+- ###  Matteo Bettini ([@MatteoBettini](https://github.com/MatteoBettini))<br>matteo1.bettini@mail.polimi.it
+- ###  Mirko De Vita ([@MirkoDeVita98](https://github.com/MirkoDeVita98))<br>mirko.devita@mail.polimi.it
 
 | Functionality | State |
 |:-----------------------|:------------------------------------:|
