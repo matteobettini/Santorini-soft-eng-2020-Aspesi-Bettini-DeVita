@@ -1,7 +1,7 @@
 # Final project Software Engineering 2020
 # Santorini
 
-This repository contains a video game implementation of the board game *Santorini*. 
+This repository contains a **Java** video game implementation of the board game *Santorini*. 
 It has been developed for the course "Software Engineering" at Politecnico di Milano as part of the final examination projects for the Bachelor in Computer Engineering.
 In a team of 3 students we implemented this multiplayer online game with 3D graphics.
 In the game it is possible to play multiple concurrent matches. 
@@ -84,13 +84,14 @@ For this project we have been awarded the maximum grade of **30 cum laude/30**.
  
  ## Testing and Documentation
  
- The [model](src/main/java/it/polimi/ingsw/server/model) and [card](src/main/java/it/polimi/ingsw/server/cards)'s packages are entirely tested:
+ The [model](src/main/java/it/polimi/ingsw/server/model) and [card](src/main/java/it/polimi/ingsw/server/cards)'s packages have been entirely tested and documentation of the project has been written using JavaDocs:
  
+  - [JavaDoc](deliveries/JavaDoc)
  - <a href="deliveries/TestCoverage" title="Tests' Coverage Report">Tests' Coverage Report</a>
  ![Model Coverage](deliveries/TestCoverage/modelCoverage.png)
  ![Cards Coverage](deliveries/TestCoverage/cardsCoverage.png)
  
- - [JavaDoc](deliveries/JavaDoc)
+
  
  ## Tools
  
