@@ -1,3 +1,5 @@
+![Santorini Logo](logo.png)
+
 # Final project Software Engineering 2020
 # Santorini
 
@@ -8,8 +10,6 @@ In the game it is possible to play multiple concurrent matches.
 Sockets are used for asynchronous communication.
 For this project we have been awarded the maximum grade of **30 cum laude/30**.
  
-
-![Santorini Logo](logo.png)
 
 ## Section of Professor Alessandro Margara
 ## Group AM09
