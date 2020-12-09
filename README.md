@@ -1,12 +1,22 @@
-# Prova Finale Ingegneria del Software 2020
-# Scaglione Margara
+# Final project Software Engineering 2020
+# Santorini
 
-## Gruppo AM09
+This repository contains a video game implementation of the board game *Santorini*. 
+It has been developed for the course "Software Engineering" at Politecnico di Milano as part of the final examination projects for the Bachelor in Computer Engineering.
+In a team of 3 students we implemented this multiplayer online game with 3D graphics.
+In the game it is possible to play multiple concurrent matches. 
+Sockets are used for asynchronous communication.
+For this project we have been awarded the maximum grade of **30 cum laude/30**.
+ 
 
+![Santorini Logo](logo.png)
 
-- ###  Andrea Aspesi ([@AspesiAndrea](https://github.com/AspesiAndrea))<br>andrea1.aspesi@mail.polimi.it
-- ###  Matteo Bettini ([@MatteoBettini](https://github.com/MatteoBettini))<br>matteo1.bettini@mail.polimi.it
-- ###  Mirko De Vita ([@MirkoDeVita98](https://github.com/MirkoDeVita98))<br>mirko.devita@mail.polimi.it
+## Section of Professor Alessandro Margara
+## Group AM09
+
+- ###   10568949    Andrea Aspesi ([@AspesiAndrea](https://github.com/AspesiAndrea))<br>andrea1.aspesi@mail.polimi.it
+- ###   10580728    Matteo Bettini ([@MatteoBettini](https://github.com/MatteoBettini))<br>matteo1.bettini@mail.polimi.it
+- ###   10560693    Mirko De Vita ([@MirkoDeVita98](https://github.com/MirkoDeVita98))<br>mirko.devita@mail.polimi.it
 
 | Functionality | State |
 |:-----------------------|:------------------------------------:|
@@ -16,9 +26,7 @@
 | GUI | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
 | CLI | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
 | Multiple games | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
-| Persistence | [![RED](https://placehold.it/15/f03c15/f03c15)](#) |
 | Advanced Gods | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
-| Undo | [![RED](https://placehold.it/15/f03c15/f03c15)](#) |
 
 <!--
 [![RED](https://placehold.it/15/f03c15/f03c15)](#)
@@ -26,9 +34,7 @@
 [![GREEN](https://placehold.it/15/44bb44/44bb44)](#)
 -->
 
-# Santorini
 
-![Santorini Logo](logo.png)
 
 ## Setup
 
