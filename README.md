@@ -1,31 +1,41 @@
 # Final project Software Engineering 2020
 # Santorini
 
+<img src="logo.png" width="400" height="400"  alt="drawing"/>
+
 This repository contains a **Java** video game implementation of the board game *Santorini*. 
 It has been developed for the course "Software Engineering" at Politecnico di Milano as part of the final examination projects for the Bachelor in Computer Engineering.
 In a team of 3 students we implemented this multiplayer online game with 3D graphics.
 In the game it is possible to play multiple concurrent matches. 
 Sockets are used for asynchronous communication.
 For this project we have been awarded the maximum grade of **30 cum laude/30**.
- 
-![Santorini Logo](logo.png)
+
+ ![](deliveries/media/gui.png)
+
+### Features
+
+- **2-3 Online players**
+- **GUI**: Play in a 3D rendered world
+- **Multiple parallel online games**
+- **Advanced gods**: Apart from the full rules and the basic gods, we implement advanced gods
+- **Normal or hardcore game-modes**: In hardcore mode, illegal moves are allowed and make you loose the game. In normal mode, the allowed moves are displayed to the user which can only choose among them
 
 ## Section of Professor Alessandro Margara
 ## Group AM09
 
-- ###   10568949    Andrea Aspesi ([@AspesiAndrea](https://github.com/AspesiAndrea))<br>andrea1.aspesi@mail.polimi.it
-- ###   10580728    Matteo Bettini ([@MatteoBettini](https://github.com/MatteoBettini))<br>matteo1.bettini@mail.polimi.it
+- ###   10568949    Andrea Aspesi ([@andreaaspesidev](https://github.com/andreaaspesidev))<br>andrea1.aspesi@mail.polimi.it
+- ###   10580728    Matteo Bettini ([@matteobettini](https://github.com/matteomettini))<br>matteo1.bettini@mail.polimi.it
 - ###   10560693    Mirko De Vita ([@MirkoDeVita98](https://github.com/MirkoDeVita98))<br>mirko.devita@mail.polimi.it
 
-| Functionality | State |
-|:-----------------------|:------------------------------------:|
-| Basic rules | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
-| Complete rules | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
-| Socket | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
-| GUI | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
-| CLI | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
-| Multiple games | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
-| Advanced Gods | [![GREEN](https://placehold.it/15/44bb44/44bb44)](#) |
+| Functionality  |       State        |
+|:---------------|:------------------:|
+| Basic rules    | :heavy_check_mark: |
+| Complete rules | :heavy_check_mark: |
+| Socket         | :heavy_check_mark: |
+| GUI            | :heavy_check_mark: |
+| CLI            | :heavy_check_mark: |
+| Multiple games | :heavy_check_mark: |
+| Advanced Gods  | :heavy_check_mark: |
 
 <!--
 [![RED](https://placehold.it/15/f03c15/f03c15)](#)
